@@ -1,5 +1,6 @@
 import Image from "next/image";
 import React from "react";
+import { FaFacebook, FaYoutube } from "react-icons/fa";
 
 const Home = () => {
   return (
@@ -59,28 +60,26 @@ const Home = () => {
         </p>
 
         <div className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8">
-          <p className="text-sm sm:text-base">
-            Find me on Facebook:{" "}
+          <div className="flex justify-center space-x-6">
             <a
               href="https://www.facebook.com/avshalom.elitzur"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-700 hover:underline"
+              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-200"
+              aria-label="Facebook"
             >
-              https://www.facebook.com/avshalom.elitzur
+              <FaFacebook />
             </a>
-          </p>
-          <p className="text-sm sm:text-base mt-2">
-            and YouTube:{" "}
             <a
               href="https://www.youtube.com/@avshalomelitzur424"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-500 hover:text-blue-700 hover:underline"
+              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-200"
+              aria-label="YouTube"
             >
-              https://www.youtube.com/@avshalomelitzur424
+              <FaYoutube />
             </a>
-          </p>
+          </div>
         </div>
       </div>
     </main>
