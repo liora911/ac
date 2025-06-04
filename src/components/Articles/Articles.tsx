@@ -1,68 +1,68 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { ArticleProps } from "@/types/Articles/articles";
 
-const Articles: React.FC<ArticleProps> = ({
-  publisherImage,
-  publisherName,
-  date,
-  readDuration,
-  title,
-  articleImage,
-  content,
-}) => {
+interface ArticleListProps {
+  articles: ArticleProps[];
+}
+
+const ArticlesGrid: React.FC<ArticleListProps> = ({ articles }) => {
+  const router = useRouter();
+
+  const handleClick = (id: string) => {
+    router.push(`/article?id=${id}`);
+  };
+
   return (
-    <article
-      style={{
-        border: "1px solid #e0e0e0",
-        borderRadius: "8px",
-        padding: "20px",
-        marginBottom: "30px",
-        fontFamily: "Arial, sans-serif",
-        direction: "rtl",
-      }}
-    >
-      <header
-        style={{ display: "flex", alignItems: "center", marginBottom: "15px" }}
-      >
-        {publisherImage && (
-          <Image
-            src={publisherImage}
-            alt={`${publisherName} profile`}
-            width={40}
-            height={40}
-            style={{ borderRadius: "50%", marginRight: "10px" }}
-          />
-        )}
-        <div>
-          <p style={{ margin: 0, fontWeight: "bold" }}>{publisherName}</p>
-          <p style={{ margin: 0, fontSize: "0.9em", color: "#555" }}>
-            {date} · {readDuration} דקות קריאה
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-4 sm:p-6">
+      {articles.map((article) => (
+        <article
+          key={article.id}
+          onClick={() => handleClick(article.id)}
+          className="bg-white border border-gray-300 rounded-lg p-5 cursor-pointer hover:shadow-lg transition duration-200 font-sans text-right"
+        >
+          <header className="flex items-center mb-4">
+            {article.publisherImage && (
+              <Image
+                src={article.publisherImage}
+                alt={`${article.publisherName} profile`}
+                width={40}
+                height={40}
+                className="rounded-full ml-3"
+              />
+            )}
+            <div>
+              <p className="m-0 font-bold">{article.publisherName}</p>
+              <p className="m-0 text-sm text-gray-600">
+                {article.date} · {article.readDuration} דקות קריאה
+              </p>
+            </div>
+          </header>
+
+          <h2 className="text-xl font-semibold mb-3">{article.title}</h2>
+
+          {article.articleImage && (
+            <div className="mb-4">
+              <Image
+                src={article.articleImage}
+                alt={article.title}
+                width={600}
+                height={300}
+                className="rounded w-full max-h-[200px] object-cover"
+              />
+            </div>
+          )}
+
+          <p className="text-sm leading-relaxed text-gray-700 line-clamp-4">
+            {article.content}
           </p>
-        </div>
-      </header>
-      <h2 style={{ fontSize: "1.8em", marginBottom: "10px" }}>{title}</h2>
-      {articleImage && (
-        <div style={{ marginBottom: "15px" }}>
-          <Image
-            src={articleImage}
-            alt={title}
-            width={600}
-            height={300}
-            style={{
-              borderRadius: "4px",
-              objectFit: "cover",
-              width: "100%",
-              maxHeight: "300px",
-            }}
-          />
-        </div>
-      )}
-      <div style={{ fontSize: "1.1em", lineHeight: "1.6" }}>
-        <p>{content}</p>
-      </div>
-    </article>
+        </article>
+      ))}
+    </div>
   );
 };
 
-export default Articles;
+export default ArticlesGrid;

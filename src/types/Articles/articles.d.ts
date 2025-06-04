@@ -1,4 +1,5 @@
 export interface ArticleProps {
+  id: string;
   publisherImage: string;
   publisherName: string;
   date: string;
