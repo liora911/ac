@@ -1,6 +1,10 @@
 import ArticlePage from "@/components/Article/article";
-import React from "react";
+import React, { Suspense } from "react";
 
-const Page = () => <ArticlePage />;
+const Page = () => (
+  <Suspense>
+    <ArticlePage />
+  </Suspense>
+);
 
 export default Page;
