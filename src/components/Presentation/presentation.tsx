@@ -3,74 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
-
-const presentations = [
-  {
-    id: "qm-001",
-    title: "Quantum Mechanics Insights",
-    imageUrls: ["/consc.png", "/moon.png", "/qft.png"],
-    description: "An overview of foundational concepts in quantum mechanics.",
-    content: `
-        Topics covered:
-        - Wave-particle duality
-        - Schrödinger's equation
-        - Quantum entanglement
-        - Measurement problem and decoherence
-      `,
-  },
-  {
-    id: "rel-002",
-    title: "Exploring Relativity",
-    imageUrls: ["/spacetime.png", "/schrodingercat.jpg"],
-    description: "Delving into the theories of special and general relativity.",
-    content: `
-        Topics covered:
-        - Lorentz transformations
-        - Time dilation and length contraction
-        - Spacetime curvature
-        - Einstein field equations
-      `,
-  },
-  {
-    id: "bio-003",
-    title: "Evolutionary Biology Today",
-    imageUrls: ["/electroncloud.png", "/qftt.png"],
-    description: "Current research and discussions in evolutionary biology.",
-    content: `
-        Topics covered:
-        - Natural selection and adaptation
-        - Genetic drift and gene flow
-        - Phylogenetic trees and molecular evolution
-        - Evo-Devo (evolutionary developmental biology)
-      `,
-  },
-  {
-    id: "mind-004",
-    title: "Philosophy of Mind",
-    imageUrls: ["/moon.png"],
-    description: "Exploring consciousness and the nature of mind.",
-    content: `
-        Topics covered:
-        - Dualism vs Physicalism
-        - Intentionality and qualia
-        - Neural correlates of consciousness
-        - Panpsychism, emergence, and integrated information theory
-      `,
-  },
-  {
-    id: "test-001",
-    title: "Yarin Test Presentation",
-    imageUrls: ["/1.png", "/2.png", "/3.png", "/4.png"],
-    description:
-      "Testing Presentations, long paragraph to check text overflow and layout. This is a long description to ensure that the text wraps correctly and does not overflow the card. It should be long enough to test the layout effectively.",
-    content: `
-        Topics covered:
-        - Testing layout and responsiveness
-        - Ensuring text wraps correctly
-        - Checking image loading and transitions
-      `,
-  },
-];
+import { presentations } from "@/constants/Presentations/data";
 
 export default function PresentationDetail() {
   const searchParams = useSearchParams();

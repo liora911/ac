@@ -1,49 +1,8 @@
 "use client";
 
+import { presentations } from "@/constants/Presentations/data";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-
-interface PresentationCardProps {
-  id: string;
-  title: string;
-  imageUrls: string[];
-  description: string;
-}
-
-const presentations: PresentationCardProps[] = [
-  // Placeholder data - we'll need actual data for these
-  {
-    id: "qm-001",
-    title: "Quantum Mechanics Insights",
-    imageUrls: ["/consc.png", "/moon.png", "/qft.png"],
-    description: "An overview of foundational concepts in quantum mechanics.",
-  },
-  {
-    id: "rel-002",
-    title: "Exploring Relativity",
-    imageUrls: ["/spacetime.png", "/schrodingercat.jpg"],
-    description: "Delving into the theories of special and general relativity.",
-  },
-  {
-    id: "bio-003",
-    title: "Evolutionary Biology Today",
-    imageUrls: ["/electroncloud.png", "/qftt.png"],
-    description: "Current research and discussions in evolutionary biology.",
-  },
-  {
-    id: "mind-004",
-    title: "Philosophy of Mind",
-    imageUrls: ["/moon.png"],
-    description: "Exploring consciousness and the nature of mind.",
-  },
-  {
-    id: "test-001",
-    title: "Yarin Test Presentation",
-    imageUrls: ["/1.png", "/2.png", "/3.png", "/4.png"],
-    description:
-      "Testing Presentations, long paragraph to check text overflow and layout. This is a long description to ensure that the text wraps correctly and does not overflow the card. It should be long enough to test the layout effectively.",
-  },
-];
 
 export default function Presentations() {
   const router = useRouter();

@@ -21,7 +21,7 @@ const Home = () => {
 
         <div className="my-6 sm:my-8">
           <Image
-            src="/NNZxjUl0_400x400.png"
+            src="/acpfp2.png"
             alt="Avshalom C. Elitzur"
             width={150}
             height={150}
