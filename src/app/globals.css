@@ -2,6 +2,7 @@
 
 body {
   background: var(--background);
+  --background: #daf7a6;
   color: var(--foreground);
   font-family: var(--font-sans);
 }
