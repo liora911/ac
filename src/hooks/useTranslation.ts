@@ -25,8 +25,6 @@ export function useTranslation() {
 
   useEffect(() => {
     setIsMounted(true);
-
-    // Re-sync locale after mount to handle any discrepancies
     const savedLocale = getInitialLocale();
     if (savedLocale !== locale) {
       setLocale(savedLocale);
@@ -35,8 +33,6 @@ export function useTranslation() {
 
   useEffect(() => {
     if (!isMounted) return;
-
-    // Only save to localStorage - no direction changes
     localStorage.setItem("locale", locale);
   }, [locale, isMounted]);
 
@@ -48,7 +44,7 @@ export function useTranslation() {
       if (value && typeof value === "object" && k in value) {
         value = value[k];
       } else {
-        return key; // Return the key if translation not found
+        return key;
       }
     }
 

@@ -1,7 +1,7 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
 import Image from "next/image";
 
 const presentations = [
@@ -81,10 +81,20 @@ export default function PresentationDetail() {
     [id]
   );
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const total = presentation!.imageUrls.length;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const total = presentation?.imageUrls.length ?? 0;
 
   const next = () => setCurrentImageIndex((i) => (i + 1) % total);
   const prev = () => setCurrentImageIndex((i) => (i - 1 + total) % total);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
   if (!presentation) {
     return (
       <div className="p-8 text-center text-red-600 font-semibold">
@@ -99,7 +109,10 @@ export default function PresentationDetail() {
         {presentation.title}
       </h1>
 
-      <div className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-100">
+      <div
+        className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
+        onClick={() => setIsModalOpen(true)}
+      >
         <Image
           src={presentation.imageUrls[currentImageIndex]}
           alt={`${presentation.title} - image ${currentImageIndex + 1}`}
@@ -112,14 +125,20 @@ export default function PresentationDetail() {
         {total > 1 && (
           <>
             <button
-              onClick={prev}
+              onClick={(e) => {
+                e.stopPropagation();
+                prev();
+              }}
               className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md z-10 cursor-pointer"
             >
               &#8592;
             </button>
 
             <button
-              onClick={next}
+              onClick={(e) => {
+                e.stopPropagation();
+                next();
+              }}
               className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-2 shadow-md z-10 cursor-pointer"
             >
               &#8594;
@@ -135,6 +154,24 @@ export default function PresentationDetail() {
       <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 whitespace-pre-line text-sm sm:text-base text-gray-800">
         {presentation.content}
       </div>
+
+      {isModalOpen && (
+        <div
+          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 cursor-zoom-out"
+          onClick={() => setIsModalOpen(false)}
+        >
+          <div className="relative w-full max-w-5xl h-[90vh]">
+            <Image
+              src={presentation.imageUrls[currentImageIndex]}
+              alt="Preview"
+              fill
+              className="object-contain"
+              sizes="100vw"
+              priority
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
