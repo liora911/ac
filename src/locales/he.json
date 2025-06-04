@@ -1,0 +1,14 @@
+{
+  "nav": {
+    "presentations": "מצגות",
+    "articles": "מאמרים",
+    "lectures": "הרצאות",
+    "contact": "צור קשר",
+    "events": "אירועים",
+    "onlineEvents": "אירועים מקוונים"
+  },
+  "hero": {
+    "title": "ברוכים הבאים לאתר שלנו",
+    "subtitle": "כתובית משנה מדהימה כאן"
+  }
+}

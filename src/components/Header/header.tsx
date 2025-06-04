@@ -1,10 +1,14 @@
 "use client";
 
 import { navItems } from "@/constants/Nav/data";
+import { useTranslation } from "@/hooks/useTranslation";
 import Link from "next/link";
 import { useState } from "react";
+import LocaleSelect from "../LocaleSelect/locale-select";
 
 export default function Header() {
+  const { t, locale, setLocale } = useTranslation();
+
   const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
 
   return (
@@ -13,24 +17,30 @@ export default function Header() {
         <Link href="/" className="text-xl font-semibold tracking-tight">
           A.Elitzur
         </Link>
-        <nav className="flex flex-wrap justify-center gap-4 text-sm sm:text-base">
-          {navItems.map(({ label, href, className }) => (
-            <Link
-              key={href}
-              href={href}
-              className={`hover:underline underline-offset-4 ${
-                className || ""
-              }`} // Apply custom className
-              onClick={() => setActiveNavItem(href)}
-              style={{
-                textDecoration:
-                  activeNavItem === href ? "underline" : undefined,
-              }}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
+        <div className="flex items-center gap-4">
+          <nav className="flex flex-wrap justify-center items-center gap-4 text-sm sm:text-base">
+            {navItems.map(({ label, href, className }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`hover:underline underline-offset-4 ${
+                  className || ""
+                }`}
+                onClick={() => setActiveNavItem(href)}
+                style={{
+                  textDecoration:
+                    activeNavItem === href ? "underline" : undefined,
+                }}
+              >
+                {t(label)}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="relative shrink-0">
+            <LocaleSelect value={locale} onChange={setLocale} />
+          </div>
+        </div>
       </div>
     </header>
   );

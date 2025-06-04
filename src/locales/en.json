@@ -1,0 +1,14 @@
+{
+  "nav": {
+    "presentations": "Presentations",
+    "articles": "Articles",
+    "lectures": "Lectures",
+    "contact": "Contact",
+    "events": "Events",
+    "onlineEvents": "Online Events"
+  },
+  "hero": {
+    "title": "Welcome to Our Site",
+    "subtitle": "Your amazing subtitle here"
+  }
+}
