@@ -56,6 +56,7 @@ const mockArticles = [
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
+  console.log(searchParams);
   const articleId = searchParams.get("id");
 
   const [article, setArticle] = useState<any>(null);
