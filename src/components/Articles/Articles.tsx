@@ -10,6 +10,7 @@ interface ArticleListProps {
 }
 
 const ArticlesGrid: React.FC<ArticleListProps> = ({ articles }) => {
+  console.log("runs");
   const router = useRouter();
 
   const handleClick = (id: string) => {
