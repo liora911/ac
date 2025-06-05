@@ -56,7 +56,7 @@ export default function ArticlesDemoPage() {
 
   return (
     <div className="p-4">
-      <h1 className="text-center text-2xl font-bold mb-6">דף הדגמה למאמרים</h1>
+      <h1 className="text-center text-2xl font-bold mb-6">מאמרים</h1>
       <ArticlesGrid articles={articlesData} />
     </div>
   );

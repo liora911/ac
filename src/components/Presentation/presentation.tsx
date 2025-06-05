@@ -43,7 +43,7 @@ export default function PresentationDetail() {
       </h1>
 
       <div
-        className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-100 cursor-zoom-in"
+        className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-dark-700 cursor-zoom-in"
         onClick={() => setIsModalOpen(true)}
       >
         <Image
@@ -90,7 +90,7 @@ export default function PresentationDetail() {
 
       {isModalOpen && (
         <div
-          className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 cursor-zoom-out"
+          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 cursor-zoom-out"
           onClick={() => setIsModalOpen(false)}
         >
           <div className="relative w-full max-w-5xl h-[90vh]">
@@ -98,7 +98,7 @@ export default function PresentationDetail() {
               src={presentation.imageUrls[currentImageIndex]}
               alt="Preview"
               fill
-              className="object-contain"
+              className="object-cover"
               sizes="100vw"
               priority
             />

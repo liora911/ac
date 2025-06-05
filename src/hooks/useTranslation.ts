@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 
 type Locale = "en" | "he";
 
-// Import the JSON files directly at the top
 import enTranslations from "../locales/en.json";
 import heTranslations from "../locales/he.json";
 
@@ -11,9 +10,8 @@ const translations = {
   he: heTranslations,
 };
 
-// Helper function to get initial locale
 const getInitialLocale = (): Locale => {
-  if (typeof window === "undefined") return "en"; // Server-side default
+  if (typeof window === "undefined") return "en";
 
   const savedLocale = localStorage.getItem("locale") as Locale;
   return savedLocale && ["en", "he"].includes(savedLocale) ? savedLocale : "en";

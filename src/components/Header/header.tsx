@@ -1,7 +1,7 @@
 "use client";
 
 import { navItems } from "@/constants/Nav/data";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
 import { useState } from "react";
 import LocaleSelect from "../LocaleSelect/locale-select";

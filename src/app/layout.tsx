@@ -4,6 +4,7 @@ import "./globals.css";
 
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
+import { TranslationProvider } from "@/contexts/Translation/translation.context";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -27,11 +28,13 @@ export default function RootLayout({
         className={`${poppins.className} antialiased`}
         suppressHydrationWarning={true}
       >
-        <div className="flex flex-col min-h-screen">
-          <Header />
-          <main className="flex-grow flex flex-col pt-19">{children}</main>
-          <Footer />
-        </div>
+        <TranslationProvider>
+          <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow flex flex-col pt-19">{children}</main>
+            <Footer />
+          </div>
+        </TranslationProvider>
       </body>
     </html>
   );

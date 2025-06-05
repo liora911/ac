@@ -7,8 +7,24 @@
     "events": "Events",
     "onlineEvents": "Online Events"
   },
-  "hero": {
-    "title": "Welcome to Our Site",
-    "subtitle": "Your amazing subtitle here"
+
+  "home": {
+    "name": "Avshalom C. Elitzur",
+    "tagline": "A Site where Souls and Minds Rejoice",
+    "greeting": "Shalom and welcome to my site.",
+    "introEn": [
+      "My research topics are diverse, spanning over quantum mechanics, relativity, thermodynamics, evolutionary biology, psychoanalysis and philosophy of mind.",
+      "All articles and presentations posted on this site are Copyleft. Most of my peer-reviewed papers can be downloaded. Help yourself with the presentations as well.",
+      "Comments are welcome."
+    ],
+    "bio": {
+      "buttonRead": "Read more...",
+      "buttonHide": "Hide biography"
+    },
+    "photoCredit": "Photo: Avishag Shaar Yashuv",
+    "social": {
+      "facebook": "Facebook",
+      "youtube": "YouTube"
+    }
   }
 }

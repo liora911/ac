@@ -1,24 +1,20 @@
 "use client";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import Image from "next/image";
 import React, { useState } from "react";
 import { FaFacebook, FaYoutube } from "react-icons/fa";
 
 const Home = () => {
+  const { t, locale, setLocale } = useTranslation();
   const [showBio, setShowBio] = useState(false);
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-gray-800">
       <div className="text-center max-w-3xl w-full bg-white shadow-xl rounded-lg p-6 sm:p-8 md:p-10">
         <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
-          Avshalom C. Elitzur
+          {t("home.name")}
         </h1>
-        <h2 className="text-2xl sm:text-3xl mt-2 text-blue-600">
-          אבשלום אליצור
-        </h2>
         <p className="text-lg sm:text-xl mt-2 text-gray-700">
-          אֲתַר דִי בֵהּ יֶחֱדוּן רוּחִין וְנַפְשִׁין
-        </p>
-        <p className="text-lg sm:text-xl mt-1 text-gray-600">
-          A Site where Souls and Minds Rejoice
+          {t("home.tagline")}
         </p>
 
         <div className="my-6 sm:my-8">
@@ -30,13 +26,11 @@ const Home = () => {
             className="mx-auto rounded-full border-4 border-blue-300 shadow-md"
           />
           <p className="text-xs sm:text-sm mt-2 text-gray-500">
-            Photo: Avishag Shaar Yashuv
+            {t("home.photoCredit")}
           </p>
         </div>
 
-        <p className="text-md sm:text-lg mt-4">
-          Shalom and welcome to my site.
-        </p>
+        <p className="text-md sm:text-lg mt-4">{t("home.greeting")}</p>
 
         <div className="mt-4 text-left text-sm sm:text-base space-y-3">
           <p>
@@ -70,7 +64,7 @@ const Home = () => {
               className="text-blue-600 hover:underline font-medium"
               style={{ cursor: "pointer" }}
             >
-              קרא עוד...
+              {t("home.bio.buttonRead")}
             </button>
           ) : (
             <>
@@ -134,7 +128,7 @@ const Home = () => {
                 className="text-blue-600 hover:underline font-medium mt-3 block"
                 style={{ cursor: "pointer" }}
               >
-                הסתר ביוגרפיה
+                {t("home.bio.buttonHide")}
               </button>
             </>
           )}
