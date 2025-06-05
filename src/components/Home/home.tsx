@@ -33,26 +33,15 @@ const Home = () => {
         <p className="text-md sm:text-lg mt-4">{t("home.greeting")}</p>
 
         <div className="mt-4 text-left text-sm sm:text-base space-y-3">
-          <p>
-            My research topics are diverse, spanning over quantum mechanics,
-            relativity, thermodynamics, evolutionary biology, psychoanalysis and
-            philosophy of mind.
-          </p>
-          <p>
-            All articles and presentations posted on this site are Copyleft.
-            Most of my peer-reviewed papers can be downloaded. Help yourself
-            with the presentations as well.
-          </p>
-          <p>Comments are welcome.</p>
+          <p>{t("home.intro")}</p>
+          <p>{t("home.comments")}</p>
         </div>
 
-        <p className="text-md sm:text-lg mt-6 sm:mt-8">שלום וברוכים הבאים.</p>
         <p
           className="mt-3 text-right text-sm sm:text-base max-w-2xl mx-auto"
           dir="rtl"
         >
-          כאן אשתף במה שקורה במחקר ובפעילות הציבורית. כל המאמרים והמצגות ניתנים
-          להורדה חינם ללא זכויות יוצרים.
+          {t("home.mainTopic")}
         </p>
         <div
           className="mt-4 text-sm sm:text-base text-right max-w-3xl mx-auto"

@@ -1,12 +1,13 @@
 "use client";
 
 import { presentations } from "@/constants/Presentations/data";
+import { useTranslation } from "@/hooks/useTranslation";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export default function Presentations() {
+  const { t, locale, setLocale } = useTranslation();
   const router = useRouter();
-
   const handleCardClick = (presentationId: string) => {
     router.push(`/presentation?id=${presentationId}`);
   };
@@ -14,9 +15,7 @@ export default function Presentations() {
   return (
     <div className="container mx-auto px-4 py-8 sm:py-12">
       <p className="text-lg sm:text-xl md:text-2xl text-gray-700 mb-8 sm:mb-12 leading-relaxed text-center max-w-3xl mx-auto">
-        My research topics are diverse, spanning over quantum mechanics,
-        relativity, thermodynamics, evolutionary biology, psychoanalysis and
-        philosophy of mind.
+        {t("presentations.title")}
       </p>
 
       <h2 className="text-2xl sm:text-3xl font-semibold text-blue-700 mb-6 sm:mb-8 text-center">

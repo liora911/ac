@@ -4,8 +4,13 @@ import en from "../../locales/en.json";
 import he from "../../locales/he.json";
 
 type Locale = "en" | "he";
+// type TranslationContextType = {
+//   t: (key: string) => string;
+//   locale: Locale;
+//   setLocale: (l: Locale) => void;
+// };
 type TranslationContextType = {
-  t: (key: string) => string;
+  t: (key: string) => string | string[];
   locale: Locale;
   setLocale: (l: Locale) => void;
 };
@@ -33,7 +38,19 @@ export const TranslationProvider = ({
     localStorage.setItem("locale", locale);
   }, [locale]);
 
-  const t = (key: string): string => {
+  // const t = (key: string): string => {
+  //   const keys = key.split(".");
+  //   let value: any = translations[locale];
+  //   for (const k of keys) {
+  //     if (value?.[k] !== undefined) {
+  //       value = value[k];
+  //     } else {
+  //       return key;
+  //     }
+  //   }
+  //   return typeof value === "string" ? value : key;
+  // };
+  const t = (key: string): string | string[] => {
     const keys = key.split(".");
     let value: any = translations[locale];
     for (const k of keys) {
@@ -43,7 +60,11 @@ export const TranslationProvider = ({
         return key;
       }
     }
-    return typeof value === "string" ? value : key;
+    return Array.isArray(value)
+      ? value
+      : typeof value === "string"
+      ? value
+      : key;
   };
 
   return (

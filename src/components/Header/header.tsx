@@ -13,7 +13,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-slate-50 px-4 py-4 sm:py-6">
+      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-slate-50 px-4 py-5 sm:py-6">
         <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4">
           <Link href="/" className="text-xl font-semibold tracking-tight">
             A.Elitzur
@@ -52,8 +52,8 @@ export default function Header() {
         </div>
       </header>
       {menuOpen && (
-        <nav className="sm:hidden mt-2 px-4 py-2 bg-slate-100 border-b border-gray-300 rounded-md shadow-md">
-          <ul className="flex flex-col gap-2">
+        <nav className="fixed top-[72px] left-0 right-0 z-40 sm:hidden bg-slate-100 border-b border-gray-300 shadow-md">
+          <ul className="flex flex-col">
             {navItems.map(({ label, href, className }) => (
               <li key={href}>
                 <Link

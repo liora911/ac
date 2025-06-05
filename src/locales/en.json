@@ -12,10 +12,13 @@
     "name": "Avshalom C. Elitzur",
     "tagline": "A Site where Souls and Minds Rejoice",
     "greeting": "Shalom and welcome to my site.",
-    "introEn": [
+    "comments": "Comments are welcome",
+    "mainTopic": [
+      "Here I share what is happening in my research and public activities. All articles and presentations are available for free download without copyright restrictions."
+    ],
+    "intro": [
       "My research topics are diverse, spanning over quantum mechanics, relativity, thermodynamics, evolutionary biology, psychoanalysis and philosophy of mind.",
-      "All articles and presentations posted on this site are Copyleft. Most of my peer-reviewed papers can be downloaded. Help yourself with the presentations as well.",
-      "Comments are welcome."
+      "All articles and presentations posted on this site are Copyleft. Most of my peer-reviewed papers can be downloaded. Help yourself with the presentations as well."
     ],
     "bio": {
       "buttonRead": "Read more...",
@@ -26,5 +29,11 @@
       "facebook": "Facebook",
       "youtube": "YouTube"
     }
+  },
+  "presentations": {
+    "title": "My research topics are diverse, spanning over quantum mechanics, relativity, thermodynamics, evolutionary biology, psychoanalysis and philosophy of mind.",
+    "description": "Here you can find my presentations on various topics. They are available for free download.",
+    "download": "Download Presentation",
+    "viewOnline": "View Online"
   }
 }
