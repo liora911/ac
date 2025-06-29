@@ -43,6 +43,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  articles      Article[] // Add this relation
 }
 
 model VerificationToken {
@@ -51,4 +52,24 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// New Article model
+model Article {
+  id              String   @id @default(cuid())
+  title           String
+  content         String
+  articleImage    String?
+  publisherName   String
+  publisherImage  String?
+  readDuration    Int      @default(5) // in minutes
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Author relationship
+  authorId        String
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  @@map("articles")
 }
