@@ -67,7 +67,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
 
 interface LecturesProps {
   onBannerUpdate: (imageUrl: string | null, altText: string) => void;
-  lectureData: Category[]; // Data will be passed as a prop
+  lectureData: Category[];
 }
 
 const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
@@ -113,8 +113,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
       return;
     }
 
-    // Data is available, set initial state without selecting any specific lecture list yet
-    setSelectedLectures([]); // Start with no lectures displayed
+    setSelectedLectures([]);
     setSelectedCategoryName("בחר קטגוריה מהתפריט");
 
     const firstCategory = lectureData[0];
@@ -131,7 +130,6 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   };
 
   if (!lectureData) {
-    // Handles the case where data is still undefined (e.g. during initial fetch)
     return (
       <div
         className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl"
@@ -143,7 +141,6 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   }
 
   if (lectureData.length === 0) {
-    // Handles the case where data is fetched but empty
     return (
       <div
         className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl"

@@ -36,7 +36,7 @@ export const onlineEventsData: OnlineEventMonthGroup[] = [
         title: "סדנת כתיבה מדעית ",
         platform: "Zoom",
         status: "Join Link",
-        eventLink: "#", // Placeholder for join link (could be revealed closer to time)
+        eventLink: "#",
       },
     ],
   },

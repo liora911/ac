@@ -6,7 +6,7 @@ export interface OnlineEventItem {
   title: string;
   platform: string;
   status: "Sold Out" | "Register" | "Join Link";
-  eventLink?: string; // Optional link for registration or joining
+  eventLink?: string;
 }
 
 export interface OnlineEventMonthGroup {
