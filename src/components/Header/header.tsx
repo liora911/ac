@@ -18,7 +18,7 @@ export default function Header() {
     ...(session
       ? [
           {
-            label: "העלאת מדיה",
+            label: "משתמש מחובר",
             href: "/elitzur",
             className: "text-red-600 font-semibold",
           },

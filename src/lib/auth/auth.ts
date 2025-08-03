@@ -4,7 +4,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma/prisma";
 import { AdapterUser } from "next-auth/adapters";
 
-const ALLOWED_EMAILS = ["yarinmster@gmail.com", "avshalom819@gmail.com"];
+const ALLOWED_EMAILS = [
+  "avshalom@iyar.org.il",
+  "yarinmster@gmail.com",
+  "yakir@iyar.org.il",
+];
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -23,15 +27,26 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async session({ session, user }) {
-      (session.user as AdapterUser).id = user.id;
+      if (session.user) {
+        (session.user as AdapterUser).id = user.id;
+      }
       return session;
     },
-    async signIn({ user, account, profile, email, credentials }) {
-      if (user.email && ALLOWED_EMAILS.includes(user.email.toLowerCase())) {
-        return true;
+    async signIn({ user }) {
+      if (!user.email) {
+        console.log("Sign-in blocked: No email provided");
+        return false;
       }
 
-      return false;
+      const isAllowed = ALLOWED_EMAILS.includes(user.email.toLowerCase());
+
+      if (!isAllowed) {
+        console.log(`Sign-in blocked: ${user.email} not in allowed list`);
+        return false;
+      }
+
+      console.log(`Sign-in allowed: ${user.email}`);
+      return true;
     },
   },
   pages: {
@@ -39,10 +54,14 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: "/auth/verify-request",
     error: "/auth/error",
   },
+
+  debug: process.env.NODE_ENV === "development",
+  session: {
+    strategy: "database",
+  },
 };
 
 const handler = NextAuth(authOptions);
-
 export { handler as GET, handler as POST };
 
-export const auth = () => NextAuth(authOptions);
+export const auth = NextAuth(authOptions);
