@@ -56,10 +56,10 @@ export default function CreateLectureForm({
 
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
+          <p className="mt-2 text-gray-300">
             {status === "loading" ? "טוען..." : "טוען קטגוריות..."}
           </p>
         </div>
@@ -70,12 +70,12 @@ export default function CreateLectureForm({
   // 🚫 NOT AUTHENTICATED
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
             נדרשת התחברות
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי ליצור הרצאות</p>
+          <p className="text-gray-300 rtl">עליך להתחבר כדי ליצור הרצאות</p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
@@ -90,11 +90,11 @@ export default function CreateLectureForm({
   // 🚫 NOT AUTHORIZED
   if (!isAuthorized) {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה ליצור הרצאות באתר זה</p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
+          <p className="text-gray-300 rtl">אין לך הרשאה ליצור הרצאות באתר זה</p>
+          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
         </div>
       </div>
     );
@@ -186,7 +186,7 @@ export default function CreateLectureForm({
       // Main category
       options.push(
         <option key={category.id} value={category.id}>
-          {category.name}
+          ▶ {category.name}
         </option>
       );
 
@@ -195,7 +195,7 @@ export default function CreateLectureForm({
         category.subcategories.forEach((sub: any) => {
           options.push(
             <option key={sub.id} value={sub.id}>
-              &nbsp;&nbsp;└─ {sub.name}
+              &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
             </option>
           );
         });
@@ -207,31 +207,34 @@ export default function CreateLectureForm({
 
   // ✅ AUTHORIZED USER - SHOW FORM
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-2 text-center rtl">
+    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold mb-4 text-center rtl">
         יצירת הרצאה חדשה
       </h2>
 
       {/* Show who's logged in */}
-      <p className="text-sm text-green-600 text-center mb-6">
+      <p className="text-sm text-green-400 text-center mb-8">
         מחובר כ: {session?.user?.email}
       </p>
 
       {message && (
         <div
-          className={`mb-4 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-md ${
             message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
+              ? "bg-green-900 text-green-200 border border-green-700"
+              : "bg-red-900 text-red-200 border border-red-700"
           }`}
         >
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-2 rtl">
+          <label
+            htmlFor="title"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
             כותרת ההרצאה *
           </label>
           <input
@@ -241,7 +244,7 @@ export default function CreateLectureForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
             placeholder="הכנס כותרת להרצאה"
           />
         </div>
@@ -249,7 +252,7 @@ export default function CreateLectureForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-sm font-medium mb-2 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             תיאור ההרצאה *
           </label>
@@ -260,7 +263,7 @@ export default function CreateLectureForm({
             onChange={handleChange}
             required
             rows={4}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
             placeholder="הכנס תיאור להרצאה"
           />
         </div>
@@ -268,7 +271,7 @@ export default function CreateLectureForm({
         <div>
           <label
             htmlFor="videoUrl"
-            className="block text-sm font-medium mb-2 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             קישור לוידאו (YouTube וכו')
           </label>
@@ -278,7 +281,7 @@ export default function CreateLectureForm({
             name="videoUrl"
             value={formData.videoUrl}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
             placeholder="https://www.youtube.com/embed/..."
           />
         </div>
@@ -286,7 +289,7 @@ export default function CreateLectureForm({
         <div>
           <label
             htmlFor="duration"
-            className="block text-sm font-medium mb-2 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             משך זמן (דקות) *
           </label>
@@ -297,13 +300,16 @@ export default function CreateLectureForm({
             value={formData.duration}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
             placeholder="למשל: 60 דקות"
           />
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-sm font-medium mb-2 rtl">
+          <label
+            htmlFor="date"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
             תאריך (אופציונלי)
           </label>
           <input
@@ -312,14 +318,14 @@ export default function CreateLectureForm({
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           />
         </div>
 
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-sm font-medium mb-2 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             קטגוריה *
           </label>
@@ -330,7 +336,7 @@ export default function CreateLectureForm({
             onChange={handleChange}
             required
             disabled={categoriesLoading}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
           >
             <option value="">
               {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
@@ -339,36 +345,37 @@ export default function CreateLectureForm({
           </select>
         </div>
 
-        <UploadImage
-          onImageSelect={setBannerImageFile}
-          currentImage={formData.bannerImageUrl}
-          label="תמונת ההרצאה"
-          placeholder="PNG, JPG, GIF עד 5MB"
-        />
-
-        <details className="border border-gray-200 rounded p-3">
-          <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
-            הכנס קישור לתמונה (אופציונלי)
+        <details className="border border-gray-600 rounded-lg p-4 bg-gray-800">
+          <summary className="cursor-pointer text-lg font-semibold text-white rtl mb-3">
+            תמונת ההרצאה (אופציונלי)
           </summary>
-          <div className="mt-3">
-            <label className="block text-sm font-medium mb-1 rtl">
-              קישור תמונת ההרצאה
-            </label>
-            <input
-              type="url"
-              name="bannerImageUrl"
-              value={formData.bannerImageUrl}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-              placeholder="https://example.com/image.jpg"
+          <div className="mt-4 space-y-4">
+            <UploadImage
+              onImageSelect={setBannerImageFile}
+              currentImage={formData.bannerImageUrl}
+              label=""
+              placeholder="PNG, JPG, GIF עד 5MB"
             />
+            <div>
+              <label className="block text-base font-medium mb-2 text-gray-200 rtl">
+                או הכנס קישור לתמונה
+              </label>
+              <input
+                type="url"
+                name="bannerImageUrl"
+                value={formData.bannerImageUrl}
+                onChange={handleChange}
+                className="w-full p-3 bg-gray-700 text-white border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+                placeholder="https://example.com/image.jpg"
+              />
+            </div>
           </div>
         </details>
 
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
         >
           {isLoading ? "יוצר הרצאה..." : "צור הרצאה"}
         </button>

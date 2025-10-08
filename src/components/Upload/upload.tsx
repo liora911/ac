@@ -67,17 +67,21 @@ export default function DragDropImageUpload({
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2 rtl">{label}</label>
+      {label && (
+        <label className="block text-lg font-semibold mb-3 text-white rtl">
+          {label}
+        </label>
+      )}
 
       {preview ? (
         <div className="relative">
-          <div className="relative w-full h-48 border-2 border-gray-300 rounded-lg overflow-hidden">
+          <div className="relative w-full h-48 border-2 border-gray-600 rounded-lg overflow-hidden">
             <Image src={preview} alt="Preview" fill className="object-cover" />
           </div>
           <button
             type="button"
             onClick={removeImage}
-            className="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-600"
+            className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-700"
           >
             ×
           </button>
@@ -93,8 +97,8 @@ export default function DragDropImageUpload({
             cursor-pointer transition-colors
             ${
               isDragOver
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-gray-400"
+                ? "border-blue-400 bg-gray-700"
+                : "border-gray-600 hover:border-gray-500"
             }
           `}
         >
@@ -119,13 +123,13 @@ export default function DragDropImageUpload({
                 strokeLinejoin="round"
               />
             </svg>
-            <p className="mt-2 text-sm text-gray-600">
-              <span className="font-medium text-blue-600 hover:text-blue-500">
+            <p className="mt-2 text-base text-gray-300">
+              <span className="font-medium text-blue-400 hover:text-blue-300">
                 לחץ להעלאה
               </span>{" "}
               או גרור ושחרר כאן
             </p>
-            <p className="text-xs text-gray-500 mt-1">{placeholder}</p>
+            <p className="text-sm text-gray-400 mt-1">{placeholder}</p>
           </div>
         </div>
       )}
