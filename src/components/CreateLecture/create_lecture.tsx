@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
@@ -29,17 +29,39 @@ export default function CreateLectureForm({
   });
 
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  if (status === "loading") {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (status === "loading" || categoriesLoading) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">טוען...</p>
+          <p className="mt-2 text-gray-600">
+            {status === "loading" ? "טוען..." : "טוען קטגוריות..."}
+          </p>
         </div>
       </div>
     );
@@ -155,6 +177,32 @@ export default function CreateLectureForm({
       ...prev,
       [name]: value,
     }));
+  };
+
+  const renderCategoryOptions = () => {
+    const options: any[] = [];
+
+    categories.forEach((category) => {
+      // Main category
+      options.push(
+        <option key={category.id} value={category.id}>
+          {category.name}
+        </option>
+      );
+
+      // Subcategories indented
+      if (category.subcategories && category.subcategories.length > 0) {
+        category.subcategories.forEach((sub: any) => {
+          options.push(
+            <option key={sub.id} value={sub.id}>
+              &nbsp;&nbsp;└─ {sub.name}
+            </option>
+          );
+        });
+      }
+    });
+
+    return options;
   };
 
   // ✅ AUTHORIZED USER - SHOW FORM
@@ -281,16 +329,13 @@ export default function CreateLectureForm({
             value={formData.categoryId}
             onChange={handleChange}
             required
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={categoriesLoading}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50"
           >
-            <option value="">בחר קטגוריה</option>
-            <option value="cat1">פיזיקה קוונטית</option>
-            <option value="cat2">פילוסופיה של המדע</option>
-            <option value="cat3">אסטרונומיה</option>
-            <option value="cat4">ירין טסטים למערכת</option>
-            <option value="cat5">מדעי הטבע</option>
-            <option value="cat6">פסיכולוגיה ומדעי ההתנהגות</option>
-            <option value="cat7">נושאים ציבוריים</option>
+            <option value="">
+              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+            </option>
+            {renderCategoryOptions()}
           </select>
         </div>
 
