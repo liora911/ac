@@ -1,4 +1,4 @@
-import { EventMonthGroup } from "@/types/Events/events";
+import { EventMonthGroup } from "@/types/Events/events.d";
 
 export const eventsData: EventMonthGroup[] = [
   {

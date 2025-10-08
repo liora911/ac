@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import Events from "@/components/Events/events";
+import Events from "@/components/Events/Events";
 import CreateEventForm from "@/components/CreateEvent/create_event";
 import Image from "next/image";
 import { EventCategory } from "@/types/Events/events";
