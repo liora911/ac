@@ -29,7 +29,17 @@ export default function Header() {
     <>
       <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-slate-50 px-4 py-5 sm:py-6">
         <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4">
-          <Link href="/" className="text-xl font-semibold tracking-tight">
+          <Link
+            href="/"
+            className="text-xl font-bold tracking-tight"
+            style={{
+              background:
+                "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%)",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
             A.Elitzur
           </Link>
           <div className="flex items-center gap-4">
