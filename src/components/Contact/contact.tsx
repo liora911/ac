@@ -20,7 +20,6 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Form data submitted:", formData);
     alert("הפרטים נשלחו בהצלחה! נחזור אליך בהקדם האפשרי");
     setFormData({ name: "", email: "", subject: "", message: "" });
   };

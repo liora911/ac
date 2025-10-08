@@ -3,16 +3,15 @@
 import { useState, FormEvent } from "react";
 import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
-import BasicEditor from "@/lib/editor/editor";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-interface CreateArticleFormProps {
+interface CreateLectureFormProps {
   onSuccess?: () => void;
 }
 
-export default function CreateArticleForm({
+export default function CreateLectureForm({
   onSuccess,
-}: CreateArticleFormProps) {
+}: CreateLectureFormProps) {
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -21,17 +20,15 @@ export default function CreateArticleForm({
   } | null>(null);
   const [formData, setFormData] = useState({
     title: "",
-    content: "",
-    articleImage: "",
-    publisherName: "",
-    publisherImage: "",
-    readDuration: 5,
+    description: "",
+    videoUrl: "",
+    duration: "",
+    date: "",
+    bannerImageUrl: "",
+    categoryId: "",
   });
 
-  const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
-  const [publisherImageFile, setPublisherImageFile] = useState<File | null>(
-    null
-  );
+  const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
 
   const isAuthorized =
     session?.user?.email &&
@@ -56,7 +53,7 @@ export default function CreateArticleForm({
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
             נדרשת התחברות
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי ליצור מאמרים</p>
+          <p className="text-gray-600 rtl">עליך להתחבר כדי ליצור הרצאות</p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
@@ -74,7 +71,7 @@ export default function CreateArticleForm({
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה ליצור מאמרים באתר זה</p>
+          <p className="text-gray-600 rtl">אין לך הרשאה ליצור הרצאות באתר זה</p>
           <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
         </div>
       </div>
@@ -96,24 +93,18 @@ export default function CreateArticleForm({
     setMessage(null);
 
     try {
-      let articleImageData = formData.articleImage;
-      let publisherImageData = formData.publisherImage;
+      let bannerImageData = formData.bannerImageUrl;
 
-      if (articleImageFile) {
-        articleImageData = await fileToDataURL(articleImageFile);
-      }
-
-      if (publisherImageFile) {
-        publisherImageData = await fileToDataURL(publisherImageFile);
+      if (bannerImageFile) {
+        bannerImageData = await fileToDataURL(bannerImageFile);
       }
 
       const submissionData = {
         ...formData,
-        articleImage: articleImageData,
-        publisherImage: publisherImageData,
+        bannerImageUrl: bannerImageData,
       };
 
-      const response = await fetch("/api/articles", {
+      const response = await fetch("/api/lectures", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -127,27 +118,27 @@ export default function CreateArticleForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "המאמר נוצר בהצלחה!" });
+      setMessage({ type: "success", text: "ההרצאה נוצרה בהצלחה!" });
 
       setFormData({
         title: "",
-        content: "",
-        articleImage: "",
-        publisherName: "",
-        publisherImage: "",
-        readDuration: 5,
+        description: "",
+        videoUrl: "",
+        duration: "",
+        date: "",
+        bannerImageUrl: "",
+        categoryId: "",
       });
-      setArticleImageFile(null);
-      setPublisherImageFile(null);
+      setBannerImageFile(null);
 
       if (onSuccess) {
         onSuccess();
       }
     } catch (error: any) {
-      console.error("Error creating article:", error);
+      console.error("Error creating lecture:", error);
       setMessage({
         type: "error",
-        text: error.message || "שגיאה ביצירת המאמר. נסה שוב.",
+        text: error.message || "שגיאה ביצירת ההרצאה. נסה שוב.",
       });
     } finally {
       setIsLoading(false);
@@ -155,19 +146,14 @@ export default function CreateArticleForm({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "readDuration" ? parseInt(value) || 5 : value,
-    }));
-  };
-
-  const handleContentChange = (content: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      content,
+      [name]: value,
     }));
   };
 
@@ -175,7 +161,7 @@ export default function CreateArticleForm({
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center rtl">
-        יצירת מאמר חדש
+        יצירת הרצאה חדשה
       </h2>
 
       {/* Show who's logged in */}
@@ -198,7 +184,7 @@ export default function CreateArticleForm({
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-2 rtl">
-            כותרת המאמר *
+            כותרת ההרצאה *
           </label>
           <input
             type="text"
@@ -208,114 +194,138 @@ export default function CreateArticleForm({
             onChange={handleChange}
             required
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-            placeholder="הכנס כותרת למאמר"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium mb-2 rtl">
-            תוכן המאמר *
-          </label>
-          <BasicEditor
-            value={formData.content}
-            onChange={handleContentChange}
-            placeholder="כתוב את תוכן המאמר כאן..."
-            className="focus:ring-2 focus:ring-blue-500"
+            placeholder="הכנס כותרת להרצאה"
           />
         </div>
 
         <div>
           <label
-            htmlFor="publisherName"
+            htmlFor="description"
             className="block text-sm font-medium mb-2 rtl"
           >
-            שם המחבר *
+            תיאור ההרצאה *
           </label>
-          <input
-            type="text"
-            id="publisherName"
-            name="publisherName"
-            value={formData.publisherName}
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
             onChange={handleChange}
             required
+            rows={4}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-            placeholder="הכנס שם המחבר"
+            placeholder="הכנס תיאור להרצאה"
           />
         </div>
 
-        <UploadImage
-          onImageSelect={setArticleImageFile}
-          currentImage={formData.articleImage}
-          label="תמונת המאמר"
-          placeholder="PNG, JPG, GIF עד 5MB"
-        />
+        <div>
+          <label
+            htmlFor="videoUrl"
+            className="block text-sm font-medium mb-2 rtl"
+          >
+            קישור לוידאו (YouTube וכו')
+          </label>
+          <input
+            type="url"
+            id="videoUrl"
+            name="videoUrl"
+            value={formData.videoUrl}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="https://www.youtube.com/embed/..."
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="duration"
+            className="block text-sm font-medium mb-2 rtl"
+          >
+            משך זמן (דקות) *
+          </label>
+          <input
+            type="text"
+            id="duration"
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="למשל: 60 דקות"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="date" className="block text-sm font-medium mb-2 rtl">
+            תאריך (אופציונלי)
+          </label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="categoryId"
+            className="block text-sm font-medium mb-2 rtl"
+          >
+            קטגוריה *
+          </label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            value={formData.categoryId}
+            onChange={handleChange}
+            required
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="">בחר קטגוריה</option>
+            <option value="cat1">פיזיקה קוונטית</option>
+            <option value="cat2">פילוסופיה של המדע</option>
+            <option value="cat3">אסטרונומיה</option>
+            <option value="cat4">ירין טסטים למערכת</option>
+            <option value="cat5">מדעי הטבע</option>
+            <option value="cat6">פסיכולוגיה ומדעי ההתנהגות</option>
+            <option value="cat7">נושאים ציבוריים</option>
+          </select>
+        </div>
 
         <UploadImage
-          onImageSelect={setPublisherImageFile}
-          currentImage={formData.publisherImage}
-          label="תמונת המחבר"
+          onImageSelect={setBannerImageFile}
+          currentImage={formData.bannerImageUrl}
+          label="תמונת ההרצאה"
           placeholder="PNG, JPG, GIF עד 5MB"
         />
 
         <details className="border border-gray-200 rounded p-3">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
-            או הכנס קישורי תמונות (אופציונלי)
+            הכנס קישור לתמונה (אופציונלי)
           </summary>
-          <div className="mt-3 space-y-3">
-            <div>
-              <label className="block text-sm font-medium mb-1 rtl">
-                קישור תמונת המאמר
-              </label>
-              <input
-                type="url"
-                name="articleImage"
-                value={formData.articleImage}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1 rtl">
-                קישור תמונת המחבר
-              </label>
-              <input
-                type="url"
-                name="publisherImage"
-                value={formData.publisherImage}
-                onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/author.jpg"
-              />
-            </div>
+          <div className="mt-3">
+            <label className="block text-sm font-medium mb-1 rtl">
+              קישור תמונת ההרצאה
+            </label>
+            <input
+              type="url"
+              name="bannerImageUrl"
+              value={formData.bannerImageUrl}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+              placeholder="https://example.com/image.jpg"
+            />
           </div>
         </details>
-
-        <div>
-          <label
-            htmlFor="readDuration"
-            className="block text-sm font-medium mb-2 rtl"
-          >
-            זמן קריאה (דקות)
-          </label>
-          <input
-            type="number"
-            id="readDuration"
-            name="readDuration"
-            value={formData.readDuration}
-            onChange={handleChange}
-            min="1"
-            max="60"
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-        </div>
 
         <button
           type="submit"
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
-          {isLoading ? "יוצר מאמר..." : "צור מאמר"}
+          {isLoading ? "יוצר הרצאה..." : "צור הרצאה"}
         </button>
       </form>
     </div>

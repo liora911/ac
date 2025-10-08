@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
           email: "test@example.com",
         },
       });
-      console.log("Created test user for development");
     }
 
     const body = await request.json();

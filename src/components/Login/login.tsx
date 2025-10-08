@@ -34,7 +34,6 @@ export default function LoginForm() {
       });
 
       if (result?.error) {
-        console.log(result);
         if (result.error === "AccessDenied") {
           setMessage("משתמש זה אינו מורשה גישה אנא נסה עם מייל אחר");
           alert("משתמש זה אינו מורשה גישה");

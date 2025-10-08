@@ -1,274 +1,225 @@
 import { Category } from "@/types/Lectures/lectures";
 import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/auth";
+import { Prisma } from "@prisma/client";
 
-const lectureData: Category[] = [
-  {
-    id: "cat1",
-    name: "פיזיקה קוונטית",
-    bannerImageUrl: "/electroncloud.png",
-    lectures: [
-      {
-        id: "l1-api",
-        title: "מבוא לתורת הקוונטים",
-        description: "הסבר יסודי על עקרונות.",
-        duration: "60 דקות",
-        videoUrl: "https://www.youtube.com/embed/SOOn_vEFKaY",
-        bannerImageUrl: "/spacetime.png",
-      },
-      {
-        id: "l2-api",
-        title: "שזירות קוונטית",
-        description: "חקירת תופעת השזירות והשלכותיה.",
-        duration: "75 דקות",
-        videoUrl: "https://www.youtube.com/embed/oPGThRzxxuA",
-      },
-      {
-        id: "l3-api",
-        title: "דיאגרמות פיינמן",
-        description:
-          "הבנת דיאגרמות פיינמן וכיצד הן משמשות בתורת השדות הקוונטית.",
-        duration: "15 דקות",
-        videoUrl:
-          "https://www.youtube.com/embed/X-FEU4mQWtE?si=LjutW8IlJZREK4lS",
-      },
-    ],
-    subcategories: [
-      {
-        id: "subcat1-1-api",
-        name: "פרדוקסים קוונטיים",
-        bannerImageUrl: "/qftt.png",
-        lectures: [
-          {
-            id: "l3-api",
-            title: "החתול של שרדינגר",
-            description: "ניתוח מעמיק של הפרדוקס המפורסם.",
-            duration: "45 דקות",
-            videoUrl:
-              "https://www.youtube.com/embed/9gQys9UiQh0?si=bhwA8ehPtmDSnGcC",
-            date: "2023-05-10",
-            bannerImageUrl: "/schrodingercat.jpg",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "cat2 ",
-    name: "פילוסופיה של המדע",
-    bannerImageUrl: "/earth.jpg",
-    lectures: [
-      {
-        id: "l4",
-        title: "מהי תיאוריה מדעית?",
-        description:
-          " דיון על הקריטריונים לתיאוריה מדעית טובה. דיון על הקריטריונים לתיאוריה מדעית טובה.דיון על הקריטריונים לתיאוריה מדעית טובה.דיון על הקריטריונים לתיאוריה מדעית טובה.דיון על הקריטריונים לתיאוריה מדעית טובה.דיון על הקריטריונים לתיאוריה מדעית טובה.דיון על הקריטריונים לתיאוריה מדעית טובה.",
-        duration: "50 דקות",
-        videoUrl:
-          "https://www.youtube.com/embed/iTHUUjTA-LI?si=GrNPs9hpLlUDKDon",
-      },
-    ],
-  },
-  {
-    id: "cat3",
-    name: "אסטרונומיה",
-    bannerImageUrl: "/milkyway.jpg",
-    lectures: [
-      {
-        id: "l5",
-        title: "מבוא לאסטרונומיה",
-        description: "הבנת היקום, כוכבים וגלקסיות.",
-        duration: "40 דקות",
-        videoUrl:
-          "https://www.youtube.com/embed/1b6d8a2c7e4?si=9gQys9UiQh0?si=bhwA8ehPtmDSnGcC",
-      },
-    ],
-  },
-  {
-    id: "cat4",
-    name: "ירין טסטים למערכת",
-    bannerImageUrl: "/blackhole.jpg",
-    lectures: [
-      {
-        id: "l6",
-        title: "No Time for Caution",
-        description: "ירין בדיקה",
-        duration: "5 דקות",
-        videoUrl:
-          "https://www.youtube.com/embed/m3zvVGJrTP8?si=5BZ1bJ-zLNeaDFTO",
-      },
-      {
-        id: "l7",
-        title: "Cornfield Chase Extended",
-        description: "Cornfield Chase",
-        duration: "30 דקות",
-        videoUrl:
-          "https://www.youtube.com/embed/uCSkC3NupQc?si=I66HFlVBPdj5Ddjh",
-      },
-    ],
-    subcategories: [
-      {
-        id: "subcat4-1",
-        name: "קטגוריה משנה לירין",
-        bannerImageUrl: "/blackhole.jpg",
-        lectures: [
-          {
-            id: "l8",
-            title: "בדיקת ירין נוספת",
-            description: "תיאור בדיקה נוספת של ירין",
-            duration: "10 דקות",
-          },
-        ],
-      },
-    ],
-  },
-  //add more
-  {
-    id: "cat5",
-    name: "מדעי הטבע",
-    bannerImageUrl: "/naturephysics.jpg",
-    lectures: [
-      {
-        id: "nat1",
-        title: "איך תורת היחסות עושה הכל פשוט",
-        description:
-          "על המהפכה שחולל איינשטיין בהבנת החלל והזמן והשלכותיה, התהפוכות האישיות בחייו ובחיי אלה שפיתחו אתו את התורה החדשה, והסיפורים האישיים המרתקים - כל אלה מובאים לצד הסבר בהיר של יסודות תורת היחסות הפרטית והכללית. דגש מושם על ההבנה האינטואיטיבית, ללא מתמטיקה, ועל מגוון השלכותיה של התיאוריה, מהבנת היקום ועד הטכנולוגיה.",
-        duration: "60 דקות",
-      },
-      {
-        id: "nat2",
-        title: "תורת הקוונטים נגד השכל הישר",
-        description: `על המהפכה המקבילה בהבנת החומר והאנרגיה, שגם בה מילא איינשטיין תפקיד מכריע אבל שנא את "בתו הצעירה" מהרגע בו נולדה. הוא ניסה לחסל אותה ע"י חשיפת כל מיני פרדוקסים הנובעים ממנה. תורת הקוונטים, כבת נאמנה לגאון, לא טמנה ידה בצלחת, עשתה לאבא בושות וגרמה לכל הפרדוקסים שבהם איים עליה להתממש במציאות. איך יכול, למשל, חלקיק אחד לעבור במקומות רבים בו-זמנית? ואיך יכולה פעולה בהווה להשפיע על מה שכבר קרה בעבר? ההרצאה מסבירה בשפה קלה תופעות אלה, פרדוקסים שנותרו בלתי-פתורים עד היום וכן יישומים מבטיחים של התיאוריה לטכנולוגיה ולרפואה.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "nat3",
-        title: "חידת הזמן בפיזיקה המודרנית",
-        description: `הזמן היה תמיד מושג חמקמק בפילוסופיה. באה הפיזיקה ועשתה אותו מדיד ומורכב יותר, אבל גם הרבה יותר מוזר. תורת היחסות שילבה אותו עם החלל למארג ארבע-ממדי שיכול להתמתח, להתעקם וכו'. תורת הקוונטים הראתה שגם הרגע בו קרה משהו יכול להיות מעורפל. הקוסמולוגיה אומרת שהחלל-זמן נוצרו יחד עם היקום. אחרונה חשובה היא התרמודינמיקה, העוסקת ב"חץ" המוזר המבדיל בין עבר לעתיד. ועדיין, הרבה חידות בנוגע לזמן נותרו בלתי-פתורות. כל אלה מוסברים בשפה פשוטה ונגישה, ככל שירשה הזמן.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "nat4",
-        title: "הדואט המוזר בין האנטרופיה והחיים",
-        description: `החוק השני של התרמודינמיקה, לפיו אי-הסדר במערכת סגורה יכול רק לגדול, הוא ניגודם הגמור של תהליכי החיים, היוצרים מורכבות וסדר, שומרים עליהם ואף מגבירים אותם. אבל בראייה קרובה יותר מתברר שבלי אנטרופיה לא הייתה אבולוציה ולא כל תהליך אורגני. החיבור בין שני המדעים חושף את היופי שביסוד האבולוציה וכל תהליכי החיים. זו הזדמנות לקהל שלא למד מדעים להתוודע אל מושגי האנרגיה, הסדר והמורכבות ואל ביטוייהם בעולם החיים.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "nat5",
-        title: "אבולוציה, סיפור שלא נגמר",
-        description: `הדרך בה הגיע דארווין אל תורתו, הטעויות, הפספוסים והשגיאות שרק העידו בדיעבד על גאונות האינטואיציה שלו, השינויים שחלו בתורת האבולוציה מאז, ובעיקר שורת הניצחונות ההולכת ומתארכת עם כל גילוי מולקולרי או פליאונטולוגי. ננסה להבין למה האבולוציה מרגיזה ומאיימת על כל כך הרבה אנשים, ובעיקר למה היא כל כך מצליחה, ושימותו הקנאים - או לפחות ירדו כבר מהעצים.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "nat6",
-        title: "קולן המושתק של הנשים בתולדות המדעים",
-        description: `המחקר המודרני בהיסטוריה של המדע מגלה מספר מפתיע של נשים שחיו ופעלו לבדן או בצל בעליהן בסביבה מפלה ואפילו עוינת לנשים, שתרומתן למקצועות "גבריים" מובהקים כמו פיזיקה ומתמטיקה הייתה מכרעת, שלא לדבר על השתלטותן המדאיגה במדעי החיים...`,
-        duration: "45 דקות",
-      },
-      {
-        id: "nat7",
-        title: "תעתועים ושקרים בשם המדע",
-        description: ` כמו לכל תחום גם למדע יש צד אפל. מדענים מתפתים לפעמים לשקר ולחפש קיצורי דרך אל התהילה, נוכלים ורמאים מחפשים פרנסה קלה על חשבון חולים נואשים שקצרה יד הרפואה מלסייע להם, ותורות קונספירציה משתמשות במונחים מדעיים כדי להפיל תמימים בפח. הרצאה זו מתארת כמה מקרים לדוגמה, כולל בישראל, ומציגה קריטריונים פשוטים להבחנה בין מדע ומדע-מדומה. `,
-        duration: "60 דקות",
-      },
-    ],
-  },
-  {
-    id: "cat6",
-    name: "פסיכולוגיה ומדעי ההתנהגות",
-    bannerImageUrl: "/brain.jpg",
-    lectures: [
-      {
-        id: "psy1",
-        title: "חלום חלמתי ופותר אין אותו",
-        description: `כשאנו חולמים יש מצד אחד ירידה בכוחותינו השכליים, כי בוחן המציאות שלנו מתפוגג. כמה מהדברים שאנחנו אומרים בחלומותינו או, גרוע מזה, ממש עושים, היו מובילים אותנו היישר לאשפוז במחלקה סגורה. מצד שני, החלום הוא חכם בדרך מוזרה כי הוא מדבר בשפתם של האמן, המשורר והממציא. ההרצאה סוקרת את מחקרי השינה והחלום עד ימינו ומרחיבה על חשיבותו לבריאות הנפשית. למאזינים המוכנים לשתף בחלומותיהם את הזולת ניתנת ההרצאה גם להרחבה לסדנה (ללא יומרות טיפוליות) להרחבת ההיכרות עם הלא-מודע ועידוד חשיבה לא-שגרתית.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy2",
-        title: "שינה, חלום ובריאות",
-        description: `השינה היא חידה ביולוגית מסקרנת: מה קורה בגוף ובעיקר במוח בזמן השינה ולמה בכלל אנחנו צריכים לישון חלק כה גדול מחיינו? החלום מוסיף לנו חידה פסיכולוגית: מה פשר האירועים המוזרים והחוויות החזקות שאנחנו עוברים בזמן השינה? הרצאה זו מביאה את מיטב הידע החדש (כולל מהשנה-שנתיים האחרונות, ומחקרים פורצי-דרך ישראליים) והמפתיע על מה שקורה לנו בזמן השינה ועל השלכותיו הגורליות לבריאותנו.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy3",
-        title: "לעשות לימונדה מהלימונים של החיים: על מתת ההומור",
-        description: `בעולם שבו אין צער, כאב או ייאוש, לא יהיה, למרבה ההפתעה גם צחוק, אפילו לא חיוכים. ההומור, בדרך מוזרה, שואב את כוחו מעצם קיומו של הבכי. מה מלמדות הבדיחות עלינו? האם חוש הומור זה באמת כישרון מלידה? (ממש לא.) ההומור כמורה וכרופא, הכל מעוגן במחקרים.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy4",
-        title: "גאונות, שיגעון ויצירתיות",
-        description: `ההתקדמויות בחקר החשיבה והאינטליגנציה עדיין לא הצליחו להסביר את סוד הגאונות או אפילו החשיבה היצירתית, אם זה טבוע בגנים (שטויות) או משהו שניתן לטפח בכל גיל (לגמרי). בעיקר נותר מטריד הקשר בין החשיבה פורצת-הדרך לבין מחלות נפש שונות, כפי שניתן לראות מדוגמאות רבות בהיסטוריה של המדעים והאמנויות. ההרצאה סוקרת מגוון דוגמאות מייצגות ומצביעה על כיוונים אפשריים להבנת התופעה ולפיתוחה.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy5",
-        title: "החומר של הנפש: מוח האדם ופעולתו",
-        description: `מבנה המוח והמתחולל בו הם הבסיס לתופעות הנפש הידועות: למידה, חשיבה, יצרים ורגש. מוח שונה יש לתינוק, לצעיר ולזקן. לגבר ולאישה. למחקר המוח בימינו השלכות מרחיקות-לכת על הבנת ההתנהגות הבריאה והחולה. מומלצת בעיקר המצגת, בה הושקע הרבה עמל להסברת מבנה המוח ופעולתו, זמינה כאן לכל דורש.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy6",
-        title: "החיה שבאדם - מסע אל שורשי הרצחנות האנושית",
-        description: `אם יש ממש בתורת האבולוציה, היא צריכה להסביר למה דווקא המין האנושי, האמור להתייחד בתבונתו, הוא המין הרצחני ביותר על כדור הארץ. מחקריו של קונראד לורנץ (שהסתיר את העובדה שהוא עצמו היה נאצי בצעירותו) הביאו לו את פרס נובל אבל גם מתנגדים רבים. ההרצאה עוקבת אחרי הגישות השונות לחקר מקורות התוקפנות, מהחרקים עד קופי-האדם, ועל המסקנות האפשריות לניטרול סכנת ההשמדה העצמית.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "psy7",
-        title: "החברות האפלה - על צד לא ידוע בהתפתחות הפסיכואנליזה",
-        description: `בפתח המאה העשרים נקשרה ידידות בין שני רופאים צעירים ויפי-תואר, נוירולוג ורופא אא"ג, שהיו בטוחים שהתיאוריות המוזרות שלהם ישנו את הרפואה והביולוגיה כולה, ולשם כך אפילו סיכנו את חיי חוליהם בניסויים מסוכנים. זה היה קשר רב-עוצמה, שאחד מהם אפילו הודה כי היה בו צד הומוסקסואלי, והסתיים בניתוק טראומטי. את הראשון, שלקח את הסכסוך קשה עד כדי התעלפויות, אין צורך להציג: זיגמונד פרויד. השני, וילהלם פליס, זכור כיום רק להיסטוריונים של הרפואה בשל טענותיו האזוטריות על תפקודי האף והנומרולוגיה הביסקסואליות. ידוע שהמכתבים ביניהם, מהם שרד רק צד אחד, חושפים מעט מהאנליזה העצמית של פרויד. מה שפחות ידוע הוא שבנו של פליס, שהיגר לארה"ב ונעשה פסיכואנליטיקאי מפורסם, חשף באומץ בל-ייאמן פרטים אפלים על אביו ועל מה שעשה לבנו – כלומר לו עצמו. ההרצאה דנה בכמה השלכות של סוד זה על התפתחות הפסיכואנליזה וכל שיטות הפסיכותרפיה.`,
-        duration: "60 דקות",
-      },
-    ],
-  },
-  {
-    id: "cat7",
-    name: "נושאים ציבוריים",
-    bannerImageUrl: "/publictopics.jpg",
-    lectures: [
-      {
-        id: "pub1",
-        title: "יהדות וארוטיקה: יריבים אינטימיים",
-        description: `בניגוד כמעט קוטבי לפחד של היהדות החרדית מפני הגוף והמיניות, יחסם של חכמי המשנה והתלמוד למין ולאהבה היה סובלני, סקרני, מקבל ואפילו גולש לפורנוגרפיה. ההרצאה מביאה מגוון אמירות ועצות תלמודיות ומדרשיות בנושאי סקס, ומסיימת בשסע ביהדות ההלכה בימינו בין חיוב המין לפוביה ממנו.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "pub2",
-        title: "השילוש הלא-קדוש: שנאת-הזר, פורנוגרפיה ומיסטיקה",
-        description: `מאז ומתמיד, האזהרה "הם רוצים לשכב עם הבנות שלנו" הייתה קלף מנצח בכל הסתה גזענית. מתברר שלא מעט כתבים ביהדות, אפילו של רופא רציונליסט כמו הרמב"ם, וכמובן ה"זוהר" והקבלה, תיארו את הגוי והגויה כבעלי יכולות מיניות ואיברים מעוררי-קנאה. זו בפירוש לא הרצאה לכל קהל, והיא עושה שימוש נרחב בכתבי רבנים בני ימינו, אבל יש בה גם הרבה תובנות חיוביות.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "pub3",
-        title: "הומוסקסואליות, בריאות-נפש ותקינות פוליטית",
-        description: `הומוסקסואליות אינה מחלה, נכון? בהחלט. ואסור להפלות שום אדם על רגע נטייתו המינית - כמובן. ונטייה מינית היא בגנים, כך נולדנו ולא ניתן לשנות את זה, נכון? ... אז זהו שלא. זו הרצאה מאוד לא תקינה פוליטית, ומזה שנים שאני נותן אותה בקורס על מיניות בבית-הספר לרפואה באוניברסיטת תל-אביב ובפורומים אקדמיים נוספים. צריך הרבה סבלנות וסובלנות להרצאה הזאת, המקפידה להביא את מיטב הממצאים המדעיים בנושא המיניות באנושית בלי קשר לשאלה אם זה מוצא חן בעיני מישהו/יא. בשורה התחתונה: כשם שייתכן שסטרייט יגלה באמצע חייו שהוא הומו וקיבל את עצמו ונהיה מאושר, השינוי יכול להתחולל גם בכיוון ההפוך. צריך לדעת להעריך את גמישות המוח האנושי.`,
-        duration: "60 דקות",
-      },
-      {
-        id: "pub4",
-        title: "מניעת התאבדויות",
-        description: `על מאמרם של פרופ' חיים עומר ואבשלום אליצור "מה תאמר לאדם שעל הגג?" שפורסם בשפות רבות, המציע דרכי התמודדות עם סכנת אובדנות גם בתנאי חירום.`,
-        duration: "60 דקות",
-      },
-    ],
-  },
-];
+type LectureWithAuthor = Prisma.LectureGetPayload<{
+  include: {
+    author: {
+      select: {
+        name: true;
+        email: true;
+        image: true;
+      };
+    };
+  };
+}>;
+
+type SubcategoryWithLectures = Prisma.CategoryGetPayload<{
+  include: {
+    lectures: {
+      include: {
+        author: {
+          select: {
+            name: true;
+            email: true;
+            image: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+type CategoryWithLectures = Prisma.CategoryGetPayload<{
+  include: {
+    subcategories: {
+      include: {
+        lectures: {
+          include: {
+            author: {
+              select: {
+                name: true;
+                email: true;
+                image: true;
+              };
+            };
+          };
+        };
+      };
+    };
+    lectures: {
+      include: {
+        author: {
+          select: {
+            name: true;
+            email: true;
+            image: true;
+          };
+        };
+      };
+    };
+  };
+}>;
+
+function formatLecture(lec: LectureWithAuthor) {
+  return {
+    id: lec.id,
+    title: lec.title,
+    description: lec.description,
+    videoUrl: lec.videoUrl || undefined,
+    duration: lec.duration,
+    date: lec.date || undefined,
+    bannerImageUrl: lec.bannerImageUrl || undefined,
+    author: lec.author,
+  };
+}
 
 export async function GET() {
-  // In a real application, you would fetch data from your external API here:
-  // try {
-  //   const response = await fetch('YOUR_EXTERNAL_API_ENDPOINT/lectures');
-  //   if (!response.ok) {
-  //     throw new Error(`Failed to fetch lectures: ${response.statusText}`);
-  //   }
-  //   const data = await response.json();
-  //   return NextResponse.json(data);
-  // } catch (error) {
-  //   console.error("Error fetching lectures:", error);
-  //   return NextResponse.json({ error: 'Failed to fetch lecture data' }, { status: 500 });
-  // }
+  try {
+    const categories = await prisma.category.findMany({
+      include: {
+        subcategories: {
+          include: {
+            lectures: {
+              include: {
+                author: {
+                  select: {
+                    name: true,
+                    email: true,
+                    image: true,
+                  },
+                },
+              },
+              orderBy: {
+                createdAt: "desc",
+              },
+            },
+          },
+        },
+        lectures: {
+          include: {
+            author: {
+              select: {
+                name: true,
+                email: true,
+                image: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
 
-  // For now, we return the hardcoded sample data
-  await new Promise((resolve) => setTimeout(resolve, 500)); // Simulate network delay
-  return NextResponse.json(lectureData);
+    // Transform to match the expected format
+    const formattedCategories: Category[] = categories.map(
+      (cat: CategoryWithLectures) => ({
+        id: cat.id,
+        name: cat.name,
+        bannerImageUrl: cat.bannerImageUrl || undefined,
+        lectures: cat.lectures.map(formatLecture),
+        subcategories: cat.subcategories.map(
+          (sub: SubcategoryWithLectures) => ({
+            id: sub.id,
+            name: sub.name,
+            bannerImageUrl: sub.bannerImageUrl || undefined,
+            lectures: sub.lectures.map(formatLecture),
+            subcategories: [],
+          })
+        ),
+      })
+    );
+
+    return NextResponse.json(formattedCategories);
+  } catch (error) {
+    console.error("Error fetching lectures:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch lecture data" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email! },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    const body = await request.json();
+    const {
+      title,
+      description,
+      videoUrl,
+      duration,
+      date,
+      bannerImageUrl,
+      categoryId,
+    } = body;
+
+    if (!title || !description || !categoryId || !duration) {
+      return NextResponse.json(
+        { error: "Title, description, categoryId, and duration are required" },
+        { status: 400 }
+      );
+    }
+
+    // Check if category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 }
+      );
+    }
+
+    const lecture = await prisma.lecture.create({
+      data: {
+        title,
+        description,
+        videoUrl: videoUrl || null,
+        duration,
+        date: date || null,
+        bannerImageUrl: bannerImageUrl || null,
+        categoryId,
+        authorId: user.id,
+      },
+      include: {
+        author: {
+          select: {
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        category: true,
+      },
+    });
+
+    return NextResponse.json(lecture, { status: 201 });
+  } catch (error) {
+    console.error("Error creating lecture:", error);
+    return NextResponse.json(
+      { error: "Failed to create lecture" },
+      { status: 500 }
+    );
+  }
 }

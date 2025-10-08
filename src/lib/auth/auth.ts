@@ -3,12 +3,7 @@ import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/lib/prisma/prisma";
 import { AdapterUser } from "next-auth/adapters";
-
-const ALLOWED_EMAILS = [
-  "avshalom@iyar.org.il",
-  "yarinmster@gmail.com",
-  "yakir@iyar.org.il",
-];
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -34,18 +29,15 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ user }) {
       if (!user.email) {
-        console.log("Sign-in blocked: No email provided");
         return false;
       }
 
       const isAllowed = ALLOWED_EMAILS.includes(user.email.toLowerCase());
 
       if (!isAllowed) {
-        console.log(`Sign-in blocked: ${user.email} not in allowed list`);
         return false;
       }
 
-      console.log(`Sign-in allowed: ${user.email}`);
       return true;
     },
   },
