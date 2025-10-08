@@ -4,29 +4,32 @@ import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-// GET /api/events - Fetch all categories with events
+// GET /api/events - Fetch all events
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany({
+    const events = await prisma.event.findMany({
       include: {
-        events: {
-          include: {
-            author: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
           },
-          orderBy: {
-            eventDate: "desc",
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            bannerImageUrl: true,
           },
         },
       },
+      orderBy: {
+        eventDate: "desc",
+      },
     });
 
-    return NextResponse.json(categories);
+    return NextResponse.json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
     return NextResponse.json(

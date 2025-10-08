@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import Events from "@/components/Events/Events";
 import CreateEventForm from "@/components/CreateEvent/create_event";
 import Image from "next/image";
-import { EventCategory } from "@/types/Events/events";
+import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 const EventsPage = () => {
@@ -13,9 +13,7 @@ const EventsPage = () => {
   const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
   const [currentBannerAlt, setCurrentBannerAlt] =
     useState<string>("Banner Image");
-  const [eventCategoriesData, setEventCategoriesData] = useState<
-    EventCategory[] | null
-  >(null);
+  const [eventsData, setEventsData] = useState<Event[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -31,12 +29,12 @@ const EventsPage = () => {
             `Failed to fetch events: ${response.statusText} (status: ${response.status})`
           );
         }
-        const data: EventCategory[] = await response.json();
-        setEventCategoriesData(data);
+        const data: Event[] = await response.json();
+        setEventsData(data);
       } catch (err: any) {
         console.error("Error fetching event data:", err);
         setError(err.message || "An unknown error occurred");
-        setEventCategoriesData([]);
+        setEventsData([]);
       } finally {
         setIsLoading(false);
       }
@@ -62,12 +60,12 @@ const EventsPage = () => {
             `Failed to fetch events: ${response.statusText} (status: ${response.status})`
           );
         }
-        const data: EventCategory[] = await response.json();
-        setEventCategoriesData(data);
+        const data: Event[] = await response.json();
+        setEventsData(data);
       } catch (err: any) {
         console.error("Error fetching event data:", err);
         setError(err.message || "An unknown error occurred");
-        setEventCategoriesData([]);
+        setEventsData([]);
       } finally {
         setIsLoading(false);
       }
@@ -88,9 +86,7 @@ const EventsPage = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-white">
-            אירועים בנושאים שונים לפי קטגוריות
-          </h1>
+          <h1 className="text-4xl font-bold text-white">כל האירועים</h1>
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
@@ -131,19 +127,12 @@ const EventsPage = () => {
             שגיאה בטעינת אירועים: {error}
           </p>
         )}
-        {!isLoading && !error && eventCategoriesData && (
-          <Events
-            onBannerUpdate={handleBannerUpdate}
-            eventData={eventCategoriesData}
-          />
+        {!isLoading && !error && eventsData && (
+          <Events onBannerUpdate={handleBannerUpdate} eventsData={eventsData} />
         )}
-        {!isLoading &&
-          !error &&
-          (!eventCategoriesData || eventCategoriesData.length === 0) && (
-            <p className="text-center text-xl text-gray-400">
-              לא נמצאו אירועים.
-            </p>
-          )}
+        {!isLoading && !error && (!eventsData || eventsData.length === 0) && (
+          <p className="text-center text-xl text-gray-400">לא נמצאו אירועים.</p>
+        )}
       </div>
     </div>
   );
