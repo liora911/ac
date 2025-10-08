@@ -48,6 +48,7 @@ model User {
   articles      Article[]
   lectures      Lecture[]
   presentations Presentation[]
+  events        Event[]
 }
 
 model VerificationToken {
@@ -85,6 +86,7 @@ model Category {
   subcategories   Category[] @relation("CategoryHierarchy")
   lectures        Lecture[]
   presentations   Presentation[]
+  events          Event[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -124,4 +126,25 @@ model Presentation {
   updatedAt       DateTime @updatedAt
 
   @@map("presentations")
+}
+
+model Event {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  eventType       String
+  location        String?
+  onlineUrl       String?
+  eventDate       DateTime
+  eventTime       String?
+  bannerImageUrl  String?
+  published       Boolean  @default(false)
+  categoryId      String
+  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  authorId        String
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("events")
 }

@@ -1,0 +1,146 @@
+import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/prisma/prisma";
+import { ALLOWED_EMAILS } from "@/constants/auth";
+
+// GET /api/events - Fetch all categories with events
+export async function GET() {
+  try {
+    const categories = await prisma.category.findMany({
+      include: {
+        events: {
+          include: {
+            author: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+          },
+          orderBy: {
+            eventDate: "desc",
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(categories);
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch events" },
+      { status: 500 }
+    );
+  }
+}
+
+// POST /api/events - Create new event
+export async function POST(request: NextRequest) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (
+      !session?.user?.email ||
+      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const {
+      title,
+      description,
+      eventType,
+      location,
+      onlineUrl,
+      eventDate,
+      eventTime,
+      bannerImageUrl,
+      categoryId,
+    } = body;
+
+    if (!title || !description || !eventType || !eventDate || !categoryId) {
+      return NextResponse.json(
+        { error: "Missing required fields" },
+        { status: 400 }
+      );
+    }
+
+    if (eventType !== "in-person" && eventType !== "online") {
+      return NextResponse.json(
+        { error: "Invalid event type" },
+        { status: 400 }
+      );
+    }
+
+    if (eventType === "in-person" && !location) {
+      return NextResponse.json(
+        { error: "Location is required for in-person events" },
+        { status: 400 }
+      );
+    }
+
+    if (eventType === "online" && !onlineUrl) {
+      return NextResponse.json(
+        { error: "Online URL is required for online events" },
+        { status: 400 }
+      );
+    }
+
+    // Verify category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 400 }
+      );
+    }
+
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 400 });
+    }
+
+    const event = await prisma.event.create({
+      data: {
+        title,
+        description,
+        eventType,
+        location: eventType === "in-person" ? location : null,
+        onlineUrl: eventType === "online" ? onlineUrl : null,
+        eventDate: new Date(eventDate),
+        eventTime,
+        bannerImageUrl,
+        categoryId,
+        authorId: user.id,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        category: true,
+      },
+    });
+
+    return NextResponse.json(event, { status: 201 });
+  } catch (error) {
+    console.error("Error creating event:", error);
+    return NextResponse.json(
+      { error: "Failed to create event" },
+      { status: 500 }
+    );
+  }
+}
