@@ -129,7 +129,7 @@ const Home = () => {
               href="https://www.facebook.com/avshalom.elitzur"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-200"
+              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110"
               aria-label="Facebook"
             >
               <FaFacebook />
@@ -138,7 +138,7 @@ const Home = () => {
               href="https://www.youtube.com/@avshalomelitzur424"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-200"
+              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110"
               aria-label="YouTube"
             >
               <FaYoutube />
