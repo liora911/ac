@@ -1,15 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import ArticlesGrid from "@/components/Articles/Articles";
 import CreateArticleForm from "@/components/CreateArticle/create_article";
 import { ArticleProps } from "@/types/Articles/articles";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export default function ArticlesDemoPage() {
+  const { data: session } = useSession();
   const [articles, setArticles] = useState<ArticleProps[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+
+  const isAuthorized =
+    session?.user?.email &&
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   const fetchArticles = async () => {
     try {
@@ -71,15 +78,17 @@ export default function ArticlesDemoPage() {
     <div className="p-4">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold rtl">מאמרים</h1>
-        <button
-          onClick={() => setShowCreateForm(!showCreateForm)}
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors rtl"
-        >
-          {showCreateForm ? "ביטול" : "+ מאמר חדש"}
-        </button>
+        {isAuthorized && (
+          <button
+            onClick={() => setShowCreateForm(!showCreateForm)}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition-colors rtl"
+          >
+            {showCreateForm ? "ביטול" : "+ מאמר חדש"}
+          </button>
+        )}
       </div>
 
-      {showCreateForm && (
+      {showCreateForm && isAuthorized && (
         <div className="mb-8">
           <CreateArticleForm onSuccess={handleArticleCreated} />
         </div>
