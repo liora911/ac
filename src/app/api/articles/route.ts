@@ -46,6 +46,7 @@ export async function GET(request: NextRequest) {
       const categoriesMap = new Map();
 
       articles.forEach((article: any) => {
+        if (!article.category) return; // Skip articles without category
         const rootCategory = article.category.parent || article.category;
         const categoryId = rootCategory.id;
         if (!categoriesMap.has(categoryId)) {
