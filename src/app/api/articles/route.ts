@@ -24,7 +24,11 @@ export async function GET(request: NextRequest) {
             image: true,
           },
         },
-        category: true,
+        category: {
+          include: {
+            parent: true,
+          },
+        },
       },
       orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
@@ -34,12 +38,13 @@ export async function GET(request: NextRequest) {
       const categoriesMap = new Map();
 
       articles.forEach((article: any) => {
-        const categoryId = article.category.id;
+        const rootCategory = article.category.parent || article.category;
+        const categoryId = rootCategory.id;
         if (!categoriesMap.has(categoryId)) {
           categoriesMap.set(categoryId, {
-            id: article.category.id,
-            name: article.category.name,
-            bannerImageUrl: article.category.bannerImageUrl,
+            id: rootCategory.id,
+            name: rootCategory.name,
+            bannerImageUrl: rootCategory.bannerImageUrl,
             articles: [],
           });
         }
