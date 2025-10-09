@@ -14,16 +14,6 @@ export async function GET(
 
     const article = await prisma.article.findUnique({
       where: { id },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
-        },
-      },
     });
 
     if (!article) {
@@ -40,7 +30,6 @@ export async function GET(
       articleImage: article.articleImage || "/consc.png",
       content: article.content,
       published: article.published,
-      author: article.author,
     };
 
     return NextResponse.json(formattedArticle);
@@ -152,7 +141,6 @@ export async function PUT(
       articleImage: updatedArticle.articleImage,
       content: updatedArticle.content,
       published: updatedArticle.published,
-      author: updatedArticle.author,
     };
 
     return NextResponse.json(formattedArticle);
