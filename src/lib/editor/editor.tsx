@@ -1,99 +1,81 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
+import Underline from "@tiptap/extension-underline";
+import Placeholder from "@tiptap/extension-placeholder";
+import { useEffect } from "react";
 
-interface BasicEditorProps {
+interface TiptapEditorProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
 }
 
-export default function BasicEditor({
+export default function TiptapEditor({
   value,
   onChange,
   placeholder = "כתוב את תוכן המאמר כאן...",
   className = "",
-}: BasicEditorProps) {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const [isActive, setIsActive] = useState(false);
+}: TiptapEditorProps) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit,
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Underline,
+      Placeholder.configure({
+        placeholder,
+      }),
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class:
+          "min-h-[200px] p-3 focus:outline-none rtl prose prose-sm max-w-none",
+        style: "direction: rtl;",
+      },
+    },
+  });
 
-  const execCommand = (command: string, value?: string) => {
-    document.execCommand(command, false, value);
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
     }
-  };
+  }, [value, editor]);
 
-  const handleInput = () => {
-    if (editorRef.current) {
-      onChange(editorRef.current.innerHTML);
-    }
-  };
+  if (!editor) {
+    return null;
+  }
 
-  const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault();
-    const text = e.clipboardData.getData("text/plain");
-    document.execCommand("insertText", false, text);
-  };
-
-  const formatButtons = [
-    {
-      command: "bold",
-      icon: "B",
-      title: "Bold (Ctrl+B)",
-      style: "font-bold",
-    },
-    {
-      command: "italic",
-      icon: "I",
-      title: "Italic (Ctrl+I)",
-      style: "italic",
-    },
-    {
-      command: "underline",
-      icon: "U",
-      title: "Underline (Ctrl+U)",
-      style: "underline",
-    },
-    {
-      command: "strikeThrough",
-      icon: "S",
-      title: "Strikethrough",
-      style: "line-through",
-    },
-  ];
-
-  const listButtons = [
-    {
-      command: "insertUnorderedList",
-      icon: "•",
-      title: "Bullet List",
-    },
-    {
-      command: "insertOrderedList",
-      icon: "1.",
-      title: "Numbered List",
-    },
-  ];
-
-  const alignButtons = [
-    {
-      command: "justifyLeft",
-      icon: "⟵",
-      title: "Align Left",
-    },
-    {
-      command: "justifyCenter",
-      icon: "⟷",
-      title: "Align Center",
-    },
-    {
-      command: "justifyRight",
-      icon: "⟶",
-      title: "Align Right",
-    },
-  ];
+  const ToolbarButton = ({
+    onClick,
+    isActive,
+    children,
+    title,
+  }: {
+    onClick: () => void;
+    isActive?: boolean;
+    children: React.ReactNode;
+    title: string;
+  }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 ${
+        isActive ? "bg-blue-100 border-blue-300" : ""
+      }`}
+      title={title}
+    >
+      {children}
+    </button>
+  );
 
   return (
     <div className={`border border-gray-300 rounded-md ${className}`}>
@@ -102,97 +84,145 @@ export default function BasicEditor({
         <div className="flex flex-wrap gap-1">
           {/* Format buttons */}
           <div className="flex border-r border-gray-300 pr-2 mr-2">
-            {formatButtons.map((button) => (
-              <button
-                key={button.command}
-                type="button"
-                onClick={() => execCommand(button.command)}
-                className={`px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 ${button.style} first:rounded-l last:rounded-r`}
-                title={button.title}
-              >
-                {button.icon}
-              </button>
-            ))}
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleBold().run()}
+              isActive={editor.isActive("bold")}
+              title="Bold (Ctrl+B)"
+            >
+              <strong>B</strong>
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleItalic().run()}
+              isActive={editor.isActive("italic")}
+              title="Italic (Ctrl+I)"
+            >
+              <em>I</em>
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleUnderline().run()}
+              isActive={editor.isActive("underline")}
+              title="Underline (Ctrl+U)"
+            >
+              <u>U</u>
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleStrike().run()}
+              isActive={editor.isActive("strike")}
+              title="Strikethrough"
+            >
+              <s>S</s>
+            </ToolbarButton>
           </div>
 
+          {/* List buttons */}
           <div className="flex border-r border-gray-300 pr-2 mr-2">
-            {listButtons.map((button) => (
-              <button
-                key={button.command}
-                type="button"
-                onClick={() => execCommand(button.command)}
-                className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 first:rounded-l last:rounded-r"
-                title={button.title}
-              >
-                {button.icon}
-              </button>
-            ))}
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleBulletList().run()}
+              isActive={editor.isActive("bulletList")}
+              title="Bullet List"
+            >
+              •
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().toggleOrderedList().run()}
+              isActive={editor.isActive("orderedList")}
+              title="Numbered List"
+            >
+              1.
+            </ToolbarButton>
           </div>
 
+          {/* Alignment buttons */}
           <div className="flex border-r border-gray-300 pr-2 mr-2">
-            {alignButtons.map((button) => (
-              <button
-                key={button.command}
-                type="button"
-                onClick={() => execCommand(button.command)}
-                className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 first:rounded-l last:rounded-r"
-                title={button.title}
-              >
-                {button.icon}
-              </button>
-            ))}
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign("left").run()}
+              isActive={editor.isActive({ textAlign: "left" })}
+              title="Align Left"
+            >
+              ⟵
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() =>
+                editor.chain().focus().setTextAlign("center").run()
+              }
+              isActive={editor.isActive({ textAlign: "center" })}
+              title="Align Center"
+            >
+              ⟷
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setTextAlign("right").run()}
+              isActive={editor.isActive({ textAlign: "right" })}
+              title="Align Right"
+            >
+              ⟶
+            </ToolbarButton>
           </div>
 
+          {/* Heading buttons */}
           <div className="flex">
-            <button
-              type="button"
-              onClick={() => execCommand("formatBlock", "h2")}
-              className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 rounded-l"
+            <ToolbarButton
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 2 }).run()
+              }
+              isActive={editor.isActive("heading", { level: 2 })}
               title="Heading 2"
             >
               H2
-            </button>
-            <button
-              type="button"
-              onClick={() => execCommand("formatBlock", "h3")}
-              className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200"
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() =>
+                editor.chain().focus().toggleHeading({ level: 3 }).run()
+              }
+              isActive={editor.isActive("heading", { level: 3 })}
               title="Heading 3"
             >
               H3
-            </button>
-            <button
-              type="button"
-              onClick={() => execCommand("formatBlock", "p")}
-              className="px-3 py-1 text-sm border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 rounded-r"
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().setParagraph().run()}
+              isActive={editor.isActive("paragraph")}
               title="Paragraph"
             >
               P
-            </button>
+            </ToolbarButton>
           </div>
         </div>
       </div>
 
-      <div
-        ref={editorRef}
-        contentEditable
-        suppressContentEditableWarning
-        onInput={handleInput}
-        onPaste={handlePaste}
-        onFocus={() => setIsActive(true)}
-        onBlur={() => setIsActive(false)}
-        className={`min-h-[200px] p-3 focus:ring-2 focus:ring-blue-500 focus:outline-none rtl ${
-          isActive ? "ring-2 ring-blue-500" : ""
-        }`}
-        style={{ direction: "rtl" }}
-        dangerouslySetInnerHTML={{ __html: value }}
-        data-placeholder={placeholder}
+      <EditorContent
+        editor={editor}
+        className="focus-within:ring-2 focus-within:ring-blue-500 rounded-b-md"
       />
 
-      <style jsx>{`
-        [contenteditable]:empty:before {
-          content: attr(data-placeholder);
-          color: #9ca3af;
-          pointer-events: none;
+      <style jsx global>{`
+        .ProseMirror {
+          outline: none;
+        }
+        .ProseMirror p {
+          margin: 0.5em 0;
+        }
+        .ProseMirror h2 {
+          margin: 0.5em 0;
+          font-size: 1.5em;
+          font-weight: bold;
+        }
+        .ProseMirror h3 {
+          margin: 0.5em 0;
+          font-size: 1.25em;
+          font-weight: bold;
+        }
+        .ProseMirror ul {
+          padding-left: 1.5em;
+        }
+        .ProseMirror ol {
+          padding-left: 1.5em;
+        }
+        .ProseMirror blockquote {
+          border-left: 3px solid #ccc;
+          padding-left: 1em;
+          margin: 1em 0;
+          font-style: italic;
         }
       `}</style>
     </div>
