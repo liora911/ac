@@ -130,6 +130,26 @@ export default function EditArticleForm({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted!", formData);
+
+    // Manual validation
+    if (!formData.title.trim()) {
+      setMessage({ type: "error", text: "כותרת המאמר נדרשת" });
+      return;
+    }
+    if (
+      !formData.content ||
+      formData.content.trim() === "" ||
+      formData.content.replace(/<[^>]*>/g, "").trim() === ""
+    ) {
+      setMessage({ type: "error", text: "תוכן המאמר נדרש" });
+      return;
+    }
+    if (!formData.publisherName.trim()) {
+      setMessage({ type: "error", text: "שם המחבר נדרש" });
+      return;
+    }
+
     setIsLoading(true);
     setMessage(null);
 
@@ -223,7 +243,7 @@ export default function EditArticleForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-2 rtl">
             כותרת המאמר *
@@ -234,7 +254,6 @@ export default function EditArticleForm({
             name="title"
             value={formData.title}
             onChange={handleChange}
-            required
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
             placeholder="הכנס כותרת למאמר"
           />
@@ -248,12 +267,6 @@ export default function EditArticleForm({
             value={formData.content}
             onChange={handleContentChange}
             placeholder="כתוב את תוכן המאמר כאן..."
-          />
-          <input
-            type="hidden"
-            name="content"
-            value={formData.content}
-            required
           />
         </div>
 
@@ -270,7 +283,6 @@ export default function EditArticleForm({
             name="publisherName"
             value={formData.publisherName}
             onChange={handleChange}
-            required
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
             placeholder="הכנס שם המחבר"
           />
