@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/auth";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const categoryId = searchParams.get("categoryId");
+
+    const whereClause = {
+      published: true,
+      ...(categoryId && { categoryId }),
+    };
+
     const articles = await prisma.article.findMany({
-      where: { published: true },
+      where: whereClause,
       include: {
         author: {
           select: {
@@ -13,10 +24,41 @@ export async function GET() {
             image: true,
           },
         },
+        category: true,
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
     });
 
+    // If no categoryId specified, group by category
+    if (!categoryId) {
+      const categoriesMap = new Map();
+
+      articles.forEach((article: any) => {
+        const categoryId = article.category.id;
+        if (!categoriesMap.has(categoryId)) {
+          categoriesMap.set(categoryId, {
+            id: article.category.id,
+            name: article.category.name,
+            bannerImageUrl: article.category.bannerImageUrl,
+            articles: [],
+          });
+        }
+        categoriesMap.get(categoryId).articles.push({
+          id: article.id,
+          publisherImage: article.publisherImage || "/NNZxjUl0_400x400.png",
+          publisherName: article.publisherName,
+          date: new Date(article.createdAt).toLocaleDateString("he-IL"),
+          readDuration: article.readDuration,
+          title: article.title,
+          articleImage: article.articleImage || "/consc.png",
+          content: article.content,
+        });
+      });
+
+      return NextResponse.json(Array.from(categoriesMap.values()));
+    }
+
+    // If categoryId specified, return articles for that category
     const formattedArticles = articles.map((article: any) => ({
       id: article.id,
       publisherImage: article.publisherImage || "/NNZxjUl0_400x400.png",
@@ -40,13 +82,32 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    let user = await prisma.user.findFirst();
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
+      return NextResponse.json(
+        { error: "Unauthorized to create articles" },
+        { status: 403 }
+      );
+    }
+
+    let user = await prisma.user.findUnique({
+      where: { email: session.user.email! },
+    });
 
     if (!user) {
       user = await prisma.user.create({
         data: {
-          name: "Test User",
-          email: "test@example.com",
+          name: session.user.name || "Anonymous",
+          email: session.user.email!,
+          image: session.user.image,
         },
       });
     }
@@ -59,14 +120,27 @@ export async function POST(request: NextRequest) {
       publisherName,
       publisherImage,
       readDuration,
+      categoryId,
       published = true,
     } = body;
 
-    if (!title || !content) {
+    if (!title || !content || !categoryId) {
       return NextResponse.json(
         {
-          error: "Title and content are required",
+          error: "Title, content, and categoryId are required",
         },
+        { status: 400 }
+      );
+    }
+
+    // Check if category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
         { status: 400 }
       );
     }
@@ -81,6 +155,7 @@ export async function POST(request: NextRequest) {
         readDuration: readDuration || Math.ceil(content.length / 200),
         published,
         authorId: user.id,
+        categoryId,
       },
     });
 

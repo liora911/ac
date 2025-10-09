@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
@@ -26,18 +26,39 @@ export default function CreateArticleForm({
     publisherName: "",
     publisherImage: "",
     readDuration: 5,
+    categoryId: "",
   });
 
   const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
   const [publisherImageFile, setPublisherImageFile] = useState<File | null>(
     null
   );
+  const [categories, setCategories] = useState<any[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState(true);
 
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  if (status === "loading") {
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (response.ok) {
+          const data = await response.json();
+          setCategories(data);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      } finally {
+        setCategoriesLoading(false);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  if (status === "loading" || categoriesLoading) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
@@ -136,6 +157,7 @@ export default function CreateArticleForm({
         publisherName: "",
         publisherImage: "",
         readDuration: 5,
+        categoryId: "",
       });
       setArticleImageFile(null);
       setPublisherImageFile(null);
@@ -155,7 +177,9 @@ export default function CreateArticleForm({
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -246,6 +270,33 @@ export default function CreateArticleForm({
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
             placeholder="הכנס שם המחבר"
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="categoryId"
+            className="block text-sm font-medium mb-2 rtl"
+          >
+            קטגוריה *
+          </label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            value={formData.categoryId}
+            onChange={handleChange}
+            required
+            disabled={categoriesLoading}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
+          >
+            <option value="">
+              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+            </option>
+            {categories.map((category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </div>
 
         <UploadImage
