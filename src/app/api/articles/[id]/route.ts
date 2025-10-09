@@ -105,7 +105,7 @@ export async function PUT(
         { status: 400 }
       );
     }
-
+    console.log("d");
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
