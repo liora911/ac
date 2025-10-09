@@ -16,10 +16,16 @@ export async function GET(request: NextRequest) {
       })
       .then((categories) => categories.map((cat) => cat.id));
 
-    const whereClause = {
+    const whereClause: any = {
       published: true,
-      categoryId: { in: validCategoryIds },
-      ...(categoryId && { categoryId }),
+      ...(categoryId
+        ? { categoryId }
+        : {
+            OR: [
+              { categoryId: null },
+              { categoryId: { in: validCategoryIds } },
+            ],
+          }),
     };
 
     const articles = await prisma.article.findMany({
@@ -46,9 +52,20 @@ export async function GET(request: NextRequest) {
       const categoriesMap = new Map();
 
       articles.forEach((article: any) => {
-        if (!article.category) return; // Skip articles without category
-        const rootCategory = article.category.parent || article.category;
-        const categoryId = rootCategory.id;
+        let rootCategory;
+        let categoryId;
+        if (!article.category) {
+          // Default category for articles without category
+          categoryId = "no-category";
+          rootCategory = {
+            id: categoryId,
+            name: "ללא קטגוריה",
+            bannerImageUrl: null,
+          };
+        } else {
+          rootCategory = article.category.parent || article.category;
+          categoryId = rootCategory.id;
+        }
         if (!categoriesMap.has(categoryId)) {
           categoriesMap.set(categoryId, {
             id: rootCategory.id,

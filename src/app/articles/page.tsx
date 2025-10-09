@@ -268,7 +268,7 @@ const ArticlesGrid: React.FC<ArticlesGridProps> = ({
                 }
               >
                 {isAuthorized && (
-                  <div className="absolute top-2 left-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-2 left-2 flex gap-2 opacity-100 transition-opacity">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
