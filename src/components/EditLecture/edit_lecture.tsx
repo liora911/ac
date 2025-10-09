@@ -62,12 +62,6 @@ export default function EditLectureForm({
         if (response.ok) {
           const lecture = await response.json();
 
-          // Check if user is the author
-          if (lecture.author.email !== session?.user?.email) {
-            setMessage({ type: "error", text: "אין לך הרשאה לערוך הרצאה זו" });
-            return;
-          }
-
           setFormData({
             title: lecture.title || "",
             description: lecture.description || "",

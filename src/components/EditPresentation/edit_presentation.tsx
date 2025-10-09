@@ -58,12 +58,6 @@ export default function EditPresentationForm({
         if (response.ok) {
           const presentation = await response.json();
 
-          // Check if user is the author
-          if (presentation.author.email !== session?.user?.email) {
-            setMessage({ type: "error", text: "אין לך הרשאה לערוך מצגת זו" });
-            return;
-          }
-
           setFormData({
             title: presentation.title || "",
             description: presentation.description || "",

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET /api/presentations/[id] - Fetch single presentation by ID
 export async function GET(
@@ -56,7 +57,7 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if presentation exists and user is the author
+    // Check if presentation exists and user is authorized
     const existingPresentation = await prisma.presentation.findUnique({
       where: { id },
       include: { author: true },
@@ -69,9 +70,13 @@ export async function PUT(
       );
     }
 
-    if (existingPresentation.author.email !== session.user.email) {
+    // Check if user is authorized (in allowed emails)
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
       return NextResponse.json(
-        { error: "You can only edit your own presentations" },
+        { error: "Unauthorized to edit presentations" },
         { status: 403 }
       );
     }

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET /api/lectures/[id] - Fetch single lecture by ID
 export async function GET(
@@ -54,7 +55,7 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if lecture exists and user is the author
+    // Check if lecture exists and user is authorized
     const existingLecture = await prisma.lecture.findUnique({
       where: { id },
       include: { author: true },
@@ -64,9 +65,13 @@ export async function PUT(
       return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
     }
 
-    if (existingLecture.author.email !== session.user.email) {
+    // Check if user is authorized (in allowed emails)
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
       return NextResponse.json(
-        { error: "You can only edit your own lectures" },
+        { error: "Unauthorized to edit lectures" },
         { status: 403 }
       );
     }
