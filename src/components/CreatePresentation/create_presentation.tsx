@@ -266,6 +266,12 @@ export default function CreatePresentationForm({
             }
             placeholder="הכנס תיאור למצגת"
           />
+          <input
+            type="hidden"
+            name="description"
+            value={formData.description}
+            required
+          />
         </div>
 
         <div>
@@ -281,6 +287,12 @@ export default function CreatePresentationForm({
               setFormData((prev) => ({ ...prev, content: value }))
             }
             placeholder="הכנס את תוכן המצגת"
+          />
+          <input
+            type="hidden"
+            name="content"
+            value={formData.content}
+            required
           />
         </div>
 

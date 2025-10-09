@@ -221,6 +221,12 @@ export default function CreateArticleForm({
             onChange={handleContentChange}
             placeholder="כתוב את תוכן המאמר כאן..."
           />
+          <input
+            type="hidden"
+            name="content"
+            value={formData.content}
+            required
+          />
         </div>
 
         <div>

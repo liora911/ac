@@ -264,6 +264,12 @@ export default function CreateLectureForm({
             }
             placeholder="הכנס תיאור להרצאה"
           />
+          <input
+            type="hidden"
+            name="description"
+            value={formData.description}
+            required
+          />
         </div>
 
         <div>
