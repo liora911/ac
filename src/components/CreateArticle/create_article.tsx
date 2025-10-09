@@ -3,7 +3,6 @@
 import { useState, FormEvent } from "react";
 import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
-import BasicEditor from "@/lib/editor/editor";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 interface CreateArticleFormProps {
@@ -216,11 +215,13 @@ export default function CreateArticleForm({
           <label className="block text-sm font-medium mb-2 rtl">
             תוכן המאמר *
           </label>
-          <BasicEditor
+          <textarea
             value={formData.content}
-            onChange={handleContentChange}
+            onChange={(e) => handleContentChange(e.target.value)}
+            required
+            rows={12}
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
             placeholder="כתוב את תוכן המאמר כאן..."
-            className="focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
