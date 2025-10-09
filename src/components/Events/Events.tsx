@@ -37,48 +37,52 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
 
   return (
     <div
-      className="p-4 md:p-6 bg-gray-900 text-gray-100 min-h-[calc(100vh-200px)]"
+      className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-purple-950 to-indigo-950 text-gray-100 min-h-[calc(100vh-200px)]"
       style={{ direction: "rtl" }}
     >
-      <h2 className="text-3xl font-bold mb-6 text-white">כל האירועים</h2>
+      <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+        כל האירועים
+      </h2>
       <div className="space-y-6">
         {eventsData.map((event) => (
           <div
             key={event.id}
-            className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer"
+            className="bg-gradient-to-r from-slate-800/80 via-purple-900/80 to-indigo-900/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer"
             onClick={() => handleEventClick(event)}
           >
-            <h4 className="text-2xl font-semibold mb-2 text-blue-400">
+            <h4 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
               {event.title}
             </h4>
-            <p className="text-gray-300 mb-3">{event.description}</p>
-            <div className="flex justify-between items-center text-sm text-gray-400">
+            <p className="text-gray-200 mb-3 leading-relaxed">
+              {event.description}
+            </p>
+            <div className="flex justify-between items-center text-sm text-cyan-300/80">
               <span>
                 תאריך: {new Date(event.eventDate).toLocaleDateString("he-IL")}
               </span>
               {event.eventTime && <span>שעה: {event.eventTime}</span>}
             </div>
             {event.location && (
-              <div className="mt-2 text-sm text-gray-400">
+              <div className="mt-2 text-sm text-purple-300/80">
                 מיקום: {event.location}
               </div>
             )}
             {event.onlineUrl && (
               <div className="mt-2">
-                <p className="text-sm text-gray-400 mb-1">
+                <p className="text-sm text-cyan-300/80 mb-1">
                   קישור לאירוע מקוון:
                 </p>
                 <a
                   href={event.onlineUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:underline"
+                  className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/50 hover:decoration-cyan-300 transition-colors"
                 >
                   {event.onlineUrl}
                 </a>
               </div>
             )}
-            <div className="mt-2 text-sm text-gray-500">
+            <div className="mt-2 text-sm text-purple-400/70">
               קטגוריה: {event.category.name}
             </div>
           </div>

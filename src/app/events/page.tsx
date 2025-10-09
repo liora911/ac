@@ -81,16 +81,18 @@ const EventsPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: "rtl" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-white">כל האירועים</h1>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+            כל האירועים
+          </h1>
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold rtl"
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25"
             >
               {showCreateForm ? "ביטול" : "העלאת אירוע חדש"}
             </button>
@@ -103,7 +105,7 @@ const EventsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center border border-gray-600 overflow-hidden">
+        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gradient-to-r from-slate-800 via-purple-900 to-indigo-900 rounded-xl shadow-2xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm">
           {currentBannerUrl ? (
             <Image
               src={currentBannerUrl}
@@ -120,10 +122,10 @@ const EventsPage = () => {
           )}
         </div>
         {isLoading && (
-          <p className="text-center text-xl text-gray-300">טוען אירועים...</p>
+          <p className="text-center text-xl text-cyan-300">טוען אירועים...</p>
         )}
         {error && (
-          <p className="text-center text-xl text-red-500">
+          <p className="text-center text-xl text-red-400">
             שגיאה בטעינת אירועים: {error}
           </p>
         )}
@@ -131,7 +133,9 @@ const EventsPage = () => {
           <Events onBannerUpdate={handleBannerUpdate} eventsData={eventsData} />
         )}
         {!isLoading && !error && (!eventsData || eventsData.length === 0) && (
-          <p className="text-center text-xl text-gray-400">לא נמצאו אירועים.</p>
+          <p className="text-center text-xl text-cyan-300/70">
+            לא נמצאו אירועים.
+          </p>
         )}
       </div>
     </div>
