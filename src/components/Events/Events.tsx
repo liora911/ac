@@ -37,17 +37,17 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
 
   return (
     <div
-      className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-purple-950 to-indigo-950 text-gray-100 min-h-[calc(100vh-200px)]"
+      className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 min-h-[calc(100vh-200px)]"
       style={{ direction: "rtl" }}
     >
-      <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+      <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
         כל האירועים
       </h2>
       <div className="space-y-6">
         {eventsData.map((event) => (
           <div
             key={event.id}
-            className="bg-gradient-to-r from-slate-800/80 via-purple-900/80 to-indigo-900/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer"
+            className="bg-gradient-to-r from-slate-800/80 via-blue-900/80 to-slate-800/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer"
             onClick={() => handleEventClick(event)}
           >
             <h4 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
@@ -63,7 +63,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
               {event.eventTime && <span>שעה: {event.eventTime}</span>}
             </div>
             {event.location && (
-              <div className="mt-2 text-sm text-purple-300/80">
+              <div className="mt-2 text-sm text-blue-300/80">
                 מיקום: {event.location}
               </div>
             )}
@@ -82,7 +82,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
                 </a>
               </div>
             )}
-            <div className="mt-2 text-sm text-purple-400/70">
+            <div className="mt-2 text-sm text-blue-400/70">
               קטגוריה: {event.category.name}
             </div>
           </div>

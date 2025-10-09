@@ -81,7 +81,7 @@ const EventsPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-900 text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: "rtl" }}
     >
       <div className="max-w-7xl mx-auto">
@@ -105,7 +105,7 @@ const EventsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gradient-to-r from-slate-800 via-purple-900 to-indigo-900 rounded-xl shadow-2xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm">
+        <div className="mb-10 aspect-video bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-xl shadow-2xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm">
           {currentBannerUrl ? (
             <Image
               src={currentBannerUrl}
