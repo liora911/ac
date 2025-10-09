@@ -105,18 +105,71 @@ const EventsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 aspect-video bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-xl shadow-2xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm">
+        <div className="mb-6 h-48 md:h-56 bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-lg shadow-xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm relative">
           {currentBannerUrl ? (
-            <Image
-              src={currentBannerUrl}
-              alt={currentBannerAlt}
-              width={1200}
-              height={320}
-              className="object-cover w-full h-full"
-              priority
-            />
+            <>
+              <Image
+                src={currentBannerUrl}
+                alt={currentBannerAlt}
+                fill
+                className="object-cover"
+                priority
+              />
+              {/* Event details overlay */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end">
+                <div className="p-4 text-white w-full">
+                  <h3
+                    className="text-lg md:text-xl font-semibold mb-1"
+                    style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
+                  >
+                    {currentBannerAlt}
+                  </h3>
+                  {eventsData &&
+                    eventsData.find(
+                      (event) => event.title === currentBannerAlt
+                    ) && (
+                      <div className="text-xs md:text-sm opacity-85">
+                        <div className="flex flex-wrap gap-2 mb-1">
+                          <span className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">
+                            📅{" "}
+                            {new Date(
+                              eventsData.find(
+                                (event) => event.title === currentBannerAlt
+                              )?.eventDate || ""
+                            ).toLocaleDateString("he-IL")}
+                          </span>
+                          {eventsData.find(
+                            (event) => event.title === currentBannerAlt
+                          )?.eventTime && (
+                            <span className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">
+                              🕐{" "}
+                              {
+                                eventsData.find(
+                                  (event) => event.title === currentBannerAlt
+                                )?.eventTime
+                              }
+                            </span>
+                          )}
+                        </div>
+                        {eventsData.find(
+                          (event) => event.title === currentBannerAlt
+                        )?.location && (
+                          <div className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm inline-block">
+                            📍{" "}
+                            {
+                              eventsData.find(
+                                (event) => event.title === currentBannerAlt
+                              )?.location
+                            }
+                          </div>
+                        )}
+                      </div>
+                    )}
+                </div>
+              </div>
+            </>
           ) : (
-            <p className="text-gray-400 text-xl">
+            <p className="text-gray-400 text-lg">
               {isLoading ? "טוען באנר..." : "תמונה/באנר של האירועים יופיע כאן"}
             </p>
           )}
