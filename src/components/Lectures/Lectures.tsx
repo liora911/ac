@@ -6,6 +6,9 @@ import {
   Lecture,
 } from "@/types/Lectures/lectures";
 import React, { useState, useEffect, useRef } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 const CategoryTree: React.FC<CategoryTreeProps> = ({
   categories,
@@ -71,6 +74,8 @@ interface LecturesProps {
 }
 
 const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
+  const { data: session } = useSession();
+  const router = useRouter();
   const hasInitializedRef = useRef(false);
   const [selectedLectures, setSelectedLectures] = useState<Lecture[]>([]);
   const [currentCategoryBanner, setCurrentCategoryBanner] = useState<
@@ -84,6 +89,10 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+
+  const isAuthorized =
+    session?.user?.email &&
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   const handleSelectCategory = (category: Category) => {
     setSelectedLectures(category.lectures);
@@ -177,37 +186,53 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
         </h2>
         {selectedLectures.length > 0 ? (
           <div className="space-y-6">
-            {selectedLectures.map((lecture) => (
-              <div
-                key={lecture.id}
-                className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer"
-                onClick={() => handleLectureClick(lecture)}
-              >
-                <h4 className="text-2xl font-semibold mb-2 text-blue-400">
-                  {lecture.title}
-                </h4>
-                <p className="text-gray-300 mb-3">{lecture.description}</p>
-                <div className="flex justify-between items-center text-sm text-gray-400">
-                  <span>משך: {lecture.duration}</span>
-                  {lecture.date && <span>תאריך: {lecture.date}</span>}
-                </div>
-                {lecture.videoUrl && (
-                  <div className="mt-4">
-                    <p className="text-sm text-gray-400 mb-1">צפה בהרצאה:</p>
-                    <div className="aspect-w-16 aspect-h-9">
-                      <iframe
-                        src={lecture.videoUrl}
-                        title={lecture.title}
-                        frameBorder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        className="rounded"
-                      ></iframe>
-                    </div>
+            {selectedLectures.map((lecture) => {
+              const isAuthor = lecture.author?.email === session?.user?.email;
+              return (
+                <div
+                  key={lecture.id}
+                  className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer"
+                  onClick={() => handleLectureClick(lecture)}
+                >
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="text-2xl font-semibold text-blue-400">
+                      {lecture.title}
+                    </h4>
+                    {isAuthorized && isAuthor && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          router.push(`/edit-lecture/${lecture.id}`);
+                        }}
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-sm"
+                      >
+                        ✏️ ערוך
+                      </button>
+                    )}
                   </div>
-                )}
-              </div>
-            ))}
+                  <p className="text-gray-300 mb-3">{lecture.description}</p>
+                  <div className="flex justify-between items-center text-sm text-gray-400">
+                    <span>משך: {lecture.duration}</span>
+                    {lecture.date && <span>תאריך: {lecture.date}</span>}
+                  </div>
+                  {lecture.videoUrl && (
+                    <div className="mt-4">
+                      <p className="text-sm text-gray-400 mb-1">צפה בהרצאה:</p>
+                      <div className="aspect-w-16 aspect-h-9">
+                        <iframe
+                          src={lecture.videoUrl}
+                          title={lecture.title}
+                          frameBorder="0"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="rounded"
+                        ></iframe>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         ) : (
           <p className="text-gray-400 text-lg">

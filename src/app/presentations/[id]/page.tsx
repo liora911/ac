@@ -2,12 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Presentation } from "@/types/Presentations/presentations";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export default function PresentationDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const { data: session } = useSession();
   const id = params.id as string;
 
   const [presentation, setPresentation] = useState<Presentation | null>(null);
@@ -15,6 +18,11 @@ export default function PresentationDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const isAuthorized =
+    session?.user?.email &&
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+  const isAuthor = presentation?.author.email === session?.user?.email;
 
   const total = presentation?.imageUrls.length ?? 0;
 
@@ -82,13 +90,23 @@ export default function PresentationDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
-        <button
-          onClick={() => router.push("/presentations")}
-          className="mb-6 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
-        >
-          ← חזור למצגות
-        </button>
+        {/* Back Button and Edit Button */}
+        <div className="mb-6 flex justify-between items-center">
+          <button
+            onClick={() => router.push("/presentations")}
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+          >
+            ← חזור למצגות
+          </button>
+          {isAuthorized && isAuthor && (
+            <button
+              onClick={() => router.push(`/edit-presentation/${id}`)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              ✏️ ערוך מצגת
+            </button>
+          )}
+        </div>
 
         {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-bold text-blue-400 mb-6 text-center">

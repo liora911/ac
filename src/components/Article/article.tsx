@@ -1,8 +1,10 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 interface Article {
   id: string;
@@ -13,15 +15,25 @@ interface Article {
   title: string;
   articleImage: string;
   content: string;
+  author?: {
+    email: string;
+  };
 }
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
+  const router = useRouter();
+  const { data: session } = useSession();
   const articleId = searchParams.get("id");
 
   const [article, setArticle] = useState<Article | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const isAuthorized =
+    session?.user?.email &&
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+  const isAuthor = article?.author?.email === session?.user?.email;
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -34,20 +46,14 @@ export default function ArticlePage() {
       try {
         setLoading(true);
 
-        const response = await fetch("/api/articles");
+        const response = await fetch(`/api/articles/${articleId}`);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const articles: Article[] = await response.json();
-        const foundArticle = articles.find((a) => a.id === articleId);
-
-        if (!foundArticle) {
-          setError("המאמר לא נמצא");
-        } else {
-          setArticle(foundArticle);
-        }
+        const foundArticle: Article = await response.json();
+        setArticle(foundArticle);
       } catch (err) {
         console.error("Error fetching article:", err);
         setError("שגיאה בטעינת המאמר");
@@ -105,22 +111,32 @@ export default function ArticlePage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 sm:px-12 py-12 rtl">
-        <div className="flex items-center gap-4 mb-6">
-          {article.publisherImage && (
-            <Image
-              src={article.publisherImage}
-              alt={article.publisherName}
-              width={40}
-              height={40}
-              className="rounded-full border"
-            />
-          )}
-          <div>
-            <p className="font-semibold">{article.publisherName}</p>
-            <p className="text-sm text-gray-600">
-              {article.date} · {article.readDuration} דקות קריאה
-            </p>
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            {article.publisherImage && (
+              <Image
+                src={article.publisherImage}
+                alt={article.publisherName}
+                width={40}
+                height={40}
+                className="rounded-full border"
+              />
+            )}
+            <div>
+              <p className="font-semibold">{article.publisherName}</p>
+              <p className="text-sm text-gray-600">
+                {article.date} · {article.readDuration} דקות קריאה
+              </p>
+            </div>
           </div>
+          {isAuthorized && isAuthor && (
+            <button
+              onClick={() => router.push(`/edit-article/${articleId}`)}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+              ✏️ ערוך מאמר
+            </button>
+          )}
         </div>
 
         <div className="text-lg leading-loose text-gray-800 whitespace-pre-line">

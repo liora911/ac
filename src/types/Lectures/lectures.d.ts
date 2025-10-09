@@ -6,6 +6,11 @@ export interface Lecture {
   duration: string;
   date?: string;
   bannerImageUrl?: string;
+  author?: {
+    name: string;
+    email: string;
+    image: string;
+  };
 }
 
 export interface Category {

@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 
-// GET /api/presentations/[id] - Fetch single presentation by ID
+// GET /api/lectures/[id] - Fetch single lecture by ID
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -11,7 +11,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const presentation = await prisma.presentation.findUnique({
+    const lecture = await prisma.lecture.findUnique({
       where: { id },
       include: {
         author: {
@@ -19,30 +19,28 @@ export async function GET(
             id: true,
             name: true,
             email: true,
+            image: true,
           },
         },
         category: true,
       },
     });
 
-    if (!presentation) {
-      return NextResponse.json(
-        { error: "Presentation not found" },
-        { status: 404 }
-      );
+    if (!lecture) {
+      return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
     }
 
-    return NextResponse.json(presentation);
+    return NextResponse.json(lecture);
   } catch (error) {
-    console.error("Error fetching presentation:", error);
+    console.error("Error fetching lecture:", error);
     return NextResponse.json(
-      { error: "Failed to fetch presentation" },
+      { error: "Failed to fetch lecture" },
       { status: 500 }
     );
   }
 }
 
-// PUT /api/presentations/[id] - Update presentation by ID
+// PUT /api/lectures/[id] - Update lecture by ID
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -56,42 +54,37 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if presentation exists and user is the author
-    const existingPresentation = await prisma.presentation.findUnique({
+    // Check if lecture exists and user is the author
+    const existingLecture = await prisma.lecture.findUnique({
       where: { id },
       include: { author: true },
     });
 
-    if (!existingPresentation) {
-      return NextResponse.json(
-        { error: "Presentation not found" },
-        { status: 404 }
-      );
+    if (!existingLecture) {
+      return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
     }
 
-    if (existingPresentation.author.email !== session.user.email) {
+    if (existingLecture.author.email !== session.user.email) {
       return NextResponse.json(
-        { error: "You can only edit your own presentations" },
+        { error: "You can only edit your own lectures" },
         { status: 403 }
       );
     }
 
     const body = await request.json();
-    const { title, description, content, imageUrls, categoryId } = body;
+    const {
+      title,
+      description,
+      videoUrl,
+      duration,
+      date,
+      bannerImageUrl,
+      categoryId,
+    } = body;
 
-    if (
-      !title ||
-      !description ||
-      !content ||
-      !categoryId ||
-      !imageUrls ||
-      imageUrls.length === 0
-    ) {
+    if (!title || !description || !categoryId || !duration) {
       return NextResponse.json(
-        {
-          error:
-            "Title, description, content, categoryId, and imageUrls are required",
-        },
+        { error: "Title, description, categoryId, and duration are required" },
         { status: 400 }
       );
     }
@@ -108,32 +101,34 @@ export async function PUT(
       );
     }
 
-    const updatedPresentation = await prisma.presentation.update({
+    const updatedLecture = await prisma.lecture.update({
       where: { id },
       data: {
         title,
         description,
-        content,
-        imageUrls,
+        videoUrl: videoUrl || null,
+        duration,
+        date: date || null,
+        bannerImageUrl: bannerImageUrl || null,
         categoryId,
       },
       include: {
         author: {
           select: {
-            id: true,
             name: true,
             email: true,
+            image: true,
           },
         },
         category: true,
       },
     });
 
-    return NextResponse.json(updatedPresentation);
+    return NextResponse.json(updatedLecture);
   } catch (error) {
-    console.error("Error updating presentation:", error);
+    console.error("Error updating lecture:", error);
     return NextResponse.json(
-      { error: "Failed to update presentation" },
+      { error: "Failed to update lecture" },
       { status: 500 }
     );
   }
