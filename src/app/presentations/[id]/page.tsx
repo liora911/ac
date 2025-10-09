@@ -187,17 +187,19 @@ export default function PresentationDetailPage() {
         {/* Description */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">תיאור</h2>
-          <p className="text-gray-300 whitespace-pre-line leading-relaxed">
-            {presentation.description}
-          </p>
+          <div
+            className="text-gray-300 prose prose-sm max-w-none leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: presentation.description }}
+          />
         </div>
 
         {/* Content */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">תוכן המצגת</h2>
-          <div className="text-gray-300 whitespace-pre-line leading-relaxed">
-            {presentation.content}
-          </div>
+          <div
+            className="text-gray-300 prose prose-sm max-w-none leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: presentation.content }}
+          />
         </div>
 
         {/* Author Info */}

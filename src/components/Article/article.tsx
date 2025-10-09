@@ -138,9 +138,10 @@ export default function ArticlePage() {
           )}
         </div>
 
-        <div className="text-lg leading-loose text-gray-800 whitespace-pre-line">
-          {article.content}
-        </div>
+        <div
+          className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
       </div>
     </div>
   );

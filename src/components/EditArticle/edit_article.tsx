@@ -130,7 +130,6 @@ export default function EditArticleForm({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted!", formData);
 
     // Manual validation
     if (!formData.title.trim()) {
@@ -288,19 +287,47 @@ export default function EditArticleForm({
           />
         </div>
 
-        <UploadImage
-          onImageSelect={setArticleImageFile}
-          currentImage={formData.articleImage}
-          label="תמונת המאמר"
-          placeholder="PNG, JPG, GIF עד 5MB"
-        />
+        <div>
+          <UploadImage
+            onImageSelect={setArticleImageFile}
+            currentImage={formData.articleImage}
+            label="תמונת המאמר"
+            placeholder="PNG, JPG, GIF עד 5MB"
+          />
+          {formData.articleImage && (
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, articleImage: "" }));
+                setArticleImageFile(null);
+              }}
+              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+            >
+              הסר תמונה
+            </button>
+          )}
+        </div>
 
-        <UploadImage
-          onImageSelect={setPublisherImageFile}
-          currentImage={formData.publisherImage}
-          label="תמונת המחבר"
-          placeholder="PNG, JPG, GIF עד 5MB"
-        />
+        <div>
+          <UploadImage
+            onImageSelect={setPublisherImageFile}
+            currentImage={formData.publisherImage}
+            label="תמונת המחבר"
+            placeholder="PNG, JPG, GIF עד 5MB"
+          />
+          {formData.publisherImage && (
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, publisherImage: "" }));
+                setPublisherImageFile(null);
+              }}
+              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+            >
+              הסר תמונה
+            </button>
+          )}
+        </div>
 
         <details className="border border-gray-200 rounded p-3">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">

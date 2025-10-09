@@ -210,7 +210,10 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                       </button>
                     )}
                   </div>
-                  <p className="text-gray-300 mb-3">{lecture.description}</p>
+                  <div
+                    className="text-gray-300 mb-3 prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: lecture.description }}
+                  />
                   <div className="flex justify-between items-center text-sm text-gray-400">
                     <span>משך: {lecture.duration}</span>
                     {lecture.date && <span>תאריך: {lecture.date}</span>}

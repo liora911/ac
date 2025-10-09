@@ -374,12 +374,26 @@ export default function EditLectureForm({
             תמונת ההרצאה (אופציונלי)
           </summary>
           <div className="mt-4 space-y-4">
-            <UploadImage
-              onImageSelect={setBannerImageFile}
-              currentImage={formData.bannerImageUrl}
-              label=""
-              placeholder="PNG, JPG, GIF עד 5MB"
-            />
+            <div>
+              <UploadImage
+                onImageSelect={setBannerImageFile}
+                currentImage={formData.bannerImageUrl}
+                label=""
+                placeholder="PNG, JPG, GIF עד 5MB"
+              />
+              {formData.bannerImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, bannerImageUrl: "" }));
+                    setBannerImageFile(null);
+                  }}
+                  className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+                >
+                  הסר תמונה
+                </button>
+              )}
+            </div>
             <div>
               <label className="block text-base font-medium mb-2 text-gray-200 rtl">
                 או הכנס קישור לתמונה
