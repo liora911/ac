@@ -9,8 +9,16 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const categoryId = searchParams.get("categoryId");
 
+    // Get all valid category IDs to filter out articles with invalid categories
+    const validCategoryIds = await prisma.category
+      .findMany({
+        select: { id: true },
+      })
+      .then((categories) => categories.map((cat) => cat.id));
+
     const whereClause = {
       published: true,
+      categoryId: { in: validCategoryIds },
       ...(categoryId && { categoryId }),
     };
 
