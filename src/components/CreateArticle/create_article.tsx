@@ -4,6 +4,7 @@ import { useState, FormEvent } from "react";
 import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface CreateArticleFormProps {
   onSuccess?: () => void;
@@ -215,12 +216,9 @@ export default function CreateArticleForm({
           <label className="block text-sm font-medium mb-2 rtl">
             תוכן המאמר *
           </label>
-          <textarea
+          <TiptapEditor
             value={formData.content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            required
-            rows={12}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
+            onChange={handleContentChange}
             placeholder="כתוב את תוכן המאמר כאן..."
           />
         </div>

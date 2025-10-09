@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface EditArticleFormProps {
   articleId: string;
@@ -47,12 +48,6 @@ export default function EditArticleForm({
         const response = await fetch(`/api/articles/${articleId}`);
         if (response.ok) {
           const article = await response.json();
-
-          // Check if user is the author
-          if (article.author.email !== session?.user?.email) {
-            setMessage({ type: "error", text: "אין לך הרשאה לערוך מאמר זה" });
-            return;
-          }
 
           setFormData({
             title: article.title || "",
@@ -249,12 +244,9 @@ export default function EditArticleForm({
           <label className="block text-sm font-medium mb-2 rtl">
             תוכן המאמר *
           </label>
-          <textarea
+          <TiptapEditor
             value={formData.content}
-            onChange={(e) => handleContentChange(e.target.value)}
-            required
-            rows={12}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
+            onChange={handleContentChange}
             placeholder="כתוב את תוכן המאמר כאן..."
           />
         </div>

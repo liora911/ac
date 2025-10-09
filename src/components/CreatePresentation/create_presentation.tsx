@@ -3,6 +3,7 @@
 import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface CreatePresentationFormProps {
   onSuccess?: () => void;
@@ -258,14 +259,11 @@ export default function CreatePresentationForm({
           >
             תיאור המצגת *
           </label>
-          <textarea
-            id="description"
-            name="description"
+          <TiptapEditor
             value={formData.description}
-            onChange={handleChange}
-            required
-            rows={3}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, description: value }))
+            }
             placeholder="הכנס תיאור למצגת"
           />
         </div>
@@ -277,14 +275,11 @@ export default function CreatePresentationForm({
           >
             תוכן המצגת *
           </label>
-          <textarea
-            id="content"
-            name="content"
+          <TiptapEditor
             value={formData.content}
-            onChange={handleChange}
-            required
-            rows={6}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, content: value }))
+            }
             placeholder="הכנס את תוכן המצגת"
           />
         </div>
