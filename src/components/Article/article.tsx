@@ -33,7 +33,6 @@ export default function ArticlePage() {
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-  const isAuthor = article?.author?.email === session?.user?.email;
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -129,7 +128,7 @@ export default function ArticlePage() {
               </p>
             </div>
           </div>
-          {isAuthorized && isAuthor && (
+          {isAuthorized && (
             <button
               onClick={() => router.push(`/edit-article/${articleId}`)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"

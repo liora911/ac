@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET /api/articles/[id] - Fetch single article by ID
 export async function GET(
@@ -66,7 +67,7 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if article exists and user is the author
+    // Check if article exists and user is authorized
     const existingArticle = await prisma.article.findUnique({
       where: { id },
       include: { author: true },
@@ -76,9 +77,13 @@ export async function PUT(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    if (existingArticle.author.email !== session.user.email) {
+    // Check if user is authorized (in allowed emails)
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
       return NextResponse.json(
-        { error: "You can only edit your own articles" },
+        { error: "Unauthorized to edit articles" },
         { status: 403 }
       );
     }
