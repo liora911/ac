@@ -7,9 +7,9 @@ export interface Lecture {
   date?: string;
   bannerImageUrl?: string;
   author?: {
-    name: string;
-    email: string;
-    image: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
   };
 }
 
