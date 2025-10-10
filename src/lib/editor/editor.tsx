@@ -29,6 +29,7 @@ interface TiptapEditorProps {
   onChange: (value: string) => void;
   placeholder?: string;
   className?: string;
+  theme?: "light" | "dark";
 }
 
 export default function TiptapEditor({
@@ -36,6 +37,7 @@ export default function TiptapEditor({
   onChange,
   placeholder = "כתוב את תוכן המאמר כאן...",
   className = "",
+  theme = "light",
 }: TiptapEditorProps) {
   const [linkUrl, setLinkUrl] = useState("");
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
@@ -96,11 +98,19 @@ export default function TiptapEditor({
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      // Clean the HTML to remove problematic inline styles
+      let html = editor.getHTML();
+      // Remove inline style attributes that might cause issues
+      html = html.replace(/ style="[^"]*"/g, "");
+      // Remove empty style attributes
+      html = html.replace(/ style=""/g, "");
+      onChange(html);
     },
     editorProps: {
       attributes: {
-        class: "min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none",
+        class: `min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none ${
+          theme === "dark" ? "prose-invert" : ""
+        }`,
       },
     },
   });
@@ -127,19 +137,30 @@ export default function TiptapEditor({
     children: React.ReactNode;
     title: string;
     disabled?: boolean;
-  }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`px-2 py-1 text-xs border border-gray-300 hover:bg-gray-200 focus:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed ${
-        isActive ? "bg-blue-100 border-blue-300" : ""
-      }`}
-      title={title}
-    >
-      {children}
-    </button>
-  );
+  }) => {
+    const baseClasses =
+      "px-2 py-1 text-xs border disabled:opacity-50 disabled:cursor-not-allowed";
+    const themeClasses =
+      theme === "dark"
+        ? `border-gray-600 text-white hover:bg-gray-700 focus:bg-gray-700 ${
+            isActive ? "bg-blue-600 border-blue-500" : ""
+          }`
+        : `border-gray-300 hover:bg-gray-200 focus:bg-gray-200 ${
+            isActive ? "bg-blue-100 border-blue-300" : ""
+          }`;
+
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={`${baseClasses} ${themeClasses}`}
+        title={title}
+      >
+        {children}
+      </button>
+    );
+  };
 
   const addLink = () => {
     if (linkUrl) {
@@ -166,12 +187,26 @@ export default function TiptapEditor({
   };
 
   return (
-    <div className={`border border-gray-300 rounded-md ${className}`}>
+    <div
+      className={`border rounded-md ${
+        theme === "dark" ? "border-gray-600" : "border-gray-300"
+      } ${className}`}
+    >
       {/* Toolbar */}
-      <div className="border-b border-gray-200 p-2 bg-gray-50 rounded-t-md overflow-x-auto">
+      <div
+        className={`border-b p-2 rounded-t-md overflow-x-auto ${
+          theme === "dark"
+            ? "border-gray-700 bg-gray-800"
+            : "border-gray-200 bg-gray-50"
+        }`}
+      >
         <div className="flex flex-wrap gap-1 min-w-max">
           {/* Text Formatting */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
               isActive={editor.isActive("bold")}
@@ -210,13 +245,19 @@ export default function TiptapEditor({
           </div>
 
           {/* Colors & Highlight */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <input
               type="color"
               onChange={(e) =>
                 editor.chain().focus().setColor(e.target.value).run()
               }
-              className="w-8 h-6 border border-gray-300 rounded cursor-pointer"
+              className={`w-8 h-6 border rounded cursor-pointer ${
+                theme === "dark" ? "border-gray-600" : "border-gray-300"
+              }`}
               title="Text Color"
             />
             <input
@@ -228,13 +269,19 @@ export default function TiptapEditor({
                   .toggleHighlight({ color: e.target.value })
                   .run()
               }
-              className="w-8 h-6 border border-gray-300 rounded cursor-pointer ml-1"
+              className={`w-8 h-6 border rounded cursor-pointer ml-1 ${
+                theme === "dark" ? "border-gray-600" : "border-gray-300"
+              }`}
               title="Highlight Color"
             />
           </div>
 
           {/* Headings */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() =>
                 editor.chain().focus().toggleHeading({ level: 1 }).run()
@@ -272,7 +319,11 @@ export default function TiptapEditor({
           </div>
 
           {/* Lists */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               isActive={editor.isActive("bulletList")}
@@ -297,7 +348,11 @@ export default function TiptapEditor({
           </div>
 
           {/* Alignment */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() => editor.chain().focus().setTextAlign("left").run()}
               isActive={editor.isActive({ textAlign: "left" })}
@@ -324,7 +379,11 @@ export default function TiptapEditor({
           </div>
 
           {/* Special Elements */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
               isActive={editor.isActive("blockquote")}
@@ -348,7 +407,11 @@ export default function TiptapEditor({
           </div>
 
           {/* Links & Media */}
-          <div className="flex border-r border-gray-300 pr-2 mr-2">
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
             <ToolbarButton
               onClick={() => setIsLinkModalOpen(true)}
               title="Insert Link"
@@ -370,10 +433,16 @@ export default function TiptapEditor({
           <div className="flex">
             <ToolbarButton
               onClick={() => {
+                // Toggle RTL class on the editor content
                 const currentElement = editor.view.dom;
-                const currentDir = currentElement.style.direction;
-                currentElement.style.direction =
-                  currentDir === "rtl" ? "ltr" : "rtl";
+                const hasRTL = currentElement.classList.contains("rtl-text");
+                if (hasRTL) {
+                  currentElement.classList.remove("rtl-text");
+                  currentElement.style.direction = "";
+                } else {
+                  currentElement.classList.add("rtl-text");
+                  currentElement.style.direction = "rtl";
+                }
                 // Also update the placeholder direction
                 const placeholder =
                   currentElement.querySelector("[data-placeholder]");
@@ -393,14 +462,28 @@ export default function TiptapEditor({
       {/* Link Modal */}
       {isLinkModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">Insert Link</h3>
+          <div
+            className={`p-4 rounded-lg shadow-lg ${
+              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+            }`}
+          >
+            <h3
+              className={`text-lg font-semibold mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Insert Link
+            </h3>
             <input
               type="url"
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="https://example.com"
-              className="w-full p-2 border border-gray-300 rounded mb-2"
+              className={`w-full p-2 border rounded mb-2 ${
+                theme === "dark"
+                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  : "border-gray-300"
+              }`}
             />
             <div className="flex gap-2">
               <button
@@ -411,7 +494,11 @@ export default function TiptapEditor({
               </button>
               <button
                 onClick={() => setIsLinkModalOpen(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                className={`px-4 py-2 rounded ${
+                  theme === "dark"
+                    ? "bg-gray-600 text-white hover:bg-gray-700"
+                    : "bg-gray-600 text-white hover:bg-gray-700"
+                }`}
               >
                 Cancel
               </button>
@@ -423,14 +510,28 @@ export default function TiptapEditor({
       {/* Image Modal */}
       {isImageModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <h3 className="text-lg font-semibold mb-2">Insert Image</h3>
+          <div
+            className={`p-4 rounded-lg shadow-lg ${
+              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+            }`}
+          >
+            <h3
+              className={`text-lg font-semibold mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Insert Image
+            </h3>
             <input
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
-              className="w-full p-2 border border-gray-300 rounded mb-2"
+              className={`w-full p-2 border rounded mb-2 ${
+                theme === "dark"
+                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  : "border-gray-300"
+              }`}
             />
             <div className="flex gap-2">
               <button
@@ -441,7 +542,11 @@ export default function TiptapEditor({
               </button>
               <button
                 onClick={() => setIsImageModalOpen(false)}
-                className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700"
+                className={`px-4 py-2 rounded ${
+                  theme === "dark"
+                    ? "bg-gray-600 text-white hover:bg-gray-700"
+                    : "bg-gray-600 text-white hover:bg-gray-700"
+                }`}
               >
                 Cancel
               </button>
@@ -452,7 +557,9 @@ export default function TiptapEditor({
 
       <EditorContent
         editor={editor}
-        className="focus-within:ring-2 focus-within:ring-blue-500 rounded-b-md"
+        className={`focus-within:ring-2 focus-within:ring-blue-500 rounded-b-md ${
+          theme === "dark" ? "text-white" : ""
+        }`}
       />
 
       <style jsx global>{`
@@ -539,6 +646,12 @@ export default function TiptapEditor({
         }
         .ProseMirror-task-item > div {
           flex: 1;
+        }
+        .rtl-text {
+          direction: rtl;
+        }
+        .rtl-text [data-placeholder] {
+          direction: rtl;
         }
       `}</style>
     </div>

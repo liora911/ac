@@ -290,6 +290,7 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder="הכנס תיאור למצגת"
+            theme="dark"
           />
           <input
             type="hidden"
@@ -312,6 +313,7 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, content: value }))
             }
             placeholder="הכנס את תוכן המצגת"
+            theme="dark"
           />
           <input
             type="hidden"

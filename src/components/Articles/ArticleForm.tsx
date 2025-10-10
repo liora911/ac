@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCreateArticle, useUpdateArticle } from "../../hooks/useArticles";
 import { ArticleFormData, Article } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface ArticleFormProps {
   article?: Article; // For editing existing articles
@@ -182,17 +183,17 @@ export default function ArticleForm({
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Content *
             </label>
-            <textarea
+            <TiptapEditor
               value={formData.content}
-              onChange={(e) => handleInputChange("content", e.target.value)}
-              rows={15}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+              onChange={(value) => handleInputChange("content", value)}
               placeholder="Write your article content here..."
+            />
+            <input
+              type="hidden"
+              name="content"
+              value={formData.content}
               required
             />
-            <p className="text-sm text-gray-500 mt-1">
-              You can use Markdown formatting in the content.
-            </p>
           </div>
 
           {/* Excerpt */}

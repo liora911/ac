@@ -53,9 +53,10 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
             <h4 className="text-2xl font-semibold mb-2 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
               {event.title}
             </h4>
-            <p className="text-gray-200 mb-3 leading-relaxed">
-              {event.description}
-            </p>
+            <p
+              className="text-gray-200 mb-3 leading-relaxed prose prose-sm max-w-none"
+              dangerouslySetInnerHTML={{ __html: event.description }}
+            />
             <div className="flex justify-between items-center text-sm text-cyan-300/80">
               <span>
                 תאריך: {new Date(event.eventDate).toLocaleDateString("he-IL")}

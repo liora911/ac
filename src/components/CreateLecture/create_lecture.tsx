@@ -263,6 +263,7 @@ export default function CreateLectureForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder="הכנס תיאור להרצאה"
+            theme="dark"
           />
           <input
             type="hidden"

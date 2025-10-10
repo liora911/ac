@@ -217,9 +217,10 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                 <h3 className="text-xl font-semibold mb-3 text-blue-400">
                   {presentation.title}
                 </h3>
-                <p className="text-gray-300 mb-4 line-clamp-3">
-                  {presentation.description}
-                </p>
+                <p
+                  className="text-gray-300 mb-4 line-clamp-3 prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: presentation.description }}
+                />
                 <div className="flex justify-between items-center text-sm text-gray-400">
                   <span>תמונות: {presentation.imageUrls.length}</span>
                   <span>

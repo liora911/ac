@@ -3,6 +3,7 @@
 import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface CreateEventFormProps {
   onSuccess?: () => void;
@@ -241,15 +242,19 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           >
             תיאור האירוע *
           </label>
-          <textarea
-            id="description"
+          <TiptapEditor
+            value={formData.description}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, description: value }))
+            }
+            placeholder="הכנס תיאור לאירוע"
+            theme="dark"
+          />
+          <input
+            type="hidden"
             name="description"
             value={formData.description}
-            onChange={handleChange}
             required
-            rows={3}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס תיאור לאירוע"
           />
         </div>
 

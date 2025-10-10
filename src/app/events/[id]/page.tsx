@@ -137,9 +137,10 @@ export default function EventDetailPage() {
         {/* Description */}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">תיאור</h2>
-          <p className="text-gray-300 whitespace-pre-line leading-relaxed">
-            {event.description}
-          </p>
+          <div
+            className="text-gray-300 prose prose-sm max-w-none leading-relaxed prose-invert"
+            dangerouslySetInnerHTML={{ __html: event.description }}
+          />
         </div>
 
         {/* Author Info */}

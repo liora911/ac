@@ -205,11 +205,10 @@ export default function ArticleDetailPage() {
         )}
 
         {/* Article Content */}
-        <div className="prose prose-lg max-w-none">
-          <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-            {article.content}
-          </div>
-        </div>
+        <div
+          className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: article.content }}
+        />
 
         {/* Article Footer */}
         <footer className="mt-12 pt-8 border-t border-gray-200">
