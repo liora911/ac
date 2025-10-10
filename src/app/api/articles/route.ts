@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
       .findMany({
         select: { id: true },
       })
-      .then((categories) => categories.map((cat) => cat.id));
+      .then((categories: any) => categories.map((cat: any) => cat.id));
 
     const whereClause: any = {
       published: true,
