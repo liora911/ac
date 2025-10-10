@@ -40,7 +40,21 @@
   },
   "articlesPage": {
     "title": "Articles",
-    "description": "Explore our collection of articles covering various topics in physics, philosophy, and scientific research."
+    "description": "Explore our collection of articles covering various topics in physics, philosophy, and scientific research.",
+    "article": "article",
+    "articlesSuffix": "s",
+    "found": "found",
+    "articlesFound": "{total} article(s) found",
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search articles...",
+    "allCategories": "All Categories",
+    "allStatus": "All Status",
+    "noArticlesFound": "No articles found",
+    "noArticlesMatch": "No articles match \"{query}\"",
+    "noArticlesAvailable": "There are no articles available at the moment.",
+    "createFirstArticle": "Create First Article",
+    "previousButton": "Previous",
+    "nextButton": "Next"
   },
   "articleForm": {
     "signInPrompt": "Please sign in to create or edit articles.",
@@ -87,5 +101,14 @@
   "loading": "Loading...",
   "loadingArticleData": "Loading article data...",
   "loadingLectureData": "Loading lecture data...",
-  "loadingPresentationData": "Loading presentation data..."
+  "loadingPresentationData": "Loading presentation data...",
+  "articleCard": {
+    "featured": "Featured",
+    "minRead": "min read",
+    "authorAnonymous": "Anonymous",
+    "editButton": "Edit",
+    "deleteButton": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this article?",
+    "deleteError": "Error deleting article. Please try again."
+  }
 }

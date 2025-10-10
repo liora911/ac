@@ -146,3 +146,55 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
+      return NextResponse.json(
+        { error: "Unauthorized to delete presentations" },
+        { status: 403 }
+      );
+    }
+
+    const { id } = await params;
+
+    const existingPresentation = await prisma.presentation.findUnique({
+      where: { id },
+    });
+
+    if (!existingPresentation) {
+      return NextResponse.json(
+        { error: "Presentation not found" },
+        { status: 404 }
+      );
+    }
+
+    await prisma.presentation.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Presentation deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting presentation:", error);
+    return NextResponse.json(
+      { error: "Failed to delete presentation" },
+      { status: 500 }
+    );
+  }
+}

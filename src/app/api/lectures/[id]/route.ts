@@ -141,3 +141,52 @@ export async function PUT(
     );
   }
 }
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const isAuthorized =
+      session.user.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    if (!isAuthorized) {
+      return NextResponse.json(
+        { error: "Unauthorized to delete lectures" },
+        { status: 403 }
+      );
+    }
+
+    const { id } = await params;
+
+    const existingLecture = await prisma.lecture.findUnique({
+      where: { id },
+    });
+
+    if (!existingLecture) {
+      return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
+    }
+
+    await prisma.lecture.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Lecture deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting lecture:", error);
+    return NextResponse.json(
+      { error: "Failed to delete lecture" },
+      { status: 500 }
+    );
+  }
+}

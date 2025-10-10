@@ -3,10 +3,12 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useArticles, useSearchArticles } from "../../hooks/useArticles";
 import { Article } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -27,6 +29,7 @@ export default function ArticlesList({
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+  const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
@@ -40,6 +43,7 @@ export default function ArticlesList({
     isLoading,
     error,
     isFetching,
+    refetch, // Add refetch from useArticles
   } = searchQuery
     ? useSearchArticles(searchQuery, {
         page: currentPage,
@@ -82,10 +86,10 @@ export default function ArticlesList({
     return (
       <div className="text-center py-12">
         <div className="text-red-500 text-lg font-semibold mb-2">
-          Error loading articles
+          {t("articleForm.errorLoading")}
         </div>
         <p className="text-gray-600">
-          {error.message || "Something went wrong. Please try again."}
+          {error.message || t("articleForm.errorMessage")}
         </p>
       </div>
     );
@@ -100,13 +104,13 @@ export default function ArticlesList({
             {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Search
+                {t("articleForm.searchLabel")}
               </label>
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
-                placeholder="Search articles..."
+                placeholder={t("articleForm.searchPlaceholder") as string}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -114,18 +118,22 @@ export default function ArticlesList({
             {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category
+                {t("articleForm.categoryLabel")}
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="">All Categories</option>
+                <option value="">{t("articleForm.allCategories")}</option>
                 {}
-                <option value="tech">Technology</option>
-                <option value="science">Science</option>
-                <option value="philosophy">Philosophy</option>
+                <option value="tech">{t("articleForm.categoryTech")}</option>
+                <option value="science">
+                  {t("articleForm.categoryScience")}
+                </option>
+                <option value="philosophy">
+                  {t("articleForm.categoryPhilosophy")}
+                </option>
               </select>
             </div>
 
@@ -133,17 +141,21 @@ export default function ArticlesList({
             {isAuthorized && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Status
+                  {t("articleForm.statusLabel")}
                 </label>
                 <select
                   value={statusFilter}
                   onChange={(e) => handleStatusChange(e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  <option value="">All Status</option>
-                  <option value="PUBLISHED">Published</option>
-                  <option value="DRAFT">Draft</option>
-                  <option value="ARCHIVED">Archived</option>
+                  <option value="">{t("articleForm.allStatus")}</option>
+                  <option value="PUBLISHED">
+                    {t("articleForm.statusPublished")}
+                  </option>
+                  <option value="DRAFT">{t("articleForm.statusDraft")}</option>
+                  <option value="ARCHIVED">
+                    {t("articleForm.statusArchived")}
+                  </option>
                 </select>
               </div>
             )}
@@ -152,10 +164,10 @@ export default function ArticlesList({
             <div className="flex items-end">
               <div className="text-sm text-gray-600">
                 {isLoading ? (
-                  "Loading..."
+                  t("loading")
                 ) : (
                   <>
-                    {total} article{total !== 1 ? "s" : ""} found
+                    {total} {t("articlesPage.articlesFound")}
                   </>
                 )}
               </div>
@@ -191,6 +203,7 @@ export default function ArticlesList({
               key={article.id}
               article={article}
               isAuthorized={!!isAuthorized}
+              onDeleteSuccess={refetch} // Pass refetch to ArticleCard
             />
           ))}
         </div>
@@ -201,19 +214,22 @@ export default function ArticlesList({
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">📝</div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            No articles found
+            {t("articlesPage.noArticlesFound")}
           </h3>
           <p className="text-gray-600">
             {searchQuery
-              ? `No articles match "${searchQuery}"`
-              : "There are no articles available at the moment."}
+              ? t("articlesPage.noArticlesMatch").replace(
+                  "{query}",
+                  searchQuery
+                )
+              : t("articlesPage.noArticlesAvailable")}
           </p>
           {isAuthorized && (
             <Link
               href="/articles/create"
               className="inline-flex items-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
-              Create First Article
+              {t("articlesPage.createFirstArticle")}
             </Link>
           )}
         </div>
@@ -228,7 +244,7 @@ export default function ArticlesList({
               disabled={currentPage === 1 || isFetching}
               className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              {t("articlesPage.previousButton")}
             </button>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -255,7 +271,7 @@ export default function ArticlesList({
               disabled={currentPage === totalPages || isFetching}
               className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              {t("articlesPage.nextButton")}
             </button>
           </nav>
         </div>
@@ -267,9 +283,17 @@ export default function ArticlesList({
 interface ArticleCardProps {
   article: Article;
   isAuthorized: boolean;
+  onDeleteSuccess: () => void; // Add onDeleteSuccess prop
 }
 
-function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
+function ArticleCard({
+  article,
+  isAuthorized,
+  onDeleteSuccess,
+}: ArticleCardProps) {
+  const { t } = useTranslation();
+  const router = useRouter();
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -291,6 +315,26 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
     }
   };
 
+  const handleDelete = async () => {
+    if (confirm(t("articleCard.deleteConfirm") as string)) {
+      try {
+        const response = await fetch(`/api/articles/${article.id}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Failed to delete article: ${response.statusText}`);
+        }
+
+        onDeleteSuccess(); // Call the callback to refresh the list
+        router.push("/articles"); // Redirect to articles list after deletion
+      } catch (error) {
+        console.error("Error deleting article:", error);
+        alert(t("articleCard.deleteError") as string); // Assuming a new translation key for delete error
+      }
+    }
+  };
+
   return (
     <article className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
       {}
@@ -305,7 +349,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           />
           {article.isFeatured && (
             <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
-              Featured
+              {t("articleCard.featured")}
             </div>
           )}
         </div>
@@ -349,16 +393,23 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
             {article.author.image && (
               <Image
                 src={article.author.image}
-                alt={article.author.name || "Author"}
+                alt={
+                  article.author.name ||
+                  (t("articleCard.authorAnonymous") as string)
+                }
                 width={24}
                 height={24}
                 className="rounded-full"
               />
             )}
-            <span>{article.author.name || "Anonymous"}</span>
+            <span>
+              {article.author.name || t("articleCard.authorAnonymous")}
+            </span>
           </div>
           <div className="flex items-center space-x-4">
-            <span>{article.readTime} min read</span>
+            <span>
+              {article.readTime} {t("articleCard.minRead")}
+            </span>
             <span>{formatDate(article.createdAt)}</span>
           </div>
         </div>
@@ -379,16 +430,13 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
               href={`/articles/${article.id}/edit`}
               className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
             >
-              Edit
+              {t("articleCard.editButton")}
             </Link>
             <button
-              onClick={() => {
-                if (confirm("Are you sure you want to delete this article?")) {
-                }
-              }}
+              onClick={handleDelete}
               className="text-sm text-red-600 hover:text-red-800 transition-colors"
             >
-              Delete
+              {t("articleCard.deleteButton")}
             </button>
           </div>
         )}

@@ -40,7 +40,21 @@
   },
   "articlesPage": {
     "title": "מאמרים",
-    "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי."
+    "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי.",
+    "article": "מאמר",
+    "articlesSuffix": "ים",
+    "found": "נמצאו",
+    "articlesFound": "{total} מאמרים נמצאו",
+    "searchLabel": "חיפוש",
+    "searchPlaceholder": "חפש מאמרים...",
+    "allCategories": "כל הקטגוריות",
+    "allStatus": "כל הסטטוסים",
+    "noArticlesFound": "לא נמצאו מאמרים",
+    "noArticlesMatch": "לא נמצאו מאמרים התואמים ל \"{query}\"",
+    "noArticlesAvailable": "אין מאמרים זמינים כרגע.",
+    "createFirstArticle": "צור מאמר ראשון",
+    "previousButton": "הקודם",
+    "nextButton": "הבא"
   },
   "articleForm": {
     "signInPrompt": "אנא התחבר כדי ליצור או לערוך מאמרים.",
@@ -87,5 +101,14 @@
   "loading": "טוען...",
   "loadingArticleData": "טוען נתוני מאמר...",
   "loadingLectureData": "טוען נתוני הרצאה...",
-  "loadingPresentationData": "טוען נתוני מצגת..."
+  "loadingPresentationData": "טוען נתוני מצגת...",
+  "articleCard": {
+    "featured": "מומלץ",
+    "minRead": "דקות קריאה",
+    "authorAnonymous": "אנונימי",
+    "editButton": "ערוך",
+    "deleteButton": "מחק",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק מאמר זה?",
+    "deleteError": "שגיאה במחיקת המאמר. אנא נסה שוב."
+  }
 }
