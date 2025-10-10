@@ -167,7 +167,10 @@ export default function ArticlesList({
                   t("loading")
                 ) : (
                   <>
-                    {total} {t("articlesPage.articlesFound")}
+                    {t("articlesPage.articlesFound").replace(
+                      "{total}",
+                      total.toString()
+                    )}
                   </>
                 )}
               </div>
