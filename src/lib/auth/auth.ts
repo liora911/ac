@@ -1,12 +1,12 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { AdapterUser } from "next-auth/adapters";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+  adapter: prisma ? PrismaAdapter(prisma) : undefined,
   providers: [
     EmailProvider({
       server: {
@@ -49,7 +49,7 @@ export const authOptions: NextAuthOptions = {
 
   debug: process.env.NODE_ENV === "development",
   session: {
-    strategy: "database",
+    strategy: prisma ? "database" : "jwt",
   },
 };
 

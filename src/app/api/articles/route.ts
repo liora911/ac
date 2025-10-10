@@ -1,111 +1,140 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
-import { getServerSession } from "next-auth/next";
+import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import prisma from "@/lib/prisma/prisma";
+import type {
+  ArticlesListResponse,
+  ArticlesQueryParams,
+  CreateArticleRequest,
+  Article,
+} from "@/types/Articles/articles";
 
+// GET /api/articles - Fetch articles with filtering, pagination, and search
 export async function GET(request: NextRequest) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const { searchParams } = new URL(request.url);
-    const categoryId = searchParams.get("categoryId");
-
-    // Get all valid category IDs to filter out articles with invalid categories
-    const validCategoryIds = await prisma.category
-      .findMany({
-        select: { id: true },
-      })
-      .then((categories: any) => categories.map((cat: any) => cat.id));
-
-    const whereClause: any = {
-      published: true,
-      ...(categoryId
-        ? { categoryId }
-        : {
-            OR: [
-              { categoryId: null },
-              { categoryId: { in: validCategoryIds } },
-            ],
-          }),
+    const query: ArticlesQueryParams = {
+      page: parseInt(searchParams.get("page") || "1"),
+      limit: parseInt(searchParams.get("limit") || "10"),
+      categoryId: searchParams.get("categoryId") || undefined,
+      status: (searchParams.get("status") as any) || undefined,
+      search: searchParams.get("search") || undefined,
+      featured: searchParams.get("featured") === "true" ? true : undefined,
+      sortBy: (searchParams.get("sortBy") as any) || "createdAt",
+      sortOrder: (searchParams.get("sortOrder") as any) || "desc",
     };
 
+    const skip = (query.page! - 1) * query.limit!;
+    const take = query.limit!;
+
+    // Build where clause
+    const where: any = {};
+
+    if (query.categoryId) {
+      where.categoryId = query.categoryId;
+    }
+
+    if (query.status) {
+      where.published = query.status === "PUBLISHED";
+    } else {
+      // Default to published articles for public access
+      const session = await getServerSession(authOptions);
+      const isAuthorized =
+        session?.user?.email &&
+        ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+
+      if (!isAuthorized) {
+        where.published = true;
+      }
+    }
+
+    if (query.featured !== undefined) {
+      // For now, we'll use the order field as a featured indicator
+      // In a real implementation, you'd add an isFeatured field
+      where.order = { gt: 0 };
+    }
+
+    if (query.search) {
+      where.OR = [
+        { title: { contains: query.search, mode: "insensitive" } },
+        { content: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+
+    // Build order clause
+    const orderBy: any = {};
+    orderBy[query.sortBy!] = query.sortOrder;
+
+    // Get total count
+    const total = await prisma.article.count({ where });
+
+    // Get articles
     const articles = await prisma.article.findMany({
-      where: whereClause,
+      where,
       include: {
         author: {
           select: {
+            id: true,
             name: true,
             email: true,
             image: true,
           },
         },
         category: {
-          include: {
-            parent: true,
+          select: {
+            id: true,
+            name: true,
+            bannerImageUrl: true,
           },
         },
       },
-      orderBy: [{ order: "asc" }, { createdAt: "desc" }],
+      orderBy,
+      skip,
+      take,
     });
 
-    // If no categoryId specified, group by category
-    if (!categoryId) {
-      const categoriesMap = new Map();
+    // Ensure articles is an array
+    const articlesArray = Array.isArray(articles) ? articles : [];
 
-      articles.forEach((article: any) => {
-        let rootCategory;
-        let categoryId;
-        if (!article.category) {
-          // Default category for articles without category
-          categoryId = "no-category";
-          rootCategory = {
-            id: categoryId,
-            name: "ללא קטגוריה",
-            bannerImageUrl: null,
-          };
-        } else {
-          rootCategory = article.category.parent || article.category;
-          categoryId = rootCategory.id;
-        }
-        if (!categoriesMap.has(categoryId)) {
-          categoriesMap.set(categoryId, {
-            id: rootCategory.id,
-            name: rootCategory.name,
-            bannerImageUrl: rootCategory.bannerImageUrl,
-            articles: [],
-          });
-        }
-        categoriesMap.get(categoryId).articles.push({
-          id: article.id,
-          publisherImage: article.publisherImage || "/NNZxjUl0_400x400.png",
-          publisherName: article.publisherName,
-          date: new Date(article.createdAt).toLocaleDateString("he-IL"),
-          readDuration: article.readDuration,
-          title: article.title,
-          articleImage: article.articleImage || "/consc.png",
-          content: article.content,
-          author: article.author,
-          category: article.category,
-        });
-      });
+    // Transform to our API format
+    const transformedArticles: Article[] = articlesArray.map(
+      (article: any) => ({
+        id: article.id,
+        title: article.title,
+        content: article.content,
+        featuredImage: article.articleImage,
+        status: article.published ? "PUBLISHED" : "DRAFT",
+        publishedAt: article.published
+          ? article.createdAt.toISOString()
+          : undefined,
+        isFeatured: false, // Not implemented in current schema
+        viewCount: 0, // Not implemented in current schema
+        readTime: article.readDuration,
+        createdAt: article.createdAt.toISOString(),
+        updatedAt: article.updatedAt.toISOString(),
+        authorId: article.authorId,
+        author: article.author,
+        categoryId: undefined, // Not implemented in current schema
+        category: undefined, // Not implemented in current schema
+        tags: [], // Not implemented in current schema
+        keywords: [], // Not implemented in current schema
+      })
+    );
 
-      return NextResponse.json(Array.from(categoriesMap.values()));
-    }
+    const response: ArticlesListResponse = {
+      articles: transformedArticles,
+      total,
+      page: query.page!,
+      limit: query.limit!,
+      totalPages: Math.ceil(total / query.limit!),
+    };
 
-    // If categoryId specified, return articles for that category
-    const formattedArticles = articles.map((article: any) => ({
-      id: article.id,
-      publisherImage: article.publisherImage || "/NNZxjUl0_400x400.png",
-      publisherName: article.publisherName,
-      date: new Date(article.createdAt).toLocaleDateString("he-IL"),
-      readDuration: article.readDuration,
-      title: article.title,
-      articleImage: article.articleImage || "/consc.png",
-      content: article.content,
-      author: article.author,
-      category: article.category,
-    }));
-
-    return NextResponse.json(formattedArticles);
+    return NextResponse.json(response);
   } catch (error) {
     console.error("Error fetching articles:", error);
     return NextResponse.json(
@@ -115,8 +144,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// POST /api/articles - Create new article
 export async function POST(request: NextRequest) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -133,49 +167,64 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
+    // Get user
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
     });
 
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          name: session.user.name || "Anonymous",
-          email: session.user.email!,
-          image: session.user.image,
-        },
-      });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const body = await request.json();
+    const body: CreateArticleRequest = await request.json();
     const {
       title,
       content,
-      articleImage,
-      publisherName,
-      publisherImage,
-      readDuration,
+      excerpt,
+      featuredImage,
       categoryId,
-      published = true,
+      status = "DRAFT",
+      isFeatured = false,
+      metaTitle,
+      metaDescription,
+      keywords = [],
     } = body;
 
-    if (!title || !content || !categoryId) {
+    if (!title || !content) {
       return NextResponse.json(
-        {
-          error: "Title, content, and categoryId are required",
-        },
+        { error: "Title and content are required" },
         { status: 400 }
       );
     }
 
-    // Check if category exists
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
+    // Validate category if provided
+    if (categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+
+      if (!category) {
+        return NextResponse.json(
+          { error: "Category not found" },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Create slug from title
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    // Check if slug is unique
+    const existingArticle = await prisma.article.findFirst({
+      where: { title: { equals: title, mode: "insensitive" } },
     });
 
-    if (!category) {
+    if (existingArticle) {
       return NextResponse.json(
-        { error: "Category not found" },
+        { error: "An article with this title already exists" },
         { status: 400 }
       );
     }
@@ -184,34 +233,56 @@ export async function POST(request: NextRequest) {
       data: {
         title,
         content,
-        articleImage: articleImage || "/consc.png",
-        publisherName: publisherName || user.name || "Anonymous",
-        publisherImage: publisherImage || user.image || "/NNZxjUl0_400x400.png",
-        readDuration: readDuration || Math.ceil(content.length / 200),
-        published,
+        articleImage: featuredImage,
+        publisherName: user.name || "Anonymous",
+        publisherImage: user.image,
+        readDuration: Math.max(1, Math.ceil(content.length / 1000)), // Rough estimate
+        published: status === "PUBLISHED",
         authorId: user.id,
-        categoryId,
       },
       include: {
-        author: { select: { id: true, name: true, email: true } },
-        category: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            bannerImageUrl: true,
+          },
+        },
       },
     });
 
-    const formattedArticle = {
+    // Transform to our API format
+    const transformedArticle: Article = {
       id: article.id,
-      publisherImage: article.publisherImage,
-      publisherName: article.publisherName,
-      date: new Date(article.createdAt).toLocaleDateString("he-IL"),
-      readDuration: article.readDuration,
       title: article.title,
-      articleImage: article.articleImage,
       content: article.content,
+      featuredImage: article.articleImage,
+      status: article.published ? "PUBLISHED" : "DRAFT",
+      publishedAt: article.published
+        ? article.createdAt.toISOString()
+        : undefined,
+      isFeatured: false, // Not implemented in current schema
+      viewCount: 0, // Not implemented in current schema
+      readTime: article.readDuration,
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
+      authorId: article.authorId,
       author: article.author,
-      category: article.category,
+      categoryId: undefined, // Not implemented in current schema
+      category: undefined, // Not implemented in current schema
+      tags: [], // Not implemented in current schema
+      keywords: [], // Not implemented in current schema
     };
 
-    return NextResponse.json(formattedArticle, { status: 201 });
+    return NextResponse.json(transformedArticle, { status: 201 });
   } catch (error) {
     console.error("Error creating article:", error);
     return NextResponse.json(

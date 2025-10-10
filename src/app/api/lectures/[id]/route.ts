@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
@@ -10,6 +10,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const { id } = await params;
 
     const lecture = await prisma.lecture.findUnique({
@@ -47,6 +51,10 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET /api/presentations - Fetch all categories with presentations
 export async function GET() {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const categories = await prisma.category.findMany({
       include: {
         presentations: {
@@ -39,6 +43,10 @@ export async function GET() {
 // POST /api/presentations - Create new presentation
 export async function POST(request: NextRequest) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (

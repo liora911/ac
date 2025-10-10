@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 
 // GET /api/events/[id] - Fetch single event by ID
 export async function GET(
@@ -7,6 +7,10 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const { id } = await params;
 
     const event = await prisma.event.findUnique({

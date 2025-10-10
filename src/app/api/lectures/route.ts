@@ -1,68 +1,12 @@
 import { Category } from "@/types/Lectures/lectures";
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
-import { Prisma } from "@prisma/client";
 
-type LectureWithAuthor = Prisma.LectureGetPayload<{
-  include: {
-    author: {
-      select: {
-        name: true;
-        email: true;
-        image: true;
-      };
-    };
-  };
-}>;
-
-type SubcategoryWithLectures = Prisma.CategoryGetPayload<{
-  include: {
-    lectures: {
-      include: {
-        author: {
-          select: {
-            name: true;
-            email: true;
-            image: true;
-          };
-        };
-      };
-    };
-  };
-}>;
-
-type CategoryWithLectures = Prisma.CategoryGetPayload<{
-  include: {
-    subcategories: {
-      include: {
-        lectures: {
-          include: {
-            author: {
-              select: {
-                name: true;
-                email: true;
-                image: true;
-              };
-            };
-          };
-        };
-      };
-    };
-    lectures: {
-      include: {
-        author: {
-          select: {
-            name: true;
-            email: true;
-            image: true;
-          };
-        };
-      };
-    };
-  };
-}>;
+type LectureWithAuthor = any;
+type SubcategoryWithLectures = any;
+type CategoryWithLectures = any;
 
 function formatLecture(lec: LectureWithAuthor) {
   return {
@@ -79,6 +23,10 @@ function formatLecture(lec: LectureWithAuthor) {
 
 export async function GET() {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const categories = await prisma.category.findMany({
       include: {
         subcategories: {
@@ -147,6 +95,10 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET /api/events - Fetch all events
 export async function GET() {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const events = await prisma.event.findMany({
       include: {
         author: {
@@ -42,6 +46,10 @@ export async function GET() {
 // POST /api/events - Create new event
 export async function POST(request: NextRequest) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (

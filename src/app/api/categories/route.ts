@@ -1,8 +1,12 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
+import prisma from "@/lib/prisma/prisma";
 
 export async function GET() {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const categories = await prisma.category.findMany({
       include: {
         subcategories: true,

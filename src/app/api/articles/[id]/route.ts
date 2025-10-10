@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import prisma from "@/lib/prisma/prisma";
+import type { Article, UpdateArticleRequest } from "@/types/Articles/articles";
 
 // GET /api/articles/[id] - Fetch single article by ID
 export async function GET(
@@ -10,13 +11,36 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const { id } = await params;
+
+    // Check if user is authorized to view unpublished articles
+    const session = await getServerSession(authOptions);
+    const isAuthorized =
+      session?.user?.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
     const article = await prisma.article.findUnique({
       where: { id },
       include: {
-        author: { select: { id: true, name: true, email: true } },
-        category: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        category: {
+          select: {
+            id: true,
+            name: true,
+            bannerImageUrl: true,
+          },
+        },
       },
     });
 
@@ -24,21 +48,35 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    const formattedArticle = {
+    // Check if user can view this article
+    if (!article.published && !isAuthorized) {
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+
+    // Transform to our API format
+    const transformedArticle: Article = {
       id: article.id,
-      publisherImage: article.publisherImage || "/NNZxjUl0_400x400.png",
-      publisherName: article.publisherName,
-      date: new Date(article.createdAt).toLocaleDateString("he-IL"),
-      readDuration: article.readDuration,
       title: article.title,
-      articleImage: article.articleImage || "/consc.png",
       content: article.content,
-      published: article.published,
+      featuredImage: article.articleImage,
+      status: article.published ? "PUBLISHED" : "DRAFT",
+      publishedAt: article.published
+        ? article.createdAt.toISOString()
+        : undefined,
+      isFeatured: false, // Not implemented in current schema
+      viewCount: 0, // Not implemented in current schema
+      readTime: article.readDuration,
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
+      authorId: article.authorId,
       author: article.author,
-      category: article.category,
+      categoryId: undefined, // Not implemented in current schema
+      category: undefined, // Not implemented in current schema
+      tags: [], // Not implemented in current schema
+      keywords: [], // Not implemented in current schema
     };
 
-    return NextResponse.json(formattedArticle);
+    return NextResponse.json(transformedArticle);
   } catch (error) {
     console.error("Error fetching article:", error);
     return NextResponse.json(
@@ -54,25 +92,16 @@ export async function PUT(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-
-    // Check if article exists and user is authorized
-    const existingArticle = await prisma.article.findUnique({
-      where: { id },
-      include: { author: true },
-    });
-
-    if (!existingArticle) {
-      return NextResponse.json({ error: "Article not found" }, { status: 404 });
-    }
-
-    // Check if user is authorized (in allowed emails)
     const isAuthorized =
       session.user.email &&
       ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
@@ -83,75 +112,120 @@ export async function PUT(
       );
     }
 
-    const body = await request.json();
+    const { id } = await params;
+
+    // Check if article exists
+    const existingArticle = await prisma.article.findUnique({
+      where: { id },
+      include: { author: true },
+    });
+
+    if (!existingArticle) {
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+
+    const body: UpdateArticleRequest = await request.json();
     const {
       title,
       content,
-      articleImage,
-      publisherName,
-      publisherImage,
-      readDuration,
+      excerpt,
+      featuredImage,
       categoryId,
-      published = true,
+      status,
+      isFeatured,
+      metaTitle,
+      metaDescription,
+      keywords,
     } = body;
 
-    if (!title || !content || !categoryId) {
-      return NextResponse.json(
-        { error: "Title, content, and categoryId are required" },
-        { status: 400 }
-      );
+    // Validate category if provided
+    if (categoryId) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+      });
+
+      if (!category) {
+        return NextResponse.json(
+          { error: "Category not found" },
+          { status: 400 }
+        );
+      }
     }
 
-    // Check if category exists
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId },
-    });
+    // Check title uniqueness if title is being changed
+    if (title && title !== existingArticle.title) {
+      const duplicateArticle = await prisma.article.findFirst({
+        where: {
+          title: { equals: title, mode: "insensitive" },
+          id: { not: id },
+        },
+      });
 
-    if (!category) {
-      return NextResponse.json(
-        { error: "Category not found" },
-        { status: 400 }
-      );
+      if (duplicateArticle) {
+        return NextResponse.json(
+          { error: "An article with this title already exists" },
+          { status: 400 }
+        );
+      }
     }
+
+    const updateData: any = {};
+
+    if (title !== undefined) updateData.title = title;
+    if (content !== undefined) updateData.content = content;
+    if (featuredImage !== undefined) updateData.articleImage = featuredImage;
+    if (status !== undefined) updateData.published = status === "PUBLISHED";
+
+    if (content !== undefined) {
+      updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
+    }
+
     const updatedArticle = await prisma.article.update({
       where: { id },
-      data: {
-        title,
-        content,
-        articleImage: articleImage || "/consc.png",
-        publisherName: publisherName || existingArticle.publisherName,
-        publisherImage: publisherImage || existingArticle.publisherImage,
-        readDuration: readDuration || Math.ceil(content.length / 200),
-        categoryId,
-        published,
-      },
+      data: updateData,
       include: {
         author: {
           select: {
             id: true,
             name: true,
             email: true,
+            image: true,
           },
         },
-        category: true,
+        category: {
+          select: {
+            id: true,
+            name: true,
+            bannerImageUrl: true,
+          },
+        },
       },
     });
 
-    const formattedArticle = {
+    // Transform to our API format
+    const transformedArticle: Article = {
       id: updatedArticle.id,
-      publisherImage: updatedArticle.publisherImage,
-      publisherName: updatedArticle.publisherName,
-      date: new Date(updatedArticle.createdAt).toLocaleDateString("he-IL"),
-      readDuration: updatedArticle.readDuration,
       title: updatedArticle.title,
-      articleImage: updatedArticle.articleImage,
       content: updatedArticle.content,
-      published: updatedArticle.published,
+      featuredImage: updatedArticle.articleImage,
+      status: updatedArticle.published ? "PUBLISHED" : "DRAFT",
+      publishedAt: updatedArticle.published
+        ? updatedArticle.createdAt.toISOString()
+        : undefined,
+      isFeatured: false, // Not implemented in current schema
+      viewCount: 0, // Not implemented in current schema
+      readTime: updatedArticle.readDuration,
+      createdAt: updatedArticle.createdAt.toISOString(),
+      updatedAt: updatedArticle.updatedAt.toISOString(),
+      authorId: updatedArticle.authorId,
       author: updatedArticle.author,
-      category: updatedArticle.category,
+      categoryId: undefined, // Not implemented in current schema
+      category: undefined, // Not implemented in current schema
+      tags: [], // Not implemented in current schema
+      keywords: [], // Not implemented in current schema
     };
 
-    return NextResponse.json(formattedArticle);
+    return NextResponse.json(transformedArticle);
   } catch (error) {
     console.error("Error updating article:", error);
     return NextResponse.json(
@@ -167,25 +241,16 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    if (!prisma) {
+      throw new Error("Database connection not available");
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { id } = await params;
-
-    // Check if article exists and user is authorized
-    const existingArticle = await prisma.article.findUnique({
-      where: { id },
-      include: { author: true },
-    });
-
-    if (!existingArticle) {
-      return NextResponse.json({ error: "Article not found" }, { status: 404 });
-    }
-
-    // Check if user is authorized (in allowed emails)
     const isAuthorized =
       session.user.email &&
       ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
@@ -194,6 +259,17 @@ export async function DELETE(
         { error: "Unauthorized to delete articles" },
         { status: 403 }
       );
+    }
+
+    const { id } = await params;
+
+    // Check if article exists
+    const existingArticle = await prisma.article.findUnique({
+      where: { id },
+    });
+
+    if (!existingArticle) {
+      return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
     await prisma.article.delete({
