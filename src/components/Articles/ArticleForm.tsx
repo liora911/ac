@@ -6,6 +6,7 @@ import { useCreateArticle, useUpdateArticle } from "../../hooks/useArticles";
 import { ArticleFormData, Article } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface ArticleFormProps {
   article?: Article;
@@ -21,6 +22,7 @@ export default function ArticleForm({
   const router = useRouter();
   const { data: session } = useSession();
   const isEditing = !!article;
+  const { t } = useTranslation();
 
   const [formData, setFormData] = useState<ArticleFormData>({
     title: article?.title || "",
@@ -61,7 +63,7 @@ export default function ArticleForm({
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.content.trim()) {
-      alert("Title and content are required");
+      alert(t("articleForm.titleAndContentRequired")); // Assuming this key exists or will be added
       return;
     }
 
@@ -129,9 +131,7 @@ export default function ArticleForm({
   if (!session) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-600">
-          Please sign in to create or edit articles.
-        </p>
+        <p className="text-gray-600">{t("articleForm.signInPrompt")}</p>
       </div>
     );
   }
@@ -141,49 +141,49 @@ export default function ArticleForm({
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-gray-900">
-            {isEditing ? "Edit Article" : "Create New Article"}
+            {isEditing
+              ? t("articleForm.editArticleTitle")
+              : t("articleForm.createNewArticleTitle")}
           </h2>
           {onCancel && (
             <button
               onClick={onCancel}
               className="text-gray-500 hover:text-gray-700 transition-colors"
             >
-              Cancel
+              {t("articleForm.cancelButton")}
             </button>
           )}
         </div>
 
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-md">
-            <p className="text-red-800">
-              Error: {error.message || "Something went wrong"}
-            </p>
+            <p className="text-red-800">{t("articleForm.errorMessage")}</p>
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Title *
+              {t("articleForm.titleLabel")}
             </label>
             <input
               type="text"
               value={formData.title}
               onChange={(e) => handleInputChange("title", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter article title"
+              placeholder={t("articleForm.titlePlaceholder") as string}
               required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Content *
+              {t("articleForm.contentLabel")}
             </label>
             <TiptapEditor
               value={formData.content}
               onChange={(value) => handleInputChange("content", value)}
-              placeholder="Write your article content here..."
+              placeholder={t("articleForm.contentPlaceholder") as string}
             />
             <input
               type="hidden"
@@ -195,20 +195,20 @@ export default function ArticleForm({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Excerpt
+              {t("articleForm.excerptLabel")}
             </label>
             <textarea
               value={formData.excerpt}
               onChange={(e) => handleInputChange("excerpt", e.target.value)}
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Brief summary of the article (auto-generated from content)"
+              placeholder={t("articleForm.excerptPlaceholder") as string}
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Featured Image URL
+              {t("articleForm.featuredImageUrlLabel")}
             </label>
             <input
               type="url"
@@ -223,23 +223,27 @@ export default function ArticleForm({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Category
+              {t("articleForm.categoryLabel")}
             </label>
             <select
               value={formData.categoryId}
               onChange={(e) => handleInputChange("categoryId", e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">Select a category</option>
-              <option value="tech">Technology</option>
-              <option value="science">Science</option>
-              <option value="philosophy">Philosophy</option>
+              <option value="">{t("articleForm.selectCategory")}</option>
+              <option value="tech">{t("articleForm.categoryTech")}</option>
+              <option value="science">
+                {t("articleForm.categoryScience")}
+              </option>
+              <option value="philosophy">
+                {t("articleForm.categoryPhilosophy")}
+              </option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tags
+              {t("articleForm.tagsLabel")}
             </label>
             <div className="flex gap-2 mb-2">
               <input
@@ -250,14 +254,14 @@ export default function ArticleForm({
                   e.key === "Enter" && (e.preventDefault(), addTag())
                 }
                 className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Add a tag"
+                placeholder={t("articleForm.addTagPlaceholder") as string}
               />
               <button
                 type="button"
                 onClick={addTag}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
-                Add
+                {t("articleForm.addButton")}
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
@@ -282,16 +286,20 @@ export default function ArticleForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Status
+                {t("articleForm.statusLabel")}
               </label>
               <select
                 value={formData.status}
                 onChange={(e) => handleInputChange("status", e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
-                <option value="DRAFT">Draft</option>
-                <option value="PUBLISHED">Published</option>
-                <option value="ARCHIVED">Archived</option>
+                <option value="DRAFT">{t("articleForm.statusDraft")}</option>
+                <option value="PUBLISHED">
+                  {t("articleForm.statusPublished")}
+                </option>
+                <option value="ARCHIVED">
+                  {t("articleForm.statusArchived")}
+                </option>
               </select>
             </div>
 
@@ -309,20 +317,20 @@ export default function ArticleForm({
                 htmlFor="isFeatured"
                 className="ml-2 text-sm text-gray-700"
               >
-                Featured Article
+                {t("articleForm.featuredArticleLabel")}
               </label>
             </div>
           </div>
 
           <div className="border-t pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
-              SEO Settings
+              {t("articleForm.seoSettingsTitle")}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Title
+                  {t("articleForm.metaTitleLabel")}
                 </label>
                 <input
                   type="text"
@@ -331,13 +339,13 @@ export default function ArticleForm({
                     handleInputChange("metaTitle", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="SEO title (optional)"
+                  placeholder={t("articleForm.metaTitlePlaceholder") as string}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Meta Description
+                  {t("articleForm.metaDescriptionLabel")}
                 </label>
                 <input
                   type="text"
@@ -346,14 +354,16 @@ export default function ArticleForm({
                     handleInputChange("metaDescription", e.target.value)
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="SEO description (optional)"
+                  placeholder={
+                    t("articleForm.metaDescriptionPlaceholder") as string
+                  }
                 />
               </div>
             </div>
 
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Keywords
+                {t("articleForm.keywordsLabel")}
               </label>
               <div className="flex gap-2 mb-2">
                 <input
@@ -364,14 +374,14 @@ export default function ArticleForm({
                     e.key === "Enter" && (e.preventDefault(), addKeyword())
                   }
                   className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Add a keyword"
+                  placeholder={t("articleForm.addKeywordPlaceholder") as string}
                 />
                 <button
                   type="button"
                   onClick={addKeyword}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
                 >
-                  Add
+                  {t("articleForm.addButton")}
                 </button>
               </div>
               <div className="flex flex-wrap gap-2">
@@ -402,7 +412,7 @@ export default function ArticleForm({
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
                 disabled={isLoading}
               >
-                Cancel
+                {t("articleForm.cancelButton")}
               </button>
             )}
             <button
@@ -411,10 +421,10 @@ export default function ArticleForm({
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               {isLoading
-                ? "Saving..."
+                ? t("articleForm.savingButton")
                 : isEditing
-                ? "Update Article"
-                : "Create Article"}
+                ? t("articleForm.updateArticleButton")
+                : t("articleForm.createArticleButton")}
             </button>
           </div>
         </form>

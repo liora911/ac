@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface EditPresentationFormProps {
   presentationId: string;
@@ -33,6 +34,7 @@ export default function EditPresentationForm({
 
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { t } = useTranslation();
 
   const isAuthorized =
     session?.user?.email &&
@@ -67,11 +69,17 @@ export default function EditPresentationForm({
             categoryId: presentation.category?.id || "",
           });
         } else {
-          setMessage({ type: "error", text: "שגיאה בטעינת המצגת" });
+          setMessage({
+            type: "error",
+            text: t("loadingPresentationData") as string,
+          });
         }
       } catch (error) {
         console.error("Error fetching presentation:", error);
-        setMessage({ type: "error", text: "שגיאה בטעינת המצגת" });
+        setMessage({
+          type: "error",
+          text: t("loadingPresentationData") as string,
+        });
       } finally {
         setIsFetching(false);
       }
@@ -89,7 +97,7 @@ export default function EditPresentationForm({
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
           <p className="mt-2 text-gray-300">
-            {status === "loading" ? "טוען..." : "טוען נתוני מצגת..."}
+            {status === "loading" ? t("loading") : t("loadingPresentationData")}
           </p>
         </div>
       </div>

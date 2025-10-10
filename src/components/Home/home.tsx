@@ -130,7 +130,7 @@ const Home = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110"
-              aria-label="Facebook"
+              aria-label={t("home.social.facebook")}
             >
               <FaFacebook />
             </a>
@@ -139,7 +139,7 @@ const Home = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110"
-              aria-label="YouTube"
+              aria-label={t("home.social.youtube")}
             >
               <FaYoutube />
             </a>

@@ -44,7 +44,7 @@ export const TranslationProvider = ({
       }
     }
     return Array.isArray(value)
-      ? value
+      ? value.join(" ")
       : typeof value === "string"
       ? value
       : key;

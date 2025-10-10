@@ -13,7 +13,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Avshalom Elitzur",
+  title: "Avshalom Elitzur", // This will be handled by the TranslationProvider
   description:
     "Physicist & Philosopher | TSVF, Quantum Paradoxes, and Foundations",
 };

@@ -7,7 +7,6 @@
     "events": "Events",
     "onlineEvents": "Online Events"
   },
-
   "home": {
     "name": "Avshalom C. Elitzur",
     "tagline": "A Site where Souls and Minds Rejoice",
@@ -35,5 +34,58 @@
     "description": "Here you can find my presentations on various topics. They are available for free download.",
     "download": "Download Presentation",
     "viewOnline": "View Online"
-  }
+  },
+  "app": {
+    "title": "Avshalom Elitzur"
+  },
+  "articlesPage": {
+    "title": "Articles",
+    "description": "Explore our collection of articles covering various topics in physics, philosophy, and scientific research."
+  },
+  "articleForm": {
+    "signInPrompt": "Please sign in to create or edit articles.",
+    "errorLoading": "Error loading article",
+    "articleNotFound": "Article not found",
+    "articleNotFoundMessage": "The article you're trying to edit doesn't exist.",
+    "backToArticles": "Back to Articles",
+    "editArticleTitle": "Edit Article",
+    "editArticleDescription": "Make changes to your article and save when you're done.",
+    "createNewArticleTitle": "Create New Article",
+    "cancelButton": "Cancel",
+    "errorMessage": "Error: Something went wrong",
+    "titleLabel": "Title *",
+    "titlePlaceholder": "Enter article title",
+    "contentLabel": "Content *",
+    "contentPlaceholder": "Write your article content here...",
+    "excerptLabel": "Excerpt",
+    "excerptPlaceholder": "Brief summary of the article (auto-generated from content)",
+    "featuredImageUrlLabel": "Featured Image URL",
+    "categoryLabel": "Category",
+    "selectCategory": "Select a category",
+    "categoryTech": "Technology",
+    "categoryScience": "Science",
+    "categoryPhilosophy": "Philosophy",
+    "tagsLabel": "Tags",
+    "addTagPlaceholder": "Add a tag",
+    "addButton": "Add",
+    "statusLabel": "Status",
+    "statusDraft": "Draft",
+    "statusPublished": "Published",
+    "statusArchived": "Archived",
+    "featuredArticleLabel": "Featured Article",
+    "seoSettingsTitle": "SEO Settings",
+    "metaTitleLabel": "Meta Title",
+    "metaTitlePlaceholder": "SEO title (optional)",
+    "metaDescriptionLabel": "Meta Description",
+    "metaDescriptionPlaceholder": "SEO description (optional)",
+    "keywordsLabel": "Keywords",
+    "addKeywordPlaceholder": "Add a keyword",
+    "savingButton": "Saving...",
+    "updateArticleButton": "Update Article",
+    "createArticleButton": "Create Article"
+  },
+  "loading": "Loading...",
+  "loadingArticleData": "Loading article data...",
+  "loadingLectureData": "Loading lecture data...",
+  "loadingPresentationData": "Loading presentation data..."
 }

@@ -23,12 +23,69 @@
       "buttonRead": "קרא עוד...",
       "buttonHide": "הסתר ביוגרפיה"
     },
-    "photoCredit": "צילום: אבישג שאר-ישוב"
+    "photoCredit": "צילום: אבישג שאר-ישוב",
+    "social": {
+      "facebook": "פייסבוק",
+      "youtube": "יוטיוב"
+    }
   },
   "presentations": {
     "title": "תחומי המחקר שלי מגוונים, וכוללים מכניקת קוונטים, תורת היחסות, תרמודינמיקה, ביולוגיה אבולוציונית, פסיכואנליזה ופילוסופיית התודעה.",
     "description": "כאן תמצאו מצגות שלי בנושאים שונים. הן זמינות להורדה חינם.",
     "download": "Download Presentation",
     "viewOnline": "View Online"
-  }
+  },
+  "app": {
+    "title": "אבשלום אליצור"
+  },
+  "articlesPage": {
+    "title": "מאמרים",
+    "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי."
+  },
+  "articleForm": {
+    "signInPrompt": "אנא התחבר כדי ליצור או לערוך מאמרים.",
+    "errorLoading": "שגיאה בטעינת המאמר",
+    "articleNotFound": "מאמר לא נמצא",
+    "articleNotFoundMessage": "המאמר שאתה מנסה לערוך אינו קיים.",
+    "backToArticles": "חזרה למאמרים",
+    "editArticleTitle": "ערוך מאמר",
+    "editArticleDescription": "בצע שינויים במאמר שלך ושמור כשתסיים.",
+    "createNewArticleTitle": "צור מאמר חדש",
+    "cancelButton": "ביטול",
+    "errorMessage": "שגיאה: משהו השתבש",
+    "titleLabel": "כותרת *",
+    "titlePlaceholder": "הכנס כותרת למאמר",
+    "contentLabel": "תוכן *",
+    "contentPlaceholder": "כתוב את תוכן המאמר כאן...",
+    "excerptLabel": "תקציר",
+    "excerptPlaceholder": "סיכום קצר של המאמר (נוצר אוטומטית מהתוכן)",
+    "featuredImageUrlLabel": "כתובת URL לתמונה ראשית",
+    "categoryLabel": "קטגוריה",
+    "selectCategory": "בחר קטגוריה",
+    "categoryTech": "טכנולוגיה",
+    "categoryScience": "מדע",
+    "categoryPhilosophy": "פילוסופיה",
+    "tagsLabel": "תגיות",
+    "addTagPlaceholder": "הוסף תגית",
+    "addButton": "הוסף",
+    "statusLabel": "סטטוס",
+    "statusDraft": "טיוטה",
+    "statusPublished": "פורסם",
+    "statusArchived": "ארכיון",
+    "featuredArticleLabel": "מאמר מומלץ",
+    "seoSettingsTitle": "הגדרות SEO",
+    "metaTitleLabel": "כותרת מטא",
+    "metaTitlePlaceholder": "כותרת SEO (אופציונלי)",
+    "metaDescriptionLabel": "תיאור מטא",
+    "metaDescriptionPlaceholder": "תיאור SEO (אופציונלי)",
+    "keywordsLabel": "מילות מפתח",
+    "addKeywordPlaceholder": "הוסף מילת מפתח",
+    "savingButton": "שומר...",
+    "updateArticleButton": "עדכן מאמר",
+    "createArticleButton": "צור מאמר"
+  },
+  "loading": "טוען...",
+  "loadingArticleData": "טוען נתוני מאמר...",
+  "loadingLectureData": "טוען נתוני הרצאה...",
+  "loadingPresentationData": "טוען נתוני מצגת..."
 }

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface EditLectureFormProps {
   lectureId: string;
@@ -37,6 +38,7 @@ export default function EditLectureForm({
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<any[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const { t } = useTranslation();
 
   const isAuthorized =
     session?.user?.email &&
@@ -73,11 +75,14 @@ export default function EditLectureForm({
             categoryId: lecture.category?.id || "",
           });
         } else {
-          setMessage({ type: "error", text: "שגיאה בטעינת ההרצאה" });
+          setMessage({
+            type: "error",
+            text: t("loadingLectureData") as string,
+          });
         }
       } catch (error) {
         console.error("Error fetching lecture:", error);
-        setMessage({ type: "error", text: "שגיאה בטעינת ההרצאה" });
+        setMessage({ type: "error", text: t("loadingLectureData") as string });
       } finally {
         setIsFetching(false);
       }
@@ -95,7 +100,7 @@ export default function EditLectureForm({
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
           <p className="mt-2 text-gray-300">
-            {status === "loading" ? "טוען..." : "טוען נתוני הרצאה..."}
+            {status === "loading" ? t("loading") : t("loadingLectureData")}
           </p>
         </div>
       </div>
