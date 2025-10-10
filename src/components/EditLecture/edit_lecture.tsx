@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface EditLectureFormProps {
   lectureId: string;
@@ -280,15 +281,18 @@ export default function EditLectureForm({
           >
             תיאור ההרצאה *
           </label>
-          <textarea
-            id="description"
+          <TiptapEditor
+            value={formData.description}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, description: value }))
+            }
+            placeholder="הכנס תיאור להרצאה"
+          />
+          <input
+            type="hidden"
             name="description"
             value={formData.description}
-            onChange={handleChange}
             required
-            rows={4}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס תיאור להרצאה"
           />
         </div>
 

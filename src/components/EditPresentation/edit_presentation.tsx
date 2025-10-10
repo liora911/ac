@@ -4,6 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface EditPresentationFormProps {
   presentationId: string;
@@ -283,15 +284,18 @@ export default function EditPresentationForm({
           >
             תיאור המצגת *
           </label>
-          <textarea
-            id="description"
+          <TiptapEditor
+            value={formData.description}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, description: value }))
+            }
+            placeholder="הכנס תיאור למצגת"
+          />
+          <input
+            type="hidden"
             name="description"
             value={formData.description}
-            onChange={handleChange}
             required
-            rows={3}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס תיאור למצגת"
           />
         </div>
 
@@ -302,15 +306,18 @@ export default function EditPresentationForm({
           >
             תוכן המצגת *
           </label>
-          <textarea
-            id="content"
+          <TiptapEditor
+            value={formData.content}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, content: value }))
+            }
+            placeholder="הכנס את תוכן המצגת"
+          />
+          <input
+            type="hidden"
             name="content"
             value={formData.content}
-            onChange={handleChange}
             required
-            rows={6}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס את תוכן המצגת"
           />
         </div>
 
