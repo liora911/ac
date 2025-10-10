@@ -83,6 +83,8 @@ export async function GET(request: NextRequest) {
           title: article.title,
           articleImage: article.articleImage || "/consc.png",
           content: article.content,
+          author: article.author,
+          category: article.category,
         });
       });
 
@@ -99,6 +101,8 @@ export async function GET(request: NextRequest) {
       title: article.title,
       articleImage: article.articleImage || "/consc.png",
       content: article.content,
+      author: article.author,
+      category: article.category,
     }));
 
     return NextResponse.json(formattedArticles);
@@ -188,6 +192,10 @@ export async function POST(request: NextRequest) {
         authorId: user.id,
         categoryId,
       },
+      include: {
+        author: { select: { id: true, name: true, email: true } },
+        category: true,
+      },
     });
 
     const formattedArticle = {
@@ -199,6 +207,8 @@ export async function POST(request: NextRequest) {
       title: article.title,
       articleImage: article.articleImage,
       content: article.content,
+      author: article.author,
+      category: article.category,
     };
 
     return NextResponse.json(formattedArticle, { status: 201 });

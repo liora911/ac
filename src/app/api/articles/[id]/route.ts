@@ -14,6 +14,10 @@ export async function GET(
 
     const article = await prisma.article.findUnique({
       where: { id },
+      include: {
+        author: { select: { id: true, name: true, email: true } },
+        category: true,
+      },
     });
 
     if (!article) {
@@ -30,6 +34,8 @@ export async function GET(
       articleImage: article.articleImage || "/consc.png",
       content: article.content,
       published: article.published,
+      author: article.author,
+      category: article.category,
     };
 
     return NextResponse.json(formattedArticle);
@@ -107,7 +113,6 @@ export async function PUT(
         { status: 400 }
       );
     }
-    console.log("d");
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
@@ -117,6 +122,7 @@ export async function PUT(
         publisherName: publisherName || existingArticle.publisherName,
         publisherImage: publisherImage || existingArticle.publisherImage,
         readDuration: readDuration || Math.ceil(content.length / 200),
+        categoryId,
         published,
       },
       include: {
@@ -125,9 +131,9 @@ export async function PUT(
             id: true,
             name: true,
             email: true,
-            image: true,
           },
         },
+        category: true,
       },
     });
 
@@ -141,6 +147,8 @@ export async function PUT(
       articleImage: updatedArticle.articleImage,
       content: updatedArticle.content,
       published: updatedArticle.published,
+      author: updatedArticle.author,
+      category: updatedArticle.category,
     };
 
     return NextResponse.json(formattedArticle);
