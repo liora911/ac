@@ -32,7 +32,7 @@ export const TranslationProvider = ({
   useEffect(() => {
     localStorage.setItem("locale", locale);
   }, [locale]);
-
+  console.log("test");
   const t = (key: string): string => {
     const keys = key.split(".");
     let value: any = translations[locale];
