@@ -4,7 +4,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-// GET /api/presentations/[id] - Fetch single presentation by ID
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -47,7 +46,6 @@ export async function GET(
   }
 }
 
-// PUT /api/presentations/[id] - Update presentation by ID
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -65,7 +63,6 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if presentation exists and user is authorized
     const existingPresentation = await prisma.presentation.findUnique({
       where: { id },
       include: { author: true },
@@ -78,7 +75,6 @@ export async function PUT(
       );
     }
 
-    // Check if user is authorized (in allowed emails)
     const isAuthorized =
       session.user.email &&
       ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
@@ -109,7 +105,6 @@ export async function PUT(
       );
     }
 
-    // Check if category exists
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });

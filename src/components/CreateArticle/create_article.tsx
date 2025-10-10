@@ -69,7 +69,6 @@ export default function CreateArticleForm({
     );
   }
 
-  // 🚫 NOT AUTHENTICATED
   if (status === "unauthenticated") {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -89,7 +88,6 @@ export default function CreateArticleForm({
     );
   }
 
-  // 🚫 NOT AUTHORIZED
   if (!isAuthorized) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -195,14 +193,12 @@ export default function CreateArticleForm({
     }));
   };
 
-  // ✅ AUTHORIZED USER - SHOW FORM
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center rtl">
         יצירת מאמר חדש
       </h2>
 
-      {/* Show who's logged in */}
       <p className="text-sm text-green-600 text-center mb-6">
         מחובר כ: {session?.user?.email}
       </p>
@@ -328,7 +324,7 @@ export default function CreateArticleForm({
                 value={formData.articleImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://" //"
               />
             </div>
             <div>
@@ -341,7 +337,7 @@ export default function CreateArticleForm({
                 value={formData.publisherImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/author.jpg"
+                placeholder="https://" //"
               />
             </div>
           </div>

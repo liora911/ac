@@ -35,7 +35,6 @@ export default function ArticlesList({
     "PUBLISHED" | "DRAFT" | "ARCHIVED" | ""
   >("");
 
-  // Use search hook when there's a search query, otherwise use regular articles hook
   const {
     data: articlesData,
     isLoading,
@@ -62,7 +61,7 @@ export default function ArticlesList({
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
 
   const handleCategoryChange = (categoryId: string) => {
@@ -94,11 +93,11 @@ export default function ArticlesList({
 
   return (
     <div className="space-y-6">
-      {/* Filters */}
+      {}
       {showFilters && (
         <div className="bg-white rounded-lg shadow-sm border p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Search
@@ -112,7 +111,7 @@ export default function ArticlesList({
               />
             </div>
 
-            {/* Category Filter */}
+            {}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Category
@@ -123,14 +122,14 @@ export default function ArticlesList({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">All Categories</option>
-                {/* TODO: Add dynamic categories */}
+                {}
                 <option value="tech">Technology</option>
                 <option value="science">Science</option>
                 <option value="philosophy">Philosophy</option>
               </select>
             </div>
 
-            {/* Status Filter (for authorized users) */}
+            {}
             {isAuthorized && (
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -149,7 +148,7 @@ export default function ArticlesList({
               </div>
             )}
 
-            {/* Results count */}
+            {}
             <div className="flex items-end">
               <div className="text-sm text-gray-600">
                 {isLoading ? (
@@ -165,7 +164,7 @@ export default function ArticlesList({
         </div>
       )}
 
-      {/* Loading State */}
+      {}
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: initialLimit }).map((_, index) => (
@@ -184,7 +183,7 @@ export default function ArticlesList({
         </div>
       )}
 
-      {/* Articles Grid */}
+      {}
       {!isLoading && articles.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {articles.map((article) => (
@@ -197,7 +196,7 @@ export default function ArticlesList({
         </div>
       )}
 
-      {/* Empty State */}
+      {}
       {!isLoading && articles.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">📝</div>
@@ -220,7 +219,7 @@ export default function ArticlesList({
         </div>
       )}
 
-      {/* Pagination */}
+      {}
       {showPagination && totalPages > 1 && (
         <div className="flex justify-center">
           <nav className="flex items-center space-x-2">
@@ -265,7 +264,6 @@ export default function ArticlesList({
   );
 }
 
-// Article Card Component
 interface ArticleCardProps {
   article: Article;
   isAuthorized: boolean;
@@ -295,7 +293,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
 
   return (
     <article className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
-      {/* Featured Image */}
+      {}
       {article.featuredImage && (
         <div className="relative h-48 overflow-hidden">
           <Image
@@ -313,9 +311,9 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
         </div>
       )}
 
-      {/* Content */}
+      {}
       <div className="p-6">
-        {/* Status Badge (for authorized users) */}
+        {}
         {isAuthorized && (
           <div className="mb-2">
             <span
@@ -328,7 +326,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           </div>
         )}
 
-        {/* Title */}
+        {}
         <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
           <Link
             href={`/articles/${article.id}`}
@@ -338,14 +336,14 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           </Link>
         </h3>
 
-        {/* Excerpt */}
+        {}
         {article.excerpt && (
           <p className="text-gray-600 text-sm mb-4 line-clamp-3">
             {article.excerpt}
           </p>
         )}
 
-        {/* Meta Information */}
+        {}
         <div className="flex items-center justify-between text-sm text-gray-500">
           <div className="flex items-center space-x-2">
             {article.author.image && (
@@ -365,7 +363,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           </div>
         </div>
 
-        {/* Category */}
+        {}
         {article.category && (
           <div className="mt-3">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
@@ -374,7 +372,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           </div>
         )}
 
-        {/* Admin Actions */}
+        {}
         {isAuthorized && (
           <div className="mt-4 flex space-x-2">
             <Link
@@ -386,7 +384,6 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
             <button
               onClick={() => {
                 if (confirm("Are you sure you want to delete this article?")) {
-                  // TODO: Implement delete functionality
                 }
               }}
               className="text-sm text-red-600 hover:text-red-800 transition-colors"

@@ -8,7 +8,7 @@ import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
 
 interface ArticleFormProps {
-  article?: Article; // For editing existing articles
+  article?: Article;
   onSuccess?: () => void;
   onCancel?: () => void;
 }
@@ -45,11 +45,10 @@ export default function ArticleForm({
   const isLoading = createMutation.isPending || updateMutation.isPending;
   const error = createMutation.error || updateMutation.error;
 
-  // Auto-generate excerpt from content
   useEffect(() => {
     if (!formData.excerpt && formData.content) {
       const excerpt = formData.content
-        .replace(/<[^>]*>/g, "") // Remove HTML tags
+        .replace(/<[^>]*>/g, "")
         .substring(0, 150)
         .trim();
       if (excerpt) {
@@ -163,7 +162,6 @@ export default function ArticleForm({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Title *
@@ -178,7 +176,6 @@ export default function ArticleForm({
             />
           </div>
 
-          {/* Content */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Content *
@@ -196,7 +193,6 @@ export default function ArticleForm({
             />
           </div>
 
-          {/* Excerpt */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Excerpt
@@ -210,7 +206,6 @@ export default function ArticleForm({
             />
           </div>
 
-          {/* Featured Image */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Featured Image URL
@@ -222,11 +217,10 @@ export default function ArticleForm({
                 handleInputChange("featuredImage", e.target.value)
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://example.com/image.jpg"
+              placeholder="https://" //"
             />
           </div>
 
-          {/* Category */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Category
@@ -240,11 +234,9 @@ export default function ArticleForm({
               <option value="tech">Technology</option>
               <option value="science">Science</option>
               <option value="philosophy">Philosophy</option>
-              {/* TODO: Add dynamic categories */}
             </select>
           </div>
 
-          {/* Tags */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Tags
@@ -287,7 +279,6 @@ export default function ArticleForm({
             </div>
           </div>
 
-          {/* Status and Featured */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -323,7 +314,6 @@ export default function ArticleForm({
             </div>
           </div>
 
-          {/* SEO Fields */}
           <div className="border-t pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">
               SEO Settings
@@ -361,7 +351,6 @@ export default function ArticleForm({
               </div>
             </div>
 
-            {/* Keywords */}
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Keywords
@@ -405,7 +394,6 @@ export default function ArticleForm({
             </div>
           </div>
 
-          {/* Submit Buttons */}
           <div className="flex justify-end space-x-4 pt-6 border-t">
             {onCancel && (
               <button

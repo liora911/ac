@@ -67,7 +67,7 @@ export default function EventDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button */}
+        {}
         <button
           onClick={() => router.push("/events")}
           className="mb-6 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
@@ -75,7 +75,7 @@ export default function EventDetailPage() {
           ← חזור לאירועים
         </button>
 
-        {/* Banner Image */}
+        {}
         {event.bannerImageUrl && (
           <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-800 shadow-lg">
             <Image
@@ -89,12 +89,12 @@ export default function EventDetailPage() {
           </div>
         )}
 
-        {/* Title */}
+        {}
         <h1 className="text-3xl sm:text-4xl font-bold text-blue-400 mb-6 text-center">
           {event.title}
         </h1>
 
-        {/* Event Details */}
+        {}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">פרטי האירוע</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
@@ -134,7 +134,7 @@ export default function EventDetailPage() {
           </div>
         </div>
 
-        {/* Description */}
+        {}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">תיאור</h2>
           <div
@@ -143,7 +143,7 @@ export default function EventDetailPage() {
           />
         </div>
 
-        {/* Author Info */}
+        {}
         <div className="mt-8 text-center text-gray-400">
           <p>נוצר על ידי: {event.author.name || event.author.email}</p>
           <p className="text-sm mt-1">

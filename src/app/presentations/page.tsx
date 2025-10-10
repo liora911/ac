@@ -54,7 +54,6 @@ const PresentationsPage = () => {
   };
 
   const handlePresentationCreated = () => {
-    // Refresh the presentation data
     const fetchPresentationData = async () => {
       setIsLoading(true);
       setError(null);
@@ -174,7 +173,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      {/* Categories Sidebar */}
+      {}
       <div className="lg:col-span-1">
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
           <h3 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
@@ -198,7 +197,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         </div>
       </div>
 
-      {/* Presentations Grid */}
+      {}
       <div className="lg:col-span-3">
         <h2 className="text-3xl font-bold mb-6 text-white">
           מצגות {selectedCategory ? `בקטגוריה: ${selectedCategory.name}` : ""}

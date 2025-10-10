@@ -64,7 +64,6 @@ export async function GET() {
       },
     });
 
-    // Transform to match the expected format
     const formattedCategories: Category[] = categories.map(
       (cat: CategoryWithLectures) => ({
         id: cat.id,
@@ -131,7 +130,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if category exists
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });

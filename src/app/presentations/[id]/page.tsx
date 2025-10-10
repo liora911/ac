@@ -90,7 +90,7 @@ export default function PresentationDetailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        {/* Back Button and Edit Button */}
+        {}
         <div className="mb-6 flex justify-between items-center">
           <button
             onClick={() => router.push("/presentations")}
@@ -108,12 +108,12 @@ export default function PresentationDetailPage() {
           )}
         </div>
 
-        {/* Title */}
+        {}
         <h1 className="text-3xl sm:text-4xl font-bold text-blue-400 mb-6 text-center">
           {presentation.title}
         </h1>
 
-        {/* Image Carousel */}
+        {}
         {presentation.imageUrls.length > 0 && (
           <div
             className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-800 cursor-zoom-in shadow-lg"
@@ -150,7 +150,7 @@ export default function PresentationDetailPage() {
                   &#8594;
                 </button>
 
-                {/* Image Counter */}
+                {}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
                   {currentImageIndex + 1} / {total}
                 </div>
@@ -159,7 +159,7 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {/* Thumbnail Navigation */}
+        {}
         {total > 1 && (
           <div className="flex justify-center gap-2 mb-8 overflow-x-auto pb-2">
             {presentation.imageUrls.map((url, index) => (
@@ -184,7 +184,7 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {/* Description */}
+        {}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
           <h2 className="text-xl font-semibold text-white mb-4">תיאור</h2>
           <div
@@ -193,7 +193,7 @@ export default function PresentationDetailPage() {
           />
         </div>
 
-        {/* Content */}
+        {}
         <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">תוכן המצגת</h2>
           <div
@@ -202,7 +202,7 @@ export default function PresentationDetailPage() {
           />
         </div>
 
-        {/* Author Info */}
+        {}
         <div className="mt-8 text-center text-gray-400">
           <p>
             נוצר על ידי: {presentation.author.name || presentation.author.email}
@@ -213,7 +213,7 @@ export default function PresentationDetailPage() {
           </p>
         </div>
 
-        {/* Modal for Full Screen Image */}
+        {}
         {isModalOpen && (
           <div
             className="fixed inset-0 bg-black/95 flex items-center justify-center z-50 cursor-zoom-out"
@@ -253,7 +253,7 @@ export default function PresentationDetailPage() {
                 </>
               )}
 
-              {/* Close button */}
+              {}
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-4 right-4 bg-black/60 hover:bg-black/80 text-white rounded-full p-2 shadow-lg z-10 cursor-pointer transition-colors"

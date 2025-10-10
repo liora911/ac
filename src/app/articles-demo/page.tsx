@@ -16,12 +16,11 @@ export default function ArticlesDemoPage() {
 
   const handleArticleCreated = () => {
     setShowCreateForm(false);
-    // The ArticlesList component will automatically refetch data
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {}
       <div className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center">
@@ -41,7 +40,7 @@ export default function ArticlesDemoPage() {
         </div>
       </div>
 
-      {/* Create Form */}
+      {}
       {showCreateForm && isAuthorized && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <ArticleForm
@@ -51,7 +50,7 @@ export default function ArticlesDemoPage() {
         </div>
       )}
 
-      {/* Articles List */}
+      {}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ArticlesList
           initialLimit={9}

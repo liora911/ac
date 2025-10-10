@@ -5,7 +5,6 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
 import type { Article, UpdateArticleRequest } from "@/types/Articles/articles";
 
-// GET /api/articles/[id] - Fetch single article by ID
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -17,7 +16,6 @@ export async function GET(
 
     const { id } = await params;
 
-    // Check if user is authorized to view unpublished articles
     const session = await getServerSession(authOptions);
     const isAuthorized =
       session?.user?.email &&
@@ -48,12 +46,10 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // Check if user can view this article
     if (!article.published && !isAuthorized) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // Transform to our API format
     const transformedArticle: Article = {
       id: article.id,
       title: article.title,
@@ -63,17 +59,17 @@ export async function GET(
       publishedAt: article.published
         ? article.createdAt.toISOString()
         : undefined,
-      isFeatured: false, // Not implemented in current schema
-      viewCount: 0, // Not implemented in current schema
+      isFeatured: false,
+      viewCount: 0,
       readTime: article.readDuration,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
       author: article.author,
-      categoryId: undefined, // Not implemented in current schema
-      category: undefined, // Not implemented in current schema
-      tags: [], // Not implemented in current schema
-      keywords: [], // Not implemented in current schema
+      categoryId: undefined,
+      category: undefined,
+      tags: [],
+      keywords: [],
     };
 
     return NextResponse.json(transformedArticle);
@@ -86,7 +82,6 @@ export async function GET(
   }
 }
 
-// PUT /api/articles/[id] - Update article by ID
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -114,7 +109,6 @@ export async function PUT(
 
     const { id } = await params;
 
-    // Check if article exists
     const existingArticle = await prisma.article.findUnique({
       where: { id },
       include: { author: true },
@@ -138,7 +132,6 @@ export async function PUT(
       keywords,
     } = body;
 
-    // Validate category if provided
     if (categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: categoryId },
@@ -152,7 +145,6 @@ export async function PUT(
       }
     }
 
-    // Check title uniqueness if title is being changed
     if (title && title !== existingArticle.title) {
       const duplicateArticle = await prisma.article.findFirst({
         where: {
@@ -202,7 +194,6 @@ export async function PUT(
       },
     });
 
-    // Transform to our API format
     const transformedArticle: Article = {
       id: updatedArticle.id,
       title: updatedArticle.title,
@@ -212,17 +203,17 @@ export async function PUT(
       publishedAt: updatedArticle.published
         ? updatedArticle.createdAt.toISOString()
         : undefined,
-      isFeatured: false, // Not implemented in current schema
-      viewCount: 0, // Not implemented in current schema
+      isFeatured: false,
+      viewCount: 0,
       readTime: updatedArticle.readDuration,
       createdAt: updatedArticle.createdAt.toISOString(),
       updatedAt: updatedArticle.updatedAt.toISOString(),
       authorId: updatedArticle.authorId,
       author: updatedArticle.author,
-      categoryId: undefined, // Not implemented in current schema
-      category: undefined, // Not implemented in current schema
-      tags: [], // Not implemented in current schema
-      keywords: [], // Not implemented in current schema
+      categoryId: undefined,
+      category: undefined,
+      tags: [],
+      keywords: [],
     };
 
     return NextResponse.json(transformedArticle);
@@ -235,7 +226,6 @@ export async function PUT(
   }
 }
 
-// DELETE /api/articles/[id] - Delete article by ID
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -263,7 +253,6 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // Check if article exists
     const existingArticle = await prisma.article.findUnique({
       where: { id },
     });

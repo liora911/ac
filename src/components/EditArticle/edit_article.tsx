@@ -105,7 +105,6 @@ export default function EditArticleForm({
     );
   }
 
-  // 🚫 NOT AUTHENTICATED
   if (status === "unauthenticated") {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -125,7 +124,6 @@ export default function EditArticleForm({
     );
   }
 
-  // 🚫 NOT AUTHORIZED
   if (!isAuthorized) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
@@ -150,7 +148,6 @@ export default function EditArticleForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Manual validation
     if (!formData.title.trim()) {
       setMessage({ type: "error", text: "כותרת המאמר נדרשת" });
       return;
@@ -208,7 +205,6 @@ export default function EditArticleForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect to articles page or article detail
         router.push("/articles-demo");
       }
     } catch (error: any) {
@@ -241,12 +237,10 @@ export default function EditArticleForm({
     }));
   };
 
-  // ✅ AUTHORIZED USER - SHOW FORM
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center rtl">עריכת מאמר</h2>
 
-      {/* Show who's logged in */}
       <p className="text-sm text-green-600 text-center mb-6">
         מחובר כ: {session?.user?.email}
       </p>
@@ -391,7 +385,7 @@ export default function EditArticleForm({
                 value={formData.articleImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://" //"
               />
             </div>
             <div>
@@ -404,7 +398,7 @@ export default function EditArticleForm({
                 value={formData.publisherImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://example.com/author.jpg"
+                placeholder="https://" //"
               />
             </div>
           </div>

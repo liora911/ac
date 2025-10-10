@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 
-// GET /api/events/[id] - Fetch single event by ID
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

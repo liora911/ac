@@ -96,7 +96,6 @@ export default function EditPresentationForm({
     );
   }
 
-  // 🚫 NOT AUTHENTICATED
   if (status === "unauthenticated") {
     return (
       <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
@@ -116,7 +115,6 @@ export default function EditPresentationForm({
     );
   }
 
-  // 🚫 NOT AUTHORIZED
   if (!isAuthorized) {
     return (
       <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
@@ -159,7 +157,6 @@ export default function EditPresentationForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        // Redirect to presentation detail page
         router.push(`/presentations/${presentationId}`);
       }
     } catch (error: any) {
@@ -213,14 +210,12 @@ export default function EditPresentationForm({
     const options: any[] = [];
 
     categories.forEach((category) => {
-      // Main category
       options.push(
         <option key={category.id} value={category.id}>
           ▶ {category.name}
         </option>
       );
 
-      // Subcategories indented
       if (category.subcategories && category.subcategories.length > 0) {
         category.subcategories.forEach((sub: any) => {
           options.push(
@@ -235,12 +230,10 @@ export default function EditPresentationForm({
     return options;
   };
 
-  // ✅ AUTHORIZED USER - SHOW FORM
   return (
     <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
       <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת מצגת</h2>
 
-      {/* Show who's logged in */}
       <p className="text-sm text-green-400 text-center mb-8">
         מחובר כ: {session?.user?.email}
       </p>
@@ -357,7 +350,7 @@ export default function EditPresentationForm({
                 value={url}
                 onChange={(e) => handleImageUrlChange(index, e.target.value)}
                 className="flex-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://" //"
               />
               <button
                 type="button"

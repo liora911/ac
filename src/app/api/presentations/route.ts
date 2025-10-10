@@ -4,7 +4,6 @@ import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-// GET /api/presentations - Fetch all categories with presentations
 export async function GET() {
   try {
     if (!prisma) {
@@ -40,7 +39,6 @@ export async function GET() {
   }
 }
 
-// POST /api/presentations - Create new presentation
 export async function POST(request: NextRequest) {
   try {
     if (!prisma) {
@@ -66,7 +64,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify category exists
     const category = await prisma.category.findUnique({
       where: { id: categoryId },
     });
@@ -78,7 +75,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });

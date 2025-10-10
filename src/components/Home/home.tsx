@@ -126,7 +126,7 @@ const Home = () => {
         <div className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8">
           <div className="flex justify-center space-x-6">
             <a
-              href="https://www.facebook.com/avshalom.elitzur"
+              href="https://" //"
               target="_blank"
               rel="noopener noreferrer"
               className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110"
@@ -135,7 +135,7 @@ const Home = () => {
               <FaFacebook />
             </a>
             <a
-              href="https://www.youtube.com/@avshalomelitzur424"
+              href="https://" //"
               target="_blank"
               rel="noopener noreferrer"
               className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110"

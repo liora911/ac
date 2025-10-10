@@ -49,7 +49,6 @@ const EventsPage = () => {
   };
 
   const handleEventCreated = () => {
-    // Refresh the event data
     const fetchEventData = async () => {
       setIsLoading(true);
       setError(null);
@@ -115,7 +114,7 @@ const EventsPage = () => {
                 className="object-cover"
                 priority
               />
-              {/* Event details overlay */}
+              {}
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end">
                 <div className="p-4 text-white w-full">
                   <h3

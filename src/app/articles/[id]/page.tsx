@@ -95,7 +95,7 @@ export default function ArticleDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Navigation */}
+      {}
       <div className="bg-white shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -119,9 +119,9 @@ export default function ArticleDetailPage() {
       </div>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Article Header */}
+        {}
         <header className="mb-8">
-          {/* Status Badge (for authorized users) */}
+          {}
           {isAuthorized && (
             <div className="mb-4">
               <span
@@ -139,22 +139,22 @@ export default function ArticleDetailPage() {
             </div>
           )}
 
-          {/* Title */}
+          {}
           <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {article.title}
           </h1>
 
-          {/* Excerpt */}
+          {}
           {article.excerpt && (
             <p className="text-xl text-gray-600 mb-6 leading-relaxed">
               {article.excerpt}
             </p>
           )}
 
-          {/* Article Meta */}
+          {}
           <div className="flex items-center justify-between border-b border-gray-200 pb-6">
             <div className="flex items-center space-x-4">
-              {/* Author */}
+              {}
               <div className="flex items-center space-x-2">
                 {article.author.image && (
                   <Image
@@ -189,7 +189,7 @@ export default function ArticleDetailPage() {
           </div>
         </header>
 
-        {/* Featured Image */}
+        {}
         {article.featuredImage && (
           <div className="mb-8">
             <div className="relative h-96 rounded-lg overflow-hidden">
@@ -204,15 +204,15 @@ export default function ArticleDetailPage() {
           </div>
         )}
 
-        {/* Article Content */}
+        {}
         <div
           className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 
-        {/* Article Footer */}
+        {}
         <footer className="mt-12 pt-8 border-t border-gray-200">
-          {/* Tags */}
+          {}
           {article.tags && article.tags.length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-medium text-gray-900 mb-2">Tags</h3>
@@ -229,7 +229,7 @@ export default function ArticleDetailPage() {
             </div>
           )}
 
-          {/* Author Bio */}
+          {}
           <div className="bg-gray-50 rounded-lg p-6">
             <div className="flex items-start space-x-4">
               {article.author.image && (
@@ -253,7 +253,7 @@ export default function ArticleDetailPage() {
             </div>
           </div>
 
-          {/* Navigation */}
+          {}
           <div className="mt-8 flex justify-between">
             <button
               onClick={() => router.push("/articles")}

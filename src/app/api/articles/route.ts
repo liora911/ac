@@ -10,7 +10,6 @@ import type {
   Article,
 } from "@/types/Articles/articles";
 
-// GET /api/articles - Fetch articles with filtering, pagination, and search
 export async function GET(request: NextRequest) {
   try {
     if (!prisma) {
@@ -32,7 +31,6 @@ export async function GET(request: NextRequest) {
     const skip = (query.page! - 1) * query.limit!;
     const take = query.limit!;
 
-    // Build where clause
     const where: any = {};
 
     if (query.categoryId) {
@@ -42,7 +40,6 @@ export async function GET(request: NextRequest) {
     if (query.status) {
       where.published = query.status === "PUBLISHED";
     } else {
-      // Default to published articles for public access
       const session = await getServerSession(authOptions);
       const isAuthorized =
         session?.user?.email &&
@@ -54,8 +51,6 @@ export async function GET(request: NextRequest) {
     }
 
     if (query.featured !== undefined) {
-      // For now, we'll use the order field as a featured indicator
-      // In a real implementation, you'd add an isFeatured field
       where.order = { gt: 0 };
     }
 
@@ -66,14 +61,11 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    // Build order clause
     const orderBy: any = {};
     orderBy[query.sortBy!] = query.sortOrder;
 
-    // Get total count
     const total = await prisma.article.count({ where });
 
-    // Get articles
     const articles = await prisma.article.findMany({
       where,
       include: {
@@ -98,10 +90,8 @@ export async function GET(request: NextRequest) {
       take,
     });
 
-    // Ensure articles is an array
     const articlesArray = Array.isArray(articles) ? articles : [];
 
-    // Transform to our API format
     const transformedArticles: Article[] = articlesArray.map(
       (article: any) => ({
         id: article.id,
@@ -112,17 +102,17 @@ export async function GET(request: NextRequest) {
         publishedAt: article.published
           ? article.createdAt.toISOString()
           : undefined,
-        isFeatured: false, // Not implemented in current schema
-        viewCount: 0, // Not implemented in current schema
+        isFeatured: false,
+        viewCount: 0,
         readTime: article.readDuration,
         createdAt: article.createdAt.toISOString(),
         updatedAt: article.updatedAt.toISOString(),
         authorId: article.authorId,
         author: article.author,
-        categoryId: undefined, // Not implemented in current schema
-        category: undefined, // Not implemented in current schema
-        tags: [], // Not implemented in current schema
-        keywords: [], // Not implemented in current schema
+        categoryId: undefined,
+        category: undefined,
+        tags: [],
+        keywords: [],
       })
     );
 
@@ -144,7 +134,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/articles - Create new article
 export async function POST(request: NextRequest) {
   try {
     if (!prisma) {
@@ -167,7 +156,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get user
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
@@ -197,7 +185,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate category if provided
     if (categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: categoryId },
@@ -211,13 +198,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create slug from title
     const slug = title
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "");
 
-    // Check if slug is unique
     const existingArticle = await prisma.article.findFirst({
       where: { title: { equals: title, mode: "insensitive" } },
     });
@@ -236,7 +221,7 @@ export async function POST(request: NextRequest) {
         articleImage: featuredImage,
         publisherName: user.name || "Anonymous",
         publisherImage: user.image,
-        readDuration: Math.max(1, Math.ceil(content.length / 1000)), // Rough estimate
+        readDuration: Math.max(1, Math.ceil(content.length / 1000)),
         published: status === "PUBLISHED",
         authorId: user.id,
       },
@@ -259,7 +244,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Transform to our API format
     const transformedArticle: Article = {
       id: article.id,
       title: article.title,
@@ -269,17 +253,17 @@ export async function POST(request: NextRequest) {
       publishedAt: article.published
         ? article.createdAt.toISOString()
         : undefined,
-      isFeatured: false, // Not implemented in current schema
-      viewCount: 0, // Not implemented in current schema
+      isFeatured: false,
+      viewCount: 0,
       readTime: article.readDuration,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
       author: article.author,
-      categoryId: undefined, // Not implemented in current schema
-      category: undefined, // Not implemented in current schema
-      tags: [], // Not implemented in current schema
-      keywords: [], // Not implemented in current schema
+      categoryId: undefined,
+      category: undefined,
+      tags: [],
+      keywords: [],
     };
 
     return NextResponse.json(transformedArticle, { status: 201 });

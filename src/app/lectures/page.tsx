@@ -51,7 +51,6 @@ const LecturesPage = () => {
   };
 
   const handleLectureCreated = () => {
-    // Refresh the lecture data
     const fetchLectureData = async () => {
       setIsLoading(true);
       setError(null);
