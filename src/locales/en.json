@@ -57,6 +57,9 @@
     "nextButton": "Next"
   },
   "articleForm": {
+    "searchLabel": "Search",
+    "searchPlaceholder": "Search articles...",
+    "allCategories": "All Categories",
     "signInPrompt": "Please sign in to create or edit articles.",
     "errorLoading": "Error loading article",
     "articleNotFound": "Article not found",
