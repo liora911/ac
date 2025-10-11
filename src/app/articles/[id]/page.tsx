@@ -247,8 +247,7 @@ export default function ArticleDetailPage() {
                   {article.author.name || "Anonymous"}
                 </h3>
                 <p className="text-gray-600 mt-1">
-                  Author of this article. Passionate about sharing knowledge and
-                  insights.
+                  מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים
                 </p>
               </div>
             </div>

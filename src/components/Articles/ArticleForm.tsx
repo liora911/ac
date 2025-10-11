@@ -33,6 +33,7 @@ export default function ArticleForm({
     tags: article?.tags?.map((tag) => tag.name) || [],
     status: article?.status || "DRAFT",
     isFeatured: article?.isFeatured || false,
+    direction: article?.direction || "ltr",
     metaTitle: article?.metaTitle || "",
     metaDescription: article?.metaDescription || "",
     keywords: article?.keywords || [],
@@ -184,6 +185,10 @@ export default function ArticleForm({
               value={formData.content}
               onChange={(value) => handleInputChange("content", value)}
               placeholder={t("articleForm.contentPlaceholder") as string}
+              direction={formData.direction}
+              onDirectionChange={(direction) =>
+                handleInputChange("direction", direction)
+              }
             />
             <input
               type="hidden"
