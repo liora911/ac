@@ -105,6 +105,7 @@ export async function GET(request: NextRequest) {
         isFeatured: false,
         viewCount: 0,
         readTime: article.readDuration,
+        direction: article.direction || "ltr",
         createdAt: article.createdAt.toISOString(),
         updatedAt: article.updatedAt.toISOString(),
         authorId: article.authorId,

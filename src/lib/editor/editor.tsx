@@ -23,6 +23,8 @@ import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { useEffect, useState } from "react";
+import { Node } from "@tiptap/core";
+import { mergeAttributes } from "@tiptap/react";
 
 interface TiptapEditorProps {
   value: string;
@@ -30,6 +32,8 @@ interface TiptapEditorProps {
   placeholder?: string;
   className?: string;
   theme?: "light" | "dark";
+  direction?: "ltr" | "rtl";
+  onDirectionChange?: (direction: "ltr" | "rtl") => void;
 }
 
 export default function TiptapEditor({
@@ -38,7 +42,12 @@ export default function TiptapEditor({
   placeholder = "כתוב את תוכן המאמר כאן...",
   className = "",
   theme = "light",
+  direction = "ltr",
+  onDirectionChange,
 }: TiptapEditorProps) {
+  const [currentDirection, setCurrentDirection] = useState<"ltr" | "rtl">(
+    direction
+  );
   const [linkUrl, setLinkUrl] = useState("");
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
@@ -124,7 +133,18 @@ export default function TiptapEditor({
   if (!editor) {
     return null;
   }
+  useEffect(() => {
+    if (editor && direction !== currentDirection) {
+      setCurrentDirection(direction);
+      const currentElement = editor.view.dom;
+      currentElement.style.direction = direction;
 
+      const placeholder = currentElement.querySelector("[data-placeholder]");
+      if (placeholder) {
+        (placeholder as HTMLElement).style.direction = direction;
+      }
+    }
+  }, [direction, editor, currentDirection]);
   const ToolbarButton = ({
     onClick,
     isActive,
@@ -430,7 +450,36 @@ export default function TiptapEditor({
           </div>
 
           {/* Text Direction */}
+          {/* Text Direction */}
           <div className="flex">
+            <ToolbarButton
+              onClick={() => {
+                const newDirection = currentDirection === "ltr" ? "rtl" : "ltr";
+                const currentElement = editor.view.dom;
+
+                // Update the editor's direction
+                currentElement.style.direction = newDirection;
+
+                // Update placeholder direction
+                const placeholder =
+                  currentElement.querySelector("[data-placeholder]");
+                if (placeholder) {
+                  (placeholder as HTMLElement).style.direction = newDirection;
+                }
+
+                // Update state
+                setCurrentDirection(newDirection);
+
+                // Notify parent component
+                onDirectionChange?.(newDirection);
+              }}
+              isActive={currentDirection === "rtl"}
+              title="Toggle Text Direction (RTL/LTR)"
+            >
+              {currentDirection === "rtl" ? "RTL" : "LTR"}
+            </ToolbarButton>
+          </div>
+          {/* <div className="flex">
             <ToolbarButton
               onClick={() => {
                 // Toggle RTL class on the editor content
@@ -455,7 +504,7 @@ export default function TiptapEditor({
             >
               ↔
             </ToolbarButton>
-          </div>
+          </div> */}
         </div>
       </div>
 

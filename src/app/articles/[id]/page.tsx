@@ -207,6 +207,7 @@ export default function ArticleDetailPage() {
         {}
         <div
           className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+          dir={article.direction || "ltr"}
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 

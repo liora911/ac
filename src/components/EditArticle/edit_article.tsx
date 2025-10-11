@@ -32,6 +32,7 @@ export default function EditArticleForm({
     publisherImage: "",
     readDuration: 5,
     categoryId: "",
+    direction: "ltr" as "ltr" | "rtl",
   });
 
   const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
@@ -74,6 +75,7 @@ export default function EditArticleForm({
             publisherImage: article.publisherImage || "",
             readDuration: article.readDuration || 5,
             categoryId: article.category?.id || "",
+            direction: article.direction || "ltr",
           });
         } else {
           setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
@@ -184,6 +186,7 @@ export default function EditArticleForm({
         ...formData,
         articleImage: articleImageData,
         publisherImage: publisherImageData,
+        direction: formData.direction,
       };
 
       const response = await fetch(`/api/articles/${articleId}`, {
@@ -281,6 +284,10 @@ export default function EditArticleForm({
             value={formData.content}
             onChange={handleContentChange}
             placeholder="כתוב את תוכן המאמר כאן..."
+            direction={formData.direction}
+            onDirectionChange={(direction) =>
+              setFormData((prev) => ({ ...prev, direction }))
+            }
           />
         </div>
 
