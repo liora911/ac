@@ -177,6 +177,7 @@ export async function POST(request: NextRequest) {
       metaTitle,
       metaDescription,
       keywords = [],
+      direction = "ltr",
     } = body;
 
     if (!title || !content) {
@@ -225,6 +226,7 @@ export async function POST(request: NextRequest) {
         readDuration: Math.max(1, Math.ceil(content.length / 1000)),
         published: status === "PUBLISHED",
         authorId: user.id,
+        direction,
       },
       include: {
         author: {
@@ -257,6 +259,7 @@ export async function POST(request: NextRequest) {
       isFeatured: false,
       viewCount: 0,
       readTime: article.readDuration,
+      direction: article.direction,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,

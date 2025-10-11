@@ -25,6 +25,7 @@ import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { useEffect, useState } from "react";
 import { Node } from "@tiptap/core";
 import { mergeAttributes } from "@tiptap/react";
+import { TextDirection } from "./text-direction";
 
 interface TiptapEditorProps {
   value: string;
@@ -54,6 +55,7 @@ export default function TiptapEditor({
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const editor = useEditor({
+    immediatelyRender: false, // Fix Tiptap SSR hydration mismatch
     extensions: [
       StarterKit.configure({
         bulletList: {
@@ -104,6 +106,9 @@ export default function TiptapEditor({
       CodeBlock,
       Blockquote,
       HorizontalRule,
+      TextDirection.configure({
+        types: ["heading", "paragraph", "listItem"],
+      }),
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
@@ -130,25 +135,17 @@ export default function TiptapEditor({
     }
   }, [value, editor]);
 
-  if (!editor) {
-    return null;
-  }
   // In your TiptapEditor component
   useEffect(() => {
     if (editor && direction !== currentDirection) {
       setCurrentDirection(direction);
-      const currentElement = editor.view.dom;
-      if (currentElement) {
-        // <-- ADD THIS CHECK
-        currentElement.style.direction = direction;
-
-        const placeholder = currentElement.querySelector("[data-placeholder]");
-        if (placeholder) {
-          (placeholder as HTMLElement).style.direction = direction;
-        }
-      }
+      editor.chain().focus().setTextDirection(direction).run();
     }
   }, [direction, editor, currentDirection]);
+
+  if (!editor) {
+    return null;
+  }
   const ToolbarButton = ({
     onClick,
     isActive,
@@ -459,22 +456,8 @@ export default function TiptapEditor({
             <ToolbarButton
               onClick={() => {
                 const newDirection = currentDirection === "ltr" ? "rtl" : "ltr";
-                const currentElement = editor.view.dom;
-
-                // Update the editor's direction
-                currentElement.style.direction = newDirection;
-
-                // Update placeholder direction
-                const placeholder =
-                  currentElement.querySelector("[data-placeholder]");
-                if (placeholder) {
-                  (placeholder as HTMLElement).style.direction = newDirection;
-                }
-
-                // Update state
+                editor.chain().focus().setTextDirection(newDirection).run();
                 setCurrentDirection(newDirection);
-
-                // Notify parent component
                 onDirectionChange?.(newDirection);
               }}
               isActive={currentDirection === "rtl"}
@@ -700,10 +683,10 @@ export default function TiptapEditor({
         .ProseMirror-task-item > div {
           flex: 1;
         }
-        .rtl-text {
+        .ProseMirror[dir="rtl"] {
           direction: rtl;
         }
-        .rtl-text [data-placeholder] {
+        .ProseMirror[dir="rtl"] [data-placeholder] {
           direction: rtl;
         }
       `}</style>

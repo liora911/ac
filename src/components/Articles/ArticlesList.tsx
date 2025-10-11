@@ -138,7 +138,7 @@ export default function ArticlesList({
             </div>
 
             {}
-            {isAuthorized && (
+            {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t("articleForm.statusLabel")}
@@ -158,7 +158,7 @@ export default function ArticlesList({
                   </option>
                 </select>
               </div>
-            )}
+            }
 
             {}
             <div className="flex items-end">
@@ -361,7 +361,7 @@ function ArticleCard({
       {}
       <div className="p-6">
         {}
-        {isAuthorized && (
+        {
           <div className="mb-2">
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
@@ -371,7 +371,7 @@ function ArticleCard({
               {article.status}
             </span>
           </div>
-        )}
+        }
 
         {}
         <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">

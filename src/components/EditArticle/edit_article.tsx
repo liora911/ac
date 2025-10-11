@@ -5,7 +5,11 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import TiptapEditor from "@/lib/editor/editor";
+import dynamic from "next/dynamic";
+
+const TiptapEditor = dynamic(() => import("@/lib/editor/editor"), {
+  ssr: false,
+});
 
 interface EditArticleFormProps {
   articleId: string;
@@ -99,40 +103,26 @@ export default function EditArticleForm({
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
-            {status === "loading" ? "טוען..." : "טוען נתוני מאמר..."}
-          </p>
+          <p className="mt-2 text-gray-600">טוען נתונים...</p>
         </div>
       </div>
     );
   }
 
-  if (status === "unauthenticated") {
+  if (!session || !isAuthorized) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            נדרשת התחברות
-          </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי לערוך מאמרים</p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
-          >
-            התחבר
-          </button>
-        </div>
+        <p className="text-center text-red-600">אינך מורשה לערוך מאמרים.</p>
       </div>
     );
   }
 
-  if (!isAuthorized) {
+  if (isFetching || categoriesLoading) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה לערוך מאמרים באתר זה</p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-2 text-gray-600">טוען נתוני מאמר...</p>
         </div>
       </div>
     );

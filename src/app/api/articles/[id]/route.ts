@@ -62,6 +62,7 @@ export async function GET(
       isFeatured: false,
       viewCount: 0,
       readTime: article.readDuration,
+      direction: article.direction,
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
@@ -130,6 +131,7 @@ export async function PUT(
       metaTitle,
       metaDescription,
       keywords,
+      direction,
     } = body;
 
     if (categoryId) {
@@ -167,6 +169,7 @@ export async function PUT(
     if (content !== undefined) updateData.content = content;
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
+    if (direction !== undefined) updateData.direction = direction;
 
     if (content !== undefined) {
       updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
@@ -206,6 +209,7 @@ export async function PUT(
       isFeatured: false,
       viewCount: 0,
       readTime: updatedArticle.readDuration,
+      direction: updatedArticle.direction,
       createdAt: updatedArticle.createdAt.toISOString(),
       updatedAt: updatedArticle.updatedAt.toISOString(),
       authorId: updatedArticle.authorId,
