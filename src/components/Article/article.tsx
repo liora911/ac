@@ -77,7 +77,7 @@ export default function ArticlePage() {
 
   if (error || !article) {
     return (
-      <div className="p-8 text-center text-gray-600 rtl">
+      <div className="p-8 text-center text-gray-600">
         <p className="text-lg mb-4">{error || "המאמר לא נמצא"}</p>
         <button
           onClick={() => window.history.back()}
@@ -99,7 +99,7 @@ export default function ArticlePage() {
           className="object-cover brightness-75"
           priority
         />
-        <div className="absolute inset-0 flex flex-col justify-center items-start px-8 sm:px-16 md:px-24 text-white rtl">
+        <div className="absolute inset-0 flex flex-col justify-center items-start px-8 sm:px-16 md:px-24 text-white">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight max-w-5xl drop-shadow-md">
             {article.title}
           </h1>
@@ -109,7 +109,7 @@ export default function ArticlePage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 sm:px-12 py-12 rtl">
+      <div className="max-w-5xl mx-auto px-6 sm:px-12 py-12">
         <div className="flex items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-4">
             {article.publisherImage && (
