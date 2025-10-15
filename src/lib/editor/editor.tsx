@@ -23,8 +23,6 @@ import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import { useEffect, useState } from "react";
-import { Node } from "@tiptap/core";
-import { mergeAttributes } from "@tiptap/react";
 import { TextDirection } from "./text-direction";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
