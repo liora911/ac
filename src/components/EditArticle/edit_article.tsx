@@ -198,7 +198,7 @@ export default function EditArticleForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/articles-demo");
+        router.push("/articles");
       }
     } catch (error: any) {
       console.error("Error updating article:", error);

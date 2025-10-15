@@ -3,15 +3,16 @@
 import { navItems } from "@/constants/Nav/data";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname } from "next/navigation";
 import LocaleSelect from "../LocaleSelect/locale-select";
 import { useSession } from "next-auth/react";
+import { useState } from "react";
 
 export default function Header() {
   const { data: session, status } = useSession();
   const { t, locale, setLocale } = useTranslation();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [activeNavItem, setActiveNavItem] = useState<string | null>(null);
+  const pathname = usePathname();
 
   const visibleNavItems = [
     ...navItems,
@@ -58,10 +59,8 @@ export default function Header() {
                   className={`hover:underline underline-offset-4 ${
                     className || ""
                   }`}
-                  onClick={() => setActiveNavItem(href)}
                   style={{
-                    textDecoration:
-                      activeNavItem === href ? "underline" : undefined,
+                    textDecoration: pathname === href ? "underline" : undefined,
                   }}
                 >
                   {t(label)}
@@ -86,7 +85,6 @@ export default function Header() {
                     className || ""
                   }`}
                   onClick={() => {
-                    setActiveNavItem(href);
                     setMenuOpen(false);
                   }}
                 >

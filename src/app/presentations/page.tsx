@@ -9,9 +9,30 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 
 const PresentationsPage = () => {
   const { data: session } = useSession();
-  const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
-  const [currentBannerAlt, setCurrentBannerAlt] =
-    useState<string>("Banner Image");
+  const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(
+    () => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("selectedPresentationBannerUrl") || null;
+      }
+      return null;
+    }
+  );
+  const [currentBannerAlt, setCurrentBannerAlt] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.getItem("selectedPresentationBannerAlt") || "Banner Image"
+      );
+    }
+    return "Banner Image";
+  });
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
+    () => {
+      if (typeof window !== "undefined") {
+        return localStorage.getItem("selectedPresentationCategoryId") || null;
+      }
+      return null;
+    }
+  );
   const [presentationCategoriesData, setPresentationCategoriesData] = useState<
     PresentationCategory[] | null
   >(null);
@@ -36,6 +57,34 @@ const PresentationsPage = () => {
         }
         const data: PresentationCategory[] = await response.json();
         setPresentationCategoriesData(data);
+
+        // If no category is selected from localStorage, select a random one
+        if (!selectedCategoryId && data.length > 0) {
+          const categoriesWithPresentations = data.filter(
+            (category) => category.presentations.length > 0
+          );
+          if (categoriesWithPresentations.length > 0) {
+            const randomIndex = Math.floor(
+              Math.random() * categoriesWithPresentations.length
+            );
+            const randomCategory = categoriesWithPresentations[randomIndex];
+            setSelectedCategoryId(randomCategory.id);
+            setCurrentBannerUrl(randomCategory.bannerImageUrl);
+            setCurrentBannerAlt(randomCategory.name);
+            localStorage.setItem(
+              "selectedPresentationCategoryId",
+              randomCategory.id
+            );
+            localStorage.setItem(
+              "selectedPresentationBannerUrl",
+              randomCategory.bannerImageUrl || ""
+            );
+            localStorage.setItem(
+              "selectedPresentationBannerAlt",
+              randomCategory.name
+            );
+          }
+        }
       } catch (err: any) {
         console.error("Error fetching presentation data:", err);
         setError(err.message || "An unknown error occurred");
@@ -48,9 +97,30 @@ const PresentationsPage = () => {
     fetchPresentationData();
   }, []);
 
+  useEffect(() => {
+    if (currentBannerUrl !== null) {
+      localStorage.setItem("selectedPresentationBannerUrl", currentBannerUrl);
+    } else {
+      localStorage.removeItem("selectedPresentationBannerUrl");
+    }
+  }, [currentBannerUrl]);
+
+  useEffect(() => {
+    localStorage.setItem("selectedPresentationBannerAlt", currentBannerAlt);
+  }, [currentBannerAlt]);
+
   const handleBannerUpdate = (imageUrl: string | null, altText: string) => {
     setCurrentBannerUrl(imageUrl);
     setCurrentBannerAlt(altText || "Banner Image");
+  };
+
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+    if (categoryId) {
+      localStorage.setItem("selectedPresentationCategoryId", categoryId);
+    } else {
+      localStorage.removeItem("selectedPresentationCategoryId");
+    }
   };
 
   const handlePresentationCreated = () => {
@@ -92,7 +162,7 @@ const PresentationsPage = () => {
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold rtl"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl"
             >
               {showCreateForm ? "ביטול" : "העלאת מצגת חדשה"}
             </button>
@@ -135,6 +205,12 @@ const PresentationsPage = () => {
           <PresentationsGrid
             categories={presentationCategoriesData}
             onBannerUpdate={handleBannerUpdate}
+            initialSelectedCategoryId={selectedCategoryId}
+            initialBannerInfo={{
+              imageUrl: currentBannerUrl,
+              altText: currentBannerAlt,
+            }}
+            onCategorySelect={handleCategorySelect}
           />
         )}
 
@@ -152,19 +228,40 @@ const PresentationsPage = () => {
 interface PresentationsGridProps {
   categories: PresentationCategory[];
   onBannerUpdate: (imageUrl: string | null, altText: string) => void;
+  initialSelectedCategoryId: string | null;
+  initialBannerInfo: { imageUrl: string | null; altText: string } | null;
+  onCategorySelect: (categoryId: string | null) => void;
 }
 
 const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   categories,
   onBannerUpdate,
+  initialSelectedCategoryId,
+  initialBannerInfo,
+  onCategorySelect,
 }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    null
+    initialSelectedCategoryId
   );
+
+  useEffect(() => {
+    if (initialSelectedCategoryId && !selectedCategoryId) {
+      setSelectedCategoryId(initialSelectedCategoryId);
+    }
+    if (initialBannerInfo && initialBannerInfo.imageUrl !== null) {
+      onBannerUpdate(initialBannerInfo.imageUrl, initialBannerInfo.altText);
+    }
+  }, [
+    initialSelectedCategoryId,
+    selectedCategoryId,
+    initialBannerInfo,
+    onBannerUpdate,
+  ]);
 
   const handleCategoryClick = (category: PresentationCategory) => {
     setSelectedCategoryId(category.id);
     onBannerUpdate(category.bannerImageUrl, category.name);
+    onCategorySelect(category.id);
   };
 
   const selectedCategory = categories.find(
@@ -186,7 +283,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                 onClick={() => handleCategoryClick(category)}
                 className={`w-full text-left p-3 rounded-md transition-colors ${
                   selectedCategoryId === category.id
-                    ? "bg-blue-600 text-white"
+                    ? "bg-green-600 text-white"
                     : "bg-gray-700 text-gray-300 hover:bg-gray-600"
                 }`}
               >
@@ -208,12 +305,12 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             {selectedCategory.presentations.map((presentation) => (
               <div
                 key={presentation.id}
-                className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-all duration-200 hover:scale-105 cursor-pointer"
+                className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-all duration-200 hover:scale-105 cursor-pointer"
                 onClick={() =>
                   (window.location.href = `/presentations/${presentation.id}`)
                 }
               >
-                <h3 className="text-xl font-semibold mb-3 text-blue-400">
+                <h3 className="text-xl font-semibold mb-3 text-green-400">
                   {presentation.title}
                 </h3>
                 <p

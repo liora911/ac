@@ -93,7 +93,7 @@ const LecturesPage = () => {
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg font-semibold rtl"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl"
             >
               {showCreateForm ? "ביטול" : "העלאת הרצאה חדשה"}
             </button>

@@ -26,7 +26,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
           <div
             className={`flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-700 transition-colors ${
               selectedCategoryId === category.id
-                ? "bg-blue-600 text-white"
+                ? "bg-green-600 text-white"
                 : "bg-gray-800"
             }`}
           >
@@ -209,7 +209,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
       <main className="w-full md:w-3/4 lg:w-4/5">
         <h2 className="text-3xl font-bold mb-6 text-white">
           הרצאות בנושא:{" "}
-          <span className="text-blue-400">{selectedCategoryName}</span>
+          <span className="text-green-400">{selectedCategoryName}</span>
         </h2>
         {selectedLectures.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -218,7 +218,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
               return (
                 <div
                   key={lecture.id}
-                  className="bg-gray-800 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer flex flex-col"
+                  className="bg-gray-800 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-shadow cursor-pointer flex flex-col"
                 >
                   {lecture.bannerImageUrl && (
                     <div className="relative h-40 w-full">
@@ -230,7 +230,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                     </div>
                   )}
                   <div className="p-4 flex-grow">
-                    <h4 className="text-xl font-semibold text-blue-400 mb-2">
+                    <h4 className="text-xl font-semibold text-green-400 mb-2">
                       {lecture.title}
                     </h4>
                     <p className="text-gray-300 text-sm mb-3 line-clamp-3">
@@ -244,7 +244,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                   <div className="p-4 border-t border-gray-700 flex justify-between items-center">
                     <button
                       onClick={() => handleLectureClick(lecture)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold"
                     >
                       צפה בהרצאה
                     </button>
@@ -280,7 +280,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
               >
                 &times;
               </button>
-              <h3 className="text-3xl font-bold text-blue-400 mb-4">
+              <h3 className="text-3xl font-bold text-green-400 mb-4">
                 {selectedLecture.title}
               </h3>
               {selectedLecture.videoUrl && (
