@@ -107,7 +107,11 @@ const LecturesPage = () => {
         )}
 
         <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center border border-gray-600 overflow-hidden">
-          {currentBannerUrl ? (
+          {isLoading ? (
+            <div className="animate-pulse bg-gray-600 h-full w-full flex items-center justify-center">
+              <p className="text-gray-400 text-xl">טוען באנר...</p>
+            </div>
+          ) : currentBannerUrl ? (
             <Image
               src={currentBannerUrl}
               alt={currentBannerAlt}
@@ -118,12 +122,39 @@ const LecturesPage = () => {
             />
           ) : (
             <p className="text-gray-400 text-xl">
-              {isLoading ? "טוען באנר..." : "תמונה/באנר של ההרצאות יופיע כאן"}
+              תמונה/באנר של ההרצאות יופיע כאן
             </p>
           )}
         </div>
         {isLoading && (
-          <p className="text-center text-xl text-gray-300">טוען הרצאות...</p>
+          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-gray-900 text-gray-100 min-h-[calc(100vh-200px)]">
+            <aside className="w-full md:w-1/4 lg:w-1/5 bg-gray-850 p-4 rounded-lg shadow-lg border border-gray-700 animate-pulse">
+              <div className="h-6 bg-gray-700 rounded w-3/4 mb-4"></div>
+              <div className="space-y-2">
+                <div className="h-8 bg-gray-700 rounded"></div>
+                <div className="h-8 bg-gray-700 rounded w-5/6"></div>
+                <div className="h-8 bg-gray-700 rounded w-4/5"></div>
+              </div>
+            </aside>
+            <main className="w-full md:w-3/4 lg:w-4/5">
+              <div className="h-8 bg-gray-700 rounded w-1/2 mb-6 animate-pulse"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-gray-800 rounded-lg shadow-md border border-gray-700 h-64 animate-pulse"
+                  >
+                    <div className="h-32 bg-gray-700 rounded-t-lg"></div>
+                    <div className="p-4">
+                      <div className="h-4 bg-gray-600 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-600 rounded w-full mb-2"></div>
+                      <div className="h-3 bg-gray-600 rounded w-2/3"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
         )}
         {error && (
           <p className="text-center text-xl text-red-500">

@@ -24,31 +24,37 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
       {categories.map((category) => (
         <li key={category.id}>
           <div
-            className={`flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-gray-700 transition-colors
-                        ${
-                          selectedCategoryId === category.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-800"
-                        }`}
-            onClick={() => {
-              if (category.subcategories && category.subcategories.length > 0) {
-                toggleCategory(category.id);
-              }
-              onSelectCategory(category);
-              setSelectedCategoryIdDirectly(category.id);
-            }}
+            className={`flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-700 transition-colors ${
+              selectedCategoryId === category.id
+                ? "bg-blue-600 text-white"
+                : "bg-gray-800"
+            }`}
           >
-            <span className="font-medium">
+            <span
+              className="flex-grow font-medium"
+              onClick={() => {
+                onSelectCategory(category);
+                setSelectedCategoryIdDirectly(category.id);
+              }}
+            >
               {category.name} ({category.lectures.length})
             </span>
             {category.subcategories && category.subcategories.length > 0 && (
-              <span
-                className={`transform transition-transform ${
-                  expandedCategories[category.id] ? "rotate-90" : "rotate-0"
-                }`}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent category selection when clicking the toggle
+                  toggleCategory(category.id);
+                }}
+                className="ml-2 p-1 rounded-full hover:bg-gray-600 focus:outline-none"
               >
-                ▶
-              </span>
+                <span
+                  className={`transform transition-transform ${
+                    expandedCategories[category.id] ? "rotate-90" : "rotate-0"
+                  }`}
+                >
+                  ▶
+                </span>
+              </button>
             )}
           </div>
           {category.subcategories && expandedCategories[category.id] && (
@@ -89,6 +95,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     null
   );
+  const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
 
   const isAuthorized =
     session?.user?.email &&
@@ -122,20 +129,40 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
       return;
     }
 
-    setSelectedLectures([]);
-    setSelectedCategoryName("בחר קטגוריה מהתפריט");
+    const categoriesWithLectures = lectureData.filter(
+      (category) => category.lectures.length > 0
+    );
 
-    const firstCategory = lectureData[0];
-    const initialBanner = firstCategory?.bannerImageUrl || null;
-    setCurrentCategoryBanner(initialBanner);
-    onBannerUpdate(initialBanner, firstCategory?.name || "הרצאות");
+    if (categoriesWithLectures.length > 0) {
+      const randomIndex = Math.floor(
+        Math.random() * categoriesWithLectures.length
+      );
+      const randomCategory = categoriesWithLectures[randomIndex];
+
+      setSelectedLectures(randomCategory.lectures);
+      setSelectedCategoryName(randomCategory.name);
+      setSelectedCategoryId(randomCategory.id);
+      const initialBanner = randomCategory.bannerImageUrl || null;
+      setCurrentCategoryBanner(initialBanner);
+      onBannerUpdate(initialBanner, randomCategory.name);
+    } else {
+      setSelectedLectures([]);
+      setSelectedCategoryName("אין הרצאות זמינות");
+      onBannerUpdate(null, "הרצאות");
+      setCurrentCategoryBanner(null);
+    }
   }, [lectureData, onBannerUpdate]);
 
   const handleLectureClick = (lecture: Lecture) => {
+    setSelectedLecture(lecture);
     onBannerUpdate(
       lecture.bannerImageUrl || currentCategoryBanner || null,
       lecture.title
     );
+  };
+
+  const handleCloseLectureModal = () => {
+    setSelectedLecture(null);
   };
 
   if (!lectureData) {
@@ -185,54 +212,54 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
           <span className="text-blue-400">{selectedCategoryName}</span>
         </h2>
         {selectedLectures.length > 0 ? (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {selectedLectures.map((lecture) => {
               const isAuthor = lecture.author?.email === session?.user?.email;
               return (
                 <div
                   key={lecture.id}
-                  className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer"
-                  onClick={() => handleLectureClick(lecture)}
+                  className="bg-gray-800 rounded-lg shadow-md border border-gray-700 hover:shadow-blue-500/30 transition-shadow cursor-pointer flex flex-col"
                 >
-                  <div className="flex justify-between items-start mb-2">
-                    <h4 className="text-2xl font-semibold text-blue-400">
+                  {lecture.bannerImageUrl && (
+                    <div className="relative h-40 w-full">
+                      <img
+                        src={lecture.bannerImageUrl}
+                        alt={lecture.title}
+                        className="object-cover w-full h-full rounded-t-lg"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4 flex-grow">
+                    <h4 className="text-xl font-semibold text-blue-400 mb-2">
                       {lecture.title}
                     </h4>
+                    <p className="text-gray-300 text-sm mb-3 line-clamp-3">
+                      {lecture.description.replace(/<[^>]*>?/gm, "")}
+                    </p>
+                    <div className="flex justify-between items-center text-xs text-gray-400 mt-auto">
+                      <span>משך: {lecture.duration}</span>
+                      {lecture.date && <span>תאריך: {lecture.date}</span>}
+                    </div>
+                  </div>
+                  <div className="p-4 border-t border-gray-700 flex justify-between items-center">
+                    <button
+                      onClick={() => handleLectureClick(lecture)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold"
+                    >
+                      צפה בהרצאה
+                    </button>
                     {isAuthorized && isAuthor && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           router.push(`/edit-lecture/${lecture.id}`);
                         }}
-                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition-colors text-sm"
+                        className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
                       >
                         ✏️ ערוך
                       </button>
                     )}
                   </div>
-                  <div
-                    className="text-gray-300 mb-3 prose prose-sm max-w-none"
-                    dangerouslySetInnerHTML={{ __html: lecture.description }}
-                  />
-                  <div className="flex justify-between items-center text-sm text-gray-400">
-                    <span>משך: {lecture.duration}</span>
-                    {lecture.date && <span>תאריך: {lecture.date}</span>}
-                  </div>
-                  {lecture.videoUrl && (
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-400 mb-1">צפה בהרצאה:</p>
-                      <div className="aspect-w-16 aspect-h-9">
-                        <iframe
-                          src={lecture.videoUrl}
-                          title={lecture.title}
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="rounded"
-                        ></iframe>
-                      </div>
-                    </div>
-                  )}
                 </div>
               );
             })}
@@ -241,6 +268,47 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
           <p className="text-gray-400 text-lg">
             אנא בחר קטגוריה כדי להציג הרצאות, או שאין הרצאות זמינות בקטגוריה זו.
           </p>
+        )}
+
+        {/* Lecture Modal */}
+        {selectedLecture && (
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+            <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
+              <button
+                onClick={handleCloseLectureModal}
+                className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl font-bold"
+              >
+                &times;
+              </button>
+              <h3 className="text-3xl font-bold text-blue-400 mb-4">
+                {selectedLecture.title}
+              </h3>
+              {selectedLecture.videoUrl && (
+                <div className="aspect-w-16 aspect-h-9 mb-4">
+                  <iframe
+                    src={selectedLecture.videoUrl}
+                    title={selectedLecture.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="rounded w-full h-full"
+                  ></iframe>
+                </div>
+              )}
+              <div
+                className="text-gray-300 prose prose-invert prose-sm max-w-none mb-4"
+                dangerouslySetInnerHTML={{
+                  __html: selectedLecture.description,
+                }}
+              />
+              <div className="flex justify-between items-center text-sm text-gray-400 border-t border-gray-700 pt-4">
+                <span>משך: {selectedLecture.duration}</span>
+                {selectedLecture.date && (
+                  <span>תאריך: {selectedLecture.date}</span>
+                )}
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>
