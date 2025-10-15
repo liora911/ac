@@ -110,8 +110,8 @@ export async function GET(request: NextRequest) {
         updatedAt: article.updatedAt.toISOString(),
         authorId: article.authorId,
         author: article.author,
-        categoryId: undefined,
-        category: undefined,
+        categoryId: article.categoryId || undefined,
+        category: article.category || undefined,
         tags: [],
         keywords: [],
       })

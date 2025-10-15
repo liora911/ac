@@ -10,7 +10,31 @@ import type {
   ArticlesQueryParams,
   CreateArticleRequest,
   UpdateArticleRequest,
+  ArticleCategory, // Use ArticleCategory instead of Category
 } from "../types/Articles/articles";
+
+// Query keys for categories
+export const categoryKeys = {
+  all: ["categories"] as const,
+  lists: () => [...categoryKeys.all, "list"] as const,
+};
+
+// Fetch all categories
+export function useCategories() {
+  return useQuery<ArticleCategory[], Error>({
+    // Use ArticleCategory here
+    queryKey: categoryKeys.lists(),
+    queryFn: async () => {
+      const response = await fetch("/api/categories");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    staleTime: 1000 * 60 * 60, // 1 hour
+    gcTime: 1000 * 60 * 60 * 6, // 6 hours
+  });
+}
 
 // Query keys
 export const articlesKeys = {

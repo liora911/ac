@@ -55,14 +55,18 @@
     "createFirstArticle": "Create First Article",
     "previousButton": "Previous",
     "nextButton": "Next",
-    "createArticleButton": "Create Article"
+    "createArticleButton": "Create Article",
+    "createArticleDescription": "Share your knowledge and insights with the community."
   },
   "articleForm": {
     "searchLabel": "Search",
     "searchPlaceholder": "Search articles...",
     "allStatus": "All Status",
     "allCategories": "All Categories",
+    "loadingCategories": "Loading categories...",
     "signInPrompt": "Please sign in to create or edit articles.",
+    "unauthorizedTitle": "Unauthorized",
+    "unauthorizedMessage": "You are not authorized to create articles on this site.",
     "errorLoading": "Error loading article",
     "articleNotFound": "Article not found",
     "articleNotFoundMessage": "The article you're trying to edit doesn't exist.",

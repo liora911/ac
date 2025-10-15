@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useArticles, useSearchArticles } from "../../hooks/useArticles";
+import {
+  useArticles,
+  useSearchArticles,
+  useCategories,
+} from "../../hooks/useArticles";
 import { Article } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
@@ -58,6 +62,8 @@ export default function ArticlesList({
         status: statusFilter || undefined,
         featured: featuredOnly || undefined,
       });
+
+  const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
   const articles = articlesData?.articles || [];
   const totalPages = articlesData?.totalPages || 1;
@@ -126,14 +132,15 @@ export default function ArticlesList({
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="">{t("articleForm.allCategories")}</option>
-                {}
-                <option value="tech">{t("articleForm.categoryTech")}</option>
-                <option value="science">
-                  {t("articleForm.categoryScience")}
-                </option>
-                <option value="philosophy">
-                  {t("articleForm.categoryPhilosophy")}
-                </option>
+                {isLoadingCategories ? (
+                  <option disabled>{t("articleForm.loadingCategories")}</option>
+                ) : (
+                  categories?.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))
+                )}
               </select>
             </div>
 

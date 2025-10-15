@@ -55,14 +55,18 @@
     "createFirstArticle": "צור מאמר ראשון",
     "previousButton": "הקודם",
     "nextButton": "הבא",
-    "createArticleButton": "צור מאמר"
+    "createArticleButton": "צור מאמר",
+    "createArticleDescription": "שתף את הידע והתובנות שלך עם הקהילה."
   },
   "articleForm": {
     "searchLabel": "חיפוש",
     "allStatus": "כל הסטטוסים",
     "searchPlaceholder": "חפש מאמרים...",
     "allCategories": "כל הקטגוריות",
+    "loadingCategories": "טוען קטגוריות...",
     "signInPrompt": "אנא התחבר כדי ליצור או לערוך מאמרים.",
+    "unauthorizedTitle": "אין הרשאה",
+    "unauthorizedMessage": "אין לך הרשאה ליצור מאמרים באתר זה.",
     "errorLoading": "שגיאה בטעינת המאמר",
     "articleNotFound": "מאמר לא נמצא",
     "articleNotFoundMessage": "המאמר שאתה מנסה לערוך אינו קיים.",
