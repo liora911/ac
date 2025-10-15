@@ -54,7 +54,8 @@
     "noArticlesAvailable": "There are no articles available at the moment.",
     "createFirstArticle": "Create First Article",
     "previousButton": "Previous",
-    "nextButton": "Next"
+    "nextButton": "Next",
+    "createArticleButton": "Create Article"
   },
   "articleForm": {
     "searchLabel": "Search",
@@ -99,8 +100,7 @@
     "keywordsLabel": "Keywords",
     "addKeywordPlaceholder": "Add a keyword",
     "savingButton": "Saving...",
-    "updateArticleButton": "Update Article",
-    "createArticleButton": "Create Article"
+    "updateArticleButton": "Update Article"
   },
   "loading": "Loading...",
   "loadingArticleData": "Loading article data...",

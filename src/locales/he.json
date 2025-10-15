@@ -54,7 +54,8 @@
     "noArticlesAvailable": "אין מאמרים זמינים כרגע.",
     "createFirstArticle": "צור מאמר ראשון",
     "previousButton": "הקודם",
-    "nextButton": "הבא"
+    "nextButton": "הבא",
+    "createArticleButton": "צור מאמר"
   },
   "articleForm": {
     "searchLabel": "חיפוש",
@@ -99,8 +100,7 @@
     "keywordsLabel": "מילות מפתח",
     "addKeywordPlaceholder": "הוסף מילת מפתח",
     "savingButton": "שומר...",
-    "updateArticleButton": "עדכן מאמר",
-    "createArticleButton": "צור מאמר"
+    "updateArticleButton": "עדכן מאמר"
   },
   "loading": "טוען...",
   "loadingArticleData": "טוען נתוני מאמר...",
