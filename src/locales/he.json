@@ -58,6 +58,7 @@
   },
   "articleForm": {
     "searchLabel": "חיפוש",
+    "allStatus": "כל הסטטוסים",
     "searchPlaceholder": "חפש מאמרים...",
     "allCategories": "כל הקטגוריות",
     "signInPrompt": "אנא התחבר כדי ליצור או לערוך מאמרים.",

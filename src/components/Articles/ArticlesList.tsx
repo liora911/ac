@@ -360,8 +360,7 @@ function ArticleCard({
 
       {}
       <div className="p-6">
-        {}
-        {
+        {isAuthorized && (
           <div className="mb-2">
             <span
               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
@@ -371,7 +370,7 @@ function ArticleCard({
               {article.status}
             </span>
           </div>
-        }
+        )}
 
         {}
         <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">

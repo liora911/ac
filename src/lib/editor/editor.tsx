@@ -26,6 +26,9 @@ import { useEffect, useState } from "react";
 import { Node } from "@tiptap/core";
 import { mergeAttributes } from "@tiptap/react";
 import { TextDirection } from "./text-direction";
+import { FontSize } from "./extensions/FontSize";
+import { LineHeight } from "./extensions/LineHeight";
+import { Indent } from "./extensions/Indent";
 
 interface TiptapEditorProps {
   value: string;
@@ -109,15 +112,13 @@ export default function TiptapEditor({
       TextDirection.configure({
         types: ["heading", "paragraph", "listItem"],
       }),
+      FontSize,
+      LineHeight,
+      Indent,
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
-      // Clean the HTML to remove problematic inline styles
-      let html = editor.getHTML();
-      // Remove inline style attributes that might cause issues
-      html = html.replace(/ style="[^"]*"/g, "");
-      // Remove empty style attributes
-      html = html.replace(/ style=""/g, "");
+      const html = editor.getHTML();
       onChange(html);
     },
     editorProps: {
