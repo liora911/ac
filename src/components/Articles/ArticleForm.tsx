@@ -3,7 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useCreateArticle, useUpdateArticle } from "../../hooks/useArticles";
-import { ArticleFormData, Article } from "../../types/Articles/articles";
+import {
+  ArticleFormData,
+  Article,
+  ArticleCategory,
+} from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -41,6 +45,7 @@ export default function ArticleForm({
 
   const [tagInput, setTagInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
+  const [categories, setCategories] = useState<ArticleCategory[]>([]);
 
   const createMutation = useCreateArticle();
   const updateMutation = useUpdateArticle();
@@ -59,6 +64,23 @@ export default function ArticleForm({
       }
     }
   }, [formData.content, formData.excerpt]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch("/api/categories");
+        if (!response.ok) {
+          throw new Error("Failed to fetch categories");
+        }
+        const data: ArticleCategory[] = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+
+    fetchCategories();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -236,13 +258,11 @@ export default function ArticleForm({
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">{t("articleForm.selectCategory")}</option>
-              <option value="tech">{t("articleForm.categoryTech")}</option>
-              <option value="science">
-                {t("articleForm.categoryScience")}
-              </option>
-              <option value="philosophy">
-                {t("articleForm.categoryPhilosophy")}
-              </option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
             </select>
           </div>
 

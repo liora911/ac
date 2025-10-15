@@ -170,6 +170,7 @@ export async function PUT(
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
     if (direction !== undefined) updateData.direction = direction;
+    if (categoryId !== undefined) updateData.categoryId = categoryId || null; // Add categoryId here
 
     if (content !== undefined) {
       updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
@@ -214,8 +215,8 @@ export async function PUT(
       updatedAt: updatedArticle.updatedAt.toISOString(),
       authorId: updatedArticle.authorId,
       author: updatedArticle.author,
-      categoryId: undefined,
-      category: undefined,
+      categoryId: updatedArticle.categoryId || undefined, // Include categoryId
+      category: updatedArticle.category || undefined, // Include category
       tags: [],
       keywords: [],
     };

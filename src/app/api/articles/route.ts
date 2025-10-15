@@ -227,6 +227,7 @@ export async function POST(request: NextRequest) {
         published: status === "PUBLISHED",
         authorId: user.id,
         direction,
+        categoryId: categoryId || null, // Add categoryId here
       },
       include: {
         author: {
@@ -264,8 +265,8 @@ export async function POST(request: NextRequest) {
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
       author: article.author,
-      categoryId: undefined,
-      category: undefined,
+      categoryId: article.categoryId || undefined, // Include categoryId
+      category: article.category || undefined, // Include category
       tags: [],
       keywords: [],
     };
