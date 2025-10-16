@@ -59,6 +59,7 @@
     "createArticleDescription": "Share your knowledge and insights with the community."
   },
   "articleForm": {
+    "createArticleButton": "Create Article",
     "searchLabel": "Search",
     "searchPlaceholder": "Search articles...",
     "allStatus": "All Status",

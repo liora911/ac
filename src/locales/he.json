@@ -59,6 +59,7 @@
     "createArticleDescription": "שתף את הידע והתובנות שלך עם הקהילה."
   },
   "articleForm": {
+    "createArticleButton": "צור מאמר",
     "searchLabel": "חיפוש",
     "allStatus": "כל הסטטוסים",
     "searchPlaceholder": "חפש מאמרים...",
