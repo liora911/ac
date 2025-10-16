@@ -78,7 +78,7 @@ export default function PresentationDetailPage() {
           <p className="text-gray-300 mb-6">{error || "המצגת לא נמצאה"}</p>
           <button
             onClick={() => router.push("/presentations")}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
           >
             חזור למצגות
           </button>
@@ -94,14 +94,14 @@ export default function PresentationDetailPage() {
         <div className="mb-6 flex justify-between items-center">
           <button
             onClick={() => router.push("/presentations")}
-            className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 cursor-pointer"
           >
             ← חזור למצגות
           </button>
           {isAuthorized && isAuthor && (
             <button
               onClick={() => router.push(`/edit-presentation/${id}`)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
               ✏️ ערוך מצגת
             </button>
@@ -166,7 +166,7 @@ export default function PresentationDetailPage() {
               <button
                 key={index}
                 onClick={() => setCurrentImageIndex(index)}
-                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors ${
+                className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
                   index === currentImageIndex
                     ? "border-blue-400"
                     : "border-gray-600 hover:border-gray-400"
@@ -236,7 +236,7 @@ export default function PresentationDetailPage() {
                       e.stopPropagation();
                       prev();
                     }}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-4 shadow-lg z-10 cursor-pointer transition-colors text-2xl"
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-4 shadow-lg z-10 cursor-pointer transition-colors"
                   >
                     &#8592;
                   </button>
@@ -246,7 +246,7 @@ export default function PresentationDetailPage() {
                       e.stopPropagation();
                       next();
                     }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-4 shadow-lg z-10 cursor-pointer transition-colors text-2xl"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white rounded-full p-4 shadow-lg z-10 cursor-pointer transition-colors"
                   >
                     &#8594;
                   </button>

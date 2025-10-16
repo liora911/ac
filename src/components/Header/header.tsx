@@ -32,7 +32,7 @@ export default function Header() {
         <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4">
           <Link
             href="/"
-            className="text-xl font-bold tracking-tight"
+            className="text-xl font-bold tracking-tight cursor-pointer"
             style={{
               background:
                 "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%)",
@@ -45,7 +45,7 @@ export default function Header() {
           </Link>
           <div className="flex items-center gap-4">
             <button
-              className="sm:hidden text-2xl focus:outline-none"
+              className="sm:hidden text-2xl focus:outline-none cursor-pointer"
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-label="Toggle navigation"
             >
@@ -56,7 +56,7 @@ export default function Header() {
                 <Link
                   key={href}
                   href={href}
-                  className={`hover:underline underline-offset-4 ${
+                  className={`hover:underline underline-offset-4 cursor-pointer ${
                     className || ""
                   }`}
                   style={{
@@ -81,7 +81,7 @@ export default function Header() {
               <li key={href}>
                 <Link
                   href={href}
-                  className={`block py-2 px-2 rounded hover:bg-slate-200 ${
+                  className={`block py-2 px-2 rounded hover:bg-slate-200 cursor-pointer ${
                     className || ""
                   }`}
                   onClick={() => {

@@ -42,7 +42,7 @@ export default function ArticleDetailPage() {
           </p>
           <button
             onClick={() => router.push("/articles")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
           >
             Back to Articles
           </button>
@@ -63,7 +63,7 @@ export default function ArticleDetailPage() {
           </p>
           <button
             onClick={() => router.push("/articles")}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
           >
             Back to Articles
           </button>
@@ -101,7 +101,7 @@ export default function ArticleDetailPage() {
           <div className="flex items-center justify-between">
             <button
               onClick={() => router.push("/articles")}
-              className="text-blue-600 hover:text-blue-800 transition-colors flex items-center"
+              className="text-blue-600 hover:text-blue-800 transition-colors flex items-center cursor-pointer"
             >
               ← Back to Articles
             </button>
@@ -109,7 +109,7 @@ export default function ArticleDetailPage() {
             {isAuthorized && (
               <Link
                 href={`/articles/${article.id}/edit`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 Edit Article
               </Link>
@@ -258,7 +258,7 @@ export default function ArticleDetailPage() {
           <div className="mt-8 flex justify-between">
             <button
               onClick={() => router.push("/articles")}
-              className="text-blue-600 hover:text-blue-800 transition-colors"
+              className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
             >
               ← Back to Articles
             </button>
@@ -266,7 +266,7 @@ export default function ArticleDetailPage() {
             {isAuthorized && (
               <Link
                 href={`/articles/${article.id}/edit`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 Edit Article
               </Link>

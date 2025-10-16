@@ -81,7 +81,7 @@ export default function DragDropImageUpload({
           <button
             type="button"
             onClick={removeImage}
-            className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-700"
+            className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm hover:bg-red-700 cursor-pointer"
           >
             ×
           </button>

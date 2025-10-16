@@ -22,7 +22,7 @@ export default function LocaleSelect({
     <div className="relative inline-block text-left">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-3 py-2 border rounded-md bg-white"
+        className="flex items-center gap-2 px-3 py-2 border rounded-md bg-white cursor-pointer"
       >
         <Image
           src={selected.flag}
@@ -52,7 +52,7 @@ export default function LocaleSelect({
                 onChange(opt.value as "en" | "he");
                 setOpen(false);
               }}
-              className="w-full px-2 py-1 hover:bg-gray-100"
+              className="w-full px-2 py-1 hover:bg-gray-100 cursor-pointer"
             >
               <Image src={opt.flag} alt={opt.label} width={20} height={15} />
               {opt.label}

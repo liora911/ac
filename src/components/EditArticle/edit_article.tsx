@@ -339,7 +339,7 @@ export default function EditArticleForm({
                 setFormData((prev) => ({ ...prev, articleImage: "" }));
                 setArticleImageFile(null);
               }}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
             >
               הסר תמונה
             </button>
@@ -360,7 +360,7 @@ export default function EditArticleForm({
                 setFormData((prev) => ({ ...prev, publisherImage: "" }));
                 setPublisherImageFile(null);
               }}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm"
+              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
             >
               הסר תמונה
             </button>
@@ -423,7 +423,7 @@ export default function EditArticleForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           {isLoading ? "מעדכן מאמר..." : "עדכן מאמר"}
         </button>

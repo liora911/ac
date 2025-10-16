@@ -77,7 +77,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
                   href={event.onlineUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/50 hover:decoration-cyan-300 transition-colors"
+                  className="text-cyan-400 hover:text-cyan-300 underline decoration-cyan-400/50 hover:decoration-cyan-300 transition-colors cursor-pointer"
                 >
                   {event.onlineUrl}
                 </a>

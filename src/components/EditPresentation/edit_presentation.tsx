@@ -114,7 +114,7 @@ export default function EditPresentationForm({
           <p className="text-gray-300 rtl">עליך להתחבר כדי לערוך מצגות</p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700"
+            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
           >
             התחבר
           </button>
@@ -363,7 +363,7 @@ export default function EditPresentationForm({
               <button
                 type="button"
                 onClick={() => removeImageUrl(index)}
-                className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
+                className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer"
               >
                 הסר
               </button>
@@ -372,7 +372,7 @@ export default function EditPresentationForm({
           <button
             type="button"
             onClick={addImageUrl}
-            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 cursor-pointer"
           >
             הוסף קישור תמונה
           </button>
@@ -381,7 +381,7 @@ export default function EditPresentationForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-lg font-semibold"
+          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           {isLoading ? "מעדכן מצגת..." : "עדכן מצגת"}
         </button>

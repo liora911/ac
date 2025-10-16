@@ -48,7 +48,7 @@ const Online = () => {
                           href={event.eventLink}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="hover:underline"
+                          className="hover:underline cursor-pointer"
                         >
                           {event.status === "Register" ? "הרשמה" : "הצטרפות"}
                         </a>

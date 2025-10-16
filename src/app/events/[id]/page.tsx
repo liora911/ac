@@ -55,7 +55,7 @@ export default function EventDetailPage() {
           <p className="text-gray-300 mb-6">{error || "האירוע לא נמצא"}</p>
           <button
             onClick={() => router.push("/events")}
-            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
           >
             חזור לאירועים
           </button>
@@ -70,7 +70,7 @@ export default function EventDetailPage() {
         {}
         <button
           onClick={() => router.push("/events")}
-          className="mb-6 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2"
+          className="mb-6 bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 cursor-pointer"
         >
           ← חזור לאירועים
         </button>
@@ -125,7 +125,7 @@ export default function EventDetailPage() {
                   href={event.onlineUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-blue-400 hover:text-blue-300 underline"
+                  className="text-blue-400 hover:text-blue-300 underline cursor-pointer"
                 >
                   {event.onlineUrl}
                 </a>

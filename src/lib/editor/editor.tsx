@@ -22,6 +22,7 @@ import TaskItem from "@tiptap/extension-task-item";
 import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
+import Youtube from "@tiptap/extension-youtube";
 import { useEffect, useState } from "react";
 import { TextDirection } from "./text-direction";
 import { FontSize } from "./extensions/FontSize";
@@ -54,6 +55,8 @@ export default function TiptapEditor({
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const editor = useEditor({
     immediatelyRender: false, // Fix Tiptap SSR hydration mismatch
@@ -113,6 +116,11 @@ export default function TiptapEditor({
       FontSize,
       LineHeight,
       Indent,
+      Youtube.configure({
+        controls: true,
+        nocookie: true,
+        modestBranding: true,
+      }),
     ],
     content: value || "",
     onUpdate: ({ editor }) => {
@@ -174,7 +182,9 @@ export default function TiptapEditor({
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className={`${baseClasses} ${themeClasses}`}
+        className={`${baseClasses} ${themeClasses} ${
+          !disabled ? "cursor-pointer" : ""
+        }`}
         title={title}
       >
         {children}
@@ -206,6 +216,14 @@ export default function TiptapEditor({
       .run();
   };
 
+  const addVideo = () => {
+    if (videoUrl) {
+      editor.chain().focus().setYoutubeVideo({ src: videoUrl }).run();
+      setVideoUrl("");
+      setIsVideoModalOpen(false);
+    }
+  };
+
   return (
     <div
       className={`border rounded-md ${
@@ -221,6 +239,28 @@ export default function TiptapEditor({
         }`}
       >
         <div className="flex flex-wrap gap-1 min-w-max">
+          {/* Undo/Redo */}
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
+            <ToolbarButton
+              onClick={() => editor.chain().focus().undo().run()}
+              disabled={!editor.can().undo()}
+              title="Undo (Ctrl+Z)"
+            >
+              ↩
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().redo().run()}
+              disabled={!editor.can().redo()}
+              title="Redo (Ctrl+Y)"
+            >
+              ↪
+            </ToolbarButton>
+          </div>
+
           {/* Text Formatting */}
           <div
             className={`flex border-r pr-2 mr-2 ${
@@ -261,6 +301,12 @@ export default function TiptapEditor({
               title="Inline Code"
             >
               {"</>"}
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().unsetAllMarks().run()}
+              title="Clear Formatting"
+            >
+              ✖
             </ToolbarButton>
           </div>
 
@@ -447,6 +493,12 @@ export default function TiptapEditor({
             <ToolbarButton onClick={addTable} title="Insert Table">
               📊
             </ToolbarButton>
+            <ToolbarButton
+              onClick={() => setIsVideoModalOpen(true)}
+              title="Insert Video"
+            >
+              🎞
+            </ToolbarButton>
           </div>
 
           {/* Text Direction */}
@@ -523,13 +575,13 @@ export default function TiptapEditor({
             <div className="flex gap-2">
               <button
                 onClick={addLink}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
               >
                 Add Link
               </button>
               <button
                 onClick={() => setIsLinkModalOpen(false)}
-                className={`px-4 py-2 rounded ${
+                className={`px-4 py-2 rounded cursor-pointer ${
                   theme === "dark"
                     ? "bg-gray-600 text-white hover:bg-gray-700"
                     : "bg-gray-600 text-white hover:bg-gray-700"
@@ -571,13 +623,61 @@ export default function TiptapEditor({
             <div className="flex gap-2">
               <button
                 onClick={addImage}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
               >
                 Add Image
               </button>
               <button
                 onClick={() => setIsImageModalOpen(false)}
-                className={`px-4 py-2 rounded ${
+                className={`px-4 py-2 rounded cursor-pointer ${
+                  theme === "dark"
+                    ? "bg-gray-600 text-white hover:bg-gray-700"
+                    : "bg-gray-600 text-white hover:bg-gray-700"
+                }`}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Video Modal */}
+      {isVideoModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div
+            className={`p-4 rounded-lg shadow-lg ${
+              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+            }`}
+          >
+            <h3
+              className={`text-lg font-semibold mb-2 ${
+                theme === "dark" ? "text-white" : "text-gray-900"
+              }`}
+            >
+              Insert Video
+            </h3>
+            <input
+              type="url"
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+              placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+              className={`w-full p-2 border rounded mb-2 ${
+                theme === "dark"
+                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                  : "border-gray-300"
+              }`}
+            />
+            <div className="flex gap-2">
+              <button
+                onClick={addVideo}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
+              >
+                Add Video
+              </button>
+              <button
+                onClick={() => setIsVideoModalOpen(false)}
+                className={`px-4 py-2 rounded cursor-pointer ${
                   theme === "dark"
                     ? "bg-gray-600 text-white hover:bg-gray-700"
                     : "bg-gray-600 text-white hover:bg-gray-700"

@@ -91,7 +91,7 @@ const EventsPage = () => {
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25"
+              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25 cursor-pointer"
             >
               {showCreateForm ? "ביטול" : "העלאת אירוע חדש"}
             </button>

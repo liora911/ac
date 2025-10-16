@@ -162,7 +162,7 @@ const PresentationsPage = () => {
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl"
+              className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl cursor-pointer"
             >
               {showCreateForm ? "ביטול" : "העלאת מצגת חדשה"}
             </button>
@@ -281,7 +281,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className={`w-full text-left p-3 rounded-md transition-colors ${
+                className={`w-full text-left p-3 rounded-md transition-colors cursor-pointer ${
                   selectedCategoryId === category.id
                     ? "bg-green-600 text-white"
                     : "bg-gray-700 text-gray-300 hover:bg-gray-600"

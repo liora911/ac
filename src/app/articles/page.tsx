@@ -30,7 +30,7 @@ export default function ArticlesPage() {
             {isAuthorized && (
               <div className="mt-6">
                 <Link href="/articles/create" passHref>
-                  <button className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors duration-200">
+                  <button className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
                     {t("articlesPage.createArticleButton")}
                   </button>
                 </Link>

@@ -31,7 +31,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
             }`}
           >
             <span
-              className="flex-grow font-medium"
+              className="flex-grow font-medium cursor-pointer"
               onClick={() => {
                 onSelectCategory(category);
                 setSelectedCategoryIdDirectly(category.id);
@@ -45,7 +45,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
                   e.stopPropagation(); // Prevent category selection when clicking the toggle
                   toggleCategory(category.id);
                 }}
-                className="ml-2 p-1 rounded-full hover:bg-gray-600 focus:outline-none"
+                className="ml-2 p-1 rounded-full hover:bg-gray-600 focus:outline-none cursor-pointer"
               >
                 <span
                   className={`transform transition-transform ${
@@ -244,7 +244,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                   <div className="p-4 border-t border-gray-700 flex justify-between items-center">
                     <button
                       onClick={() => handleLectureClick(lecture)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold"
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold cursor-pointer"
                     >
                       צפה בהרצאה
                     </button>
@@ -254,7 +254,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                           e.stopPropagation();
                           router.push(`/edit-lecture/${lecture.id}`);
                         }}
-                        className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm"
+                        className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
                       >
                         ✏️ ערוך
                       </button>
@@ -276,7 +276,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
             <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
               <button
                 onClick={handleCloseLectureModal}
-                className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl font-bold"
+                className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl font-bold cursor-pointer"
               >
                 &times;
               </button>

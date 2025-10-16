@@ -50,8 +50,7 @@ const Home = () => {
           {!showBio ? (
             <button
               onClick={() => setShowBio(true)}
-              className="text-blue-600 hover:underline font-medium"
-              style={{ cursor: "pointer" }}
+              className="text-blue-600 hover:underline font-medium cursor-pointer"
             >
               {t("home.bio.buttonRead")}
             </button>
@@ -114,8 +113,7 @@ const Home = () => {
 
               <button
                 onClick={() => setShowBio(false)}
-                className="text-blue-600 hover:underline font-medium mt-3 block"
-                style={{ cursor: "pointer" }}
+                className="text-blue-600 hover:underline font-medium mt-3 block cursor-pointer"
               >
                 {t("home.bio.buttonHide")}
               </button>
@@ -129,7 +127,7 @@ const Home = () => {
               href="https://" //"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110"
+              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
               aria-label={t("home.social.facebook")}
             >
               <FaFacebook />
@@ -138,7 +136,7 @@ const Home = () => {
               href="https://" //"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110"
+              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
               aria-label={t("home.social.youtube")}
             >
               <FaYoutube />
