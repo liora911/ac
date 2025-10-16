@@ -79,7 +79,7 @@ export default function ArticlePage() {
         <p className="text-lg mb-4">{error || "המאמר לא נמצא"}</p>
         <button
           onClick={() => window.history.back()}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer"
         >
           חזור
         </button>
@@ -129,7 +129,7 @@ export default function ArticlePage() {
           {
             <button
               onClick={() => router.push(`/edit-article/${articleId}`)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
               ✏️ ערוך מאמר
             </button>

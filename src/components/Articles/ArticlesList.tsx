@@ -252,7 +252,7 @@ export default function ArticlesList({
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1 || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {t("articlesPage.previousButton")}
             </button>
@@ -265,7 +265,7 @@ export default function ArticlesList({
                   key={page}
                   onClick={() => handlePageChange(page)}
                   disabled={isFetching}
-                  className={`px-3 py-2 text-sm font-medium rounded-md ${
+                  className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${
                     page === currentPage
                       ? "bg-blue-600 text-white"
                       : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
@@ -279,7 +279,7 @@ export default function ArticlesList({
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {t("articlesPage.nextButton")}
             </button>
@@ -383,7 +383,7 @@ function ArticleCard({
         <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
           <Link
             href={`/articles/${article.id}`}
-            className="hover:text-blue-600 transition-colors"
+            className="hover:text-blue-600 transition-colors cursor-pointer"
           >
             {article.title}
           </Link>
@@ -437,13 +437,13 @@ function ArticleCard({
           <div className="mt-4 flex space-x-2">
             <Link
               href={`/articles/${article.id}/edit`}
-              className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+              className="text-sm text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
             >
               {t("articleCard.editButton")}
             </Link>
             <button
               onClick={handleDelete}
-              className="text-sm text-red-600 hover:text-red-800 transition-colors"
+              className="text-sm text-red-600 hover:text-red-800 transition-colors cursor-pointer"
             >
               {t("articleCard.deleteButton")}
             </button>

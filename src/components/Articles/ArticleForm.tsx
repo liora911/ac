@@ -171,7 +171,7 @@ export default function ArticleForm({
           {onCancel && (
             <button
               onClick={onCancel}
-              className="text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-gray-500 hover:text-gray-700 transition-colors cursor-pointer"
             >
               {t("articleForm.cancelButton")}
             </button>
@@ -284,7 +284,7 @@ export default function ArticleForm({
               <button
                 type="button"
                 onClick={addTag}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 {t("articleForm.addButton")}
               </button>
@@ -299,7 +299,7 @@ export default function ArticleForm({
                   <button
                     type="button"
                     onClick={() => removeTag(tag)}
-                    className="ml-1 text-blue-600 hover:text-blue-800"
+                    className="ml-1 text-blue-600 hover:text-blue-800 cursor-pointer"
                   >
                     ×
                   </button>
@@ -404,7 +404,7 @@ export default function ArticleForm({
                 <button
                   type="button"
                   onClick={addKeyword}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                   {t("articleForm.addButton")}
                 </button>
@@ -419,7 +419,7 @@ export default function ArticleForm({
                     <button
                       type="button"
                       onClick={() => removeKeyword(keyword)}
-                      className="ml-1 text-green-600 hover:text-green-800"
+                      className="ml-1 text-green-600 hover:text-green-800 cursor-pointer"
                     >
                       ×
                     </button>
@@ -434,7 +434,7 @@ export default function ArticleForm({
               <button
                 type="button"
                 onClick={onCancel}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
                 disabled={isLoading}
               >
                 {t("articleForm.cancelButton")}
@@ -443,7 +443,7 @@ export default function ArticleForm({
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
             >
               {isLoading
                 ? t("articleForm.savingButton")
