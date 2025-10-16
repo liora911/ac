@@ -35,13 +35,17 @@ const Clock: React.FC = () => {
 
   return (
     <div
-      className="flex items-center gap-4 cursor-pointer"
+      className="flex items-center gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-800 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
       onClick={toggleVisibility}
     >
       {isVisible && (
         <>
-          <span className="text-lg font-mono">{formattedTime}</span>
-          <span className="text-xs">{formattedDate}</span>
+          <span className="text-base font-semibold text-gray-800 dark:text-gray-100 font-mono">
+            {formattedTime}
+          </span>
+          <span className="text-xs text-gray-600 dark:text-gray-400">
+            {formattedDate}
+          </span>
         </>
       )}
     </div>
