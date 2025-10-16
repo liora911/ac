@@ -2,6 +2,7 @@
 
 import { navItems } from "@/constants/Nav/data";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useTheme } from "@/contexts/Theme/theme.context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import LocaleSelect from "../LocaleSelect/locale-select";
@@ -11,6 +12,7 @@ import { useState } from "react";
 export default function Header() {
   const { data: session, status } = useSession();
   const { t, locale, setLocale } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
@@ -67,6 +69,14 @@ export default function Header() {
                 </Link>
               ))}
             </nav>
+
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+              aria-label="Toggle theme"
+            >
+              {theme === "light" ? "☀️" : "🌙"}
+            </button>
 
             <div className="relative shrink-0">
               <LocaleSelect value={locale} onChange={setLocale} />
