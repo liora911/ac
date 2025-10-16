@@ -7,6 +7,7 @@ import { usePathname } from "next/navigation";
 import LocaleSelect from "../LocaleSelect/locale-select";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
+import Clock from "../Clock/Clock";
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -44,6 +45,7 @@ export default function Header() {
             A.Elitzur
           </Link>
           <div className="flex items-center gap-4">
+            {session && <Clock />}
             <button
               className="sm:hidden text-2xl focus:outline-none cursor-pointer"
               onClick={() => setMenuOpen((prev) => !prev)}
