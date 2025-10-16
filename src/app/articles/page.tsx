@@ -16,15 +16,26 @@ export default function ArticlesPage() {
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 bg-cover bg-center">
       {}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="shadow-sm">
+        <div
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+          style={{
+            backgroundImage: "url('/bookwrite.webp')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               {t("articlesPage.title")}
             </h1>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p
+              className="text-xl text-white max-w-3xl mx-auto"
+              style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.8)" }}
+            >
               {t("articlesPage.description")}
             </p>
             {isAuthorized && (
