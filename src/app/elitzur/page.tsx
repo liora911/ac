@@ -1,26 +1,25 @@
 import LoginForm from "@/components/Login/login";
 import { Suspense } from "react";
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
-import { redirect } from "next/navigation";
 import CategoryManager from "@/components/Category/CategoryManager";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
 
-  if (!session) {
-    redirect("/api/auth/signin");
-  }
-
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
-      <h1 className="text-4xl font-bold mb-8">Category Management</h1>
-      <p className="mb-4">Welcome, {session.user?.name}!</p>
-      <Suspense>
-        <LoginForm />
-      </Suspense>
-      <CategoryManager />
+      {session ? (
+        <>
+          <h1 className="text-4xl font-bold mb-8">Category Management</h1>
+          <p className="mb-4">Welcome, {session.user?.name}!</p>
+          <CategoryManager />
+        </>
+      ) : (
+        <Suspense>
+          <LoginForm />
+        </Suspense>
+      )}
     </div>
   );
 }
