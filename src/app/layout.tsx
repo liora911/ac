@@ -34,7 +34,7 @@ export default function RootLayout({
             <TranslationProvider>
               <div className="flex flex-col min-h-screen">
                 <Header />
-                <main className="flex-grow flex flex-col pt-19">
+                <main className="flex-grow flex flex-col pt-16">
                   {children}
                 </main>
                 <Footer />

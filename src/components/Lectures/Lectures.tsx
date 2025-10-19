@@ -161,6 +161,31 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
     );
   };
 
+  const handleDeleteLecture = async (lectureId: string) => {
+    if (window.confirm("האם אתה בטוח שברצונך למחוק הרצאה זו?")) {
+      try {
+        const response = await fetch(`/api/lectures/${lectureId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete lecture");
+        }
+
+        // Update the state to remove the deleted lecture
+        setSelectedLectures((prevLectures) =>
+          prevLectures.filter((lecture) => lecture.id !== lectureId)
+        );
+
+        // Optionally, refresh the entire lecture data if needed
+        // router.refresh();
+      } catch (error) {
+        console.error("Error deleting lecture:", error);
+        alert("נכשל במחיקת ההרצאה.");
+      }
+    }
+  };
+
   const handleCloseLectureModal = () => {
     setSelectedLecture(null);
   };
@@ -249,15 +274,28 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                       צפה בהרצאה
                     </button>
                     {isAuthorized && isAuthor && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          router.push(`/edit-lecture/${lecture.id}`);
-                        }}
-                        className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
-                      >
-                        ✏️ ערוך
-                      </button>
+                      <div className="flex space-x-2">
+                        {" "}
+                        {/* Added a div to wrap buttons */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/edit-lecture/${lecture.id}`);
+                          }}
+                          className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
+                        >
+                          ✏️ ערוך
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteLecture(lecture.id);
+                          }}
+                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
+                        >
+                          🗑️ מחק
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

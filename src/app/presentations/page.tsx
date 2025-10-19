@@ -40,8 +40,8 @@ const PresentationsPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
 
-  const isAuthorized =
-    session?.user?.email &&
+  const isAuthorized: boolean =
+    !!session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   useEffect(() => {
@@ -211,6 +211,9 @@ const PresentationsPage = () => {
               altText: currentBannerAlt,
             }}
             onCategorySelect={handleCategorySelect}
+            session={session} // Pass session
+            isAuthorized={isAuthorized} // Pass isAuthorized
+            onPresentationDeleted={handlePresentationCreated} // Callback to refresh data
           />
         )}
 
@@ -231,6 +234,9 @@ interface PresentationsGridProps {
   initialSelectedCategoryId: string | null;
   initialBannerInfo: { imageUrl: string | null; altText: string } | null;
   onCategorySelect: (categoryId: string | null) => void;
+  session: any; // Add session to props
+  isAuthorized: boolean; // Add isAuthorized to props
+  onPresentationDeleted: () => void; // Add callback for deletion
 }
 
 const PresentationsGrid: React.FC<PresentationsGridProps> = ({
@@ -239,10 +245,33 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   initialSelectedCategoryId,
   initialBannerInfo,
   onCategorySelect,
+  session, // Destructure session
+  isAuthorized, // Destructure isAuthorized
+  onPresentationDeleted, // Destructure onPresentationDeleted
 }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialSelectedCategoryId
   );
+
+  const handleDeletePresentation = async (presentationId: string) => {
+    if (window.confirm("האם אתה בטוח שברצונך למחוק מצגת זו?")) {
+      try {
+        const response = await fetch(`/api/presentations/${presentationId}`, {
+          method: "DELETE",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to delete presentation");
+        }
+
+        // Call the callback to refresh the presentation data on the parent component
+        onPresentationDeleted();
+      } catch (error) {
+        console.error("Error deleting presentation:", error);
+        alert("נכשל במחיקת המצגת.");
+      }
+    }
+  };
 
   useEffect(() => {
     if (initialSelectedCategoryId && !selectedCategoryId) {
@@ -302,29 +331,52 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
 
         {selectedCategory && selectedCategory.presentations.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {selectedCategory.presentations.map((presentation) => (
-              <div
-                key={presentation.id}
-                className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-all duration-200 hover:scale-105 cursor-pointer"
-                onClick={() =>
-                  (window.location.href = `/presentations/${presentation.id}`)
-                }
-              >
-                <h3 className="text-xl font-semibold mb-3 text-green-400">
-                  {presentation.title}
-                </h3>
-                <p
-                  className="text-gray-300 mb-4 line-clamp-3 prose prose-sm max-w-none"
-                  dangerouslySetInnerHTML={{ __html: presentation.description }}
-                />
-                <div className="flex justify-between items-center text-sm text-gray-400">
-                  <span>תמונות: {presentation.imageUrls.length}</span>
-                  <span>
-                    מאת: {presentation.author.name || presentation.author.email}
-                  </span>
+            {selectedCategory.presentations.map((presentation) => {
+              const isAuthor =
+                presentation.author?.email === session?.user?.email; // Need session here
+              return (
+                <div
+                  key={presentation.id}
+                  className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-all duration-200 hover:scale-105 cursor-pointer"
+                >
+                  <div
+                    onClick={() =>
+                      (window.location.href = `/presentations/${presentation.id}`)
+                    }
+                  >
+                    <h3 className="text-xl font-semibold mb-3 text-green-400">
+                      {presentation.title}
+                    </h3>
+                    <p
+                      className="text-gray-300 mb-4 line-clamp-3 prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{
+                        __html: presentation.description,
+                      }}
+                    />
+                    <div className="flex justify-between items-center text-sm text-gray-400">
+                      <span>תמונות: {presentation.imageUrls.length}</span>
+                      <span>
+                        מאת:{" "}
+                        {presentation.author.name || presentation.author.email}
+                      </span>
+                    </div>
+                  </div>
+                  {isAuthorized && isAuthor && (
+                    <div className="flex justify-end mt-4">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeletePresentation(presentation.id);
+                        }}
+                        className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
+                      >
+                        🗑️ מחק
+                      </button>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : selectedCategory ? (
           <p className="text-gray-400 text-lg">אין מצגות זמינות בקטגוריה זו.</p>

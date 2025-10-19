@@ -8,6 +8,27 @@ import LocaleSelect from "../LocaleSelect/locale-select";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Clock from "../Clock/Clock";
+import {
+  MdArticle,
+  MdOutlineOndemandVideo,
+  MdMic,
+  MdContactMail,
+  MdEvent,
+  MdOnlinePrediction,
+  MdMenu,
+  MdClose,
+  MdPerson,
+} from "react-icons/md";
+
+const IconMap: { [key: string]: React.ElementType } = {
+  ArticleIcon: MdArticle,
+  PresentationIcon: MdOutlineOndemandVideo,
+  LectureIcon: MdMic,
+  ContactIcon: MdContactMail,
+  EventIcon: MdEvent,
+  OnlineEventIcon: MdOnlinePrediction,
+  PersonIcon: MdPerson,
+};
 
 export default function Header() {
   const { data: session, status } = useSession();
@@ -23,20 +44,20 @@ export default function Header() {
             label: "משתמש מחובר",
             href: "/elitzur",
             className: "text-red-600 font-semibold",
+            icon: "PersonIcon",
           },
         ]
       : []),
   ];
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-slate-50 px-4 py-5 sm:py-6">
-        <div className="max-w-5xl mx-auto flex flex-wrap justify-between items-center gap-4">
+      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white shadow-md px-4 py-3 sm:py-4">
+        <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center">
           <Link
             href="/"
-            className="text-xl font-bold tracking-tight cursor-pointer"
+            className="text-2xl font-extrabold tracking-tight cursor-pointer"
             style={{
-              background:
-                "linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #7e22ce 100%)",
+              background: "linear-gradient(135deg, #007bff 0%, #6610f2 100%)",
               backgroundClip: "text",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
@@ -44,25 +65,28 @@ export default function Header() {
           >
             A.Elitzur
           </Link>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-4">
             {session && <Clock />}
             <button
-              className="sm:hidden text-2xl focus:outline-none cursor-pointer"
+              className="sm:hidden text-gray-700 focus:outline-none cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-label="Toggle navigation"
             >
-              ☰
+              {menuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
             </button>
-            <nav className="hidden sm:flex flex flex-wrap justify-center items-center gap-4 text-sm sm:text-base">
+            <nav className="hidden sm:flex items-center space-x-6 text-base font-medium">
               {visibleNavItems.map(({ label, href, className }) => (
                 <Link
                   key={href}
                   href={href}
-                  className={`hover:underline underline-offset-4 cursor-pointer ${
+                  className={`text-gray-700 hover:text-blue-600 transition-colors duration-200 ${
                     className || ""
                   }`}
                   style={{
-                    textDecoration: pathname === href ? "underline" : undefined,
+                    textDecoration: pathname === href ? "underline" : "none",
+                    textDecorationColor:
+                      pathname === href ? "#007bff" : undefined,
+                    textUnderlineOffset: pathname === href ? "4px" : undefined,
                   }}
                 >
                   {t(label)}
@@ -77,23 +101,27 @@ export default function Header() {
         </div>
       </header>
       {menuOpen && (
-        <nav className="fixed top-[72px] left-0 right-0 z-40 sm:hidden bg-slate-100 border-b border-gray-300 shadow-md">
-          <ul className="flex flex-col">
-            {visibleNavItems.map(({ label, href, className }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  className={`block py-2 px-2 rounded hover:bg-slate-200 cursor-pointer ${
-                    className || ""
-                  }`}
-                  onClick={() => {
-                    setMenuOpen(false);
-                  }}
-                >
-                  {t(label)}
-                </Link>
-              </li>
-            ))}
+        <nav className="fixed top-[64px] left-0 right-0 z-40 sm:hidden bg-white shadow-lg">
+          <ul className="flex flex-col p-4 space-y-2">
+            {visibleNavItems.map(({ label, href, className, icon }) => {
+              const IconComponent = icon ? IconMap[icon] : null;
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={`flex items-center gap-3 py-2 px-3 rounded-md text-gray-800 hover:bg-blue-100 transition-colors duration-200 ${
+                      className || ""
+                    }`}
+                    onClick={() => {
+                      setMenuOpen(false);
+                    }}
+                  >
+                    {IconComponent && <IconComponent size={20} />}
+                    {t(label)}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </nav>
       )}
