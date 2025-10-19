@@ -1,17 +1,16 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { getServerSession } from "next-auth";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 
 export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const category = await prisma.category.findUnique({
-      where: { id: params.id },
-    });
+    const { id } = await params;
 
+    const category = await prisma.category.findUnique({ where: { id } });
     if (!category) {
       return NextResponse.json(
         { error: "Category not found" },
@@ -31,17 +30,17 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const { name } = await request.json();
+    const { id } = await params;
 
+    const { name } = await request.json();
     if (!name) {
       return NextResponse.json(
         { error: "Category name is required" },
@@ -50,7 +49,7 @@ export async function PUT(
     }
 
     const updatedCategory = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: { name },
     });
 
@@ -65,20 +64,18 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
+  _request: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await getServerSession(authOptions);
-
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    await prisma.category.delete({
-      where: { id: params.id },
-    });
+    const { id } = await params;
 
+    await prisma.category.delete({ where: { id } });
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("Error deleting category:", error);
