@@ -17,6 +17,9 @@ export default async function Page() {
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center py-10">
       <h1 className="text-4xl font-bold mb-8">Category Management</h1>
       <p className="mb-4">Welcome, {session.user?.name}!</p>
+      <Suspense>
+        <LoginForm />
+      </Suspense>
       <CategoryManager />
     </div>
   );
