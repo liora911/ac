@@ -3,13 +3,10 @@ import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: Params) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
     const category = await prisma.category.findUnique({
       where: { id: params.id },
@@ -32,7 +29,10 @@ export async function GET(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function PUT(request: NextRequest, { params }: Params) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -64,7 +64,10 @@ export async function PUT(request: NextRequest, { params }: Params) {
   }
 }
 
-export async function DELETE(request: NextRequest, { params }: Params) {
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
 
   if (!session) {
