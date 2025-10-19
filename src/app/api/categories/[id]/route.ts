@@ -1,15 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: Record<string, string | string[]> }
 ) {
+  const id = Array.isArray(context.params.id)
+    ? context.params.id[0]
+    : context.params.id;
+
   try {
     const category = await prisma.category.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!category) {
@@ -30,10 +34,14 @@ export async function GET(
 }
 
 export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: Record<string, string | string[]> }
 ) {
   const session = await getServerSession(authOptions);
+
+  const id = Array.isArray(context.params.id)
+    ? context.params.id[0]
+    : context.params.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -50,7 +58,7 @@ export async function PUT(
     }
 
     const updatedCategory = await prisma.category.update({
-      where: { id: params.id },
+      where: { id },
       data: { name },
     });
 
@@ -65,10 +73,14 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
+  request: Request,
+  context: { params: Record<string, string | string[]> }
 ) {
   const session = await getServerSession(authOptions);
+
+  const id = Array.isArray(context.params.id)
+    ? context.params.id[0]
+    : context.params.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -76,7 +88,7 @@ export async function DELETE(
 
   try {
     await prisma.category.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return new NextResponse(null, { status: 204 });
