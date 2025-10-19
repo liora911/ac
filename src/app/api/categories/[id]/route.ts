@@ -5,15 +5,11 @@ import { authOptions } from "@/lib/auth/auth";
 
 export async function GET(
   request: Request,
-  context: { params: Record<string, string | string[]> }
+  { params }: { params: { id: string } }
 ) {
-  const id = Array.isArray(context.params.id)
-    ? context.params.id[0]
-    : context.params.id;
-
   try {
     const category = await prisma.category.findUnique({
-      where: { id },
+      where: { id: params.id },
     });
 
     if (!category) {
@@ -35,13 +31,9 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  context: { params: Record<string, string | string[]> }
+  { params }: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions);
-
-  const id = Array.isArray(context.params.id)
-    ? context.params.id[0]
-    : context.params.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -58,7 +50,7 @@ export async function PUT(
     }
 
     const updatedCategory = await prisma.category.update({
-      where: { id },
+      where: { id: params.id },
       data: { name },
     });
 
@@ -74,13 +66,9 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  context: { params: Record<string, string | string[]> }
+  { params }: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions);
-
-  const id = Array.isArray(context.params.id)
-    ? context.params.id[0]
-    : context.params.id;
 
   if (!session) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -88,7 +76,7 @@ export async function DELETE(
 
   try {
     await prisma.category.delete({
-      where: { id },
+      where: { id: params.id },
     });
 
     return new NextResponse(null, { status: 204 });
