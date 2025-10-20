@@ -38,6 +38,80 @@
   "app": {
     "title": "אבשלום אליצור"
   },
+  "lecturesPage": {
+    "title": "הרצאות בנושאים שונים לפי קטגוריות",
+    "createLectureButton": "העלאת הרצאה חדשה",
+    "cancelButton": "ביטול",
+    "bannerLoading": "טוען באנר...",
+    "bannerPlaceholder": "תמונה/באנר של ההרצאות יופיע כאן",
+    "errorPrefix": "שגיאה בטעינת הרצאות",
+    "noLecturesFound": "לא נמצאו הרצאות."
+  },
+  "presentationsPage": {
+    "title": "מצגות בנושאים שונים לפי קטגוריות",
+    "cancelButton": "ביטול",
+    "createPresentationButton": "העלאת מצגת חדשה",
+    "bannerLoading": "טוען באנר...",
+    "bannerPlaceholder": "תמונה/באנר של המצגות יופיע כאן",
+    "loading": "טוען מצגות...",
+    "errorPrefix": "שגיאה בטעינת מצגות",
+    "noPresentationsFound": "לא נמצאו מצגות.",
+    "categoriesTitle": "קטגוריות",
+    "headingWithCategory": "מצגות בקטגוריה:",
+    "heading": "מצגות",
+    "imagesLabel": "תמונות",
+    "byLabel": "מאת",
+    "deleteButton": "מחק",
+    "deleteConfirm": "האם אתה בטוח שברצונך למחוק מצגת זו?",
+    "deleteFailed": "נכשל במחיקת המצגת.",
+    "noPresentationsInCategory": "אין מצגות זמינות בקטגוריה זו.",
+    "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג מצגות.",
+    "image": "תמונה"
+  },
+  "eventDetail": {
+    "loading": "טוען אירוע...",
+    "errorTitle": "שגיאה",
+    "notFound": "האירוע לא נמצא",
+    "backToEvents": "חזור לאירועים",
+    "detailsTitle": "פרטי האירוע",
+    "dateLabel": "תאריך",
+    "timeLabel": "שעה",
+    "typeLabel": "סוג",
+    "type": {
+      "inPerson": "פרונטלי",
+      "online": "אונליין"
+    },
+    "locationLabel": "מיקום",
+    "linkLabel": "קישור",
+    "descriptionTitle": "תיאור",
+    "createdByLabel": "נוצר על ידי",
+    "categoryLabel": "קטגוריה",
+    "createdAtLabel": "נוצר ב"
+  },
+  "presentationDetail": {
+    "loading": "טוען מצגת...",
+    "errorTitle": "שגיאה",
+    "notFound": "המצגת לא נמצאה",
+    "backToPresentations": "חזור למצגות",
+    "editButton": "ערוך מצגת",
+    "descriptionTitle": "תיאור",
+    "contentTitle": "תוכן המצגת",
+    "createdByLabel": "נוצר על ידי",
+    "categoryLabel": "קטגוריה",
+    "createdAtLabel": "נוצר ב",
+    "image": "תמונה",
+    "fullViewAlt": "תצוגה מלאה"
+  },
+  "eventsPage": {
+    "title": "כל האירועים",
+    "cancelButton": "ביטול",
+    "createEventButton": "העלאת אירוע חדש",
+    "bannerLoading": "טוען באנר...",
+    "bannerPlaceholder": "תמונה/באנר של האירועים יופיע כאן",
+    "loading": "טוען אירועים...",
+    "errorPrefix": "שגיאה בטעינת אירועים",
+    "noEventsFound": "לא נמצאו אירועים."
+  },
   "articlesPage": {
     "title": "מאמרים",
     "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי.",

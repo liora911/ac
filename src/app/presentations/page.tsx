@@ -6,9 +6,11 @@ import Image from "next/image";
 import { PresentationCategory } from "@/types/Presentations/presentations";
 import CreatePresentationForm from "@/components/CreatePresentation/create_presentation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 const PresentationsPage = () => {
   const { data: session } = useSession();
+  const { t, locale } = useTranslation();
   const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(
     () => {
       if (typeof window !== "undefined") {
@@ -152,19 +154,21 @@ const PresentationsPage = () => {
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
-      style={{ direction: "rtl" }}
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-white">
-            מצגות בנושאים שונים לפי קטגוריות
+            {t("presentationsPage.title")}
           </h1>
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl cursor-pointer"
             >
-              {showCreateForm ? "ביטול" : "העלאת מצגת חדשה"}
+              {showCreateForm
+                ? t("presentationsPage.cancelButton")
+                : t("presentationsPage.createPresentationButton")}
             </button>
           )}
         </div>
@@ -187,17 +191,21 @@ const PresentationsPage = () => {
             />
           ) : (
             <p className="text-gray-400 text-xl">
-              {isLoading ? "טוען באנר..." : "תמונה/באנר של המצגות יופיע כאן"}
+              {isLoading
+                ? t("presentationsPage.bannerLoading")
+                : t("presentationsPage.bannerPlaceholder")}
             </p>
           )}
         </div>
 
         {isLoading && (
-          <p className="text-center text-xl text-gray-300">טוען מצגות...</p>
+          <p className="text-center text-xl text-gray-300">
+            {t("presentationsPage.loading")}
+          </p>
         )}
         {error && (
           <p className="text-center text-xl text-red-500">
-            שגיאה בטעינת מצגות: {error}
+            {t("presentationsPage.errorPrefix")}: {error}
           </p>
         )}
 
@@ -221,7 +229,9 @@ const PresentationsPage = () => {
           !error &&
           (!presentationCategoriesData ||
             presentationCategoriesData.length === 0) && (
-            <p className="text-center text-xl text-gray-400">לא נמצאו מצגות.</p>
+            <p className="text-center text-xl text-gray-400">
+              {t("presentationsPage.noPresentationsFound")}
+            </p>
           )}
       </div>
     </div>
@@ -252,9 +262,10 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialSelectedCategoryId
   );
+  const { t } = useTranslation();
 
   const handleDeletePresentation = async (presentationId: string) => {
-    if (window.confirm("האם אתה בטוח שברצונך למחוק מצגת זו?")) {
+    if (window.confirm(t("presentationsPage.deleteConfirm"))) {
       try {
         const response = await fetch(`/api/presentations/${presentationId}`, {
           method: "DELETE",
@@ -268,7 +279,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         onPresentationDeleted();
       } catch (error) {
         console.error("Error deleting presentation:", error);
-        alert("נכשל במחיקת המצגת.");
+        alert(t("presentationsPage.deleteFailed"));
       }
     }
   };
@@ -303,7 +314,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
       <div className="lg:col-span-1">
         <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
           <h3 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
-            קטגוריות
+            {t("presentationsPage.categoriesTitle")}
           </h3>
           <div className="space-y-2">
             {categories.map((category) => (
@@ -326,7 +337,11 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
       {}
       <div className="lg:col-span-3">
         <h2 className="text-3xl font-bold mb-6 text-white">
-          מצגות {selectedCategory ? `בקטגוריה: ${selectedCategory.name}` : ""}
+          {selectedCategory
+            ? `${t("presentationsPage.headingWithCategory")} ${
+                selectedCategory.name
+              }`
+            : t("presentationsPage.heading")}
         </h2>
 
         {selectedCategory && selectedCategory.presentations.length > 0 ? (
@@ -354,9 +369,12 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                       }}
                     />
                     <div className="flex justify-between items-center text-sm text-gray-400">
-                      <span>תמונות: {presentation.imageUrls.length}</span>
                       <span>
-                        מאת:{" "}
+                        {t("presentationsPage.imagesLabel")}:{" "}
+                        {presentation.imageUrls.length}
+                      </span>
+                      <span>
+                        {t("presentationsPage.byLabel")}:{" "}
                         {presentation.author.name || presentation.author.email}
                       </span>
                     </div>
@@ -370,7 +388,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                         }}
                         className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
                       >
-                        🗑️ מחק
+                        🗑️ {t("presentationsPage.deleteButton")}
                       </button>
                     </div>
                   )}
@@ -379,10 +397,12 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             })}
           </div>
         ) : selectedCategory ? (
-          <p className="text-gray-400 text-lg">אין מצגות זמינות בקטגוריה זו.</p>
+          <p className="text-gray-400 text-lg">
+            {t("presentationsPage.noPresentationsInCategory")}
+          </p>
         ) : (
           <p className="text-gray-400 text-lg">
-            אנא בחר קטגוריה כדי להציג מצגות.
+            {t("presentationsPage.selectCategoryPrompt")}
           </p>
         )}
       </div>
