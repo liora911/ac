@@ -342,48 +342,6 @@ export default function TiptapEditor({
             />
           </div>
 
-          {/* Font Size */}
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <select
-              onChange={(e) =>
-                editor.chain().focus().setFontSize(e.target.value).run()
-              }
-              value={
-                editor.isActive("textStyle")
-                  ? editor.getAttributes("textStyle").fontSize || ""
-                  : ""
-              }
-              className={`px-2 py-1 text-xs border rounded cursor-pointer ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-white"
-                  : "border-gray-300 bg-white"
-              }`}
-              title="Font Size"
-            >
-              <option value="">Size</option>
-              <option value="12px">12px</option>
-              <option value="14px">14px</option>
-              <option value="16px">16px</option>
-              <option value="18px">18px</option>
-              <option value="20px">20px</option>
-              <option value="24px">24px</option>
-              <option value="28px">28px</option>
-              <option value="32px">32px</option>
-              <option value="36px">36px</option>
-            </select>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().unsetFontSize().run()}
-              disabled={!editor.isActive("textStyle", { fontSize: true })}
-              title="Clear Font Size"
-            >
-              Clear Size
-            </ToolbarButton>
-          </div>
-
           {/* Headings */}
           <div
             className={`flex border-r pr-2 mr-2 ${
