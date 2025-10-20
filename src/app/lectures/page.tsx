@@ -7,9 +7,11 @@ import CreateLectureForm from "@/components/CreateLecture/create_lecture";
 import Image from "next/image";
 import { CategoryDef } from "@/types/Lectures/lectures";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 const LecturesPage = () => {
   const { data: session } = useSession();
+  const { t, locale } = useTranslation();
   const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
   const [currentBannerAlt, setCurrentBannerAlt] =
     useState<string>("Banner Image");
@@ -83,19 +85,21 @@ const LecturesPage = () => {
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
-      style={{ direction: "rtl" }}
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold text-white">
-            הרצאות בנושאים שונים לפי קטגוריות
+            {t("lecturesPage.title")}
           </h1>
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl cursor-pointer"
             >
-              {showCreateForm ? "ביטול" : "העלאת הרצאה חדשה"}
+              {showCreateForm
+                ? t("lecturesPage.cancelButton")
+                : t("lecturesPage.createLectureButton")}
             </button>
           )}
         </div>
@@ -109,7 +113,9 @@ const LecturesPage = () => {
         <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center border border-gray-600 overflow-hidden">
           {isLoading ? (
             <div className="animate-pulse bg-gray-600 h-full w-full flex items-center justify-center">
-              <p className="text-gray-400 text-xl">טוען באנר...</p>
+              <p className="text-gray-400 text-xl">
+                {t("lecturesPage.bannerLoading")}
+              </p>
             </div>
           ) : currentBannerUrl ? (
             <Image
@@ -122,7 +128,7 @@ const LecturesPage = () => {
             />
           ) : (
             <p className="text-gray-400 text-xl">
-              תמונה/באנר של ההרצאות יופיע כאן
+              {t("lecturesPage.bannerPlaceholder")}
             </p>
           )}
         </div>
@@ -158,7 +164,7 @@ const LecturesPage = () => {
         )}
         {error && (
           <p className="text-center text-xl text-red-500">
-            שגיאה בטעינת הרצאות: {error}
+            {t("lecturesPage.errorPrefix")}: {error}
           </p>
         )}
         {!isLoading && !error && lectureCategoriesData && (
@@ -171,7 +177,7 @@ const LecturesPage = () => {
           !error &&
           (!lectureCategoriesData || lectureCategoriesData.length === 0) && (
             <p className="text-center text-xl text-gray-400">
-              לא נמצאו הרצאות.
+              {t("lecturesPage.noLecturesFound")}
             </p>
           )}
       </div>

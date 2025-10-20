@@ -38,6 +38,15 @@
   "app": {
     "title": "Avshalom Elitzur"
   },
+  "lecturesPage": {
+    "title": "Lectures by category on various topics",
+    "createLectureButton": "Upload New Lecture",
+    "cancelButton": "Cancel",
+    "bannerLoading": "Loading banner...",
+    "bannerPlaceholder": "Lecture image/banner will appear here",
+    "errorPrefix": "Error loading lectures",
+    "noLecturesFound": "No lectures found."
+  },
   "articlesPage": {
     "title": "Articles",
     "description": "Explore our collection of articles covering various topics in physics, philosophy, and scientific research.",

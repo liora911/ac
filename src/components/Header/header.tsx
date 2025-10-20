@@ -41,7 +41,7 @@ export default function Header() {
     ...(session
       ? [
           {
-            label: "משתמש מחובר",
+            label: "הגדרות",
             href: "/elitzur",
             className: "text-red-600 font-semibold",
             icon: "PersonIcon",
