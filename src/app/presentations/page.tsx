@@ -153,12 +153,12 @@ const PresentationsPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-4xl font-bold text-gray-900">
             {t("presentationsPage.title")}
           </h1>
           {isAuthorized && (
@@ -179,7 +179,7 @@ const PresentationsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center border border-gray-600 overflow-hidden">
+        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden">
           {currentBannerUrl ? (
             <Image
               src={currentBannerUrl}
@@ -199,7 +199,7 @@ const PresentationsPage = () => {
         </div>
 
         {isLoading && (
-          <p className="text-center text-xl text-gray-300">
+          <p className="text-center text-xl text-gray-600">
             {t("presentationsPage.loading")}
           </p>
         )}
@@ -312,8 +312,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       {}
       <div className="lg:col-span-1">
-        <div className="bg-gray-800 p-4 rounded-lg shadow-lg border border-gray-700">
-          <h3 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
+        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+          <h3 className="text-xl font-semibold mb-4 text-gray-900 border-b border-gray-200 pb-2">
             {t("presentationsPage.categoriesTitle")}
           </h3>
           <div className="space-y-2">
@@ -321,10 +321,10 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
               <button
                 key={category.id}
                 onClick={() => handleCategoryClick(category)}
-                className={`w-full text-left p-3 rounded-md transition-colors cursor-pointer ${
+                className={`w-full text-left p-3 rounded-md transition-colors border cursor-pointer ${
                   selectedCategoryId === category.id
-                    ? "bg-green-600 text-white"
-                    : "bg-gray-700 text-gray-300 hover:bg-gray-600"
+                    ? "bg-blue-600 text-white border-blue-600"
+                    : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
                 }`}
               >
                 ▶ {category.name} ({category.presentations.length})
@@ -336,7 +336,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
 
       {}
       <div className="lg:col-span-3">
-        <h2 className="text-3xl font-bold mb-6 text-white">
+        <h2 className="text-3xl font-bold mb-6 text-gray-900">
           {selectedCategory
             ? `${t("presentationsPage.headingWithCategory")} ${
                 selectedCategory.name
@@ -352,23 +352,23 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
               return (
                 <div
                   key={presentation.id}
-                  className="bg-gray-800 p-6 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-all duration-200 hover:scale-105 cursor-pointer"
+                  className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer"
                 >
                   <div
                     onClick={() =>
                       (window.location.href = `/presentations/${presentation.id}`)
                     }
                   >
-                    <h3 className="text-xl font-semibold mb-3 text-green-400">
+                    <h3 className="text-xl font-semibold mb-3 text-gray-900">
                       {presentation.title}
                     </h3>
                     <p
-                      className="text-gray-300 mb-4 line-clamp-3 prose prose-sm max-w-none"
+                      className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none"
                       dangerouslySetInnerHTML={{
                         __html: presentation.description,
                       }}
                     />
-                    <div className="flex justify-between items-center text-sm text-gray-400">
+                    <div className="flex justify-between items-center text-sm text-gray-500">
                       <span>
                         {t("presentationsPage.imagesLabel")}:{" "}
                         {presentation.imageUrls.length}
@@ -397,11 +397,11 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             })}
           </div>
         ) : selectedCategory ? (
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-500 text-lg">
             {t("presentationsPage.noPresentationsInCategory")}
           </p>
         ) : (
-          <p className="text-gray-400 text-lg">
+          <p className="text-gray-500 text-lg">
             {t("presentationsPage.selectCategoryPrompt")}
           </p>
         )}

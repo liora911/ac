@@ -84,12 +84,12 @@ const LecturesPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-4xl font-bold text-gray-900">
             {t("lecturesPage.title")}
           </h1>
           {isAuthorized && (
@@ -110,7 +110,7 @@ const LecturesPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-gray-700 rounded-lg shadow-xl flex items-center justify-center border border-gray-600 overflow-hidden">
+        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden">
           {isLoading ? (
             <div className="animate-pulse bg-gray-600 h-full w-full flex items-center justify-center">
               <p className="text-gray-400 text-xl">
@@ -133,28 +133,28 @@ const LecturesPage = () => {
           )}
         </div>
         {isLoading && (
-          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-gray-900 text-gray-100 min-h-[calc(100vh-200px)]">
-            <aside className="w-full md:w-1/4 lg:w-1/5 bg-gray-850 p-4 rounded-lg shadow-lg border border-gray-700 animate-pulse">
-              <div className="h-6 bg-gray-700 rounded w-3/4 mb-4"></div>
+          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-200px)]">
+            <aside className="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
               <div className="space-y-2">
-                <div className="h-8 bg-gray-700 rounded"></div>
-                <div className="h-8 bg-gray-700 rounded w-5/6"></div>
-                <div className="h-8 bg-gray-700 rounded w-4/5"></div>
+                <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="h-8 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-8 bg-gray-200 rounded w-4/5"></div>
               </div>
             </aside>
             <main className="w-full md:w-3/4 lg:w-4/5">
-              <div className="h-8 bg-gray-700 rounded w-1/2 mb-6 animate-pulse"></div>
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-6 animate-pulse"></div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {[...Array(3)].map((_, i) => (
                   <div
                     key={i}
-                    className="bg-gray-800 rounded-lg shadow-md border border-gray-700 h-64 animate-pulse"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 h-64 animate-pulse"
                   >
-                    <div className="h-32 bg-gray-700 rounded-t-lg"></div>
+                    <div className="h-32 bg-gray-200 rounded-t-lg"></div>
                     <div className="p-4">
-                      <div className="h-4 bg-gray-600 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-600 rounded w-full mb-2"></div>
-                      <div className="h-3 bg-gray-600 rounded w-2/3"></div>
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
                     </div>
                   </div>
                 ))}

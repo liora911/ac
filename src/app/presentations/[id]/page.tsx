@@ -61,7 +61,7 @@ export default function PresentationDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
           <p className="text-xl">טוען מצגת...</p>
@@ -72,10 +72,10 @@ export default function PresentationDetailPage() {
 
   if (error || !presentation) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-400 mb-4">שגיאה</h1>
-          <p className="text-gray-300 mb-6">{error || "המצגת לא נמצאה"}</p>
+          <p className="text-gray-600 mb-6">{error || "המצגת לא נמצאה"}</p>
           <button
             onClick={() => router.push("/presentations")}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
@@ -88,13 +88,13 @@ export default function PresentationDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {}
         <div className="mb-6 flex justify-between items-center">
           <button
             onClick={() => router.push("/presentations")}
-            className="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex items-center gap-2 cursor-pointer"
+            className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 cursor-pointer"
           >
             ← חזור למצגות
           </button>
@@ -109,14 +109,14 @@ export default function PresentationDetailPage() {
         </div>
 
         {}
-        <h1 className="text-3xl sm:text-4xl font-bold text-blue-400 mb-6 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 text-center">
           {presentation.title}
         </h1>
 
         {}
         {presentation.imageUrls.length > 0 && (
           <div
-            className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-800 cursor-zoom-in shadow-lg"
+            className="relative w-full aspect-video mb-8 rounded-xl overflow-hidden bg-white border border-gray-200 cursor-zoom-in shadow-lg"
             onClick={() => setIsModalOpen(true)}
           >
             <Image
@@ -169,7 +169,7 @@ export default function PresentationDetailPage() {
                 className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-colors cursor-pointer ${
                   index === currentImageIndex
                     ? "border-blue-400"
-                    : "border-gray-600 hover:border-gray-400"
+                    : "border-gray-300 hover:border-gray-400"
                 }`}
               >
                 <Image
@@ -185,25 +185,27 @@ export default function PresentationDetailPage() {
         )}
 
         {}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-white mb-4">תיאור</h2>
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">תיאור</h2>
           <div
-            className="text-gray-300 prose prose-sm max-w-none leading-relaxed"
+            className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
             dangerouslySetInnerHTML={{ __html: presentation.description }}
           />
         </div>
 
         {}
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-white mb-4">תוכן המצגת</h2>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            תוכן המצגת
+          </h2>
           <div
-            className="text-gray-300 prose prose-sm max-w-none leading-relaxed"
+            className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
             dangerouslySetInnerHTML={{ __html: presentation.content }}
           />
         </div>
 
         {}
-        <div className="mt-8 text-center text-gray-400">
+        <div className="mt-8 text-center text-gray-500">
           <p>
             נוצר על ידי: {presentation.author.name || presentation.author.email}
           </p>
