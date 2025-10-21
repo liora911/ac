@@ -6,12 +6,15 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { Presentation } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 export default function PresentationDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
   const id = params.id as string;
+  const { t, locale } = useTranslation();
+  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -64,7 +67,7 @@ export default function PresentationDetailPage() {
       <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
-          <p className="text-xl">טוען מצגת...</p>
+          <p className="text-xl">{t("presentationDetail.loading")}</p>
         </div>
       </div>
     );
@@ -74,13 +77,17 @@ export default function PresentationDetailPage() {
     return (
       <div className="min-h-screen bg-gray-50 text-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-400 mb-4">שגיאה</h1>
-          <p className="text-gray-600 mb-6">{error || "המצגת לא נמצאה"}</p>
+          <h1 className="text-2xl font-bold text-red-400 mb-4">
+            {t("presentationDetail.errorTitle")}
+          </h1>
+          <p className="text-gray-300 mb-6">
+            {error || t("presentationDetail.notFound")}
+          </p>
           <button
             onClick={() => router.push("/presentations")}
             className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
           >
-            חזור למצגות
+            {t("presentationDetail.backToPresentations")}
           </button>
         </div>
       </div>
@@ -88,7 +95,10 @@ export default function PresentationDetailPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8">
+    <div
+      className="min-h-screen bg-gradient-to-br from-[#0b0b0c] via-slate-800 to-[#0b0b0c] text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
+    >
       <div className="max-w-4xl mx-auto">
         {}
         <div className="mb-6 flex justify-between items-center">
@@ -96,14 +106,14 @@ export default function PresentationDetailPage() {
             onClick={() => router.push("/presentations")}
             className="bg-white text-gray-700 border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-50 transition-colors flex items-center gap-2 cursor-pointer"
           >
-            ← חזור למצגות
+            ← {t("presentationDetail.backToPresentations")}
           </button>
           {isAuthorized && isAuthor && (
             <button
               onClick={() => router.push(`/edit-presentation/${id}`)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
-              ✏️ ערוך מצגת
+              ✏️ {t("presentationDetail.editButton")}
             </button>
           )}
         </div>
@@ -121,7 +131,9 @@ export default function PresentationDetailPage() {
           >
             <Image
               src={presentation.imageUrls[currentImageIndex]}
-              alt={`${presentation.title} - תמונה ${currentImageIndex + 1}`}
+              alt={`${presentation.title} - ${t("presentationDetail.image")} ${
+                currentImageIndex + 1
+              }`}
               fill
               className="object-contain transition-opacity duration-300"
               sizes="(max-width: 768px) 100vw, 800px"
@@ -174,7 +186,7 @@ export default function PresentationDetailPage() {
               >
                 <Image
                   src={url}
-                  alt={`תמונה ${index + 1}`}
+                  alt={`${t("presentationDetail.image")} ${index + 1}`}
                   width={64}
                   height={64}
                   className="object-cover w-full h-full"
@@ -185,8 +197,10 @@ export default function PresentationDetailPage() {
         )}
 
         {}
-        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">תיאור</h2>
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 mb-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            {t("presentationDetail.descriptionTitle")}
+          </h2>
           <div
             className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
             dangerouslySetInnerHTML={{ __html: presentation.description }}
@@ -194,9 +208,9 @@ export default function PresentationDetailPage() {
         </div>
 
         {}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            תוכן המצגת
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-6">
+          <h2 className="text-xl font-semibold text-white mb-4">
+            {t("presentationDetail.contentTitle")}
           </h2>
           <div
             className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
@@ -207,11 +221,14 @@ export default function PresentationDetailPage() {
         {}
         <div className="mt-8 text-center text-gray-500">
           <p>
-            נוצר על ידי: {presentation.author.name || presentation.author.email}
+            {t("presentationDetail.createdByLabel")}:{" "}
+            {presentation.author.name || presentation.author.email}
           </p>
           <p className="text-sm mt-1">
-            קטגוריה: {presentation.category.name} • נוצר ב:{" "}
-            {new Date(presentation.createdAt).toLocaleDateString("he-IL")}
+            {t("presentationDetail.categoryLabel")}:{" "}
+            {presentation.category.name} •{" "}
+            {t("presentationDetail.createdAtLabel")}:{" "}
+            {new Date(presentation.createdAt).toLocaleDateString(dateLocale)}
           </p>
         </div>
 
@@ -224,7 +241,7 @@ export default function PresentationDetailPage() {
             <div className="relative w-full max-w-6xl h-[90vh]">
               <Image
                 src={presentation.imageUrls[currentImageIndex]}
-                alt="תצוגה מלאה"
+                alt={t("presentationDetail.fullViewAlt")}
                 fill
                 className="object-contain"
                 sizes="100vw"
