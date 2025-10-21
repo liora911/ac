@@ -7,6 +7,7 @@ import {
   ArticleFormData,
   Article,
   ArticleCategory,
+  ArticleStatus,
 } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
@@ -110,7 +111,10 @@ export default function ArticleForm({
     }
   };
 
-  const handleInputChange = (field: keyof ArticleFormData, value: any) => {
+  const handleInputChange = <K extends keyof ArticleFormData>(
+    field: K,
+    value: ArticleFormData[K]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -315,7 +319,9 @@ export default function ArticleForm({
               </label>
               <select
                 value={formData.status}
-                onChange={(e) => handleInputChange("status", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("status", e.target.value as ArticleStatus)
+                }
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               >
                 <option value="DRAFT">{t("articleForm.statusDraft")}</option>

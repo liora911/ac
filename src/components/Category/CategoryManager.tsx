@@ -30,8 +30,10 @@ export default function CategoryManager() {
       }
       const data = await response.json();
       setCategories(data);
-    } catch (err: any) {
-      setError(err.message ?? "Failed to fetch categories");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to fetch categories";
+      setError(msg);
     } finally {
       setLoading(false);
     }
@@ -56,14 +58,22 @@ export default function CategoryManager() {
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error((errData as any).message || "Failed to add category");
+        const errData = (await response.json().catch(() => null)) as unknown;
+        const msg =
+          errData &&
+          typeof errData === "object" &&
+          "message" in errData &&
+          typeof (errData as any).message === "string"
+            ? (errData as any).message
+            : "Failed to add category";
+        throw new Error(msg);
       }
 
       setNewCategoryName("");
       await fetchCategories();
-    } catch (err: any) {
-      setError(err.message ?? "Failed to add category");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to add category";
+      setError(msg);
     } finally {
       setSaving(false);
     }
@@ -88,17 +98,24 @@ export default function CategoryManager() {
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(
-          (errData as any).message || "Failed to update category"
-        );
+        const errData = (await response.json().catch(() => null)) as unknown;
+        const msg =
+          errData &&
+          typeof errData === "object" &&
+          "message" in errData &&
+          typeof (errData as any).message === "string"
+            ? (errData as any).message
+            : "Failed to update category";
+        throw new Error(msg);
       }
 
       setEditingCategory(null);
       setEditedCategoryName("");
       await fetchCategories();
-    } catch (err: any) {
-      setError(err.message ?? "Failed to update category");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to update category";
+      setError(msg);
     } finally {
       setSaving(false);
     }
@@ -113,15 +130,22 @@ export default function CategoryManager() {
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(
-          (errData as any).message || "Failed to delete category"
-        );
+        const errData = (await response.json().catch(() => null)) as unknown;
+        const msg =
+          errData &&
+          typeof errData === "object" &&
+          "message" in errData &&
+          typeof (errData as any).message === "string"
+            ? (errData as any).message
+            : "Failed to delete category";
+        throw new Error(msg);
       }
 
       await fetchCategories();
-    } catch (err: any) {
-      setError(err.message ?? "Failed to delete category");
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Failed to delete category";
+      setError(msg);
     } finally {
       setSaving(false);
     }

@@ -35,9 +35,11 @@ const LecturesPage = () => {
         }
         const data: CategoryDef[] = await response.json();
         setLectureCategoriesData(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching lecture data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setLectureCategoriesData([]);
       } finally {
         setIsLoading(false);
@@ -65,9 +67,11 @@ const LecturesPage = () => {
         }
         const data: CategoryDef[] = await response.json();
         setLectureCategoriesData(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching lecture data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setLectureCategoriesData([]);
       } finally {
         setIsLoading(false);
@@ -78,9 +82,10 @@ const LecturesPage = () => {
     setShowCreateForm(false);
   };
 
-  const isAuthorized =
+  const isAuthorized = !!(
     session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
 
   return (
     <div

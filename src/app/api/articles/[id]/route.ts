@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
+import type { Prisma } from "@prisma/client";
 import type { Article, UpdateArticleRequest } from "@/types/Articles/articles";
 
 export async function GET(
@@ -54,7 +55,7 @@ export async function GET(
       id: article.id,
       title: article.title,
       content: article.content,
-      featuredImage: article.articleImage,
+      featuredImage: article.articleImage ?? undefined,
       status: article.published ? "PUBLISHED" : "DRAFT",
       publishedAt: article.published
         ? article.createdAt.toISOString()
@@ -62,13 +63,24 @@ export async function GET(
       isFeatured: false,
       viewCount: 0,
       readTime: article.readDuration,
-      direction: article.direction,
+      direction: article.direction === "rtl" ? "rtl" : "ltr",
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
-      author: article.author,
-      categoryId: undefined,
-      category: undefined,
+      author: {
+        id: article.author.id,
+        name: article.author.name ?? undefined,
+        email: article.author.email ?? undefined,
+        image: article.author.image ?? undefined,
+      },
+      categoryId: article.categoryId ?? undefined,
+      category: article.category
+        ? {
+            id: article.category.id,
+            name: article.category.name,
+            bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+          }
+        : undefined,
       tags: [],
       keywords: [],
     };
@@ -163,14 +175,18 @@ export async function PUT(
       }
     }
 
-    const updateData: any = {};
+    const updateData: Prisma.ArticleUpdateInput = {};
 
     if (title !== undefined) updateData.title = title;
     if (content !== undefined) updateData.content = content;
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
     if (direction !== undefined) updateData.direction = direction;
-    if (categoryId !== undefined) updateData.categoryId = categoryId || null; // Add categoryId here
+    if (categoryId !== undefined) {
+      updateData.category = categoryId
+        ? { connect: { id: categoryId } }
+        : { disconnect: true };
+    }
 
     if (content !== undefined) {
       updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
@@ -202,7 +218,7 @@ export async function PUT(
       id: updatedArticle.id,
       title: updatedArticle.title,
       content: updatedArticle.content,
-      featuredImage: updatedArticle.articleImage,
+      featuredImage: updatedArticle.articleImage ?? undefined,
       status: updatedArticle.published ? "PUBLISHED" : "DRAFT",
       publishedAt: updatedArticle.published
         ? updatedArticle.createdAt.toISOString()
@@ -210,13 +226,24 @@ export async function PUT(
       isFeatured: false,
       viewCount: 0,
       readTime: updatedArticle.readDuration,
-      direction: updatedArticle.direction,
+      direction: updatedArticle.direction === "rtl" ? "rtl" : "ltr",
       createdAt: updatedArticle.createdAt.toISOString(),
       updatedAt: updatedArticle.updatedAt.toISOString(),
       authorId: updatedArticle.authorId,
-      author: updatedArticle.author,
-      categoryId: updatedArticle.categoryId || undefined, // Include categoryId
-      category: updatedArticle.category || undefined, // Include category
+      author: {
+        id: updatedArticle.author.id,
+        name: updatedArticle.author.name ?? undefined,
+        email: updatedArticle.author.email ?? undefined,
+        image: updatedArticle.author.image ?? undefined,
+      },
+      categoryId: updatedArticle.categoryId ?? undefined,
+      category: updatedArticle.category
+        ? {
+            id: updatedArticle.category.id,
+            name: updatedArticle.category.name,
+            bannerImageUrl: updatedArticle.category.bannerImageUrl ?? undefined,
+          }
+        : undefined,
       tags: [],
       keywords: [],
     };

@@ -7,6 +7,12 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
+type CategoryNode = {
+  id: string;
+  name: string;
+  subcategories?: CategoryNode[];
+};
+
 interface EditPresentationFormProps {
   presentationId: string;
   onSuccess?: () => void;
@@ -32,20 +38,21 @@ export default function EditPresentationForm({
     categoryId: "",
   });
 
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
 
-  const isAuthorized =
+  const isAuthorized = !!(
     session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
         if (response.ok) {
-          const data = await response.json();
+          const data: CategoryNode[] = await response.json();
           setCategories(data);
         }
       } catch (error) {
@@ -167,11 +174,13 @@ export default function EditPresentationForm({
       } else {
         router.push(`/presentations/${presentationId}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating presentation:", error);
+      const messageText =
+        error instanceof Error ? error.message : "שגיאה בעדכון המצגת. נסה שוב.";
       setMessage({
         type: "error",
-        text: error.message || "שגיאה בעדכון המצגת. נסה שוב.",
+        text: messageText,
       });
     } finally {
       setIsLoading(false);
@@ -215,9 +224,9 @@ export default function EditPresentationForm({
   };
 
   const renderCategoryOptions = () => {
-    const options: any[] = [];
+    const options: React.ReactElement[] = [];
 
-    categories.forEach((category) => {
+    categories.forEach((category: CategoryNode) => {
       options.push(
         <option key={category.id} value={category.id}>
           ▶ {category.name}
@@ -225,7 +234,7 @@ export default function EditPresentationForm({
       );
 
       if (category.subcategories && category.subcategories.length > 0) {
-        category.subcategories.forEach((sub: any) => {
+        category.subcategories.forEach((sub: CategoryNode) => {
           options.push(
             <option key={sub.id} value={sub.id}>
               &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}

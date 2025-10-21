@@ -42,8 +42,10 @@ export default function PresentationDetailPage() {
         }
         const data = await response.json();
         setPresentation(data);
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err) {
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
       } finally {
         setLoading(false);
       }

@@ -38,9 +38,8 @@ export default function ArticlesList({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<
-    "PUBLISHED" | "DRAFT" | "ARCHIVED" | ""
-  >("");
+  type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
 
   const {
     data: articlesData,
@@ -79,8 +78,8 @@ export default function ArticlesList({
     setCurrentPage(1);
   };
 
-  const handleStatusChange = (status: string) => {
-    setStatusFilter(status as any);
+  const handleStatusChange = (status: StatusFilter) => {
+    setStatusFilter(status);
     setCurrentPage(1);
   };
 
@@ -152,7 +151,9 @@ export default function ArticlesList({
                 </label>
                 <select
                   value={statusFilter}
-                  onChange={(e) => handleStatusChange(e.target.value)}
+                  onChange={(e) =>
+                    handleStatusChange(e.target.value as StatusFilter)
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="">{t("articleForm.allStatus")}</option>

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
+import type { Prisma } from "@prisma/client";
 import type {
   ArticlesListResponse,
   ArticlesQueryParams,
@@ -17,21 +18,44 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
+    const page = Number.parseInt(searchParams.get("page") || "1");
+    const limit = Number.parseInt(searchParams.get("limit") || "10");
+    const categoryId = searchParams.get("categoryId") || undefined;
+    const statusParam = searchParams.get("status");
+    const status: ArticlesQueryParams["status"] =
+      statusParam === "PUBLISHED" ||
+      statusParam === "DRAFT" ||
+      statusParam === "ARCHIVED"
+        ? statusParam
+        : undefined;
+    const search = searchParams.get("search") || undefined;
+    const featured = searchParams.get("featured") === "true" ? true : undefined;
+    const sortByParam = searchParams.get("sortBy");
+    const sortBy: NonNullable<ArticlesQueryParams["sortBy"]> =
+      sortByParam === "createdAt" ||
+      sortByParam === "updatedAt" ||
+      sortByParam === "title"
+        ? sortByParam
+        : "createdAt";
+    const sortOrderParam = searchParams.get("sortOrder");
+    const sortOrder: NonNullable<ArticlesQueryParams["sortOrder"]> =
+      sortOrderParam === "asc" ? "asc" : "desc";
+
     const query: ArticlesQueryParams = {
-      page: parseInt(searchParams.get("page") || "1"),
-      limit: parseInt(searchParams.get("limit") || "10"),
-      categoryId: searchParams.get("categoryId") || undefined,
-      status: (searchParams.get("status") as any) || undefined,
-      search: searchParams.get("search") || undefined,
-      featured: searchParams.get("featured") === "true" ? true : undefined,
-      sortBy: (searchParams.get("sortBy") as any) || "createdAt",
-      sortOrder: (searchParams.get("sortOrder") as any) || "desc",
+      page,
+      limit,
+      categoryId,
+      status,
+      search,
+      featured,
+      sortBy,
+      sortOrder,
     };
 
     const skip = (query.page! - 1) * query.limit!;
     const take = query.limit!;
 
-    const where: any = {};
+    const where: Prisma.ArticleWhereInput = {};
 
     if (query.categoryId) {
       where.categoryId = query.categoryId;
@@ -61,8 +85,18 @@ export async function GET(request: NextRequest) {
       ];
     }
 
-    const orderBy: any = {};
-    orderBy[query.sortBy!] = query.sortOrder;
+    let orderBy: Prisma.ArticleOrderByWithRelationInput;
+    switch (sortBy) {
+      case "updatedAt":
+        orderBy = { updatedAt: sortOrder };
+        break;
+      case "title":
+        orderBy = { title: sortOrder };
+        break;
+      default:
+        orderBy = { createdAt: sortOrder };
+        break;
+    }
 
     const total = await prisma.article.count({ where });
 
@@ -90,32 +124,39 @@ export async function GET(request: NextRequest) {
       take,
     });
 
-    const articlesArray = Array.isArray(articles) ? articles : [];
-
-    const transformedArticles: Article[] = articlesArray.map(
-      (article: any) => ({
-        id: article.id,
-        title: article.title,
-        content: article.content,
-        featuredImage: article.articleImage,
-        status: article.published ? "PUBLISHED" : "DRAFT",
-        publishedAt: article.published
-          ? article.createdAt.toISOString()
-          : undefined,
-        isFeatured: false,
-        viewCount: 0,
-        readTime: article.readDuration,
-        direction: article.direction || "ltr",
-        createdAt: article.createdAt.toISOString(),
-        updatedAt: article.updatedAt.toISOString(),
-        authorId: article.authorId,
-        author: article.author,
-        categoryId: article.categoryId || undefined,
-        category: article.category || undefined,
-        tags: [],
-        keywords: [],
-      })
-    );
+    const transformedArticles: Article[] = articles.map((article) => ({
+      id: article.id,
+      title: article.title,
+      content: article.content,
+      featuredImage: article.articleImage ?? undefined,
+      status: article.published ? "PUBLISHED" : "DRAFT",
+      publishedAt: article.published
+        ? article.createdAt.toISOString()
+        : undefined,
+      isFeatured: false,
+      viewCount: 0,
+      readTime: article.readDuration,
+      direction: article.direction === "rtl" ? "rtl" : "ltr",
+      createdAt: article.createdAt.toISOString(),
+      updatedAt: article.updatedAt.toISOString(),
+      authorId: article.authorId,
+      author: {
+        id: article.author.id,
+        name: article.author.name ?? undefined,
+        email: article.author.email ?? undefined,
+        image: article.author.image ?? undefined,
+      },
+      categoryId: article.categoryId ?? undefined,
+      category: article.category
+        ? {
+            id: article.category.id,
+            name: article.category.name,
+            bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+          }
+        : undefined,
+      tags: [],
+      keywords: [],
+    }));
 
     const response: ArticlesListResponse = {
       articles: transformedArticles,
@@ -158,7 +199,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
+      where: { email: session.user.email ?? undefined },
     });
 
     if (!user) {
@@ -169,14 +210,9 @@ export async function POST(request: NextRequest) {
     const {
       title,
       content,
-      excerpt,
       featuredImage,
       categoryId,
       status = "DRAFT",
-      isFeatured = false,
-      metaTitle,
-      metaDescription,
-      keywords = [],
       direction = "ltr",
     } = body;
 
@@ -199,11 +235,6 @@ export async function POST(request: NextRequest) {
         );
       }
     }
-
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
 
     const existingArticle = await prisma.article.findFirst({
       where: { title: { equals: title, mode: "insensitive" } },
@@ -252,7 +283,7 @@ export async function POST(request: NextRequest) {
       id: article.id,
       title: article.title,
       content: article.content,
-      featuredImage: article.articleImage,
+      featuredImage: article.articleImage ?? undefined,
       status: article.published ? "PUBLISHED" : "DRAFT",
       publishedAt: article.published
         ? article.createdAt.toISOString()
@@ -260,13 +291,24 @@ export async function POST(request: NextRequest) {
       isFeatured: false,
       viewCount: 0,
       readTime: article.readDuration,
-      direction: article.direction,
+      direction: article.direction === "rtl" ? "rtl" : "ltr",
       createdAt: article.createdAt.toISOString(),
       updatedAt: article.updatedAt.toISOString(),
       authorId: article.authorId,
-      author: article.author,
-      categoryId: article.categoryId || undefined, // Include categoryId
-      category: article.category || undefined, // Include category
+      author: {
+        id: article.author.id,
+        name: article.author.name ?? undefined,
+        email: article.author.email ?? undefined,
+        image: article.author.image ?? undefined,
+      },
+      categoryId: article.categoryId ?? undefined,
+      category: article.category
+        ? {
+            id: article.category.id,
+            name: article.category.name,
+            bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+          }
+        : undefined,
       tags: [],
       keywords: [],
     };

@@ -14,7 +14,12 @@ const TranslationContext = createContext<TranslationContextType | undefined>(
   undefined
 );
 
-const translations = { en, he };
+type TranslationNode = string | string[] | { [k: string]: TranslationNode };
+
+const translations: Record<Locale, Record<string, TranslationNode>> = {
+  en,
+  he,
+} as const;
 
 const getInitialLocale = (): Locale => {
   if (typeof window === "undefined") return "en";
@@ -35,21 +40,24 @@ export const TranslationProvider = ({
 
   const t = (key: string): string => {
     const keys = key.split(".");
-    let value: any = translations[locale];
+    let value: TranslationNode | undefined = translations[locale];
+
     for (const k of keys) {
-      if (value?.[k] !== undefined) {
-        value = value[k];
+      if (
+        value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        k in value
+      ) {
+        value = (value as Record<string, TranslationNode>)[k];
       } else {
         return key;
       }
     }
-    return (
-      Array.isArray(value)
-        ? value.join(" ")
-        : typeof value === "string"
-        ? value
-        : key
-    ) as string;
+
+    if (Array.isArray(value)) return value.join(" ");
+    if (typeof value === "string") return value;
+    return key;
   };
 
   return (
