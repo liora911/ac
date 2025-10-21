@@ -112,6 +112,29 @@
     "errorPrefix": "שגיאה בטעינת אירועים",
     "noEventsFound": "לא נמצאו אירועים."
   },
+  "editLecturePage": {
+    "title": "עריכת הרצאה"
+  },
+  "editPresentationPage": {
+    "title": "עריכת מצגת"
+  },
+  "editArticlePage": {
+    "title": "עריכת מאמר"
+  },
+  "createLecturePage": {
+    "title": "יצירת הרצאה חדשה"
+  },
+  "articleDetail": {
+    "loading": "טוען מאמר...",
+    "errorTitle": "שגיאה בטעינת המאמר",
+    "errorGeneric": "המאמר לא נמצא.",
+    "backToArticles": "חזרה למאמרים",
+    "notFoundTitle": "מאמר לא נמצא",
+    "notFoundMessage": "המאמר שאתה מחפש אינו קיים.",
+    "editButton": "ערוך מאמר",
+    "tagsTitle": "תגיות",
+    "copyleftNote": "מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים"
+  },
   "articlesPage": {
     "title": "מאמרים",
     "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי.",
