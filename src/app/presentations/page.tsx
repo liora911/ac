@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import type { Session } from "next-auth";
 import Image from "next/image";
 import { PresentationCategory } from "@/types/Presentations/presentations";
 import CreatePresentationForm from "@/components/CreatePresentation/create_presentation";
@@ -87,9 +88,11 @@ const PresentationsPage = () => {
             );
           }
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching presentation data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setPresentationCategoriesData([]);
       } finally {
         setIsLoading(false);
@@ -138,9 +141,11 @@ const PresentationsPage = () => {
         }
         const data: PresentationCategory[] = await response.json();
         setPresentationCategoriesData(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching presentation data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setPresentationCategoriesData([]);
       } finally {
         setIsLoading(false);
@@ -244,7 +249,7 @@ interface PresentationsGridProps {
   initialSelectedCategoryId: string | null;
   initialBannerInfo: { imageUrl: string | null; altText: string } | null;
   onCategorySelect: (categoryId: string | null) => void;
-  session: any; // Add session to props
+  session: Session | null; // Add session to props
   isAuthorized: boolean; // Add isAuthorized to props
   onPresentationDeleted: () => void; // Add callback for deletion
 }

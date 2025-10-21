@@ -34,9 +34,11 @@ const EventsPage = () => {
         }
         const data: Event[] = await response.json();
         setEventsData(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching event data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setEventsData([]);
       } finally {
         setIsLoading(false);
@@ -64,9 +66,11 @@ const EventsPage = () => {
         }
         const data: Event[] = await response.json();
         setEventsData(data);
-      } catch (err: any) {
+      } catch (err) {
         console.error("Error fetching event data:", err);
-        setError(err.message || "An unknown error occurred");
+        const msg =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        setError(msg);
         setEventsData([]);
       } finally {
         setIsLoading(false);
@@ -77,9 +81,10 @@ const EventsPage = () => {
     setShowCreateForm(false);
   };
 
-  const isAuthorized =
+  const isAuthorized: boolean = !!(
     session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
 
   return (
     <div

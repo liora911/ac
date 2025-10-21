@@ -5,6 +5,12 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 
+type CategoryNode = {
+  id: string;
+  name: string;
+  subcategories?: CategoryNode[];
+};
+
 interface CreatePresentationFormProps {
   onSuccess?: () => void;
 }
@@ -26,19 +32,20 @@ export default function CreatePresentationForm({
     categoryId: "",
   });
 
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
 
-  const isAuthorized =
+  const isAuthorized = !!(
     session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
         if (response.ok) {
-          const data = await response.json();
+          const data: CategoryNode[] = await response.json();
           setCategories(data);
         }
       } catch (error) {
@@ -133,11 +140,13 @@ export default function CreatePresentationForm({
       if (onSuccess) {
         onSuccess();
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error creating presentation:", error);
+      const messageText =
+        error instanceof Error ? error.message : "שגיאה ביצירת המצגת. נסה שוב.";
       setMessage({
         type: "error",
-        text: error.message || "שגיאה ביצירת המצגת. נסה שוב.",
+        text: messageText,
       });
     } finally {
       setIsLoading(false);
@@ -181,9 +190,9 @@ export default function CreatePresentationForm({
   };
 
   const renderCategoryOptions = () => {
-    const options: any[] = [];
+    const options: React.ReactElement[] = [];
 
-    categories.forEach((category) => {
+    categories.forEach((category: CategoryNode) => {
       options.push(
         <option key={category.id} value={category.id}>
           ▶ {category.name}
@@ -191,7 +200,7 @@ export default function CreatePresentationForm({
       );
 
       if (category.subcategories && category.subcategories.length > 0) {
-        category.subcategories.forEach((sub: any) => {
+        category.subcategories.forEach((sub: CategoryNode) => {
           options.push(
             <option key={sub.id} value={sub.id}>
               &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}

@@ -13,6 +13,12 @@ interface EditLectureFormProps {
   onSuccess?: () => void;
 }
 
+type CategoryNode = {
+  id: string;
+  name: string;
+  subcategories?: CategoryNode[];
+};
+
 export default function EditLectureForm({
   lectureId,
   onSuccess,
@@ -36,20 +42,21 @@ export default function EditLectureForm({
   });
 
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
 
-  const isAuthorized =
+  const isAuthorized = !!(
     session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("/api/categories");
         if (response.ok) {
-          const data = await response.json();
+          const data: CategoryNode[] = await response.json();
           setCategories(data);
         }
       } catch (error) {
@@ -185,11 +192,15 @@ export default function EditLectureForm({
       } else {
         router.push(`/lectures/${lectureId}`);
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error updating lecture:", error);
+      const messageText =
+        error instanceof Error
+          ? error.message
+          : "שגיאה בעדכון ההרצאה. נסה שוב.";
       setMessage({
         type: "error",
-        text: error.message || "שגיאה בעדכון ההרצאה. נסה שוב.",
+        text: messageText,
       });
     } finally {
       setIsLoading(false);
@@ -209,9 +220,9 @@ export default function EditLectureForm({
   };
 
   const renderCategoryOptions = () => {
-    const options: any[] = [];
+    const options: React.ReactElement[] = [];
 
-    categories.forEach((category) => {
+    categories.forEach((category: CategoryNode) => {
       options.push(
         <option key={category.id} value={category.id}>
           ▶ {category.name}
@@ -219,7 +230,7 @@ export default function EditLectureForm({
       );
 
       if (category.subcategories && category.subcategories.length > 0) {
-        category.subcategories.forEach((sub: any) => {
+        category.subcategories.forEach((sub: CategoryNode) => {
           options.push(
             <option key={sub.id} value={sub.id}>
               &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
