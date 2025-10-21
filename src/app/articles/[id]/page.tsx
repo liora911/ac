@@ -7,12 +7,15 @@ import Link from "next/link";
 import { useArticle } from "@/hooks/useArticles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 export default function ArticleDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { data: session } = useSession();
   const articleId = params.id as string;
+  const { t, locale } = useTranslation();
+  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const { data: article, isLoading, error } = useArticle(articleId);
   const isAuthorized =
@@ -24,7 +27,7 @@ export default function ArticleDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading article...</p>
+          <p className="text-gray-600">{t("articleDetail.loading")}</p>
         </div>
       </div>
     );
@@ -35,16 +38,16 @@ export default function ArticleDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-red-500 text-lg font-semibold mb-2">
-            Error loading article
+            {t("articleDetail.errorTitle")}
           </div>
           <p className="text-gray-600 mb-4">
-            {error.message || "The article could not be found."}
+            {error.message || t("articleDetail.errorGeneric")}
           </p>
           <button
             onClick={() => router.push("/articles")}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
           >
-            Back to Articles
+            {t("articleDetail.backToArticles")}
           </button>
         </div>
       </div>
@@ -56,16 +59,16 @@ export default function ArticleDetailPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-gray-500 text-lg font-semibold mb-2">
-            Article not found
+            {t("articleDetail.notFoundTitle")}
           </div>
           <p className="text-gray-600 mb-4">
-            The article you're looking for doesn't exist.
+            {t("articleDetail.notFoundMessage")}
           </p>
           <button
             onClick={() => router.push("/articles")}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
           >
-            Back to Articles
+            {t("articleDetail.backToArticles")}
           </button>
         </div>
       </div>
@@ -73,11 +76,14 @@ export default function ArticleDetailPage() {
   }
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    return new Date(dateString).toLocaleDateString(
+      dateLocale as Intl.LocalesArgument,
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }
+    );
   };
 
   const getStatusColor = (status: string) => {
@@ -103,7 +109,7 @@ export default function ArticleDetailPage() {
               onClick={() => router.push("/articles")}
               className="text-blue-600 hover:text-blue-800 transition-colors flex items-center cursor-pointer"
             >
-              ← Back to Articles
+              ← {t("articleDetail.backToArticles")}
             </button>
 
             {isAuthorized && (
@@ -111,7 +117,7 @@ export default function ArticleDetailPage() {
                 href={`/articles/${article.id}/edit`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
-                Edit Article
+                {t("articleDetail.editButton")}
               </Link>
             )}
           </div>
@@ -133,7 +139,7 @@ export default function ArticleDetailPage() {
               </span>
               {article.isFeatured && (
                 <span className="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  Featured
+                  {t("articleCard.featured")}
                 </span>
               )}
             </div>
@@ -167,7 +173,7 @@ export default function ArticleDetailPage() {
                 )}
                 <div>
                   <p className="font-medium text-gray-900">
-                    {article.author.name || "Anonymous"}
+                    {article.author.name || t("articleCard.authorAnonymous")}
                   </p>
                   <p className="text-sm text-gray-500">
                     {formatDate(article.createdAt)}
@@ -178,7 +184,7 @@ export default function ArticleDetailPage() {
 
             <div className="text-right">
               <p className="text-sm text-gray-500">
-                {article.readTime} min read
+                {article.readTime} {t("articleCard.minRead")}
               </p>
               {article.category && (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
@@ -217,7 +223,9 @@ export default function ArticleDetailPage() {
           {}
           {article.tags && article.tags.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">Tags</h3>
+              <h3 className="text-sm font-medium text-gray-900 mb-2">
+                {t("articleDetail.tagsTitle")}
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {article.tags.map((tag) => (
                   <span
@@ -245,10 +253,10 @@ export default function ArticleDetailPage() {
               )}
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {article.author.name || "Anonymous"}
+                  {article.author.name || t("articleCard.authorAnonymous")}
                 </h3>
                 <p className="text-gray-600 mt-1">
-                  מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים
+                  {t("articleDetail.copyleftNote")}
                 </p>
               </div>
             </div>
@@ -260,7 +268,7 @@ export default function ArticleDetailPage() {
               onClick={() => router.push("/articles")}
               className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
             >
-              ← Back to Articles
+              ← {t("articleDetail.backToArticles")}
             </button>
 
             {isAuthorized && (
@@ -268,7 +276,7 @@ export default function ArticleDetailPage() {
                 href={`/articles/${article.id}/edit`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
-                Edit Article
+                {t("articleDetail.editButton")}
               </Link>
             )}
           </div>

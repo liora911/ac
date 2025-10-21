@@ -112,6 +112,29 @@
     "errorPrefix": "Error loading events",
     "noEventsFound": "No events found."
   },
+  "articleDetail": {
+    "loading": "Loading article...",
+    "errorTitle": "Error loading article",
+    "errorGeneric": "The article could not be found.",
+    "backToArticles": "Back to Articles",
+    "notFoundTitle": "Article not found",
+    "notFoundMessage": "The article you're looking for doesn't exist.",
+    "editButton": "Edit Article",
+    "tagsTitle": "Tags",
+    "copyleftNote": "This article is available for free download, no copyright."
+  },
+  "editLecturePage": {
+    "title": "Edit Lecture"
+  },
+  "editPresentationPage": {
+    "title": "Edit Presentation"
+  },
+  "editArticlePage": {
+    "title": "Edit Article"
+  },
+  "createLecturePage": {
+    "title": "Create New Lecture"
+  },
   "articlesPage": {
     "title": "Articles",
     "description": "Explore our collection of articles covering various topics in physics, philosophy, and scientific research.",

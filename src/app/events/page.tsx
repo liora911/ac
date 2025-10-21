@@ -7,9 +7,12 @@ import CreateEventForm from "@/components/CreateEvent/create_event";
 import Image from "next/image";
 import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 const EventsPage = () => {
   const { data: session } = useSession();
+  const { t, locale } = useTranslation();
+  const dateLocale = locale === "he" ? "he-IL" : "en-US";
   const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
   const [currentBannerAlt, setCurrentBannerAlt] =
     useState<string>("Banner Image");
@@ -81,19 +84,21 @@ const EventsPage = () => {
   return (
     <div
       className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
-      style={{ direction: "rtl" }}
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-            כל האירועים
+            {t("eventsPage.title")}
           </h1>
           {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25 cursor-pointer"
             >
-              {showCreateForm ? "ביטול" : "העלאת אירוע חדש"}
+              {showCreateForm
+                ? t("eventsPage.cancelButton")
+                : t("eventsPage.createEventButton")}
             </button>
           )}
         </div>
@@ -135,7 +140,7 @@ const EventsPage = () => {
                               eventsData.find(
                                 (event) => event.title === currentBannerAlt
                               )?.eventDate || ""
-                            ).toLocaleDateString("he-IL")}
+                            ).toLocaleDateString(dateLocale)}
                           </span>
                           {eventsData.find(
                             (event) => event.title === currentBannerAlt
@@ -169,16 +174,20 @@ const EventsPage = () => {
             </>
           ) : (
             <p className="text-gray-400 text-lg">
-              {isLoading ? "טוען באנר..." : "תמונה/באנר של האירועים יופיע כאן"}
+              {isLoading
+                ? t("eventsPage.bannerLoading")
+                : t("eventsPage.bannerPlaceholder")}
             </p>
           )}
         </div>
         {isLoading && (
-          <p className="text-center text-xl text-cyan-300">טוען אירועים...</p>
+          <p className="text-center text-xl text-cyan-300">
+            {t("eventsPage.loading")}
+          </p>
         )}
         {error && (
           <p className="text-center text-xl text-red-400">
-            שגיאה בטעינת אירועים: {error}
+            {t("eventsPage.errorPrefix")}: {error}
           </p>
         )}
         {!isLoading && !error && eventsData && (
@@ -186,7 +195,7 @@ const EventsPage = () => {
         )}
         {!isLoading && !error && (!eventsData || eventsData.length === 0) && (
           <p className="text-center text-xl text-cyan-300/70">
-            לא נמצאו אירועים.
+            {t("eventsPage.noEventsFound")}
           </p>
         )}
       </div>
