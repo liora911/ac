@@ -8,6 +8,7 @@ import { PresentationCategory } from "@/types/Presentations/presentations";
 import CreatePresentationForm from "@/components/CreatePresentation/create_presentation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import Modal from "@/components/Modal/Modal";
 
 const PresentationsPage = () => {
   const { data: session } = useSession();
@@ -268,6 +269,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     initialSelectedCategoryId
   );
   const { t } = useTranslation();
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const handleDeletePresentation = async (presentationId: string) => {
     if (window.confirm(t("presentationsPage.deleteConfirm"))) {
@@ -284,7 +287,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         onPresentationDeleted();
       } catch (error) {
         console.error("Error deleting presentation:", error);
-        alert(t("presentationsPage.deleteFailed"));
+        setErrorMessage(t("presentationsPage.deleteFailed") as string);
+        setErrorModalOpen(true);
       }
     }
   };
@@ -411,6 +415,15 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           </p>
         )}
       </div>
+      {errorModalOpen && (
+        <Modal
+          isOpen={errorModalOpen}
+          onClose={() => setErrorModalOpen(false)}
+          title="שגיאה"
+          message={errorMessage}
+          confirmText="סגור"
+        />
+      )}
     </div>
   );
 };

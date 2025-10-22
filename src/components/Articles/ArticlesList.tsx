@@ -13,6 +13,7 @@ import { Article } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import Modal from "@/components/Modal/Modal";
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -304,6 +305,8 @@ function ArticleCard({
 }: ArticleCardProps) {
   const { t } = useTranslation();
   const router = useRouter();
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -341,7 +344,8 @@ function ArticleCard({
         router.push("/articles"); // Redirect to articles list after deletion
       } catch (error) {
         console.error("Error deleting article:", error);
-        alert(t("articleCard.deleteError") as string); // Assuming a new translation key for delete error
+        setErrorMessage(t("articleCard.deleteError") as string);
+        setErrorModalOpen(true);
       }
     }
   };
@@ -451,6 +455,15 @@ function ArticleCard({
           </div>
         )}
       </div>
+      {errorModalOpen && (
+        <Modal
+          isOpen={errorModalOpen}
+          onClose={() => setErrorModalOpen(false)}
+          title="שגיאה"
+          message={errorMessage}
+          confirmText="סגור"
+        />
+      )}
     </article>
   );
 }
