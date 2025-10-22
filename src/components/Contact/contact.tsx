@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import Modal from "@/components/Modal/Modal";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -20,7 +22,7 @@ const Contact = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    alert("הפרטים נשלחו בהצלחה! נחזור אליך בהקדם האפשרי");
+    setShowSuccessModal(true);
     setFormData({ name: "", email: "", subject: "", message: "" });
   };
   return (
@@ -120,6 +122,15 @@ const Contact = () => {
             </button>
           </div>
         </form>
+
+        {/* Success Modal */}
+        <Modal
+          isOpen={showSuccessModal}
+          onClose={() => setShowSuccessModal(false)}
+          title="הודעה"
+          message="הפרטים נשלחו בהצלחה! נחזור אליך בהקדם האפשרי"
+          confirmText="סגור"
+        />
       </div>
     </div>
   );

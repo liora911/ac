@@ -12,6 +12,7 @@ import {
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import Modal from "@/components/Modal/Modal";
 
 interface ArticleFormProps {
   article?: Article;
@@ -28,6 +29,7 @@ export default function ArticleForm({
   const { data: session } = useSession();
   const isEditing = !!article;
   const { t } = useTranslation();
+  const [validationModalOpen, setValidationModalOpen] = useState(false);
 
   const [formData, setFormData] = useState<ArticleFormData>({
     title: article?.title || "",
@@ -87,7 +89,7 @@ export default function ArticleForm({
     e.preventDefault();
 
     if (!formData.title.trim() || !formData.content.trim()) {
-      alert(t("articleForm.titleAndContentRequired")); // Assuming this key exists or will be added
+      setValidationModalOpen(true);
       return;
     }
 
@@ -459,6 +461,15 @@ export default function ArticleForm({
             </button>
           </div>
         </form>
+
+        {/* Validation Modal */}
+        <Modal
+          isOpen={validationModalOpen}
+          onClose={() => setValidationModalOpen(false)}
+          title="שגיאה"
+          message={t("articleForm.titleAndContentRequired") as string}
+          confirmText="סגור"
+        />
       </div>
     </div>
   );

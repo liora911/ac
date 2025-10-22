@@ -9,6 +9,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import Modal from "@/components/Modal/Modal";
 
 const CategoryTree: React.FC<CategoryTreeProps> = ({
   categories,
@@ -96,6 +97,8 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
     null
   );
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
+  const [errorModalOpen, setErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const isAuthorized =
     session?.user?.email &&
@@ -181,7 +184,8 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
         // router.refresh();
       } catch (error) {
         console.error("Error deleting lecture:", error);
-        alert("נכשל במחיקת ההרצאה.");
+        setErrorMessage("נכשל במחיקת ההרצאה.");
+        setErrorModalOpen(true);
       }
     }
   };
@@ -347,6 +351,15 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
               </div>
             </div>
           </div>
+        )}
+        {errorModalOpen && (
+          <Modal
+            isOpen={errorModalOpen}
+            onClose={() => setErrorModalOpen(false)}
+            title="שגיאה"
+            message={errorMessage}
+            confirmText="סגור"
+          />
         )}
       </main>
     </div>
