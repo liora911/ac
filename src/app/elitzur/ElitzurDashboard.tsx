@@ -5,12 +5,14 @@ import { useSession } from "next-auth/react";
 import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
+import ArticlesAdmin from "./ArticlesAdmin";
 
-type TabKey = "user" | "categories" | "themes";
+type TabKey = "user" | "categories" | "articles" | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "user", label: "User" },
   { key: "categories", label: "Categories" },
+  { key: "articles", label: "Articles" },
   { key: "themes", label: "Themes", disabled: true },
 ];
 
@@ -111,6 +113,20 @@ export default function ElitzurDashboard() {
                   </div>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {active === "articles" && (
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              Articles
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              Create, search, filter and manage articles.
+            </p>
+            <div className="mt-6">
+              <ArticlesAdmin />
             </div>
           </div>
         )}
