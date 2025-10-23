@@ -271,25 +271,38 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const { t } = useTranslation();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingPresentationId, setPendingPresentationId] = useState<
+    string | null
+  >(null);
 
-  const handleDeletePresentation = async (presentationId: string) => {
-    if (window.confirm(t("presentationsPage.deleteConfirm"))) {
-      try {
-        const response = await fetch(`/api/presentations/${presentationId}`, {
+  const handleDeletePresentation = (presentationId: string) => {
+    setPendingPresentationId(presentationId);
+    setConfirmModalOpen(true);
+  };
+
+  const confirmDeletePresentation = async () => {
+    if (!pendingPresentationId) return;
+    try {
+      const response = await fetch(
+        `/api/presentations/${pendingPresentationId}`,
+        {
           method: "DELETE",
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to delete presentation");
         }
+      );
 
-        // Call the callback to refresh the presentation data on the parent component
-        onPresentationDeleted();
-      } catch (error) {
-        console.error("Error deleting presentation:", error);
-        setErrorMessage(t("presentationsPage.deleteFailed") as string);
-        setErrorModalOpen(true);
+      if (!response.ok) {
+        throw new Error("Failed to delete presentation");
       }
+
+      onPresentationDeleted(); // Refresh data in parent
+    } catch (error) {
+      console.error("Error deleting presentation:", error);
+      setErrorMessage(t("presentationsPage.deleteFailed") as string);
+      setErrorModalOpen(true);
+    } finally {
+      setConfirmModalOpen(false);
+      setPendingPresentationId(null);
     }
   };
 
@@ -415,6 +428,24 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           </p>
         )}
       </div>
+      {confirmModalOpen && (
+        <Modal
+          isOpen={confirmModalOpen}
+          onClose={() => {
+            setConfirmModalOpen(false);
+            setPendingPresentationId(null);
+          }}
+          title={
+            (t("presentationsPage.deleteConfirmTitle") as string) ||
+            "Confirm Deletion"
+          }
+          message={t("presentationsPage.deleteConfirm") as string}
+          confirmText={t("presentationsPage.deleteButton") as string}
+          onConfirm={confirmDeletePresentation}
+          showCancel
+          cancelText={(t("common.cancel") as string) || "Cancel"}
+        />
+      )}
       {errorModalOpen && (
         <Modal
           isOpen={errorModalOpen}

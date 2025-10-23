@@ -16,6 +16,7 @@ import type {
   ArticlesQueryParams,
 } from "@/types/Articles/articles";
 import LoginForm from "@/components/Login/login";
+import Modal from "@/components/Modal/Modal";
 
 type StatusFilter = "" | ArticleStatus;
 
@@ -63,6 +64,8 @@ export default function ArticlesAdmin() {
 
   const updateMutation = useUpdateArticle();
   const deleteMutation = useDeleteArticle();
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [pendingArticle, setPendingArticle] = useState<Article | null>(null);
 
   // Reset to first page when filters change (except page itself)
   useEffect(() => {
@@ -111,16 +114,19 @@ export default function ArticlesAdmin() {
   };
 
   const onDelete = (article: Article) => {
-    if (
-      !confirm(
-        `Delete article "${article.title}"? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
-    deleteMutation.mutate(article.id, {
+    setPendingArticle(article);
+    setConfirmModalOpen(true);
+  };
+
+  const confirmDelete = () => {
+    if (!pendingArticle) return;
+    deleteMutation.mutate(pendingArticle.id, {
       onSuccess: () => {
         refetch();
+      },
+      onSettled: () => {
+        setConfirmModalOpen(false);
+        setPendingArticle(null);
       },
     });
   };
@@ -406,6 +412,23 @@ export default function ArticlesAdmin() {
             </button>
           </nav>
         </div>
+      )}
+      {confirmModalOpen && (
+        <Modal
+          isOpen={confirmModalOpen}
+          onClose={() => {
+            setConfirmModalOpen(false);
+            setPendingArticle(null);
+          }}
+          title="Confirm Deletion"
+          message={`Delete article "${
+            pendingArticle?.title ?? ""
+          }"? This action cannot be undone.`}
+          confirmText="Delete"
+          onConfirm={confirmDelete}
+          showCancel
+          cancelText="Cancel"
+        />
       )}
     </div>
   );

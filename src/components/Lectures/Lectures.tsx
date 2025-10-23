@@ -99,6 +99,8 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [confirmLectureId, setConfirmLectureId] = useState<string | null>(null);
 
   const isAuthorized =
     session?.user?.email &&
@@ -164,29 +166,37 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
     );
   };
 
-  const handleDeleteLecture = async (lectureId: string) => {
-    if (window.confirm("האם אתה בטוח שברצונך למחוק הרצאה זו?")) {
-      try {
-        const response = await fetch(`/api/lectures/${lectureId}`, {
-          method: "DELETE",
-        });
+  const handleDeleteLecture = (lectureId: string) => {
+    setConfirmLectureId(lectureId);
+    setConfirmModalOpen(true);
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to delete lecture");
-        }
+  const confirmDeleteLecture = async () => {
+    if (!confirmLectureId) return;
+    try {
+      const response = await fetch(`/api/lectures/${confirmLectureId}`, {
+        method: "DELETE",
+      });
 
-        // Update the state to remove the deleted lecture
-        setSelectedLectures((prevLectures) =>
-          prevLectures.filter((lecture) => lecture.id !== lectureId)
-        );
-
-        // Optionally, refresh the entire lecture data if needed
-        // router.refresh();
-      } catch (error) {
-        console.error("Error deleting lecture:", error);
-        setErrorMessage("נכשל במחיקת ההרצאה.");
-        setErrorModalOpen(true);
+      if (!response.ok) {
+        throw new Error("Failed to delete lecture");
       }
+
+      // Update the state to remove the deleted lecture
+      setSelectedLectures((prevLectures) =>
+        prevLectures.filter((lecture) => lecture.id !== confirmLectureId)
+      );
+
+      setConfirmLectureId(null);
+      setConfirmModalOpen(false);
+      // Optionally, refresh the entire lecture data if needed
+      // router.refresh();
+    } catch (error) {
+      console.error("Error deleting lecture:", error);
+      setConfirmLectureId(null);
+      setConfirmModalOpen(false);
+      setErrorMessage("נכשל במחיקת ההרצאה.");
+      setErrorModalOpen(true);
     }
   };
 
@@ -351,6 +361,21 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
               </div>
             </div>
           </div>
+        )}
+        {confirmModalOpen && (
+          <Modal
+            isOpen={confirmModalOpen}
+            onClose={() => {
+              setConfirmModalOpen(false);
+              setConfirmLectureId(null);
+            }}
+            title="אישור מחיקה"
+            message="האם אתה בטוח שברצונך למחוק הרצאה זו?"
+            confirmText="מחק"
+            onConfirm={confirmDeleteLecture}
+            showCancel
+            cancelText="בטל"
+          />
         )}
         {errorModalOpen && (
           <Modal

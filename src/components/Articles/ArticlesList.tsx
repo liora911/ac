@@ -307,6 +307,7 @@ function ArticleCard({
   const router = useRouter();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -329,24 +330,28 @@ function ArticleCard({
     }
   };
 
-  const handleDelete = async () => {
-    if (confirm(t("articleCard.deleteConfirm") as string)) {
-      try {
-        const response = await fetch(`/api/articles/${article.id}`, {
-          method: "DELETE",
-        });
+  const handleDelete = () => {
+    setConfirmModalOpen(true);
+  };
 
-        if (!response.ok) {
-          throw new Error(`Failed to delete article: ${response.statusText}`);
-        }
+  const confirmDelete = async () => {
+    try {
+      const response = await fetch(`/api/articles/${article.id}`, {
+        method: "DELETE",
+      });
 
-        onDeleteSuccess(); // Call the callback to refresh the list
-        router.push("/articles"); // Redirect to articles list after deletion
-      } catch (error) {
-        console.error("Error deleting article:", error);
-        setErrorMessage(t("articleCard.deleteError") as string);
-        setErrorModalOpen(true);
+      if (!response.ok) {
+        throw new Error(`Failed to delete article: ${response.statusText}`);
       }
+
+      setConfirmModalOpen(false);
+      onDeleteSuccess(); // Refresh the list
+      router.push("/articles"); // Redirect to articles list after deletion
+    } catch (error) {
+      console.error("Error deleting article:", error);
+      setConfirmModalOpen(false);
+      setErrorMessage(t("articleCard.deleteError") as string);
+      setErrorModalOpen(true);
     }
   };
 
@@ -455,6 +460,21 @@ function ArticleCard({
           </div>
         )}
       </div>
+      {confirmModalOpen && (
+        <Modal
+          isOpen={confirmModalOpen}
+          onClose={() => setConfirmModalOpen(false)}
+          title={
+            (t("articleCard.deleteConfirmTitle") as string) ||
+            "Confirm Deletion"
+          }
+          message={t("articleCard.deleteConfirm") as string}
+          confirmText={t("articleCard.deleteButton") as string}
+          onConfirm={confirmDelete}
+          showCancel
+          cancelText={(t("common.cancel") as string) || "Cancel"}
+        />
+      )}
       {errorModalOpen && (
         <Modal
           isOpen={errorModalOpen}
