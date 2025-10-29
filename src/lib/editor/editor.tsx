@@ -54,6 +54,8 @@ export default function TiptapEditor({
   const [linkUrl, setLinkUrl] = useState("");
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
+  const [imageWidth, setImageWidth] = useState("");
+  const [imageHeight, setImageHeight] = useState("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
@@ -202,8 +204,13 @@ export default function TiptapEditor({
 
   const addImage = () => {
     if (imageUrl) {
-      editor.chain().focus().setImage({ src: imageUrl }).run();
+      const attrs: any = { src: imageUrl };
+      if (imageWidth) attrs.width = imageWidth;
+      if (imageHeight) attrs.height = imageHeight;
+      editor.chain().focus().setImage(attrs).run();
       setImageUrl("");
+      setImageWidth("");
+      setImageHeight("");
       setIsImageModalOpen(false);
     }
   };
@@ -484,6 +491,15 @@ export default function TiptapEditor({
             >
               ⟶
             </ToolbarButton>
+            <ToolbarButton
+              onClick={() =>
+                editor.chain().focus().setTextAlign("justify").run()
+              }
+              isActive={editor.isActive({ textAlign: "justify" })}
+              title="Justify"
+            >
+              ⟷
+            </ToolbarButton>
           </div>
 
           {/* Special Elements */}
@@ -662,6 +678,30 @@ export default function TiptapEditor({
                   : "border-gray-300"
               }`}
             />
+            <div className="flex gap-2 mb-2">
+              <input
+                type="number"
+                value={imageWidth}
+                onChange={(e) => setImageWidth(e.target.value)}
+                placeholder="Width (px)"
+                className={`flex-1 p-2 border rounded ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "border-gray-300"
+                }`}
+              />
+              <input
+                type="number"
+                value={imageHeight}
+                onChange={(e) => setImageHeight(e.target.value)}
+                placeholder="Height (px)"
+                className={`flex-1 p-2 border rounded ${
+                  theme === "dark"
+                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
+                    : "border-gray-300"
+                }`}
+              />
+            </div>
             <div className="flex gap-2">
               <button
                 onClick={addImage}
