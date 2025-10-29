@@ -28,7 +28,7 @@ export default function ArticleForm({
   const router = useRouter();
   const { data: session } = useSession();
   const isEditing = !!article;
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [validationModalOpen, setValidationModalOpen] = useState(false);
 
   const [formData, setFormData] = useState<ArticleFormData>({
@@ -40,7 +40,7 @@ export default function ArticleForm({
     tags: article?.tags?.map((tag) => tag.name) || [],
     status: article?.status || "DRAFT",
     isFeatured: article?.isFeatured || false,
-    direction: article?.direction || "ltr",
+    direction: article?.direction || (locale === "en" ? "ltr" : "rtl"),
     metaTitle: article?.metaTitle || "",
     metaDescription: article?.metaDescription || "",
     keywords: article?.keywords || [],

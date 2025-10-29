@@ -214,7 +214,7 @@ export default function ArticleDetailPage() {
         <div
           // className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
           className="prose prose-lg max-w-none text-gray-800 leading-relaxed [&_p]:my-4 [&_p]:leading-7"
-          dir={article.direction || "ltr"}
+          dir={article.direction || (locale === "en" ? "ltr" : "rtl")}
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
 
