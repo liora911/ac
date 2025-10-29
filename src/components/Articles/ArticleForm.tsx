@@ -57,7 +57,7 @@ export default function ArticleForm({
   const error = createMutation.error || updateMutation.error;
 
   useEffect(() => {
-    if (!formData.excerpt && formData.content) {
+    if (!isEditing && !formData.excerpt && formData.content) {
       const excerpt = formData.content
         .replace(/<[^>]*>/g, "")
         .substring(0, 150)
@@ -66,7 +66,7 @@ export default function ArticleForm({
         setFormData((prev) => ({ ...prev, excerpt: excerpt + "..." }));
       }
     }
-  }, [formData.content, formData.excerpt]);
+  }, [isEditing, formData.content, formData.excerpt]);
 
   useEffect(() => {
     const fetchCategories = async () => {
