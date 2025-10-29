@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 
 const TiptapEditor = dynamic(() => import("@/lib/editor/editor"), {
@@ -22,6 +23,7 @@ export default function EditArticleForm({
 }: EditArticleFormProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { locale } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [message, setMessage] = useState<{
@@ -36,7 +38,7 @@ export default function EditArticleForm({
     publisherImage: "",
     readDuration: 5,
     categoryId: "",
-    direction: "ltr" as "ltr" | "rtl",
+    direction: (locale === "en" ? "ltr" : "rtl") as "ltr" | "rtl",
   });
 
   const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
@@ -79,7 +81,7 @@ export default function EditArticleForm({
             publisherImage: article.publisherImage || "",
             readDuration: article.readDuration || 5,
             categoryId: article.category?.id || "",
-            direction: article.direction || "ltr",
+            direction: article.direction || (locale === "en" ? "ltr" : "rtl"),
           });
         } else {
           setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
