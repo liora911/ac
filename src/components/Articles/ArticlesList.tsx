@@ -396,9 +396,9 @@ function ArticleCard({
 
         {}
         <div className="mb-4">
-          <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+          {/* <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
             {t("articleForm.excerptLabel")}
-          </span>
+          </span> */}
           {article.excerpt && (
             <p className="text-gray-600 text-sm mt-1 line-clamp-3">
               {article.excerpt}
