@@ -21,7 +21,7 @@ const translations: Record<Locale, Record<string, TranslationNode>> = {
   he,
 } as const;
 
-const getInitialLocale = (): Locale => {
+export const getInitialLocale = (): Locale => {
   if (typeof window === "undefined") return "en";
   const saved = localStorage.getItem("locale");
   return saved === "he" ? "he" : "en";
@@ -36,6 +36,11 @@ export const TranslationProvider = ({
 
   useEffect(() => {
     localStorage.setItem("locale", locale);
+    // Update document direction and lang based on locale
+    if (typeof window !== "undefined") {
+      document.documentElement.dir = locale === "he" ? "rtl" : "ltr";
+      document.documentElement.lang = locale;
+    }
   }, [locale]);
 
   const t = (key: string): string => {

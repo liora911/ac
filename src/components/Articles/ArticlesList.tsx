@@ -396,9 +396,14 @@ function ArticleCard({
 
         {}
         {article.excerpt && (
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-            {article.excerpt}
-          </p>
+          <div className="mb-4">
+            <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+              {t("articleForm.excerptLabel")}
+            </span>
+            <p className="text-gray-600 text-sm mt-1 line-clamp-3">
+              {article.excerpt}
+            </p>
+          </div>
         )}
 
         {}
