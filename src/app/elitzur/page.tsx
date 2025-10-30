@@ -11,11 +11,11 @@ export default async function Page() {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Elitzur Admin
+              פאנל ניהול
             </h1>
             <p className="mt-2 text-sm text-gray-600">
               {session ? (
-                <>Welcome, {session.user?.name}.</>
+                <>ברוך הבא פרופ' אבשלום אליצור</>
               ) : (
                 "Please sign in to access admin features."
               )}
