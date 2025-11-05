@@ -6,13 +6,15 @@ import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
 import ArticlesAdmin from "./ArticlesAdmin";
+import EventsAdmin from "./EventsAdmin";
 
-type TabKey = "user" | "categories" | "articles" | "themes";
+type TabKey = "user" | "categories" | "articles" | "events" | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "user", label: "User" },
   { key: "categories", label: "Categories" },
   { key: "articles", label: "Articles" },
+  { key: "events", label: "Events" },
   { key: "themes", label: "Themes", disabled: true },
 ];
 
@@ -47,9 +49,7 @@ export default function ElitzurDashboard() {
                   >
                     {tab.label}
                     {isDisabled && (
-                      <span className="ml-2 text-xs opacity-80">
-                        (Coming soon)
-                      </span>
+                      <span className="ml-2 text-xs opacity-80">(בקרוב)</span>
                     )}
                   </button>
                 );
@@ -63,7 +63,7 @@ export default function ElitzurDashboard() {
               {session ? (
                 <div className="space-y-2">
                   <p className="text-xs text-gray-600">
-                    Signed in as{" "}
+                    מחובר כ:{" "}
                     <span className="font-medium text-gray-900">
                       {session.user?.email || session.user?.name || "user"}
                     </span>
@@ -71,7 +71,7 @@ export default function ElitzurDashboard() {
                   <SignOutButton />
                 </div>
               ) : (
-                <p className="text-xs text-gray-600">Not signed in</p>
+                <p className="text-xs text-gray-600">לא מחובר</p>
               )}
             </div>
           </div>
@@ -83,10 +83,10 @@ export default function ElitzurDashboard() {
         {active === "user" && (
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              User
+              משתמש
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Sign in to access administration features.
+              נהל את פרטי המשתמש שלך והתחבר או התנתק מהמערכת.
             </p>
             <div className="mt-6">
               <LoginForm />
@@ -97,17 +97,17 @@ export default function ElitzurDashboard() {
         {active === "categories" && (
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Category Management
+              ניהול קטגוריות
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Create, edit and delete categories.
+              צור, ערוך ומחק קטגוריות למאמרים באתר.
             </p>
             <div className="mt-6">
               {session ? (
                 <CategoryManager />
               ) : (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
-                  You must sign in to manage categories.
+                  <p>אנא התחבר כדי לנהל קטגוריות.</p>
                   <div className="mt-4">
                     <LoginForm />
                   </div>
@@ -120,10 +120,10 @@ export default function ElitzurDashboard() {
         {active === "articles" && (
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Articles
+              מאמרים
             </h1>
             <p className="mt-2 text-sm text-gray-600">
-              Create, search, filter and manage articles.
+              יצירה, עריכה וניהול מאמרים באתר.
             </p>
             <div className="mt-6">
               <ArticlesAdmin />
@@ -131,14 +131,28 @@ export default function ElitzurDashboard() {
           </div>
         )}
 
+        {active === "events" && (
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              אירועים
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              צור, חפש, סנן ונהל אירועים.
+            </p>
+            <div className="mt-6">
+              <EventsAdmin />
+            </div>
+          </div>
+        )}
+
         {active === "themes" && (
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              Themes
+              ניהול ערכות נושא
             </h1>
             <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <p className="text-sm text-gray-700">
-                Theme management is not implemented yet. Coming soon.
+                תכונה זו עדיין לא זמינה. בקרוב נוסיף אפשרות לניהול ערכות נושא
               </p>
             </div>
           </div>
