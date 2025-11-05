@@ -88,10 +88,10 @@ const EventsPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 py-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
             {t("eventsPage.title")}
@@ -114,7 +114,7 @@ const EventsPage = () => {
           </div>
         )}
 
-        <div className="mb-6 h-48 md:h-56 bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-lg shadow-xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm relative">
+        <div className="mb-6 h-48 md:h-56 bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-lg shadow-xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm relative group">
           {currentBannerUrl ? (
             <>
               <Image
@@ -125,7 +125,7 @@ const EventsPage = () => {
                 priority
               />
               {}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent flex items-end">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end group-hover:from-black/70 transition-all duration-300">
                 <div className="p-4 text-white w-full">
                   <h3
                     className="text-lg md:text-xl font-semibold mb-1"

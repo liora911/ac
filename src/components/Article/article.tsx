@@ -4,7 +4,8 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { ALLOWED_EMAILS } from "@/constants/auth";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface Article {
   id: string;
@@ -30,7 +31,42 @@ export default function ArticlePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isAuthorized = true; // Always show edit button
+  const downloadPDF = async () => {
+    const element = document.querySelector(".article-content") as HTMLElement;
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`${article?.title || "article"}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchArticle = async () => {
@@ -126,18 +162,26 @@ export default function ArticlePage() {
               </p>
             </div>
           </div>
-          {
+          <div className="flex gap-2">
             <button
-              onClick={() => router.push(`/edit-article/${articleId}`)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
+              onClick={downloadPDF}
+              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
-              ✏️ ערוך מאמר
+              📄 הורד PDF
             </button>
-          }
+            {
+              <button
+                onClick={() => router.push(`/edit-article/${articleId}`)}
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
+              >
+                ✏️ ערוך מאמר
+              </button>
+            }
+          </div>
         </div>
 
         <div
-          className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none"
+          className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none article-content"
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
       </div>
