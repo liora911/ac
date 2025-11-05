@@ -5,6 +5,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import LecturesSidebar from "./LecturesSidebar";
 import LectureCard from "./LectureCard";
@@ -18,6 +19,7 @@ interface LecturesProps {
 const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   const { data: session } = useSession();
   const router = useRouter();
+  const { locale } = useTranslation();
   const hasInitializedRef = useRef(false);
   const [selectedLectures, setSelectedLectures] = useState<Lecture[]>([]);
   const [currentCategoryBanner, setCurrentCategoryBanner] = useState<
@@ -131,10 +133,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
 
   if (!lectureData) {
     return (
-      <div
-        className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl"
-        style={{ direction: "rtl" }}
-      >
+      <div className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl">
         טוען נתוני הרצאות...
       </div>
     );
@@ -142,10 +141,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
 
   if (lectureData.length === 0) {
     return (
-      <div
-        className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl"
-        style={{ direction: "rtl" }}
-      >
+      <div className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl">
         אין הרצאות זמינות כרגע.
       </div>
     );
@@ -154,7 +150,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   return (
     <div
       className="flex flex-col md:flex-row gap-8 p-4 md:p-6 min-h-[calc(100vh-200px)]"
-      style={{ direction: "rtl" }}
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <LecturesSidebar
         lectureData={lectureData}
