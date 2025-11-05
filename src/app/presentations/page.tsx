@@ -1,14 +1,28 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
 import type { Session } from "next-auth";
 import Image from "next/image";
+import dynamic from "next/dynamic";
 import { PresentationCategory } from "@/types/Presentations/presentations";
-import CreatePresentationForm from "@/components/CreatePresentation/create_presentation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import Modal from "@/components/Modal/Modal";
+
+// Lazy load heavy components
+const CreatePresentationForm = dynamic(
+  () => import("@/components/CreatePresentation/create_presentation"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    ),
+  }
+);
+const Modal = dynamic(() => import("@/components/Modal/Modal"), {
+  loading: () => <div className="animate-pulse bg-gray-200 rounded" />,
+});
 
 const PresentationsPage = () => {
   const { data: session } = useSession();
@@ -181,7 +195,15 @@ const PresentationsPage = () => {
 
         {showCreateForm && isAuthorized && (
           <div className="mb-8">
-            <CreatePresentationForm onSuccess={handlePresentationCreated} />
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                </div>
+              }
+            >
+              <CreatePresentationForm onSuccess={handlePresentationCreated} />
+            </Suspense>
           </div>
         )}
 
@@ -194,6 +216,10 @@ const PresentationsPage = () => {
               height={320}
               className="object-cover w-full h-full"
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
             />
           ) : (
             <p className="text-gray-400 text-xl">
@@ -216,19 +242,27 @@ const PresentationsPage = () => {
         )}
 
         {!isLoading && !error && presentationCategoriesData && (
-          <PresentationsGrid
-            categories={presentationCategoriesData}
-            onBannerUpdate={handleBannerUpdate}
-            initialSelectedCategoryId={selectedCategoryId}
-            initialBannerInfo={{
-              imageUrl: currentBannerUrl,
-              altText: currentBannerAlt,
-            }}
-            onCategorySelect={handleCategorySelect}
-            session={session} // Pass session
-            isAuthorized={isAuthorized} // Pass isAuthorized
-            onPresentationDeleted={handlePresentationCreated} // Callback to refresh data
-          />
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              </div>
+            }
+          >
+            <PresentationsGrid
+              categories={presentationCategoriesData}
+              onBannerUpdate={handleBannerUpdate}
+              initialSelectedCategoryId={selectedCategoryId}
+              initialBannerInfo={{
+                imageUrl: currentBannerUrl,
+                altText: currentBannerAlt,
+              }}
+              onCategorySelect={handleCategorySelect}
+              session={session} // Pass session
+              isAuthorized={isAuthorized} // Pass isAuthorized
+              onPresentationDeleted={handlePresentationCreated} // Callback to refresh data
+            />
+          </Suspense>
         )}
 
         {!isLoading &&
@@ -416,13 +450,21 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         )}
       </div>
       {errorModalOpen && (
-        <Modal
-          isOpen={errorModalOpen}
-          onClose={() => setErrorModalOpen(false)}
-          title="שגיאה"
-          message={errorMessage}
-          confirmText="סגור"
-        />
+        <Suspense
+          fallback={
+            <div className="animate-pulse bg-gray-200 rounded p-4">
+              Loading...
+            </div>
+          }
+        >
+          <Modal
+            isOpen={errorModalOpen}
+            onClose={() => setErrorModalOpen(false)}
+            title="שגיאה"
+            message={errorMessage}
+            confirmText="סגור"
+          />
+        </Suspense>
       )}
     </div>
   );

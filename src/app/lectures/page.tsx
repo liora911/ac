@@ -1,13 +1,31 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import Lectures from "@/components/Lectures/Lectures";
-import CreateLectureForm from "@/components/CreateLecture/create_lecture";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { CategoryDef } from "@/types/Lectures/lectures";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+
+// Lazy load heavy components
+const Lectures = dynamic(() => import("@/components/Lectures/Lectures"), {
+  loading: () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+    </div>
+  ),
+});
+const CreateLectureForm = dynamic(
+  () => import("@/components/CreateLecture/create_lecture"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+      </div>
+    ),
+  }
+);
 
 const LecturesPage = () => {
   const { data: session } = useSession();
@@ -111,7 +129,15 @@ const LecturesPage = () => {
 
         {showCreateForm && isAuthorized && (
           <div className="mb-8">
-            <CreateLectureForm onSuccess={handleLectureCreated} />
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+                </div>
+              }
+            >
+              <CreateLectureForm onSuccess={handleLectureCreated} />
+            </Suspense>
           </div>
         )}
 
@@ -130,6 +156,10 @@ const LecturesPage = () => {
               height={320}
               className="object-cover w-full h-full"
               priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
             />
           ) : (
             <p className="text-gray-400 text-xl">
@@ -173,10 +203,18 @@ const LecturesPage = () => {
           </p>
         )}
         {!isLoading && !error && lectureCategoriesData && (
-          <Lectures
-            onBannerUpdate={handleBannerUpdate}
-            lectureData={lectureCategoriesData}
-          />
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+              </div>
+            }
+          >
+            <Lectures
+              onBannerUpdate={handleBannerUpdate}
+              lectureData={lectureCategoriesData}
+            />
+          </Suspense>
         )}
         {!isLoading &&
           !error &&

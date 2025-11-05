@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from "@next/bundle-analyzer";
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const nextConfig: NextConfig = {
   images: {
@@ -13,6 +18,42 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: [
+      "lucide-react",
+      "@dnd-kit/core",
+      "@dnd-kit/sortable",
+      "@dnd-kit/utilities",
+    ],
+  },
+  webpack: (config, { isServer }) => {
+    // Optimize bundle splitting
+    if (!isServer) {
+      config.optimization.splitChunks.chunks = "all";
+      config.optimization.splitChunks.cacheGroups = {
+        ...config.optimization.splitChunks.cacheGroups,
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: "vendors",
+          chunks: "all",
+          priority: 10,
+        },
+        tiptap: {
+          test: /[\\/]node_modules[\\/]@tiptap[\\/]/,
+          name: "tiptap",
+          chunks: "all",
+          priority: 20,
+        },
+        react: {
+          test: /[\\/]node_modules[\\/]react/,
+          name: "react",
+          chunks: "all",
+          priority: 30,
+        },
+      };
+    }
+    return config;
+  },
 };
 
-export default nextConfig;
+export default bundleAnalyzer(nextConfig);

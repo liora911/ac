@@ -1,11 +1,23 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import Link from "next/link";
-import ArticlesList from "@/components/Articles/ArticlesList";
+import dynamic from "next/dynamic";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+
+// Lazy load the heavy ArticlesList component
+const ArticlesList = dynamic(
+  () => import("@/components/Articles/ArticlesList"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    ),
+  }
+);
 
 export default function ArticlesPage() {
   const { t } = useTranslation();
@@ -53,11 +65,19 @@ export default function ArticlesPage() {
 
       {}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <ArticlesList
-          initialLimit={12}
-          showFilters={true}
-          showPagination={true}
-        />
+        <Suspense
+          fallback={
+            <div className="flex justify-center items-center py-12">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            </div>
+          }
+        >
+          <ArticlesList
+            initialLimit={12}
+            showFilters={true}
+            showPagination={true}
+          />
+        </Suspense>
       </div>
     </div>
   );

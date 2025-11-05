@@ -1,8 +1,26 @@
 "use client";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Image from "next/image";
-import React, { useState } from "react";
-import { FaFacebook, FaYoutube } from "react-icons/fa";
+import React, { useState, Suspense } from "react";
+import dynamic from "next/dynamic";
+
+// Lazy load icons to reduce initial bundle size
+const FaFacebook = dynamic(
+  () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
+  {
+    loading: () => (
+      <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+    ),
+  }
+);
+const FaYoutube = dynamic(
+  () => import("react-icons/fa").then((mod) => ({ default: mod.FaYoutube })),
+  {
+    loading: () => (
+      <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+    ),
+  }
+);
 
 const Home = () => {
   const { t, locale, setLocale } = useTranslation();
@@ -24,6 +42,11 @@ const Home = () => {
             width={150}
             height={150}
             className="mx-auto rounded-full border-4 border-blue-300 shadow-md"
+            priority
+            sizes="(max-width: 768px) 150px, 150px"
+            quality={85}
+            placeholder="blur"
+            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
           />
           <p className="text-xs sm:text-sm mt-2 text-gray-500">
             {t("home.photoCredit")}
@@ -123,24 +146,36 @@ const Home = () => {
 
         <div className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8">
           <div className="flex justify-center space-x-6">
-            <a
-              href="https://" //"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
-              aria-label={t("home.social.facebook")}
+            <Suspense
+              fallback={
+                <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+              }
             >
-              <FaFacebook />
-            </a>
-            <a
-              href="https://" //"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
-              aria-label={t("home.social.youtube")}
+              <a
+                href="https://" //"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
+                aria-label={t("home.social.facebook")}
+              >
+                <FaFacebook />
+              </a>
+            </Suspense>
+            <Suspense
+              fallback={
+                <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+              }
             >
-              <FaYoutube />
-            </a>
+              <a
+                href="https://" //"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
+                aria-label={t("home.social.youtube")}
+              >
+                <FaYoutube />
+              </a>
+            </Suspense>
           </div>
         </div>
       </div>
