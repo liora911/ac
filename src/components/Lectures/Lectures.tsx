@@ -21,14 +21,14 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
   setSelectedCategoryIdDirectly,
 }) => {
   return (
-    <ul className={`ml-${level * 4} space-y-1`}>
+    <ul className={`ml-${level * 4} space-y-2`}>
       {categories.map((category) => (
         <li key={category.id}>
           <div
-            className={`flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-700 transition-colors ${
+            className={`flex items-center p-3 rounded-lg cursor-pointer hover:bg-slate-700/50 transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 ${
               selectedCategoryId === category.id
-                ? "bg-green-600 text-white"
-                : "bg-gray-800"
+                ? "bg-cyan-600/20 text-cyan-200 border border-cyan-500/30"
+                : "bg-slate-800/50 text-slate-300 hover:text-cyan-300"
             }`}
           >
             <span
@@ -46,10 +46,10 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
                   e.stopPropagation(); // Prevent category selection when clicking the toggle
                   toggleCategory(category.id);
                 }}
-                className="ml-2 p-1 rounded-full hover:bg-gray-600 focus:outline-none cursor-pointer"
+                className="ml-2 p-1 rounded-full hover:bg-slate-600/50 focus:outline-none cursor-pointer transition-colors"
               >
                 <span
-                  className={`transform transition-transform ${
+                  className={`transform transition-transform text-cyan-400 ${
                     expandedCategories[category.id] ? "rotate-90" : "rotate-0"
                   }`}
                 >
@@ -197,7 +197,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   if (!lectureData) {
     return (
       <div
-        className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl"
+        className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl"
         style={{ direction: "rtl" }}
       >
         טוען נתוני הרצאות...
@@ -208,7 +208,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   if (lectureData.length === 0) {
     return (
       <div
-        className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl"
+        className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl"
         style={{ direction: "rtl" }}
       >
         אין הרצאות זמינות כרגע.
@@ -218,11 +218,16 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
 
   return (
     <div
-      className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-gray-900 text-gray-100 min-h-[calc(100vh-200px)]"
+      className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-slate-900 text-slate-100 min-h-[calc(100vh-200px)] relative overflow-hidden"
       style={{ direction: "rtl" }}
     >
-      <aside className="w-full md:w-1/4 lg:w-1/5 bg-gray-850 p-4 rounded-lg shadow-lg border border-gray-700">
-        <h3 className="text-xl font-semibold mb-4 text-white border-b border-gray-700 pb-2">
+      {/* Cosmic background effect */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 opacity-90"></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl"></div>
+
+      <aside className="relative w-full md:w-1/4 lg:w-1/5 bg-slate-800/80 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-slate-700/50">
+        <h3 className="text-xl font-semibold mb-4 text-cyan-300 border-b border-slate-600 pb-2">
           קטגוריות
         </h3>
         <CategoryTree
@@ -235,10 +240,10 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
         />
       </aside>
 
-      <main className="w-full md:w-3/4 lg:w-4/5">
-        <h2 className="text-3xl font-bold mb-6 text-white">
+      <main className="relative w-full md:w-3/4 lg:w-4/5">
+        <h2 className="text-3xl font-bold mb-6 text-cyan-300">
           הרצאות בנושא:{" "}
-          <span className="text-green-400">{selectedCategoryName}</span>
+          <span className="text-teal-400">{selectedCategoryName}</span>
         </h2>
         {selectedLectures.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -247,33 +252,34 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
               return (
                 <div
                   key={lecture.id}
-                  className="bg-gray-800 rounded-lg shadow-md border border-gray-700 hover:shadow-green-500/30 transition-shadow cursor-pointer flex flex-col"
+                  className="bg-slate-800/60 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 hover:shadow-cyan-500/20 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer flex flex-col overflow-hidden group"
                 >
                   {lecture.bannerImageUrl && (
-                    <div className="relative h-40 w-full">
+                    <div className="relative h-40 w-full overflow-hidden">
                       <img
                         src={lecture.bannerImageUrl}
                         alt={lecture.title}
-                        className="object-cover w-full h-full rounded-t-lg"
+                        className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent"></div>
                     </div>
                   )}
                   <div className="p-4 flex-grow">
-                    <h4 className="text-xl font-semibold text-green-400 mb-2">
+                    <h4 className="text-xl font-semibold text-cyan-300 mb-2 group-hover:text-cyan-200 transition-colors">
                       {lecture.title}
                     </h4>
-                    <p className="text-gray-300 text-sm mb-3 line-clamp-3">
+                    <p className="text-slate-300 text-sm mb-3 line-clamp-3">
                       {lecture.description.replace(/<[^>]*>?/gm, "")}
                     </p>
-                    <div className="flex justify-between items-center text-xs text-gray-400 mt-auto">
+                    <div className="flex justify-between items-center text-xs text-slate-400 mt-auto">
                       <span>משך: {lecture.duration}</span>
                       {lecture.date && <span>תאריך: {lecture.date}</span>}
                     </div>
                   </div>
-                  <div className="p-4 border-t border-gray-700 flex justify-between items-center">
+                  <div className="p-4 border-t border-slate-700/50 flex justify-between items-center">
                     <button
                       onClick={() => handleLectureClick(lecture)}
-                      className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold cursor-pointer"
+                      className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-500 transition-colors text-sm font-semibold cursor-pointer shadow-lg hover:shadow-cyan-500/25"
                     >
                       צפה בהרצאה
                     </button>
@@ -286,7 +292,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                             e.stopPropagation();
                             router.push(`/edit-lecture/${lecture.id}`);
                           }}
-                          className="bg-gray-600 text-white px-3 py-2 rounded-lg hover:bg-gray-700 transition-colors text-sm cursor-pointer"
+                          className="bg-slate-600 text-white px-3 py-2 rounded-lg hover:bg-slate-500 transition-colors text-sm cursor-pointer"
                         >
                           ✏️ ערוך
                         </button>
@@ -295,7 +301,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                             e.stopPropagation();
                             handleDeleteLecture(lecture.id);
                           }}
-                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
+                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-500 transition-colors text-sm cursor-pointer"
                         >
                           🗑️ מחק
                         </button>
@@ -314,15 +320,15 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
 
         {/* Lecture Modal */}
         {selectedLecture && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-            <div className="bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
+          <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div className="bg-slate-800/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
               <button
                 onClick={handleCloseLectureModal}
-                className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl font-bold cursor-pointer"
+                className="absolute top-3 right-3 text-slate-400 hover:text-cyan-300 text-2xl font-bold cursor-pointer transition-colors"
               >
                 &times;
               </button>
-              <h3 className="text-3xl font-bold text-green-400 mb-4">
+              <h3 className="text-3xl font-bold text-cyan-300 mb-4">
                 {selectedLecture.title}
               </h3>
               {selectedLecture.videoUrl && (
@@ -333,17 +339,17 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
-                    className="rounded w-full h-full"
+                    className="rounded-lg w-full h-full shadow-lg"
                   ></iframe>
                 </div>
               )}
               <div
-                className="text-gray-300 prose prose-invert prose-sm max-w-none mb-4"
+                className="text-slate-300 prose prose-invert prose-sm max-w-none mb-4"
                 dangerouslySetInnerHTML={{
                   __html: selectedLecture.description,
                 }}
               />
-              <div className="flex justify-between items-center text-sm text-gray-400 border-t border-gray-700 pt-4">
+              <div className="flex justify-between items-center text-sm text-slate-400 border-t border-slate-700/50 pt-4">
                 <span>משך: {selectedLecture.duration}</span>
                 {selectedLecture.date && (
                   <span>תאריך: {selectedLecture.date}</span>
