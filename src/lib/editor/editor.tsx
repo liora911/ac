@@ -239,7 +239,7 @@ export default function TiptapEditor({
     >
       {/* Toolbar */}
       <div
-        className={`sticky top-0 z-10 border-b p-2 rounded-t-md overflow-x-auto ${
+        className={`sticky top-16 z-10 border-b p-2 rounded-t-md overflow-x-auto ${
           theme === "dark"
             ? "border-gray-700 bg-gray-800"
             : "border-gray-200 bg-gray-50"
