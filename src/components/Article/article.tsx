@@ -24,7 +24,6 @@ interface Article {
 export default function ArticlePage() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { data: session } = useSession();
   const articleId = searchParams.get("id");
 
   const [article, setArticle] = useState<Article | null>(null);

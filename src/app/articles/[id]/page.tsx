@@ -8,6 +8,8 @@ import { useArticle } from "@/hooks/useArticles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -21,6 +23,43 @@ export default function ArticleDetailPage() {
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+
+  const downloadPDF = async () => {
+    const element = document.querySelector(".article-content") as HTMLElement;
+    if (!element) return;
+
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      let position = 0;
+
+      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - imgHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`${article?.title || "article"}.pdf`);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -213,7 +252,7 @@ export default function ArticleDetailPage() {
         {}
         <div
           // className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-          className="prose prose-lg max-w-none text-gray-800 leading-relaxed [&_p]:my-4 [&_p]:leading-7"
+          className="prose prose-lg max-w-none text-gray-800 leading-relaxed [&_p]:my-4 [&_p]:leading-7 article-content"
           dir={article.direction || (locale === "en" ? "ltr" : "rtl")}
           dangerouslySetInnerHTML={{ __html: article.content }}
         />
@@ -271,14 +310,22 @@ export default function ArticleDetailPage() {
               ← {t("articleDetail.backToArticles")}
             </button>
 
-            {isAuthorized && (
-              <Link
-                href={`/articles/${article.id}/edit`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
+            <div className="flex gap-2">
+              <button
+                onClick={downloadPDF}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer"
               >
-                {t("articleDetail.editButton")}
-              </Link>
-            )}
+                📄 הורד PDF
+              </button>
+              {isAuthorized && (
+                <Link
+                  href={`/articles/${article.id}/edit`}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
+                >
+                  {t("articleDetail.editButton")}
+                </Link>
+              )}
+            </div>
           </div>
         </footer>
       </article>
