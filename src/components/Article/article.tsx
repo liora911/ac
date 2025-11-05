@@ -39,6 +39,7 @@ export default function ArticlePage() {
         scale: 2,
         useCORS: true,
         allowTaint: true,
+        foreignObjectRendering: true,
       });
 
       const imgData = canvas.toDataURL("image/png");

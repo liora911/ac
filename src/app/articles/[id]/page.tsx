@@ -33,6 +33,8 @@ export default function ArticleDetailPage() {
         scale: 2,
         useCORS: true,
         allowTaint: true,
+        backgroundColor: "#ffffff",
+        foreignObjectRendering: true,
       });
 
       const imgData = canvas.toDataURL("image/png");
@@ -43,14 +45,12 @@ export default function ArticleDetailPage() {
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
       let heightLeft = imgHeight;
 
-      let position = 0;
-
-      pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
       heightLeft -= pageHeight;
 
-      while (heightLeft >= 0) {
-        position = heightLeft - imgHeight;
+      while (heightLeft > 0) {
         pdf.addPage();
+        const position = heightLeft - imgHeight;
         pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
