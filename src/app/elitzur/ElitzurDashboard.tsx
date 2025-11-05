@@ -7,14 +7,22 @@ import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
+import LecturesAdmin from "./LecturesAdmin";
 
-type TabKey = "user" | "categories" | "articles" | "events" | "themes";
+type TabKey =
+  | "user"
+  | "categories"
+  | "articles"
+  | "events"
+  | "lectures"
+  | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "user", label: "החשבון שלך" },
   { key: "categories", label: "קטגוריות" },
   { key: "articles", label: "מאמרים" },
   { key: "events", label: "אירועים" },
+  { key: "lectures", label: "הרצאות" },
   { key: "themes", label: "ערכות נושא", disabled: true },
 ];
 
@@ -141,6 +149,20 @@ export default function ElitzurDashboard() {
             </p>
             <div className="mt-6">
               <EventsAdmin />
+            </div>
+          </div>
+        )}
+
+        {active === "lectures" && (
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              הרצאות
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              צור, חפש, סנן ונהל הרצאות.
+            </p>
+            <div className="mt-6">
+              <LecturesAdmin />
             </div>
           </div>
         )}
