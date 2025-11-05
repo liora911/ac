@@ -11,11 +11,11 @@ import EventsAdmin from "./EventsAdmin";
 type TabKey = "user" | "categories" | "articles" | "events" | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
-  { key: "user", label: "User" },
-  { key: "categories", label: "Categories" },
-  { key: "articles", label: "Articles" },
-  { key: "events", label: "Events" },
-  { key: "themes", label: "Themes", disabled: true },
+  { key: "user", label: "החשבון שלך" },
+  { key: "categories", label: "קטגוריות" },
+  { key: "articles", label: "מאמרים" },
+  { key: "events", label: "אירועים" },
+  { key: "themes", label: "ערכות נושא", disabled: true },
 ];
 
 export default function ElitzurDashboard() {
@@ -28,7 +28,7 @@ export default function ElitzurDashboard() {
       <aside className="w-60 shrink-0">
         <div className="sticky top-20 space-y-4">
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-sm font-semibold text-gray-900">Navigation</h2>
+            <h2 className="text-sm font-semibold text-gray-900">ניווט</h2>
             <nav className="mt-2 space-y-2">
               {TABS.map((tab) => {
                 const isActive = active === tab.key;
@@ -58,7 +58,7 @@ export default function ElitzurDashboard() {
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h3 className="text-sm font-semibold text-gray-900">Session</h3>
+            <h3 className="text-sm font-semibold text-gray-900">סשן</h3>
             <div className="mt-2">
               {session ? (
                 <div className="space-y-2">
