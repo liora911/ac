@@ -22,8 +22,8 @@ const LecturesSidebar: React.FC<LecturesSidebarProps> = ({
   setSelectedCategoryIdDirectly,
 }) => {
   return (
-    <aside className="relative w-full md:w-1/4 lg:w-1/5 bg-slate-800/80 backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-slate-700/50">
-      <h3 className="text-xl font-semibold mb-4 text-cyan-300 border-b border-slate-600 pb-2">
+    <aside className="relative w-full md:w-1/4 lg:w-1/5  backdrop-blur-sm p-4 rounded-xl shadow-2xl border border-slate-700/50">
+      <h3 className="text-xl font-semibold mb-4 text-gray-300 border-b border-slate-600 pb-2">
         קטגוריות
       </h3>
       <CategoryTree

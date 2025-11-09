@@ -29,6 +29,16 @@ const nextConfig: NextConfig = {
   webpack: (config, { isServer }) => {
     // Optimize bundle splitting
     if (!isServer) {
+      config.optimization = config.optimization || {};
+      if (
+        !config.optimization.splitChunks ||
+        typeof config.optimization.splitChunks === "boolean"
+      ) {
+        config.optimization.splitChunks = {
+          chunks: "all",
+          cacheGroups: {},
+        };
+      }
       config.optimization.splitChunks.chunks = "all";
       config.optimization.splitChunks.cacheGroups = {
         ...config.optimization.splitChunks.cacheGroups,

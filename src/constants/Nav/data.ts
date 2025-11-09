@@ -8,6 +8,6 @@ export const navItems: NavItem[] = [
     icon: "PresentationIcon",
   },
   { label: "nav.lectures", href: "/lectures", icon: "LectureIcon" },
-  { label: "nav.contact", href: "/contact", icon: "ContactIcon" },
   { label: "nav.events", href: "/events", icon: "EventIcon" },
+  { label: "nav.contact", href: "/contact", icon: "ContactIcon" },
 ];

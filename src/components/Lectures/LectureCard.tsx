@@ -27,7 +27,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
   const isAuthor = lecture.author?.email === session?.user?.email;
 
   return (
-    <div className="bg-slate-800/60 backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 hover:shadow-cyan-500/20 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer flex flex-col overflow-hidden group">
+    <div className="backdrop-blur-sm rounded-xl shadow-xl border border-slate-700/50 hover:shadow-gray-500/20 hover:border-gray-500/30 transition-all duration-300 cursor-pointer flex flex-col overflow-hidden group">
       {lecture.bannerImageUrl && (
         <div className="relative h-40 w-full overflow-hidden">
           <img
@@ -39,7 +39,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
         </div>
       )}
       <div className="p-4 flex-grow">
-        <h4 className="text-xl font-semibold text-cyan-300 mb-2 group-hover:text-cyan-200 transition-colors">
+        <h4 className="text-xl font-semibold text-gray-300 mb-2 group-hover:text-gray-200 transition-colors">
           {lecture.title}
         </h4>
         <p className="text-slate-300 text-sm mb-3 line-clamp-3">
@@ -53,7 +53,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
       <div className="p-4 border-t border-slate-700/50 flex justify-between items-center">
         <button
           onClick={() => onLectureClick(lecture)}
-          className="bg-cyan-600 text-white px-4 py-2 rounded-lg hover:bg-cyan-500 transition-colors text-sm font-semibold cursor-pointer shadow-lg hover:shadow-cyan-500/25"
+          className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-500 transition-colors text-sm font-semibold cursor-pointer shadow-lg hover:shadow-gray-500/25"
         >
           צפה בהרצאה
         </button>

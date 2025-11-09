@@ -13,14 +13,14 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800/95 backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
+      <div className="backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 text-slate-400 hover:text-cyan-300 text-2xl font-bold cursor-pointer transition-colors"
+          className="absolute top-3 right-3 text-slate-400 hover:text-gray-300 text-2xl font-bold cursor-pointer transition-colors"
         >
           &times;
         </button>
-        <h3 className="text-3xl font-bold text-cyan-300 mb-4">
+        <h3 className="text-3xl font-bold text-gray-300 mb-4">
           {lecture.title}
         </h3>
         {lecture.videoUrl && (

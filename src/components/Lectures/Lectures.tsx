@@ -162,9 +162,9 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
       />
 
       <main className="relative w-full md:w-3/4 lg:w-4/5">
-        <h2 className="text-3xl font-bold mb-6 text-cyan-300">
+        <h2 className="text-3xl font-bold mb-6 text-gray-300">
           הרצאות בנושא:{" "}
-          <span className="text-teal-400">{selectedCategoryName}</span>
+          <span className="text-gray-400">{selectedCategoryName}</span>
         </h2>
         {selectedLectures.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

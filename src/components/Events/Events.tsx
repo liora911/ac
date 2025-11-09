@@ -177,14 +177,14 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
               placeholder="חפש אירועים..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-cyan-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 border border-cyan-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
             />
           </div>
 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-3 bg-slate-800/50 border border-cyan-500/30 rounded-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            className="px-4 py-3 border border-cyan-500/30 rounded-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
           >
             <option value="all">כל הקטגוריות</option>
             {categories.map((category) => (
@@ -200,7 +200,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
               className={`p-3 rounded-xl border transition-all ${
                 viewMode === "grid"
                   ? "bg-cyan-600 border-cyan-400 text-white"
-                  : "bg-slate-800/50 border-cyan-500/30 text-gray-400 hover:border-cyan-400"
+                  : "border-cyan-500/30 text-gray-400 hover:border-cyan-400"
               }`}
             >
               <Filter size={20} />
@@ -210,7 +210,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
               className={`p-3 rounded-xl border transition-all ${
                 viewMode === "list"
                   ? "bg-cyan-600 border-cyan-400 text-white"
-                  : "bg-slate-800/50 border-cyan-500/30 text-gray-400 hover:border-cyan-400"
+                  : "border-cyan-500/30 text-gray-400 hover:border-cyan-400"
               }`}
             >
               📋
