@@ -375,8 +375,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       {}
       <div className="lg:col-span-1">
-        <div className="bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-700">
-          <h3 className="text-xl font-semibold mb-4 text-white border-b border-slate-700 pb-2">
+        <div className="p-4 rounded-lg shadow-sm border border-slate-700">
+          <h3 className="text-xl font-semibold mb-4 text-grey-300 border-b border-slate-700 pb-2">
             {t("presentationsPage.categoriesTitle")}
           </h3>
           <PresentationCategoryTree

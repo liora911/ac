@@ -39,14 +39,14 @@ const LectureCard: React.FC<LectureCardProps> = ({
         </div>
       )}
       <div className="p-4 flex-grow">
-        <h4 className="text-xl font-semibold text-gray-300 mb-2 group-hover:text-gray-200 transition-colors">
+        <h4 className="text-xl font-semibold text-gray-400 mb-2 group-hover:text-gray-500 transition-colors">
           {lecture.title}
         </h4>
-        <p className="text-slate-300 text-sm mb-3 line-clamp-3">
+        <p className="text-slate-400 text-sm mb-3 line-clamp-3">
           {lecture.description.replace(/<[^>]*>?/gm, "")}
         </p>
         <div className="flex justify-between items-center text-xs text-slate-400 mt-auto">
-          <span>משך: {lecture.duration}</span>
+          <span>משך: {lecture.duration} דק'/min</span>
           {lecture.date && <span>תאריך: {lecture.date}</span>}
         </div>
       </div>
