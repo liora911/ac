@@ -1,9 +1,19 @@
 "use client";
 
 import React from "react";
-import { Category, CategoryTreeProps } from "@/types/Lectures/lectures";
+import { PresentationCategory } from "@/types/Presentations/presentations";
 
-const CategoryTree: React.FC<CategoryTreeProps> = ({
+interface PresentationCategoryTreeProps {
+  categories: PresentationCategory[];
+  onSelectCategory: (category: PresentationCategory) => void;
+  level?: number;
+  expandedCategories: { [key: string]: boolean };
+  toggleCategory: (categoryId: string) => void;
+  selectedCategoryId: string | null;
+  setSelectedCategoryIdDirectly: (categoryId: string) => void;
+}
+
+const PresentationCategoryTree: React.FC<PresentationCategoryTreeProps> = ({
   categories,
   onSelectCategory,
   level = 0,
@@ -17,7 +27,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
       {categories.map((category) => (
         <li key={category.id}>
           <div
-            className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300 
+            className={`flex items-center p-3 rounded-lg cursor-pointer transition-all duration-300
   ${
     selectedCategoryId === category.id
       ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/20 border border-blue-500/30"
@@ -31,7 +41,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
                 setSelectedCategoryIdDirectly(category.id);
               }}
             >
-              {category.name} ({category.lectures.length})
+              {category.name} ({category.presentations.length})
             </span>
             {category.subcategories && category.subcategories.length > 0 && (
               <button
@@ -52,7 +62,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
             )}
           </div>
           {category.subcategories && expandedCategories[category.id] && (
-            <CategoryTree
+            <PresentationCategoryTree
               categories={category.subcategories}
               onSelectCategory={onSelectCategory}
               level={level + 1}
@@ -68,4 +78,4 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
   );
 };
 
-export default CategoryTree;
+export default PresentationCategoryTree;

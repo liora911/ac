@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import { PresentationCategory } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
 
 // Lazy load heavy components
 const CreatePresentationForm = dynamic(
@@ -305,6 +306,9 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const { t } = useTranslation();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [expandedCategories, setExpandedCategories] = useState<{
+    [key: string]: boolean;
+  }>({});
 
   const handleDeletePresentation = async (presentationId: string) => {
     if (window.confirm(t("presentationsPage.deleteConfirm"))) {
@@ -347,6 +351,22 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     onCategorySelect(category.id);
   };
 
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [categoryId]: !prev[categoryId],
+    }));
+  };
+
+  const setSelectedCategoryIdDirectly = (categoryId: string) => {
+    setSelectedCategoryId(categoryId);
+    onCategorySelect(categoryId);
+    const category = categories.find((cat) => cat.id === categoryId);
+    if (category) {
+      onBannerUpdate(category.bannerImageUrl, category.name);
+    }
+  };
+
   const selectedCategory = categories.find(
     (cat) => cat.id === selectedCategoryId
   );
@@ -355,25 +375,18 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
       {}
       <div className="lg:col-span-1">
-        <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-          <h3 className="text-xl font-semibold mb-4 text-gray-900 border-b border-gray-200 pb-2">
+        <div className="bg-slate-900 p-4 rounded-lg shadow-sm border border-slate-700">
+          <h3 className="text-xl font-semibold mb-4 text-white border-b border-slate-700 pb-2">
             {t("presentationsPage.categoriesTitle")}
           </h3>
-          <div className="space-y-2">
-            {categories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryClick(category)}
-                className={`w-full text-left p-3 rounded-md transition-colors border cursor-pointer ${
-                  selectedCategoryId === category.id
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-gray-700 hover:bg-gray-50 border-gray-200"
-                }`}
-              >
-                ▶ {category.name} ({category.presentations.length})
-              </button>
-            ))}
-          </div>
+          <PresentationCategoryTree
+            categories={categories}
+            onSelectCategory={handleCategoryClick}
+            expandedCategories={expandedCategories}
+            toggleCategory={toggleCategory}
+            selectedCategoryId={selectedCategoryId}
+            setSelectedCategoryIdDirectly={setSelectedCategoryIdDirectly}
+          />
         </div>
       </div>
 
