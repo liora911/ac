@@ -112,8 +112,8 @@ export default function ElitzurDashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
-              <div className="xl:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              <div className="md:col-span-2 xl:col-span-2 space-y-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-900 mb-4">
                     סקירה מהירה
@@ -129,7 +129,7 @@ export default function ElitzurDashboard() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-3">
                     שעה ותאריך
@@ -152,7 +152,7 @@ export default function ElitzurDashboard() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div>
                   <h3 className="text-lg font-medium text-gray-900 mb-3">
                     פעילות אחרונה

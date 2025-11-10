@@ -76,6 +76,7 @@ export default function ArticlesPage() {
             initialLimit={12}
             showFilters={true}
             showPagination={true}
+            viewMode="grid"
           />
         </Suspense>
       </div>

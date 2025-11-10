@@ -21,6 +21,7 @@ interface ArticlesListProps {
   showPagination?: boolean;
   categoryId?: string;
   featuredOnly?: boolean;
+  viewMode?: "grid" | "list";
 }
 
 export default function ArticlesList({
@@ -29,6 +30,7 @@ export default function ArticlesList({
   showPagination = true,
   categoryId,
   featuredOnly = false,
+  viewMode: initialViewMode = "grid",
 }: ArticlesListProps) {
   const { data: session } = useSession();
   const isAuthorized =
@@ -41,6 +43,7 @@ export default function ArticlesList({
   const [currentPage, setCurrentPage] = useState(1);
   type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
+  const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
 
   const {
     data: articlesData,
@@ -103,6 +106,32 @@ export default function ArticlesList({
 
   return (
     <div className="space-y-6">
+      {showFilters && (
+        <div className="flex justify-end mb-4">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "grid"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "list"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              List
+            </button>
+          </div>
+        </div>
+      )}
       {}
       {showFilters && (
         <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -208,18 +237,97 @@ export default function ArticlesList({
       )}
 
       {}
-      {!isLoading && articles.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              isAuthorized={!!isAuthorized}
-              onDeleteSuccess={refetch} // Pass refetch to ArticleCard
-            />
-          ))}
-        </div>
-      )}
+      {!isLoading &&
+        articles.length > 0 &&
+        (viewMode === "grid" ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <ArticleCard
+                key={article.id}
+                article={article}
+                isAuthorized={!!isAuthorized}
+                onDeleteSuccess={refetch} // Pass refetch to ArticleCard
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {articles.map((article) => (
+              <div
+                key={article.id}
+                className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div className="flex">
+                  {article.featuredImage && (
+                    <div className="w-32 h-24 flex-shrink-0">
+                      <Image
+                        src={article.featuredImage}
+                        alt={article.title}
+                        width={128}
+                        height={96}
+                        className="object-cover w-full h-full"
+                        sizes="128px"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          <Link
+                            href={`/articles/${article.id}`}
+                            className="hover:text-blue-600 transition-colors"
+                          >
+                            {article.title}
+                          </Link>
+                        </h3>
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-2">
+                          {article.excerpt}
+                        </p>
+                        <div className="flex items-center space-x-4 text-xs text-gray-500">
+                          <span>By: {article.author.name || "Anonymous"}</span>
+                          <span>{article.readTime} min read</span>
+                          <span>
+                            {new Date(article.createdAt).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                      {isAuthorized && (
+                        <div className="flex space-x-2 ml-4">
+                          <Link
+                            href={`/articles/${article.id}/edit`}
+                            className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
+                          >
+                            Edit
+                          </Link>
+                          <button
+                            onClick={() => {
+                              if (
+                                confirm(
+                                  t("articleCard.deleteConfirm") as string
+                                )
+                              ) {
+                                const response = fetch(
+                                  `/api/articles/${article.id}`,
+                                  {
+                                    method: "DELETE",
+                                  }
+                                ).then(() => refetch());
+                              }
+                            }}
+                            className="text-sm text-red-600 hover:text-red-800 transition-colors"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
 
       {}
       {!isLoading && articles.length === 0 && (

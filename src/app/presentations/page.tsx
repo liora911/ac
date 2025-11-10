@@ -260,6 +260,7 @@ const PresentationsPage = () => {
               session={session} // Pass session
               isAuthorized={isAuthorized} // Pass isAuthorized
               onPresentationDeleted={handlePresentationCreated} // Callback to refresh data
+              viewMode="grid"
             />
           </Suspense>
         )}
@@ -286,6 +287,7 @@ interface PresentationsGridProps {
   session: Session | null; // Add session to props
   isAuthorized: boolean; // Add isAuthorized to props
   onPresentationDeleted: () => void; // Add callback for deletion
+  viewMode?: "grid" | "list";
 }
 
 const PresentationsGrid: React.FC<PresentationsGridProps> = ({
@@ -297,6 +299,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   session, // Destructure session
   isAuthorized, // Destructure isAuthorized
   onPresentationDeleted, // Destructure onPresentationDeleted
+  viewMode: initialViewMode = "grid",
 }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialSelectedCategoryId
@@ -307,6 +310,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const [expandedCategories, setExpandedCategories] = useState<{
     [key: string]: boolean;
   }>({});
+  const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
 
   const handleDeletePresentation = async (presentationId: string) => {
     if (window.confirm(t("presentationsPage.deleteConfirm"))) {
@@ -389,66 +393,154 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
 
       {}
       <div className="lg:col-span-3">
-        <h2 className="text-3xl font-bold mb-6 text-gray-900">
-          {selectedCategory
-            ? `${t("presentationsPage.headingWithCategory")} ${
-                selectedCategory.name
-              }`
-            : t("presentationsPage.heading")}
-        </h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-gray-900">
+            {selectedCategory
+              ? `${t("presentationsPage.headingWithCategory")} ${
+                  selectedCategory.name
+                }`
+              : t("presentationsPage.heading")}
+          </h2>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setViewMode("grid")}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "grid"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              Grid
+            </button>
+            <button
+              onClick={() => setViewMode("list")}
+              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                viewMode === "list"
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+              }`}
+            >
+              List
+            </button>
+          </div>
+        </div>
 
         {selectedCategory && selectedCategory.presentations.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {selectedCategory.presentations.map((presentation) => {
-              const isAuthor =
-                presentation.author?.email === session?.user?.email; // Need session here
-              return (
-                <div
-                  key={presentation.id}
-                  className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer"
-                >
+          viewMode === "grid" ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {selectedCategory.presentations.map((presentation) => {
+                const isAuthor =
+                  presentation.author?.email === session?.user?.email; // Need session here
+                return (
                   <div
+                    key={presentation.id}
+                    className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer"
+                  >
+                    <div
+                      onClick={() =>
+                        (window.location.href = `/presentations/${presentation.id}`)
+                      }
+                    >
+                      <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                        {presentation.title}
+                      </h3>
+                      <p
+                        className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{
+                          __html: presentation.description,
+                        }}
+                      />
+                      <div className="flex justify-between items-center text-sm text-gray-500">
+                        <span>
+                          {t("presentationsPage.imagesLabel")}:{" "}
+                          {presentation.imageUrls.length}
+                        </span>
+                        <span>
+                          {t("presentationsPage.byLabel")}:{" "}
+                          {presentation.author.name ||
+                            presentation.author.email}
+                        </span>
+                      </div>
+                    </div>
+                    {isAuthorized && isAuthor && (
+                      <div className="flex justify-end mt-4">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePresentation(presentation.id);
+                          }}
+                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
+                        >
+                          🗑️ {t("presentationsPage.deleteButton")}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {selectedCategory.presentations.map((presentation) => {
+                const isAuthor =
+                  presentation.author?.email === session?.user?.email;
+                return (
+                  <div
+                    key={presentation.id}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
                     onClick={() =>
                       (window.location.href = `/presentations/${presentation.id}`)
                     }
                   >
-                    <h3 className="text-xl font-semibold mb-3 text-gray-900">
-                      {presentation.title}
-                    </h3>
-                    <p
-                      className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{
-                        __html: presentation.description,
-                      }}
-                    />
-                    <div className="flex justify-between items-center text-sm text-gray-500">
-                      <span>
-                        {t("presentationsPage.imagesLabel")}:{" "}
-                        {presentation.imageUrls.length}
-                      </span>
-                      <span>
-                        {t("presentationsPage.byLabel")}:{" "}
-                        {presentation.author.name || presentation.author.email}
-                      </span>
+                    <div className="flex items-center space-x-4">
+                      {presentation.imageUrls.length > 0 && (
+                        <Image
+                          src={presentation.imageUrls[0]}
+                          alt={presentation.title}
+                          width={80}
+                          height={60}
+                          className="object-cover rounded"
+                        />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                          {presentation.title}
+                        </h3>
+                        <p
+                          className="text-gray-600 text-sm line-clamp-2"
+                          dangerouslySetInnerHTML={{
+                            __html: presentation.description,
+                          }}
+                        />
+                        <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
+                          <span>
+                            {t("presentationsPage.imagesLabel")}:{" "}
+                            {presentation.imageUrls.length}
+                          </span>
+                          <span>
+                            {t("presentationsPage.byLabel")}:{" "}
+                            {presentation.author.name ||
+                              presentation.author.email}
+                          </span>
+                        </div>
+                      </div>
+                      {isAuthorized && isAuthor && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeletePresentation(presentation.id);
+                          }}
+                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
+                        >
+                          🗑️ {t("presentationsPage.deleteButton")}
+                        </button>
+                      )}
                     </div>
                   </div>
-                  {isAuthorized && isAuthor && (
-                    <div className="flex justify-end mt-4">
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeletePresentation(presentation.id);
-                        }}
-                        className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
-                      >
-                        🗑️ {t("presentationsPage.deleteButton")}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          )
         ) : selectedCategory ? (
           <p className="text-gray-500 text-lg">
             {t("presentationsPage.noPresentationsInCategory")}

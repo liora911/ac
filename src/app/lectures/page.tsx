@@ -211,6 +211,7 @@ const LecturesPage = () => {
             <Lectures
               onBannerUpdate={handleBannerUpdate}
               lectureData={lectureCategoriesData}
+              viewMode="grid"
             />
           </Suspense>
         )}
