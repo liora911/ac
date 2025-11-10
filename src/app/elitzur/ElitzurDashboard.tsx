@@ -8,6 +8,10 @@ import SignOutButton from "@/components/Auth/SignOutButton";
 import Clock from "@/components/Clock/Clock";
 import Weather from "@/components/Weather/Weather";
 import QuickStats from "@/components/QuickStats/QuickStats";
+import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
+import QuickActions from "@/components/QuickActions/QuickActions";
+import SystemHealth from "@/components/SystemHealth/SystemHealth";
+import MotivationalQuote from "@/components/MotivationalQuote/MotivationalQuote";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
@@ -108,12 +112,21 @@ export default function ElitzurDashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              <div className="lg:col-span-2">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                  סקירה מהירה
-                </h2>
-                <QuickStats />
+            <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+              <div className="xl:col-span-2 space-y-6">
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    סקירה מהירה
+                  </h2>
+                  <QuickStats />
+                </div>
+
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                    פעולות מהירות
+                  </h2>
+                  <QuickActions />
+                </div>
               </div>
 
               <div className="space-y-4">
@@ -129,6 +142,29 @@ export default function ElitzurDashboard() {
                     מזג אוויר
                   </h3>
                   <Weather />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">
+                    מצב המערכת
+                  </h3>
+                  <SystemHealth />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">
+                    פעילות אחרונה
+                  </h3>
+                  <ActivityFeed />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">
+                    מוטיבציה יומית
+                  </h3>
+                  <MotivationalQuote />
                 </div>
               </div>
             </div>
