@@ -130,26 +130,45 @@ export default function EventsAdmin() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div
+        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+        role="region"
+        aria-labelledby="event-filters-heading"
+      >
+        <h3 id="event-filters-heading" className="sr-only">
+          Event filters
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="event-search-input"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Search
             </label>
             <input
+              id="event-search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search title or description…"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-describedby="event-search-help"
             />
+            <div id="event-search-help" className="sr-only">
+              Search events by title or description
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="event-status-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Status
             </label>
             <select
+              id="event-status-select"
               value={status}
               onChange={(e) => setStatus(e.target.value as EventStatus | "")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -162,10 +181,14 @@ export default function EventsAdmin() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="event-category-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Category
             </label>
             <select
+              id="event-category-select"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -184,10 +207,14 @@ export default function EventsAdmin() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="event-limit-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Per page
             </label>
             <select
+              id="event-limit-select"
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -201,7 +228,11 @@ export default function EventsAdmin() {
           </div>
         </div>
 
-        <div className="mt-3 text-xs text-gray-500">
+        <div
+          className="mt-3 text-xs text-gray-500"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {isFetching ? "Refreshing…" : `Found ${total} events`}
         </div>
       </div>
@@ -209,25 +240,53 @@ export default function EventsAdmin() {
       {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table
+            className="min-w-full divide-y divide-gray-200"
+            role="table"
+            aria-label="Events management table"
+          >
             <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <tr role="row">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Title
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Date & Time
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Type
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Category
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Updated
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Actions
                 </th>
               </tr>
@@ -235,40 +294,64 @@ export default function EventsAdmin() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 Array.from({ length: limit }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                  <tr
+                    key={i}
+                    className="animate-pulse"
+                    role="row"
+                    aria-label="Loading event"
+                  >
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-48 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-32 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-6 w-20 bg-gray-200 rounded-full"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-6 w-20 bg-gray-200 rounded-full"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-32 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-24 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="h-8 w-32 bg-gray-200 rounded ml-auto"></div>
+                    <td className="px-4 py-4 text-right" role="cell">
+                      <div
+                        className="h-8 w-32 bg-gray-200 rounded ml-auto"
+                        aria-hidden="true"
+                      ></div>
                     </td>
                   </tr>
                 ))
               ) : paginatedEvents.length === 0 ? (
-                <tr>
+                <tr role="row">
                   <td
                     colSpan={6}
                     className="px-4 py-10 text-center text-sm text-gray-500"
+                    role="cell"
                   >
                     No events found. Try adjusting filters or create a new one.
                   </td>
                 </tr>
               ) : (
                 paginatedEvents.map((event) => (
-                  <tr key={event.id}>
-                    <td className="px-4 py-3">
+                  <tr key={event.id} role="row">
+                    <td className="px-4 py-3" role="cell">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900 line-clamp-2">
                           {event.title}
@@ -279,9 +362,11 @@ export default function EventsAdmin() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       <div>
-                        {new Date(event.eventDate).toLocaleDateString()}
+                        <time dateTime={event.eventDate.toISOString()}>
+                          {new Date(event.eventDate).toLocaleDateString()}
+                        </time>
                       </div>
                       {event.eventTime && (
                         <div className="text-xs text-gray-500">
@@ -290,7 +375,7 @@ export default function EventsAdmin() {
                       )}
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" role="cell">
                       <span
                         className={[
                           "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
@@ -298,19 +383,23 @@ export default function EventsAdmin() {
                             ? "bg-blue-100 text-blue-800"
                             : "bg-green-100 text-green-800",
                         ].join(" ")}
+                        aria-label={`Event type: ${
+                          event.eventType === "online" ? "Online" : "In-person"
+                        }`}
                       >
                         {event.eventType === "online" ? "Online" : "In-person"}
                       </span>
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" role="cell">
                       <select
                         value={event.categoryId || ""}
                         onChange={(e) =>
                           onChangeCategory(event, e.target.value)
                         }
                         disabled={updateMutation.isPending || loadingCategories}
-                        className="px-2 py-1 text-sm border border-gray-300 rounded-md"
+                        className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                        aria-label={`Change category for event "${event.title}"`}
                       >
                         <option value="">No category</option>
                         {categories?.map((c) => (
@@ -321,30 +410,43 @@ export default function EventsAdmin() {
                       </select>
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(
-                        event.updatedAt || event.createdAt
-                      ).toLocaleString()}
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
+                      <time
+                        dateTime={(
+                          event.updatedAt || event.createdAt
+                        ).toISOString()}
+                      >
+                        {new Date(
+                          event.updatedAt || event.createdAt
+                        ).toLocaleString()}
+                      </time>
                     </td>
 
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
+                    <td className="px-4 py-3" role="cell">
+                      <div
+                        className="flex items-center gap-2 justify-end"
+                        role="group"
+                        aria-label="Event actions"
+                      >
                         <Link
                           href={`/events/${event.id}`}
-                          className="text-sm text-gray-700 hover:text-gray-900"
+                          className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`View event "${event.title}"`}
                         >
                           View
                         </Link>
                         <Link
                           href={`/edit-event/${event.id}`}
-                          className="text-sm text-blue-600 hover:text-blue-800"
+                          className="text-sm text-blue-600 hover:text-blue-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Edit event "${event.title}"`}
                         >
                           Edit
                         </Link>
                         <button
                           onClick={() => onDelete(event)}
                           disabled={deleteMutation.isPending}
-                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Delete event "${event.title}"`}
                         >
                           Delete
                         </button>
@@ -360,12 +462,13 @@ export default function EventsAdmin() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex items-center space-x-2">
+        <nav className="flex justify-center" aria-label="Events pagination">
+          <div className="flex items-center space-x-2" role="group">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to previous page"
             >
               Previous
             </button>
@@ -379,11 +482,13 @@ export default function EventsAdmin() {
                   onClick={() => setPage(p)}
                   disabled={isFetching}
                   className={[
-                    "px-3 py-2 text-sm font-medium rounded-md",
+                    "px-3 py-2 text-sm font-medium rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                     p === page
                       ? "bg-blue-600 text-white"
                       : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50",
                   ].join(" ")}
+                  aria-label={`Go to page ${p}`}
+                  aria-current={p === page ? "page" : undefined}
                 >
                   {p}
                 </button>
@@ -393,12 +498,13 @@ export default function EventsAdmin() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to next page"
             >
               Next
             </button>
-          </nav>
-        </div>
+          </div>
+        </nav>
       )}
     </div>
   );

@@ -26,15 +26,26 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${poppins.className} antialiased`}
+        className={`${poppins.className} antialiased focus-visible:outline-2 focus-visible:outline-blue-500`}
         suppressHydrationWarning={true}
       >
+        {/* Skip to main content link */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-50"
+        >
+          Skip to main content
+        </a>
         <QueryProvider>
           <AuthSessionProvider>
             <TranslationProvider>
               <div className="flex flex-col min-h-screen">
                 <Header />
-                <main className="flex-grow flex flex-col pt-16">
+                <main
+                  id="main-content"
+                  className="flex-grow flex flex-col pt-16"
+                  role="main"
+                >
                   {children}
                 </main>
                 <Footer />

@@ -148,26 +148,45 @@ export default function ArticlesAdmin() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div
+        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+        role="region"
+        aria-labelledby="filters-heading"
+      >
+        <h3 id="filters-heading" className="sr-only">
+          Article filters
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="search-input"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Search
             </label>
             <input
+              id="search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search title or content…"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-describedby="search-help"
             />
+            <div id="search-help" className="sr-only">
+              Search articles by title or content
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="status-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Status
             </label>
             <select
+              id="status-select"
               value={status}
               onChange={(e) => setStatus(e.target.value as StatusFilter)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -180,10 +199,14 @@ export default function ArticlesAdmin() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="category-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Category
             </label>
             <select
+              id="category-select"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -202,10 +225,14 @@ export default function ArticlesAdmin() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="limit-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Per page
             </label>
             <select
+              id="limit-select"
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -219,7 +246,11 @@ export default function ArticlesAdmin() {
           </div>
         </div>
 
-        <div className="mt-3 text-xs text-gray-500">
+        <div
+          className="mt-3 text-xs text-gray-500"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {isFetching ? "Refreshing…" : `Found ${total} articles`}
         </div>
       </div>
@@ -227,22 +258,46 @@ export default function ArticlesAdmin() {
       {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table
+            className="min-w-full divide-y divide-gray-200"
+            role="table"
+            aria-label="Articles management table"
+          >
             <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <tr role="row">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Title
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Category
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Updated
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Actions
                 </th>
               </tr>
@@ -250,29 +305,50 @@ export default function ArticlesAdmin() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 Array.from({ length: limit }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                  <tr
+                    key={i}
+                    className="animate-pulse"
+                    role="row"
+                    aria-label="Loading article"
+                  >
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-48 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-6 w-24 bg-gray-200 rounded-full"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-6 w-24 bg-gray-200 rounded-full"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-32 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-24 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="h-8 w-32 bg-gray-200 rounded ml-auto"></div>
+                    <td className="px-4 py-4 text-right" role="cell">
+                      <div
+                        className="h-8 w-32 bg-gray-200 rounded ml-auto"
+                        aria-hidden="true"
+                      ></div>
                     </td>
                   </tr>
                 ))
               ) : articles.length === 0 ? (
-                <tr>
+                <tr role="row">
                   <td
                     colSpan={5}
                     className="px-4 py-10 text-center text-sm text-gray-500"
+                    role="cell"
                   >
                     No articles found. Try adjusting filters or create a new
                     one.
@@ -280,8 +356,8 @@ export default function ArticlesAdmin() {
                 </tr>
               ) : (
                 articles.map((a) => (
-                  <tr key={a.id}>
-                    <td className="px-4 py-3">
+                  <tr key={a.id} role="row">
+                    <td className="px-4 py-3" role="cell">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900 line-clamp-2">
                           {a.title}
@@ -290,7 +366,7 @@ export default function ArticlesAdmin() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" role="cell">
                       <span
                         className={[
                           "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
@@ -300,6 +376,7 @@ export default function ArticlesAdmin() {
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-gray-100 text-gray-800",
                         ].join(" ")}
+                        aria-label={`Status: ${a.status}`}
                       >
                         {a.status}
                       </span>
@@ -307,19 +384,23 @@ export default function ArticlesAdmin() {
                         <button
                           onClick={() => onTogglePublish(a)}
                           disabled={updateMutation.isPending}
-                          className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+                          className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`${
+                            a.status === "PUBLISHED" ? "Unpublish" : "Publish"
+                          } article "${a.title}"`}
                         >
                           {a.status === "PUBLISHED" ? "Unpublish" : "Publish"}
                         </button>
                       </div>
                     </td>
 
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3" role="cell">
                       <select
                         value={a.categoryId || ""}
                         onChange={(e) => onChangeCategory(a, e.target.value)}
                         disabled={updateMutation.isPending || loadingCategories}
-                        className="px-2 py-1 text-sm border border-gray-300 rounded-md"
+                        className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                        aria-label={`Change category for article "${a.title}"`}
                       >
                         <option value="">No category</option>
                         {categories?.map((c) => (
@@ -330,28 +411,37 @@ export default function ArticlesAdmin() {
                       </select>
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(a.updatedAt).toLocaleString()}
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
+                      <time dateTime={a.updatedAt}>
+                        {new Date(a.updatedAt).toLocaleString()}
+                      </time>
                     </td>
 
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
+                    <td className="px-4 py-3" role="cell">
+                      <div
+                        className="flex items-center gap-2 justify-end"
+                        role="group"
+                        aria-label="Article actions"
+                      >
                         <Link
                           href={`/articles/${a.id}`}
-                          className="text-sm text-gray-700 hover:text-gray-900"
+                          className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`View article "${a.title}"`}
                         >
                           View
                         </Link>
                         <Link
                           href={`/articles/${a.id}/edit`}
-                          className="text-sm text-blue-600 hover:text-blue-800"
+                          className="text-sm text-blue-600 hover:text-blue-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Edit article "${a.title}"`}
                         >
                           Edit
                         </Link>
                         <button
                           onClick={() => onDelete(a)}
                           disabled={deleteMutation.isPending}
-                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Delete article "${a.title}"`}
                         >
                           Delete
                         </button>
@@ -367,12 +457,13 @@ export default function ArticlesAdmin() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex items-center space-x-2">
+        <nav className="flex justify-center" aria-label="Articles pagination">
+          <div className="flex items-center space-x-2" role="group">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to previous page"
             >
               Previous
             </button>
@@ -386,11 +477,13 @@ export default function ArticlesAdmin() {
                   onClick={() => setPage(p)}
                   disabled={isFetching}
                   className={[
-                    "px-3 py-2 text-sm font-medium rounded-md",
+                    "px-3 py-2 text-sm font-medium rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                     p === page
                       ? "bg-blue-600 text-white"
                       : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50",
                   ].join(" ")}
+                  aria-label={`Go to page ${p}`}
+                  aria-current={p === page ? "page" : undefined}
                 >
                   {p}
                 </button>
@@ -400,12 +493,13 @@ export default function ArticlesAdmin() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to next page"
             >
               Next
             </button>
-          </nav>
-        </div>
+          </div>
+        </nav>
       )}
     </div>
   );

@@ -35,17 +35,35 @@ const Clock: React.FC = () => {
 
   return (
     <div
-      className="flex items-center gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-800 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700"
+      className="flex items-center gap-2 p-2 rounded-md bg-gray-100 dark:bg-gray-800 cursor-pointer transition-colors duration-200 ease-in-out hover:bg-gray-200 dark:hover:bg-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
       onClick={toggleVisibility}
+      role="button"
+      tabIndex={0}
+      aria-label={isVisible ? "Hide clock and date" : "Show clock and date"}
+      aria-pressed={isVisible}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          toggleVisibility();
+        }
+      }}
     >
       {isVisible && (
         <>
-          <span className="text-base font-semibold text-gray-800 dark:text-gray-100 font-mono">
+          <time
+            className="text-base font-semibold text-gray-800 dark:text-gray-100 font-mono"
+            dateTime={time.toISOString()}
+            aria-label={`Current time: ${formattedTime}`}
+          >
             {formattedTime}
-          </span>
-          <span className="text-xs text-gray-600 dark:text-gray-400">
+          </time>
+          <time
+            className="text-xs text-gray-600 dark:text-gray-400"
+            dateTime={time.toISOString().split("T")[0]}
+            aria-label={`Current date: ${formattedDate}`}
+          >
             {formattedDate}
-          </span>
+          </time>
         </>
       )}
     </div>

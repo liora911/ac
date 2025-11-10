@@ -39,8 +39,15 @@ const Weather: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center gap-2 p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 animate-pulse">
-        <div className="w-6 h-6 bg-blue-300 rounded-full"></div>
+      <div
+        className="flex items-center gap-2 p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 animate-pulse"
+        role="status"
+        aria-live="polite"
+      >
+        <div
+          className="w-6 h-6 bg-blue-300 rounded-full"
+          aria-hidden="true"
+        ></div>
         <div className="text-sm text-blue-600">Loading weather...</div>
       </div>
     );
@@ -48,22 +55,47 @@ const Weather: React.FC = () => {
 
   if (error) {
     return (
-      <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+      <div
+        className="p-4 rounded-lg bg-red-50 border border-red-200"
+        role="alert"
+      >
         <div className="text-sm text-red-600">{error}</div>
       </div>
     );
   }
 
   return (
-    <div className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 shadow-sm">
+    <div
+      className="p-4 rounded-lg bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200 shadow-sm"
+      role="region"
+      aria-labelledby="weather-heading"
+    >
+      <h3 id="weather-heading" className="sr-only">
+        Current weather
+      </h3>
       <div className="flex items-center gap-3">
-        <div className="text-2xl">🌤️</div>
+        <div className="text-2xl" aria-hidden="true">
+          🌤️
+        </div>
         <div>
-          <div className="text-lg font-semibold text-gray-800">
+          <div
+            className="text-lg font-semibold text-gray-800"
+            aria-label={`Temperature: ${weather?.temperature} degrees Celsius`}
+          >
             {weather?.temperature}°C
           </div>
-          <div className="text-sm text-gray-600">{weather?.condition}</div>
-          <div className="text-xs text-gray-500">{weather?.location}</div>
+          <div
+            className="text-sm text-gray-600"
+            aria-label={`Weather condition: ${weather?.condition}`}
+          >
+            {weather?.condition}
+          </div>
+          <div
+            className="text-xs text-gray-500"
+            aria-label={`Location: ${weather?.location}`}
+          >
+            {weather?.location}
+          </div>
         </div>
       </div>
     </div>

@@ -43,11 +43,24 @@ export default function ElitzurDashboard() {
   return (
     <div className="flex gap-6">
       {/* Sidebar */}
-      <aside className="w-60 shrink-0">
+      <aside
+        className="w-60 shrink-0"
+        role="complementary"
+        aria-label="Dashboard navigation"
+      >
         <div className="sticky top-20 space-y-4">
           <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-            <h2 className="text-sm font-semibold text-gray-900">ניווט</h2>
-            <nav className="mt-2 space-y-2">
+            <h2
+              className="text-sm font-semibold text-gray-900"
+              id="navigation-heading"
+            >
+              ניווט
+            </h2>
+            <nav
+              className="mt-2 space-y-2"
+              role="tablist"
+              aria-labelledby="navigation-heading"
+            >
               {TABS.map((tab) => {
                 const isActive = active === tab.key;
                 const isDisabled = !!tab.disabled;
@@ -57,17 +70,27 @@ export default function ElitzurDashboard() {
                     type="button"
                     onClick={() => !isDisabled && setActive(tab.key)}
                     className={[
-                      "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition",
+                      "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                       isActive
                         ? "bg-blue-600 text-white shadow"
                         : "text-gray-700 hover:bg-gray-100",
                       isDisabled ? "opacity-50 cursor-not-allowed" : "",
                     ].join(" ")}
                     aria-disabled={isDisabled}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`panel-${tab.key}`}
+                    id={`tab-${tab.key}`}
+                    tabIndex={isActive ? 0 : -1}
                   >
                     {tab.label}
                     {isDisabled && (
-                      <span className="ml-2 text-xs opacity-80">(בקרוב)</span>
+                      <span
+                        className="ml-2 text-xs opacity-80"
+                        aria-label="Coming soon"
+                      >
+                        (בקרוב)
+                      </span>
                     )}
                   </button>
                 );
@@ -97,11 +120,19 @@ export default function ElitzurDashboard() {
       </aside>
 
       {/* Content */}
-      <section className="flex-1 overflow-hidden">
+      <section
+        className="flex-1 overflow-hidden"
+        role="tabpanel"
+        aria-labelledby={`tab-${active}`}
+        id={`panel-${active}`}
+      >
         {active === "user" && (
           <div className="space-y-8 max-w-full">
             <div>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              <h1
+                className="text-2xl md:text-3xl font-bold text-gray-900"
+                id="user-heading"
+              >
                 משתמש
               </h1>
               <p className="mt-2 text-sm text-gray-600">
@@ -179,7 +210,10 @@ export default function ElitzurDashboard() {
 
         {active === "categories" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="categories-heading"
+            >
               ניהול קטגוריות
             </h1>
             <p className="mt-2 text-sm text-gray-600">
@@ -189,7 +223,10 @@ export default function ElitzurDashboard() {
               {session ? (
                 <CategoryManager />
               ) : (
-                <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
+                <div
+                  className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800"
+                  role="alert"
+                >
                   <p>אנא התחבר כדי לנהל קטגוריות.</p>
                   <div className="mt-4">
                     <LoginForm />
@@ -202,7 +239,10 @@ export default function ElitzurDashboard() {
 
         {active === "articles" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="articles-heading"
+            >
               מאמרים
             </h1>
             <p className="mt-2 text-sm text-gray-600">
@@ -216,7 +256,10 @@ export default function ElitzurDashboard() {
 
         {active === "events" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="events-heading"
+            >
               אירועים
             </h1>
             <p className="mt-2 text-sm text-gray-600">
@@ -230,7 +273,10 @@ export default function ElitzurDashboard() {
 
         {active === "lectures" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="lectures-heading"
+            >
               הרצאות
             </h1>
             <p className="mt-2 text-sm text-gray-600">
@@ -244,7 +290,10 @@ export default function ElitzurDashboard() {
 
         {active === "presentations" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="presentations-heading"
+            >
               מצגות
             </h1>
             <p className="mt-2 text-sm text-gray-600">
@@ -258,10 +307,17 @@ export default function ElitzurDashboard() {
 
         {active === "themes" && (
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="themes-heading"
+            >
               ניהול ערכות נושא
             </h1>
-            <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div
+              className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+              role="status"
+              aria-live="polite"
+            >
               <p className="text-sm text-gray-700">
                 תכונה זו עדיין לא זמינה. בקרוב נוסיף אפשרות לניהול ערכות נושא
               </p>

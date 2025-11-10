@@ -158,26 +158,45 @@ export default function LecturesAdmin() {
       </div>
 
       {/* Filters */}
-      <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div
+        className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
+        role="region"
+        aria-labelledby="lecture-filters-heading"
+      >
+        <h3 id="lecture-filters-heading" className="sr-only">
+          Lecture filters
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="lecture-search-input"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Search
             </label>
             <input
+              id="lecture-search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search title or description…"
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              aria-describedby="lecture-search-help"
             />
+            <div id="lecture-search-help" className="sr-only">
+              Search lectures by title or description
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="lecture-category-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Category
             </label>
             <select
+              id="lecture-category-select"
               value={categoryId}
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -196,10 +215,14 @@ export default function LecturesAdmin() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="lecture-limit-select"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Per page
             </label>
             <select
+              id="lecture-limit-select"
               value={limit}
               onChange={(e) => setLimit(Number(e.target.value))}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -213,7 +236,11 @@ export default function LecturesAdmin() {
           </div>
         </div>
 
-        <div className="mt-3 text-xs text-gray-500">
+        <div
+          className="mt-3 text-xs text-gray-500"
+          aria-live="polite"
+          aria-atomic="true"
+        >
           {isFetching ? "Refreshing…" : `Found ${total} lectures`}
         </div>
       </div>
@@ -221,22 +248,46 @@ export default function LecturesAdmin() {
       {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
+          <table
+            className="min-w-full divide-y divide-gray-200"
+            role="table"
+            aria-label="Lectures management table"
+          >
             <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+              <tr role="row">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Title
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Category
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Duration
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Date
                 </th>
-                <th className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider">
+                <th
+                  className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  role="columnheader"
+                  scope="col"
+                >
                   Actions
                 </th>
               </tr>
@@ -244,29 +295,50 @@ export default function LecturesAdmin() {
             <tbody className="divide-y divide-gray-100">
               {isLoading ? (
                 Array.from({ length: limit }).map((_, i) => (
-                  <tr key={i} className="animate-pulse">
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-48 bg-gray-200 rounded"></div>
+                  <tr
+                    key={i}
+                    className="animate-pulse"
+                    role="row"
+                    aria-label="Loading lecture"
+                  >
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-48 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-32 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-16 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4">
-                      <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <td className="px-4 py-4" role="cell">
+                      <div
+                        className="h-4 w-24 bg-gray-200 rounded"
+                        aria-hidden="true"
+                      ></div>
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="h-8 w-32 bg-gray-200 rounded ml-auto"></div>
+                    <td className="px-4 py-4 text-right" role="cell">
+                      <div
+                        className="h-8 w-32 bg-gray-200 rounded ml-auto"
+                        aria-hidden="true"
+                      ></div>
                     </td>
                   </tr>
                 ))
               ) : paginatedLectures.length === 0 ? (
-                <tr>
+                <tr role="row">
                   <td
                     colSpan={5}
                     className="px-4 py-10 text-center text-sm text-gray-500"
+                    role="cell"
                   >
                     No lectures found. Try adjusting filters or create a new
                     one.
@@ -274,8 +346,8 @@ export default function LecturesAdmin() {
                 </tr>
               ) : (
                 paginatedLectures.map((lecture) => (
-                  <tr key={lecture.id}>
-                    <td className="px-4 py-3">
+                  <tr key={lecture.id} role="row">
+                    <td className="px-4 py-3" role="cell">
                       <div className="flex flex-col">
                         <div className="text-sm font-medium text-gray-900 line-clamp-2">
                           {lecture.title}
@@ -286,38 +358,49 @@ export default function LecturesAdmin() {
                       </div>
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       {lecture.categoryName}
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       {lecture.duration}
                     </td>
 
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {lecture.date
-                        ? new Date(lecture.date).toLocaleDateString()
-                        : "N/A"}
+                    <td className="px-4 py-3 text-sm text-gray-600" role="cell">
+                      {lecture.date ? (
+                        <time dateTime={new Date(lecture.date).toISOString()}>
+                          {new Date(lecture.date).toLocaleDateString()}
+                        </time>
+                      ) : (
+                        "N/A"
+                      )}
                     </td>
 
-                    <td className="px-4 py-3">
-                      <div className="flex items-center gap-2 justify-end">
+                    <td className="px-4 py-3" role="cell">
+                      <div
+                        className="flex items-center gap-2 justify-end"
+                        role="group"
+                        aria-label="Lecture actions"
+                      >
                         <Link
                           href={`/lectures/${lecture.id}`}
-                          className="text-sm text-gray-700 hover:text-gray-900"
+                          className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`View lecture "${lecture.title}"`}
                         >
                           View
                         </Link>
                         <Link
                           href={`/edit-lecture/${lecture.id}`}
-                          className="text-sm text-blue-600 hover:text-blue-800"
+                          className="text-sm text-blue-600 hover:text-blue-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Edit lecture "${lecture.title}"`}
                         >
                           Edit
                         </Link>
                         <button
                           onClick={() => onDelete(lecture)}
                           disabled={deleteMutation.isPending}
-                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50"
+                          className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Delete lecture "${lecture.title}"`}
                         >
                           Delete
                         </button>
@@ -333,12 +416,13 @@ export default function LecturesAdmin() {
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex items-center space-x-2">
+        <nav className="flex justify-center" aria-label="Lectures pagination">
+          <div className="flex items-center space-x-2" role="group">
             <button
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to previous page"
             >
               Previous
             </button>
@@ -352,11 +436,13 @@ export default function LecturesAdmin() {
                   onClick={() => setPage(p)}
                   disabled={isFetching}
                   className={[
-                    "px-3 py-2 text-sm font-medium rounded-md",
+                    "px-3 py-2 text-sm font-medium rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                     p === page
                       ? "bg-blue-600 text-white"
                       : "text-gray-600 bg-white border border-gray-300 hover:bg-gray-50",
                   ].join(" ")}
+                  aria-label={`Go to page ${p}`}
+                  aria-current={p === page ? "page" : undefined}
                 >
                   {p}
                 </button>
@@ -366,12 +452,13 @@ export default function LecturesAdmin() {
             <button
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+              aria-label="Go to next page"
             >
               Next
             </button>
-          </nav>
-        </div>
+          </div>
+        </nav>
       )}
     </div>
   );

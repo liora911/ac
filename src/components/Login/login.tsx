@@ -122,7 +122,11 @@ export default function LoginForm() {
           </div>
         )}
 
-        <form onSubmit={handleEmailSignIn} className="mt-5 space-y-4">
+        <form
+          onSubmit={handleEmailSignIn}
+          className="mt-5 space-y-4"
+          noValidate
+        >
           <div>
             <label
               htmlFor="email"
@@ -138,17 +142,27 @@ export default function LoginForm() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
               required
+              aria-required="true"
+              aria-describedby="email-error email-help"
               className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
+            <div id="email-help" className="sr-only">
+              Enter your email address to receive a magic login link
+            </div>
+            <div id="email-error" className="sr-only" aria-live="polite"></div>
           </div>
 
           <button
             type="submit"
             disabled={isLoading || !email}
             className="inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-describedby={isLoading ? "loading-status" : undefined}
           >
             {isLoading ? "שולח…" : "שלח קישור למייל"}
           </button>
+          <div id="loading-status" className="sr-only" aria-live="polite">
+            {isLoading ? "Sending login link to your email" : ""}
+          </div>
         </form>
 
         <div className="mt-6 text-center text-xs text-gray-500">
