@@ -3,6 +3,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Image from "next/image";
 import React, { useState, Suspense } from "react";
 import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 
 // Lazy load icons to reduce initial bundle size
 const FaFacebook = dynamic(
@@ -25,60 +26,119 @@ const FaYoutube = dynamic(
 const Home = () => {
   const { t, locale, setLocale } = useTranslation();
   const [showBio, setShowBio] = useState(false);
+
+  const containerVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        staggerChildren: 0.2,
+      },
+    },
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-gray-800">
-      <div className="text-center max-w-3xl w-full bg-white shadow-xl rounded-lg p-6 sm:p-8 md:p-10">
-        <h1 className="text-3xl sm:text-4xl font-bold text-blue-700">
+      <motion.div
+        className="text-center max-w-3xl w-full bg-white shadow-xl rounded-lg p-6 sm:p-8 md:p-10"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.h1
+          className="text-3xl sm:text-4xl font-bold text-blue-700"
+          variants={itemVariants}
+        >
           {t("home.name")}
-        </h1>
-        <p className="text-lg sm:text-xl mt-2 text-gray-700">
+        </motion.h1>
+        <motion.p
+          className="text-lg sm:text-xl mt-2 text-gray-700"
+          variants={itemVariants}
+        >
           {t("home.tagline")}
-        </p>
+        </motion.p>
 
-        <div className="my-6 sm:my-8">
-          <Image
-            src="/acpfp2.png"
-            alt="Avshalom C. Elitzur"
-            width={150}
-            height={150}
-            className="mx-auto rounded-full border-4 border-blue-300 shadow-md"
-            priority
-            sizes="(max-width: 768px) 150px, 150px"
-            quality={85}
-            placeholder="blur"
-            blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
-          />
-          <p className="text-xs sm:text-sm mt-2 text-gray-500">
+        <motion.div
+          className="my-6 sm:my-8"
+          variants={itemVariants}
+          whileHover={{ scale: 1.05 }}
+          transition={{ type: "spring", stiffness: 300 }}
+        >
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.5, duration: 0.6, type: "spring" }}
+          >
+            <Image
+              src="/acpfp2.png"
+              alt="Avshalom C. Elitzur"
+              width={150}
+              height={150}
+              className="mx-auto rounded-full border-4 border-blue-300 shadow-md"
+              priority
+              sizes="(max-width: 768px) 150px, 150px"
+              quality={85}
+              placeholder="blur"
+              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
+            />
+          </motion.div>
+          <motion.p
+            className="text-xs sm:text-sm mt-2 text-gray-500"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 0.4 }}
+          >
             {t("home.photoCredit")}
-          </p>
-        </div>
+          </motion.p>
+        </motion.div>
 
-        <p className="text-md sm:text-lg mt-4">{t("home.greeting")}</p>
+        <motion.p className="text-md sm:text-lg mt-4" variants={itemVariants}>
+          {t("home.greeting")}
+        </motion.p>
 
-        <div className="mt-4 text-left text-sm sm:text-base space-y-3">
+        <motion.div
+          className="mt-4 text-left text-sm sm:text-base space-y-3"
+          variants={itemVariants}
+        >
           <p>{t("home.intro")}</p>
           <p>{t("home.comments")}</p>
-        </div>
+        </motion.div>
 
-        <p
+        <motion.p
           className="mt-3 text-right text-sm sm:text-base max-w-2xl mx-auto"
           dir="rtl"
+          variants={itemVariants}
         >
           {t("home.mainTopic")}
-        </p>
-        <div
+        </motion.p>
+        <motion.div
           className="mt-4 text-sm sm:text-base text-right max-w-3xl mx-auto"
           dir="rtl"
+          variants={itemVariants}
         >
           {!showBio ? (
-            <button
+            <motion.button
               onClick={() => setShowBio(true)}
               className="text-blue-600 hover:underline font-medium cursor-pointer"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               {t("home.bio.buttonRead")}
-            </button>
+            </motion.button>
           ) : (
-            <>
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.5 }}
+            >
               <p className="whitespace-pre-line text-gray-700 leading-relaxed">
                 אבשלום אליצור (לסיפור-חיים "צהוב" ראו בויקיפדיה) הוא
                 פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ'פמאן
@@ -134,51 +194,70 @@ const Home = () => {
                 כפרופסור-אורח לפיזיקה במכון איימס AIMS למתמטיקה בקיגאלי, רואנדה.
               </p>
 
-              <button
+              <motion.button
                 onClick={() => setShowBio(false)}
                 className="text-blue-600 hover:underline font-medium mt-3 block cursor-pointer"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {t("home.bio.buttonHide")}
-              </button>
-            </>
+              </motion.button>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
 
-        <div className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8">
+        <motion.div
+          className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8"
+          variants={itemVariants}
+        >
           <div className="flex justify-center space-x-6">
             <Suspense
               fallback={
                 <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
               }
             >
-              <a
+              <motion.a
                 href="https://" //"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
+                className="text-blue-600 hover:text-blue-800 text-2xl cursor-pointer"
                 aria-label={t("home.social.facebook")}
+                whileHover={{
+                  scale: 1.2,
+                  rotate: 5,
+                  color: "#2563eb",
+                }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <FaFacebook />
-              </a>
+              </motion.a>
             </Suspense>
             <Suspense
               fallback={
                 <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
               }
             >
-              <a
+              <motion.a
                 href="https://" //"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-red-600 hover:text-red-800 text-2xl transition-transform duration-200 transform hover:scale-110 cursor-pointer"
+                className="text-red-600 hover:text-red-800 text-2xl cursor-pointer"
                 aria-label={t("home.social.youtube")}
+                whileHover={{
+                  scale: 1.2,
+                  rotate: -5,
+                  color: "#dc2626",
+                }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: "spring", stiffness: 400, damping: 10 }}
               >
                 <FaYoutube />
-              </a>
+              </motion.a>
             </Suspense>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </main>
   );
 };
