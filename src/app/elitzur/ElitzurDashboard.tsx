@@ -122,12 +122,12 @@ export default function ElitzurDashboard() {
                     <QuickStats />
                   </div>
 
-                  <div>
+                  {/* <div>
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">
                       פעולות מהירות
                     </h2>
                     <QuickActions />
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
