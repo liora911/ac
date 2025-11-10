@@ -28,7 +28,8 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async signIn({ user }) {
-      return true; // Temporarily disable authentication for editing
+      if (!user.email) return false;
+      return ALLOWED_EMAILS.includes(user.email);
     },
   },
   pages: {
