@@ -54,7 +54,6 @@ const LecturesPage = () => {
         const data: CategoryDef[] = await response.json();
         setLectureCategoriesData(data);
       } catch (err) {
-        console.error("Error fetching lecture data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);
@@ -86,7 +85,6 @@ const LecturesPage = () => {
         const data: CategoryDef[] = await response.json();
         setLectureCategoriesData(data);
       } catch (err) {
-        console.error("Error fetching lecture data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);

@@ -105,7 +105,6 @@ const PresentationsPage = () => {
           }
         }
       } catch (err) {
-        console.error("Error fetching presentation data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);
@@ -158,7 +157,6 @@ const PresentationsPage = () => {
         const data: PresentationCategory[] = await response.json();
         setPresentationCategoriesData(data);
       } catch (err) {
-        console.error("Error fetching presentation data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);
@@ -324,7 +322,6 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         // Call the callback to refresh the presentation data on the parent component
         onPresentationDeleted();
       } catch (error) {
-        console.error("Error deleting presentation:", error);
         setErrorMessage(t("presentationsPage.deleteFailed") as string);
         setErrorModalOpen(true);
       }

@@ -78,7 +78,6 @@ export default function ArticleForm({
         const data: ArticleCategory[] = await response.json();
         setCategories(data);
       } catch (error) {
-        console.error("Error fetching categories:", error);
       }
     };
 
@@ -109,7 +108,6 @@ export default function ArticleForm({
         router.push("/articles");
       }
     } catch (error) {
-      console.error("Error saving article:", error);
     }
   };
 

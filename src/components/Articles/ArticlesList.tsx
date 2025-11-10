@@ -343,7 +343,6 @@ function ArticleCard({
         onDeleteSuccess(); // Call the callback to refresh the list
         router.push("/articles"); // Redirect to articles list after deletion
       } catch (error) {
-        console.error("Error deleting article:", error);
         setErrorMessage(t("articleCard.deleteError") as string);
         setErrorModalOpen(true);
       }

@@ -58,7 +58,6 @@ export default function EditEventForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -87,7 +86,6 @@ export default function EditEventForm({
           setMessage({ type: "error", text: "שגיאה בטעינת האירוע" });
         }
       } catch (error) {
-        console.error("Error fetching event:", error);
         setMessage({ type: "error", text: "שגיאה בטעינת האירוע" });
       } finally {
         setIsFetching(false);
@@ -178,7 +176,6 @@ export default function EditEventForm({
         router.push("/elitzur");
       }
     } catch (error) {
-      console.error("Error updating event:", error);
       const messageText =
         error instanceof Error
           ? error.message

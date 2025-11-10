@@ -56,7 +56,6 @@ export default function EditPresentationForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -82,7 +81,6 @@ export default function EditPresentationForm({
           });
         }
       } catch (error) {
-        console.error("Error fetching presentation:", error);
         setMessage({
           type: "error",
           text: t("loadingPresentationData") as string,
@@ -175,7 +173,6 @@ export default function EditPresentationForm({
         router.push(`/presentations/${presentationId}`);
       }
     } catch (error) {
-      console.error("Error updating presentation:", error);
       const messageText =
         error instanceof Error ? error.message : "שגיאה בעדכון המצגת. נסה שוב.";
       setMessage({

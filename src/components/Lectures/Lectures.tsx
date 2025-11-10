@@ -2,9 +2,6 @@
 
 import { Category, Lecture } from "@/types/Lectures/lectures";
 import React, { useState, useEffect, useRef } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import LecturesSidebar from "./LecturesSidebar";
@@ -12,13 +9,11 @@ import LectureCard from "./LectureCard";
 import LectureModal from "./LectureModal";
 
 interface LecturesProps {
-  onBannerUpdate: (imageUrl: string | null, altText: string) => void;
+  onBannerUpdate: (_imageUrl: string | null) => void;
   lectureData: Category[];
 }
 
 const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
-  const { data: session } = useSession();
-  const router = useRouter();
   const { locale } = useTranslation();
   const hasInitializedRef = useRef(false);
   const [selectedLectures, setSelectedLectures] = useState<Lecture[]>([]);
@@ -37,16 +32,12 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  const isAuthorized =
-    session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-
   const handleSelectCategory = (category: Category) => {
     setSelectedLectures(category.lectures);
     setSelectedCategoryName(category.name);
     const bannerUrl = category.bannerImageUrl || null;
     setCurrentCategoryBanner(bannerUrl);
-    onBannerUpdate(bannerUrl, category.name);
+    onBannerUpdate(bannerUrl);
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -63,7 +54,7 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
 
     if (lectureData.length === 0) {
       setSelectedLectures([]);
-      onBannerUpdate(null, "הרצאות");
+      onBannerUpdate(null);
       setCurrentCategoryBanner(null);
       setSelectedCategoryName("אין הרצאות זמינות");
       return;
@@ -84,21 +75,18 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
       setSelectedCategoryId(randomCategory.id);
       const initialBanner = randomCategory.bannerImageUrl || null;
       setCurrentCategoryBanner(initialBanner);
-      onBannerUpdate(initialBanner, randomCategory.name);
+      onBannerUpdate(initialBanner);
     } else {
       setSelectedLectures([]);
       setSelectedCategoryName("אין הרצאות זמינות");
-      onBannerUpdate(null, "הרצאות");
+      onBannerUpdate(null);
       setCurrentCategoryBanner(null);
     }
   }, [lectureData, onBannerUpdate]);
 
   const handleLectureClick = (lecture: Lecture) => {
     setSelectedLecture(lecture);
-    onBannerUpdate(
-      lecture.bannerImageUrl || currentCategoryBanner || null,
-      lecture.title
-    );
+    onBannerUpdate(lecture.bannerImageUrl || currentCategoryBanner || null);
   };
 
   const handleDeleteLecture = async (lectureId: string) => {
@@ -112,15 +100,10 @@ const Lectures: React.FC<LecturesProps> = ({ onBannerUpdate, lectureData }) => {
           throw new Error("Failed to delete lecture");
         }
 
-        // Update the state to remove the deleted lecture
         setSelectedLectures((prevLectures) =>
           prevLectures.filter((lecture) => lecture.id !== lectureId)
         );
-
-        // Optionally, refresh the entire lecture data if needed
-        // router.refresh();
-      } catch (error) {
-        console.error("Error deleting lecture:", error);
+      } catch {
         setErrorMessage("נכשל במחיקת ההרצאה.");
         setErrorModalOpen(true);
       }

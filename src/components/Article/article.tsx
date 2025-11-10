@@ -64,7 +64,6 @@ export default function ArticlePage() {
 
       pdf.save(`${article?.title || "article"}.pdf`);
     } catch (error) {
-      console.error("Error generating PDF:", error);
     }
   };
 
@@ -88,7 +87,6 @@ export default function ArticlePage() {
         const foundArticle: Article = await response.json();
         setArticle(foundArticle);
       } catch (err) {
-        console.error("Error fetching article:", err);
         setError("שגיאה בטעינת המאמר");
       } finally {
         setLoading(false);

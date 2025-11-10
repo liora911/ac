@@ -61,7 +61,6 @@ export default function EditArticleForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -87,7 +86,6 @@ export default function EditArticleForm({
           setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
         }
       } catch (error) {
-        console.error("Error fetching article:", error);
         setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
       } finally {
         setIsFetching(false);
@@ -203,7 +201,6 @@ export default function EditArticleForm({
         router.push("/articles");
       }
     } catch (error: any) {
-      console.error("Error updating article:", error);
       setMessage({
         type: "error",
         text: error.message || "שגיאה בעדכון המאמר. נסה שוב.",

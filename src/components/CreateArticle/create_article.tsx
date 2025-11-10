@@ -49,7 +49,6 @@ export default function CreateArticleForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -164,7 +163,6 @@ export default function CreateArticleForm({
         onSuccess();
       }
     } catch (error: any) {
-      console.error("Error creating article:", error);
       setMessage({
         type: "error",
         text: error.message || "שגיאה ביצירת המאמר. נסה שוב.",

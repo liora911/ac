@@ -51,7 +51,6 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -148,7 +147,6 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         onSuccess();
       }
     } catch (error) {
-      console.error("Error creating event:", error);
       const messageText =
         error instanceof Error
           ? error.message

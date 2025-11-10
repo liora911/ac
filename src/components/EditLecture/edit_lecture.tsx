@@ -60,7 +60,6 @@ export default function EditLectureForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -88,7 +87,6 @@ export default function EditLectureForm({
           });
         }
       } catch (error) {
-        console.error("Error fetching lecture:", error);
         setMessage({ type: "error", text: t("loadingLectureData") as string });
       } finally {
         setIsFetching(false);
@@ -193,7 +191,6 @@ export default function EditLectureForm({
         router.push(`/lectures/${lectureId}`);
       }
     } catch (error) {
-      console.error("Error updating lecture:", error);
       const messageText =
         error instanceof Error
           ? error.message

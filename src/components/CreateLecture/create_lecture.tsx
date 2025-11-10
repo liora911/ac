@@ -53,7 +53,6 @@ export default function CreateLectureForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -163,7 +162,6 @@ export default function CreateLectureForm({
         onSuccess();
       }
     } catch (error) {
-      console.error("Error creating lecture:", error);
       const messageText =
         error instanceof Error
           ? error.message

@@ -49,7 +49,6 @@ export default function CreatePresentationForm({
           setCategories(data);
         }
       } catch (error) {
-        console.error("Error fetching categories:", error);
       } finally {
         setCategoriesLoading(false);
       }
@@ -141,7 +140,6 @@ export default function CreatePresentationForm({
         onSuccess();
       }
     } catch (error) {
-      console.error("Error creating presentation:", error);
       const messageText =
         error instanceof Error ? error.message : "שגיאה ביצירת המצגת. נסה שוב.";
       setMessage({

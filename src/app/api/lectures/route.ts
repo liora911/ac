@@ -84,7 +84,6 @@ export async function GET() {
 
     return NextResponse.json(formattedCategories);
   } catch (error) {
-    console.error("Error fetching lectures:", error);
     return NextResponse.json(
       { error: "Failed to fetch lecture data" },
       { status: 500 }
@@ -166,7 +165,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(lecture, { status: 201 });
   } catch (error) {
-    console.error("Error creating lecture:", error);
     return NextResponse.json(
       { error: "Failed to create lecture" },
       { status: 500 }

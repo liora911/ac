@@ -35,7 +35,6 @@ const EventsPage = () => {
         const data: Event[] = await response.json();
         setEventsData(data);
       } catch (err) {
-        console.error("Error fetching event data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);
@@ -67,7 +66,6 @@ const EventsPage = () => {
         const data: Event[] = await response.json();
         setEventsData(data);
       } catch (err) {
-        console.error("Error fetching event data:", err);
         const msg =
           err instanceof Error ? err.message : "An unknown error occurred";
         setError(msg);
