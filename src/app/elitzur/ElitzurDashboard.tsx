@@ -112,66 +112,68 @@ export default function ElitzurDashboard() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 w-full">
-              <div className="md:col-span-2 xl:col-span-2 space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    סקירה מהירה
-                  </h2>
-                  <QuickStats />
+            {session && (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 w-full">
+                <div className="md:col-span-2 xl:col-span-2 space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                      סקירה מהירה
+                    </h2>
+                    <QuickStats />
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                      פעולות מהירות
+                    </h2>
+                    <QuickActions />
+                  </div>
                 </div>
 
-                <div>
-                  <h2 className="text-xl font-semibold text-gray-900 mb-4">
-                    פעולות מהירות
-                  </h2>
-                  <QuickActions />
+                <div className="space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      שעה ותאריך
+                    </h3>
+                    <Clock />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      מזג אוויר
+                    </h3>
+                    <Weather />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      מצב המערכת
+                    </h3>
+                    <SystemHealth />
+                  </div>
+                </div>
+
+                <div className="space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      פעילות אחרונה
+                    </h3>
+                    <ActivityFeed />
+                  </div>
+
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      מוטיבציה יומית
+                    </h3>
+                    <MotivationalQuote />
+                  </div>
+                </div>
+
+                <div className="hidden xl:block p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
+                  {/* Placeholder for future content or additional spacing */}
                 </div>
               </div>
-
-              <div className="space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">
-                    שעה ותאריך
-                  </h3>
-                  <Clock />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">
-                    מזג אוויר
-                  </h3>
-                  <Weather />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">
-                    מצב המערכת
-                  </h3>
-                  <SystemHealth />
-                </div>
-              </div>
-
-              <div className="space-y-6 p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">
-                    פעילות אחרונה
-                  </h3>
-                  <ActivityFeed />
-                </div>
-
-                <div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-3">
-                    מוטיבציה יומית
-                  </h3>
-                  <MotivationalQuote />
-                </div>
-              </div>
-
-              <div className="hidden xl:block p-4 rounded-lg border border-gray-200 bg-white shadow-sm">
-                {/* Placeholder for future content or additional spacing */}
-              </div>
-            </div>
+            )}
           </div>
         )}
 
