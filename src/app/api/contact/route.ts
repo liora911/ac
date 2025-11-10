@@ -1,0 +1,116 @@
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma/prisma";
+
+export async function POST(request: NextRequest) {
+  try {
+    const { name, email, subject, message } = await request.json();
+
+    // Validate required fields
+    if (!name || !email || !subject || !message) {
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
+    }
+
+    // Additional validation
+    if (name.trim().length < 2) {
+      return NextResponse.json(
+        { error: "Name must be at least 2 characters long" },
+        { status: 400 }
+      );
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return NextResponse.json(
+        { error: "Invalid email format" },
+        { status: 400 }
+      );
+    }
+
+    if (subject.trim().length < 5) {
+      return NextResponse.json(
+        { error: "Subject must be at least 5 characters long" },
+        { status: 400 }
+      );
+    }
+
+    if (message.trim().length < 10) {
+      return NextResponse.json(
+        { error: "Message must be at least 10 characters long" },
+        { status: 400 }
+      );
+    }
+
+    // Save to database
+    const newMessage = await prisma.message.create({
+      data: {
+        name: name.trim(),
+        email: email.trim(),
+        subject: subject.trim(),
+        message: message.trim(),
+      },
+    });
+
+    return NextResponse.json(
+      { message: "Contact form submitted successfully", id: newMessage.id },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error("Error saving contact message:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET() {
+  try {
+    const messages = await prisma.message.findMany({
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(messages);
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json(
+        { error: "Message ID is required" },
+        { status: 400 }
+      );
+    }
+
+    await prisma.message.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Message deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting message:", error);
+    if (
+      error instanceof Error &&
+      error.message.includes("Record to delete does not exist")
+    ) {
+      return NextResponse.json({ error: "Message not found" }, { status: 404 });
+    }
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
+}

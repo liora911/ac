@@ -1,6 +1,13 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Mail, MessageSquare, Send, CheckCircle } from "lucide-react";
+import {
+  User,
+  Mail,
+  MessageSquare,
+  Send,
+  CheckCircle,
+  AlertCircle,
+} from "lucide-react";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +16,56 @@ const Contact = () => {
     subject: "",
     message: "",
   });
+  const [errors, setErrors] = useState({
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
+  });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const validateForm = () => {
+    const newErrors = {
+      name: "",
+      email: "",
+      subject: "",
+      message: "",
+    };
+
+    // Name validation
+    if (!formData.name.trim()) {
+      newErrors.name = "שם מלא הוא שדה חובה";
+    } else if (formData.name.trim().length < 2) {
+      newErrors.name = "שם חייב להכיל לפחות 2 תווים";
+    } else if (!/^[a-zA-Zא-ת\s]+$/.test(formData.name.trim())) {
+      newErrors.name = "שם יכול להכיל רק אותיות ורווחים";
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      newErrors.email = "כתובת אימייל היא שדה חובה";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+      newErrors.email = "כתובת אימייל לא תקינה";
+    }
+
+    // Subject validation
+    if (!formData.subject.trim()) {
+      newErrors.subject = "נושא הוא שדה חובה";
+    } else if (formData.subject.trim().length < 5) {
+      newErrors.subject = "נושא חייב להכיל לפחות 5 תווים";
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      newErrors.message = "הודעה היא שדה חובה";
+    } else if (formData.message.trim().length < 10) {
+      newErrors.message = "הודעה חייבת להכיל לפחות 10 תווים";
+    }
+
+    setErrors(newErrors);
+    return Object.values(newErrors).every((error) => error === "");
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -19,12 +75,46 @@ const Contact = () => {
       ...prevState,
       [name]: value,
     }));
+
+    // Clear error when user starts typing
+    if (errors[name as keyof typeof errors]) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        [name]: "",
+      }));
+    }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setShowSuccessModal(true);
-    setFormData({ name: "", email: "", subject: "", message: "" });
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setShowSuccessModal(true);
+        setFormData({ name: "", email: "", subject: "", message: "" });
+        setErrors({ name: "", email: "", subject: "", message: "" });
+      } else {
+        console.error("Failed to submit contact form");
+      }
+    } catch (error) {
+      console.error("Error submitting contact form:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <motion.div
@@ -78,10 +168,18 @@ const Contact = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
+                  errors.name ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="שם פרטי ומשפחה"
               />
             </div>
+            {errors.name && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.name}
+              </div>
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -103,10 +201,18 @@ const Contact = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="your@example.com"
               />
             </div>
+            {errors.email && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.email}
+              </div>
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -128,10 +234,18 @@ const Contact = () => {
                 value={formData.subject}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
+                  errors.subject ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="לגבי..."
               />
             </div>
+            {errors.subject && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.subject}
+              </div>
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -153,10 +267,18 @@ const Contact = () => {
                 value={formData.message}
                 onChange={handleChange}
                 required
-                className="mt-1 block w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900"
+                className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
+                  errors.message ? "border-red-500" : "border-gray-300"
+                }`}
                 placeholder="כתוב את הודעתך כאן..."
               />
             </div>
+            {errors.message && (
+              <div className="flex items-center mt-1 text-sm text-red-600">
+                <AlertCircle className="h-4 w-4 mr-1" />
+                {errors.message}
+              </div>
+            )}
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -165,12 +287,26 @@ const Contact = () => {
           >
             <motion.button
               type="submit"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-white cursor-pointer"
+              disabled={isSubmitting}
+              whileHover={{ scale: isSubmitting ? 1 : 1.05 }}
+              whileTap={{ scale: isSubmitting ? 1 : 0.95 }}
+              className={`w-full flex justify-center items-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 focus:ring-offset-white ${
+                isSubmitting
+                  ? "bg-gray-400 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700 cursor-pointer"
+              }`}
             >
-              <Send className="mr-2 h-4 w-4" />
-              שלח הודעה
+              {isSubmitting ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  שולח...
+                </>
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  שלח הודעה
+                </>
+              )}
             </motion.button>
           </motion.div>
         </motion.form>

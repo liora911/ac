@@ -16,6 +16,7 @@ import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
 import PresentationsAdmin from "./PresentationsAdmin";
+import MessagesAdmin from "./MessagesAdmin";
 
 type TabKey =
   | "user"
@@ -24,6 +25,7 @@ type TabKey =
   | "events"
   | "lectures"
   | "presentations"
+  | "messages"
   | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
@@ -33,6 +35,7 @@ const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "events", label: "אירועים" },
   { key: "lectures", label: "הרצאות" },
   { key: "presentations", label: "מצגות" },
+  { key: "messages", label: "הודעות" },
   { key: "themes", label: "ערכות נושא", disabled: true },
 ];
 
@@ -294,6 +297,23 @@ export default function ElitzurDashboard() {
             </p>
             <div className="mt-6">
               <PresentationsAdmin />
+            </div>
+          </div>
+        )}
+
+        {active === "messages" && (
+          <div>
+            <h1
+              className="text-2xl md:text-3xl font-bold text-gray-900"
+              id="messages-heading"
+            >
+              הודעות
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              צפה ונהל הודעות מיצירת קשר.
+            </p>
+            <div className="mt-6">
+              <MessagesAdmin />
             </div>
           </div>
         )}
