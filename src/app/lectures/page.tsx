@@ -66,9 +66,9 @@ const LecturesPage = () => {
     fetchLectureData();
   }, []);
 
-  const handleBannerUpdate = (imageUrl: string | null, altText: string) => {
+  const handleBannerUpdate = (imageUrl: string | null) => {
     setCurrentBannerUrl(imageUrl);
-    setCurrentBannerAlt(altText || "Banner Image");
+    setCurrentBannerAlt("Banner Image");
   };
 
   const handleLectureCreated = () => {

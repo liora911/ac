@@ -8,6 +8,7 @@ import SignOutButton from "@/components/Auth/SignOutButton";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
+import PresentationsAdmin from "./PresentationsAdmin";
 
 type TabKey =
   | "user"
@@ -15,6 +16,7 @@ type TabKey =
   | "articles"
   | "events"
   | "lectures"
+  | "presentations"
   | "themes";
 
 const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
@@ -23,6 +25,7 @@ const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "articles", label: "מאמרים" },
   { key: "events", label: "אירועים" },
   { key: "lectures", label: "הרצאות" },
+  { key: "presentations", label: "מצגות" },
   { key: "themes", label: "ערכות נושא", disabled: true },
 ];
 
@@ -163,6 +166,20 @@ export default function ElitzurDashboard() {
             </p>
             <div className="mt-6">
               <LecturesAdmin />
+            </div>
+          </div>
+        )}
+
+        {active === "presentations" && (
+          <div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+              מצגות
+            </h1>
+            <p className="mt-2 text-sm text-gray-600">
+              צור, חפש, סנן ונהל מצגות.
+            </p>
+            <div className="mt-6">
+              <PresentationsAdmin />
             </div>
           </div>
         )}
