@@ -1,11 +1,10 @@
-"use client";
-
 import React, { Suspense } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useTranslation } from "@/contexts/Translation/translation.context";
-import { useSession } from "next-auth/react";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { fetchArticles, fetchCategories } from "@/lib/server/articles";
 
 // Lazy load the heavy ArticlesList component
 const ArticlesList = dynamic(
@@ -19,13 +18,17 @@ const ArticlesList = dynamic(
   }
 );
 
-export default function ArticlesPage() {
-  const { t } = useTranslation();
-  const { data: session } = useSession();
-
+export default async function ArticlesPage() {
+  const session = await getServerSession(authOptions);
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+
+  // Fetch initial data on server
+  const [articlesResponse, categories] = await Promise.all([
+    fetchArticles({ page: 1, limit: 12 }),
+    fetchCategories(),
+  ]);
 
   return (
     <div className="min-h-screen bg-gray-50 bg-cover bg-center">
@@ -41,20 +44,18 @@ export default function ArticlesPage() {
           }}
         >
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t("articlesPage.title")}
-            </h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Articles</h1>
             <p
               className="text-xl text-white max-w-3xl mx-auto"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.8)" }}
             >
-              {t("articlesPage.description")}
+              Explore our collection of articles
             </p>
             {isAuthorized && (
               <div className="mt-6">
                 <Link href="/articles/create" passHref>
                   <button className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
-                    {t("articlesPage.createArticleButton")}
+                    Create Article
                   </button>
                 </Link>
               </div>
@@ -77,6 +78,10 @@ export default function ArticlesPage() {
             showFilters={true}
             showPagination={true}
             viewMode="grid"
+            initialArticles={articlesResponse.articles}
+            initialCategories={categories}
+            initialTotal={articlesResponse.total}
+            initialTotalPages={articlesResponse.totalPages}
           />
         </Suspense>
       </div>

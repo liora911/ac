@@ -22,6 +22,10 @@ interface ArticlesListProps {
   categoryId?: string;
   featuredOnly?: boolean;
   viewMode?: "grid" | "list";
+  initialArticles?: Article[];
+  initialCategories?: any[];
+  initialTotal?: number;
+  initialTotalPages?: number;
 }
 
 export default function ArticlesList({
@@ -31,6 +35,10 @@ export default function ArticlesList({
   categoryId,
   featuredOnly = false,
   viewMode: initialViewMode = "grid",
+  initialArticles,
+  initialCategories,
+  initialTotal,
+  initialTotalPages,
 }: ArticlesListProps) {
   const { data: session } = useSession();
   const isAuthorized =
@@ -68,9 +76,11 @@ export default function ArticlesList({
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
-  const articles = articlesData?.articles || [];
-  const totalPages = articlesData?.totalPages || 1;
-  const total = articlesData?.total || 0;
+  // Use initial data if provided and no search/filter is active
+  const articles = articlesData?.articles || initialArticles || [];
+  const total = articlesData?.total || initialTotal || 0;
+  const totalPages = articlesData?.totalPages || initialTotalPages || 1;
+  const categoriesList = categories || initialCategories || [];
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -164,7 +174,7 @@ export default function ArticlesList({
                 {isLoadingCategories ? (
                   <option disabled>{t("articleForm.loadingCategories")}</option>
                 ) : (
-                  categories?.map((category) => (
+                  categoriesList?.map((category) => (
                     <option key={category.id} value={category.id}>
                       {category.name}
                     </option>
