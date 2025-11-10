@@ -51,11 +51,11 @@ export default function Header() {
   ];
   return (
     <>
-      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white shadow-md px-4 py-3 sm:py-4">
+      <header className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 backdrop-blur-sm shadow-lg px-4 py-3 sm:py-4">
         <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center">
           <Link
             href="/"
-            className="text-2xl font-extrabold tracking-tight cursor-pointer"
+            className="text-2xl font-extrabold tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200"
             style={{
               background: "linear-gradient(135deg, #007bff 0%, #6610f2 100%)",
               backgroundClip: "text",
@@ -68,30 +68,48 @@ export default function Header() {
           <div className="flex items-center space-x-4">
             {session && <Clock />}
             <button
-              className="sm:hidden text-gray-700 focus:outline-none cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
+              className="sm:hidden text-gray-700 focus:outline-none cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-all duration-200 hover:scale-110"
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-label="Toggle navigation"
             >
-              {menuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
+              <div className="relative">
+                <MdMenu
+                  size={24}
+                  className={`transition-all duration-300 ${
+                    menuOpen ? "opacity-0 rotate-180" : "opacity-100 rotate-0"
+                  }`}
+                />
+                <MdClose
+                  size={24}
+                  className={`absolute top-0 left-0 transition-all duration-300 ${
+                    menuOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-180"
+                  }`}
+                />
+              </div>
             </button>
             <nav className="hidden sm:flex items-center space-x-6 text-base font-medium">
-              {visibleNavItems.map(({ label, href, className }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`text-gray-700 hover:text-blue-600 transition-colors duration-200 ${
-                    className || ""
-                  }`}
-                  style={{
-                    textDecoration: pathname === href ? "underline" : "none",
-                    textDecorationColor:
-                      pathname === href ? "#007bff" : undefined,
-                    textUnderlineOffset: pathname === href ? "4px" : undefined,
-                  }}
-                >
-                  {t(label)}
-                </Link>
-              ))}
+              {visibleNavItems.map(({ label, href, className, icon }) => {
+                const IconComponent = icon ? IconMap[icon] : null;
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    className={`flex items-center gap-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-all duration-200 ${
+                      className || ""
+                    }`}
+                    style={{
+                      textDecoration: pathname === href ? "underline" : "none",
+                      textDecorationColor:
+                        pathname === href ? "#007bff" : undefined,
+                      textUnderlineOffset:
+                        pathname === href ? "4px" : undefined,
+                    }}
+                  >
+                    {IconComponent && <IconComponent size={20} />}
+                    {t(label)}
+                  </Link>
+                );
+              })}
             </nav>
 
             <div className="relative shrink-0">
@@ -101,23 +119,39 @@ export default function Header() {
         </div>
       </header>
       {menuOpen && (
-        <nav className="fixed top-[64px] left-0 right-0 z-40 sm:hidden bg-white shadow-lg">
-          <ul className="flex flex-col p-4 space-y-2">
+        <nav className="fixed top-[64px] left-0 right-0 z-40 sm:hidden bg-white shadow-lg border-t border-gray-200">
+          <ul className="flex flex-col p-4 space-y-1">
             {visibleNavItems.map(({ label, href, className, icon }) => {
               const IconComponent = icon ? IconMap[icon] : null;
+              const isActive = pathname === href;
               return (
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`flex items-center gap-3 py-2 px-3 rounded-md text-gray-800 hover:bg-blue-100 transition-colors duration-200 ${
+                    className={`flex items-center gap-3 py-3 px-4 rounded-lg text-gray-800 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md transition-all duration-300 transform hover:translate-x-1 ${
                       className || ""
+                    } ${
+                      isActive
+                        ? "bg-gradient-to-r from-blue-100 to-purple-100 shadow-md"
+                        : ""
                     }`}
                     onClick={() => {
                       setMenuOpen(false);
                     }}
                   >
-                    {IconComponent && <IconComponent size={20} />}
-                    {t(label)}
+                    {IconComponent && (
+                      <IconComponent
+                        size={22}
+                        className={isActive ? "text-blue-600" : "text-gray-600"}
+                      />
+                    )}
+                    <span
+                      className={`font-medium ${
+                        isActive ? "text-blue-700" : ""
+                      }`}
+                    >
+                      {t(label)}
+                    </span>
                   </Link>
                 </li>
               );
