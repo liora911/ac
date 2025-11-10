@@ -29,11 +29,34 @@ const QuickStats: React.FC = () => {
             fetch("/api/presentations"),
           ]);
 
-        const articles = articlesRes.ok ? (await articlesRes.json()).length : 0;
-        const events = eventsRes.ok ? (await eventsRes.json()).length : 0;
-        const lectures = lecturesRes.ok ? (await lecturesRes.json()).length : 0;
-        const presentations = presentationsRes.ok
-          ? (await presentationsRes.json()).length
+        const articlesData = articlesRes.ok ? await articlesRes.json() : null;
+        const eventsData = eventsRes.ok ? await eventsRes.json() : null;
+        const lecturesData = lecturesRes.ok ? await lecturesRes.json() : null;
+        const presentationsData = presentationsRes.ok
+          ? await presentationsRes.json()
+          : null;
+
+        // Extract counts correctly based on API response structure
+        const articles = articlesData?.total || articlesData?.length || 0;
+        const events = Array.isArray(eventsData) ? eventsData.length : 0;
+        const lectures = Array.isArray(lecturesData)
+          ? lecturesData.reduce(
+              (total: number, cat: any) =>
+                total +
+                cat.lectures.length +
+                cat.subcategories.reduce(
+                  (subTotal: number, sub: any) =>
+                    subTotal + sub.lectures.length,
+                  0
+                ),
+              0
+            )
+          : 0;
+        const presentations = Array.isArray(presentationsData)
+          ? presentationsData.reduce(
+              (total: number, cat: any) => total + cat.presentations.length,
+              0
+            )
           : 0;
 
         setStats({ articles, events, lectures, presentations });
