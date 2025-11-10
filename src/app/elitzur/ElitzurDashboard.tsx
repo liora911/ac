@@ -5,6 +5,9 @@ import { useSession } from "next-auth/react";
 import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
+import Clock from "@/components/Clock/Clock";
+import Weather from "@/components/Weather/Weather";
+import QuickStats from "@/components/QuickStats/QuickStats";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
@@ -92,15 +95,42 @@ export default function ElitzurDashboard() {
       {/* Content */}
       <section className="flex-1">
         {active === "user" && (
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              משתמש
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              נהל את פרטי המשתמש שלך והתחבר או התנתק מהמערכת.
-            </p>
-            <div className="mt-6">
-              <LoginForm />
+          <div className="space-y-8">
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                משתמש
+              </h1>
+              <p className="mt-2 text-sm text-gray-600">
+                נהל את פרטי המשתמש שלך והתחבר או התנתק מהמערכת.
+              </p>
+              <div className="mt-6">
+                <LoginForm />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  סקירה מהירה
+                </h2>
+                <QuickStats />
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">
+                    שעה ותאריך
+                  </h3>
+                  <Clock />
+                </div>
+
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">
+                    מזג אוויר
+                  </h3>
+                  <Weather />
+                </div>
+              </div>
             </div>
           </div>
         )}
