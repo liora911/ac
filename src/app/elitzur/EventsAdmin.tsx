@@ -8,6 +8,7 @@ import { useEvents, useUpdateEvent, useDeleteEvent } from "@/hooks/useEvents";
 import { useCategories } from "@/hooks/useArticles";
 import type { Event } from "@/types/Events/events";
 import LoginForm from "@/components/Login/login";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type EventStatus = "active" | "cancelled" | "completed";
 
@@ -26,6 +27,7 @@ export default function EventsAdmin() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+  const { showSuccess, showError } = useNotification();
 
   // Filters / state
   const [search, setSearch] = useState("");
@@ -88,7 +90,11 @@ export default function EventsAdmin() {
       { id: event.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
+          showSuccess(`קטגוריית האירוע "${event.title}" עודכנה בהצלחה`);
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון קטגוריית האירוע");
         },
       }
     );
@@ -102,7 +108,11 @@ export default function EventsAdmin() {
     }
     deleteMutation.mutate(event.id, {
       onSuccess: () => {
+        showSuccess(`האירוע "${event.title}" נמחק בהצלחה`);
         refetch();
+      },
+      onError: () => {
+        showError("שגיאה במחיקת האירוע");
       },
     });
   };

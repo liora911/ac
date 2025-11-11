@@ -12,6 +12,7 @@ import {
 import { useCategories } from "@/hooks/useArticles";
 import type { Lecture } from "@/types/Lectures/lectures";
 import LoginForm from "@/components/Login/login";
+import { useNotification } from "@/contexts/NotificationContext";
 
 function useDebouncedValue<T>(value: T, delay = 350) {
   const [debounced, setDebounced] = useState(value);
@@ -28,6 +29,7 @@ export default function LecturesAdmin() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+  const { showSuccess, showError } = useNotification();
 
   // Filters / state
   const [search, setSearch] = useState("");
@@ -114,7 +116,11 @@ export default function LecturesAdmin() {
       { id: lecture.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
+          showSuccess(`קטגוריית ההרצאה "${lecture.title}" עודכנה בהצלחה`);
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון קטגוריית ההרצאה");
         },
       }
     );
@@ -130,7 +136,11 @@ export default function LecturesAdmin() {
     }
     deleteMutation.mutate(lecture.id, {
       onSuccess: () => {
+        showSuccess(`ההרצאה "${lecture.title}" נמחקה בהצלחה`);
         refetch();
+      },
+      onError: () => {
+        showError("שגיאה במחיקת ההרצאה");
       },
     });
   };

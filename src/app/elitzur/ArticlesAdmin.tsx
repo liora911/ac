@@ -16,6 +16,7 @@ import type {
   ArticlesQueryParams,
 } from "@/types/Articles/articles";
 import LoginForm from "@/components/Login/login";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type StatusFilter = "" | ArticleStatus;
 
@@ -34,6 +35,7 @@ export default function ArticlesAdmin() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+  const { showSuccess, showError } = useNotification();
 
   // Filters / state
   const [search, setSearch] = useState("");
@@ -91,8 +93,15 @@ export default function ArticlesAdmin() {
       { id: article.id, status: nextStatus },
       {
         onSuccess: () => {
-          // local refresh
+          showSuccess(
+            `המאמר "${article.title}" ${
+              nextStatus === "PUBLISHED" ? "פורסם" : "הועבר לטיוטה"
+            } בהצלחה`
+          );
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון סטטוס המאמר");
         },
       }
     );
@@ -104,7 +113,11 @@ export default function ArticlesAdmin() {
       { id: article.id, categoryId: newCategoryId || undefined },
       {
         onSuccess: () => {
+          showSuccess(`קטגוריית המאמר "${article.title}" עודכנה בהצלחה`);
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון קטגוריית המאמר");
         },
       }
     );
@@ -120,7 +133,11 @@ export default function ArticlesAdmin() {
     }
     deleteMutation.mutate(article.id, {
       onSuccess: () => {
+        showSuccess(`המאמר "${article.title}" נמחק בהצלחה`);
         refetch();
+      },
+      onError: () => {
+        showError("שגיאה במחיקת המאמר");
       },
     });
   };

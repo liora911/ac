@@ -14,6 +14,7 @@ import type {
   PresentationCategory,
 } from "@/types/Presentations/presentations";
 import LoginForm from "@/components/Login/login";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type StatusFilter = "" | "published" | "unpublished";
 
@@ -32,6 +33,7 @@ export default function PresentationsAdmin() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+  const { showSuccess, showError } = useNotification();
 
   // Filters / state
   const [search, setSearch] = useState("");
@@ -110,7 +112,15 @@ export default function PresentationsAdmin() {
       { id: presentation.id, published: nextPublished },
       {
         onSuccess: () => {
+          showSuccess(
+            `המצגת "${presentation.title}" ${
+              nextPublished ? "פורסמה" : "הוסרה מפרסום"
+            } בהצלחה`
+          );
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון סטטוס המצגת");
         },
       }
     );
@@ -124,7 +134,11 @@ export default function PresentationsAdmin() {
       { id: presentation.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
+          showSuccess(`קטגוריית המצגת "${presentation.title}" עודכנה בהצלחה`);
           refetch();
+        },
+        onError: () => {
+          showError("שגיאה בעדכון קטגוריית המצגת");
         },
       }
     );
@@ -140,7 +154,11 @@ export default function PresentationsAdmin() {
     }
     deleteMutation.mutate(presentation.id, {
       onSuccess: () => {
+        showSuccess(`המצגת "${presentation.title}" נמחקה בהצלחה`);
         refetch();
+      },
+      onError: () => {
+        showError("שגיאה במחיקת המצגת");
       },
     });
   };

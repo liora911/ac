@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import LoginForm from "@/components/Login/login";
 import { Mail, User, MessageSquare, Calendar, Trash2 } from "lucide-react";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface Message {
   id: string;
@@ -22,6 +23,7 @@ export default function MessagesAdmin() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+  const { showSuccess, showError } = useNotification();
 
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState(true);
@@ -68,8 +70,9 @@ export default function MessagesAdmin() {
       if (selectedMessage?.id === id) {
         setSelectedMessage(null);
       }
+      showSuccess("ההודעה נמחקה בהצלחה");
     } catch (err) {
-      alert("Failed to delete message");
+      showError("שגיאה במחיקת ההודעה");
     }
   };
 

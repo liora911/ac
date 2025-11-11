@@ -3,6 +3,7 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import { useNotification } from "@/contexts/NotificationContext";
 
 type Notice = { kind: "success" | "error" | "info"; text: string } | null;
 
@@ -12,6 +13,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
   const searchParams = useSearchParams();
+  const { showSuccess, showError, showInfo } = useNotification();
 
   useEffect(() => {
     const error = searchParams.get("error");
@@ -43,23 +45,27 @@ export default function LoginForm() {
             kind: "error",
             text: "משתמש זה אינו מורשה גישה אנא נסה עם מייל אחר",
           });
+          showError("משתמש זה אינו מורשה גישה");
         } else {
           setNotice({
             kind: "error",
             text: "Error sending email. Please try again.",
           });
+          showError("שגיאה בשליחת המייל. אנא נסה שוב.");
         }
       } else {
         setNotice({
           kind: "success",
           text: "Check your email for a magic login link!",
         });
+        showSuccess("קישור התחברות נשלח למייל שלך!");
       }
     } catch {
       setNotice({
         kind: "error",
         text: "Something went wrong. Please try again.",
       });
+      showError("משהו השתבש. אנא נסה שוב.");
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +95,10 @@ export default function LoginForm() {
             </strong>
           </p>
           <button
-            onClick={() => signOut()}
+            onClick={async () => {
+              await signOut();
+              showSuccess("התנתקת בהצלחה מהמערכת");
+            }}
             className="mt-6 inline-flex w-full items-center justify-center rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
           >
             צא מהמערכת
