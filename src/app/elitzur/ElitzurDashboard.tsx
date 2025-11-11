@@ -12,6 +12,7 @@ import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
 import QuickActions from "@/components/QuickActions/QuickActions";
 import SystemHealth from "@/components/SystemHealth/SystemHealth";
 import MotivationalQuote from "@/components/MotivationalQuote/MotivationalQuote";
+import ThemeToggle from "@/components/ThemeToggle";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
@@ -39,7 +40,7 @@ const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
   { key: "presentations", label: "מצגות" },
   { key: "messages", label: "הודעות" },
   { key: "settings", label: "הגדרות מערכת" },
-  { key: "themes", label: "ערכות נושא", disabled: true },
+  { key: "themes", label: "ערכות נושא" },
 ];
 
 export default function ElitzurDashboard() {
@@ -346,14 +347,21 @@ export default function ElitzurDashboard() {
             >
               ניהול ערכות נושא
             </h1>
-            <div
-              className="mt-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
-              role="status"
-              aria-live="polite"
-            >
-              <p className="text-sm text-gray-700">
-                תכונה זו עדיין לא זמינה. בקרוב נוסיף אפשרות לניהול ערכות נושא
-              </p>
+            <p className="mt-2 text-sm text-gray-600">
+              התאם את המראה של האתר להעדפותיך.
+            </p>
+            <div className="mt-6">
+              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  מצב תצוגה
+                </h3>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-700">
+                    החלף בין מצב בהיר וכהה
+                  </span>
+                  <ThemeToggle />
+                </div>
+              </div>
             </div>
           </div>
         )}

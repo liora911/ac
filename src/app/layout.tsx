@@ -6,6 +6,7 @@ import Footer from "@/components/Footer/footer";
 import { TranslationProvider } from "@/contexts/Translation/translation.context";
 import AuthSessionProvider from "@/components/Auth/authSessionProvider";
 import QueryProvider from "@/lib/react-query/QueryProvider";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -39,17 +40,19 @@ export default function RootLayout({
         <QueryProvider>
           <AuthSessionProvider>
             <TranslationProvider>
-              <div className="flex flex-col min-h-screen">
-                <Header />
-                <main
-                  id="main-content"
-                  className="flex-grow flex flex-col pt-16"
-                  role="main"
-                >
-                  {children}
-                </main>
-                <Footer />
-              </div>
+              <ThemeProvider>
+                <div className="flex flex-col min-h-screen">
+                  <Header />
+                  <main
+                    id="main-content"
+                    className="flex-grow flex flex-col pt-16"
+                    role="main"
+                  >
+                    {children}
+                  </main>
+                  <Footer />
+                </div>
+              </ThemeProvider>
             </TranslationProvider>
           </AuthSessionProvider>
         </QueryProvider>
