@@ -45,21 +45,21 @@ const Home = () => {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-gray-800">
+    <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-[var(--foreground)] bg-gradient-to-br from-blue-50/30 via-white to-purple-50/30">
       <motion.div
-        className="text-center max-w-3xl w-full bg-white shadow-xl rounded-lg p-6 sm:p-8 md:p-10"
+        className="text-center max-w-3xl w-full bg-gradient-to-br from-[var(--card)] via-white to-[var(--card)]/80 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 border border-[var(--border)] backdrop-blur-sm"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
         <motion.h1
-          className="text-3xl sm:text-4xl font-bold text-blue-700"
+          className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
           variants={itemVariants}
         >
           {t("home.name")}
         </motion.h1>
         <motion.p
-          className="text-lg sm:text-xl mt-2 text-gray-700"
+          className="text-lg sm:text-xl mt-2 text-[var(--muted-foreground)]"
           variants={itemVariants}
         >
           {t("home.tagline")}
@@ -81,7 +81,7 @@ const Home = () => {
               alt="Avshalom C. Elitzur"
               width={150}
               height={150}
-              className="mx-auto rounded-full border-4 border-blue-300 shadow-md"
+              className="mx-auto rounded-full border-4 border-gradient-to-r from-blue-400 via-purple-400 to-pink-400 shadow-xl ring-4 ring-white/60 hover:ring-6 hover:ring-white/80 transition-all duration-300"
               priority
               sizes="(max-width: 768px) 150px, 150px"
               quality={85}
@@ -90,7 +90,7 @@ const Home = () => {
             />
           </motion.div>
           <motion.p
-            className="text-xs sm:text-sm mt-2 text-gray-500"
+            className="text-xs sm:text-sm mt-2 text-[var(--muted-foreground)]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.4 }}
@@ -99,12 +99,15 @@ const Home = () => {
           </motion.p>
         </motion.div>
 
-        <motion.p className="text-md sm:text-lg mt-4" variants={itemVariants}>
+        <motion.p
+          className="text-md sm:text-lg mt-4 text-[var(--foreground)]"
+          variants={itemVariants}
+        >
           {t("home.greeting")}
         </motion.p>
 
         <motion.div
-          className="mt-4 text-left text-sm sm:text-base space-y-3"
+          className="mt-4 text-left text-sm sm:text-base space-y-3 text-[var(--foreground)]"
           variants={itemVariants}
         >
           <p>{t("home.intro")}</p>
@@ -112,14 +115,14 @@ const Home = () => {
         </motion.div>
 
         <motion.p
-          className="mt-3 text-right text-sm sm:text-base max-w-2xl mx-auto"
+          className="mt-3 text-right text-sm sm:text-base max-w-2xl mx-auto text-[var(--foreground)]"
           dir="rtl"
           variants={itemVariants}
         >
           {t("home.mainTopic")}
         </motion.p>
         <motion.div
-          className="mt-4 text-sm sm:text-base text-right max-w-3xl mx-auto"
+          className="mt-4 text-sm sm:text-base text-right max-w-3xl mx-auto text-[var(--foreground)]"
           dir="rtl"
           variants={itemVariants}
         >
@@ -139,7 +142,7 @@ const Home = () => {
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <p className="whitespace-pre-line text-gray-700 leading-relaxed">
+              <p className="whitespace-pre-line text-[var(--foreground)] leading-relaxed">
                 אבשלום אליצור (לסיפור-חיים "צהוב" ראו בויקיפדיה) הוא
                 פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ'פמאן
                 בקליפורניה, בראשות פרופ' יקיר אהרונוב, לצד חתני פרס נובל פול
@@ -207,7 +210,7 @@ const Home = () => {
         </motion.div>
 
         <motion.div
-          className="mt-6 sm:mt-8 border-t pt-6 sm:pt-8"
+          className="mt-6 sm:mt-8 border-t border-gradient-to-r from-transparent via-[var(--border)] to-transparent pt-6 sm:pt-8"
           variants={itemVariants}
         >
           <div className="flex justify-center space-x-6">
@@ -220,12 +223,12 @@ const Home = () => {
                 href="https://" //"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 text-2xl cursor-pointer"
+                className="text-[var(--primary)] hover:text-[var(--primary)]/80 text-2xl cursor-pointer"
                 aria-label={t("home.social.facebook")}
                 whileHover={{
                   scale: 1.2,
                   rotate: 5,
-                  color: "#2563eb",
+                  color: "var(--primary)",
                 }}
                 whileTap={{ scale: 0.9 }}
                 transition={{ type: "spring", stiffness: 400, damping: 10 }}
