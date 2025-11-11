@@ -8,6 +8,7 @@ import LocaleSelect from "../LocaleSelect/locale-select";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import Clock from "../Clock/Clock";
+import GlobalSearch from "../GlobalSearch";
 import {
   MdArticle,
   MdOutlineOndemandVideo,
@@ -70,6 +71,7 @@ export default function Header() {
             A.Elitzur
           </Link>
           <div className="flex items-center space-x-4">
+            <GlobalSearch />
             {session && <Clock />}
             <button
               className="sm:hidden text-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-all duration-200 hover:scale-110"
