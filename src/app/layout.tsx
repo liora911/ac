@@ -41,8 +41,8 @@ export default function RootLayout({
         <QueryProvider>
           <AuthSessionProvider>
             <TranslationProvider>
-              <ThemeProvider>
-                <NotificationProvider>
+              <NotificationProvider>
+                <ThemeProvider>
                   <div className="flex flex-col min-h-screen">
                     <Header />
                     <main
@@ -54,8 +54,8 @@ export default function RootLayout({
                     </main>
                     <Footer />
                   </div>
-                </NotificationProvider>
-              </ThemeProvider>
+                </ThemeProvider>
+              </NotificationProvider>
             </TranslationProvider>
           </AuthSessionProvider>
         </QueryProvider>
