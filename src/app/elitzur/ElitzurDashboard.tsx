@@ -199,12 +199,12 @@ export default function ElitzurDashboard() {
                       <ActivityFeed />
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         מוטיבציה יומית
                       </h3>
                       <MotivationalQuote />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
