@@ -173,21 +173,21 @@ export default function ElitzurDashboard() {
                         שעה ומזג אוויר
                       </h3>
                       <div className="grid grid-cols-1 gap-4">
-                        <div>
+                        {/* <div>
                           <Clock />
                         </div>
                         <div>
                           <Weather />
-                        </div>
+                        </div> */}
                       </div>
                     </div>
 
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         מצב המערכת
                       </h3>
                       <SystemHealth />
-                    </div>
+                    </div> */}
                   </div>
 
                   {/* Activity & Motivation Panel */}

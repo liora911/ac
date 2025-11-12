@@ -127,7 +127,6 @@ export default function Header() {
               <div className="hidden sm:block">
                 <GlobalSearch />
               </div>
-              {session && <Clock />}
             </div>
             <div className="flex items-center space-x-2">
               <button
