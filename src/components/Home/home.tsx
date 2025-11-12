@@ -47,7 +47,7 @@ const Home = () => {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-[var(--foreground)]">
       <motion.div
-        className="text-center max-w-3xl w-full bg-gradient-to-br from-[var(--card)] via-white to-[var(--card)]/80 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 border border-[var(--border)]"
+        className="text-center max-w-3xl w-full bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--card)]/80 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 border border-[var(--border)]"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
