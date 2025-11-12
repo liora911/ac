@@ -19,6 +19,7 @@ import LecturesAdmin from "./LecturesAdmin";
 import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import SettingsAdmin from "./SettingsAdmin";
+import { Menu, X } from "lucide-react";
 
 type TabKey =
   | "user"
@@ -46,12 +47,24 @@ const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
 export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const [active, setActive] = useState<TabKey>("user");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
     <div className="flex gap-6">
+      {/* Mobile menu button */}
+      <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-lg border border-gray-200"
+        aria-label="Toggle navigation menu"
+      >
+        {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+      </button>
+
       {/* Sidebar */}
       <aside
-        className="w-60 shrink-0"
+        className={`w-60 shrink-0 fixed md:relative top-0 left-0 h-full z-40 bg-white md:bg-transparent border-r md:border-r-0 transition-transform duration-300 ease-in-out ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        }`}
         role="complementary"
         aria-label="Dashboard navigation"
       >
@@ -75,7 +88,10 @@ export default function ElitzurDashboard() {
                   <button
                     key={tab.key}
                     type="button"
-                    onClick={() => !isDisabled && setActive(tab.key)}
+                    onClick={() => {
+                      !isDisabled && setActive(tab.key);
+                      setSidebarOpen(false); // Close sidebar on mobile after selection
+                    }}
                     className={[
                       "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                       isActive
@@ -126,9 +142,18 @@ export default function ElitzurDashboard() {
         </div>
       </aside>
 
+      {/* Overlay for mobile */}
+      {sidebarOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
+          onClick={() => setSidebarOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
       {/* Content */}
       <section
-        className="flex-1 overflow-hidden"
+        className="flex-1 overflow-hidden md:ml-0"
         role="tabpanel"
         aria-labelledby={`tab-${active}`}
         id={`panel-${active}`}
@@ -161,14 +186,14 @@ export default function ElitzurDashboard() {
                 </div>
 
                 {/* Main Dashboard Grid */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   {/* System & Environment Panel */}
                   <div className="space-y-6">
                     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         שעה ומזג אוויר
                       </h3>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-4">
                         <div>
                           <Clock />
                         </div>
