@@ -14,6 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
+import { Grid3X3, List } from "lucide-react";
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -108,26 +109,28 @@ export default function ArticlesList({
     <div className="space-y-6">
       {showFilters && (
         <div className="flex justify-end mb-4">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`p-2 rounded-md transition-colors ${
                 viewMode === "grid"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
+              title="Grid view"
             >
-              Grid
+              <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`p-2 rounded-md transition-colors ${
                 viewMode === "list"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
+              title="List view"
             >
-              List
+              <List className="w-4 h-4" />
             </button>
           </div>
         </div>

@@ -8,6 +8,7 @@ import Modal from "@/components/Modal/Modal";
 import LecturesSidebar from "./LecturesSidebar";
 import LectureCard from "./LectureCard";
 import LectureModal from "./LectureModal";
+import { Grid3X3, List } from "lucide-react";
 
 interface LecturesProps {
   onBannerUpdate: (_imageUrl: string | null) => void;
@@ -159,26 +160,28 @@ const Lectures: React.FC<LecturesProps> = ({
               {selectedCategoryName}
             </span>
           </h2>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <button
               onClick={() => setViewMode("grid")}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`p-2 rounded-md transition-colors ${
                 viewMode === "grid"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
+              title="Grid view"
             >
-              Grid
+              <Grid3X3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+              className={`p-2 rounded-md transition-colors ${
                 viewMode === "list"
                   ? "bg-blue-600 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
+              title="List view"
             >
-              List
+              <List className="w-4 h-4" />
             </button>
           </div>
         </div>
