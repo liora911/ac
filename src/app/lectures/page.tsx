@@ -113,7 +113,7 @@ const LecturesPage = () => {
           <h1 className="text-4xl font-bold text-gray-900">
             {t("lecturesPage.title")}
           </h1>
-          {isAuthorized && (
+          {/* {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl cursor-pointer"
@@ -122,7 +122,7 @@ const LecturesPage = () => {
                 ? t("lecturesPage.cancelButton")
                 : t("lecturesPage.createLectureButton")}
             </button>
-          )}
+          )} */}
         </div>
 
         {showCreateForm && isAuthorized && (

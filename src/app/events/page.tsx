@@ -94,7 +94,7 @@ const EventsPage = () => {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
             {t("eventsPage.title")}
           </h1>
-          {isAuthorized && (
+          {/* {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25 cursor-pointer"
@@ -103,7 +103,7 @@ const EventsPage = () => {
                 ? t("eventsPage.cancelButton")
                 : t("eventsPage.createEventButton")}
             </button>
-          )}
+          )} */}
         </div>
 
         {showCreateForm && isAuthorized && (

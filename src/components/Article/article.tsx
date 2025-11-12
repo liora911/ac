@@ -63,8 +63,7 @@ export default function ArticlePage() {
       }
 
       pdf.save(`${article?.title || "article"}.pdf`);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -167,14 +166,14 @@ export default function ArticlePage() {
             >
               📄 הורד PDF
             </button>
-            {
+            {/* {
               <button
                 onClick={() => router.push(`/edit-article/${articleId}`)}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 ✏️ ערוך מאמר
               </button>
-            }
+            } */}
           </div>
         </div>
 
