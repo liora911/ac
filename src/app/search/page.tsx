@@ -10,6 +10,14 @@ import {
   MdEvent,
   MdMic,
 } from "react-icons/md";
+import ArticleModal from "@/components/Articles/ArticleModal";
+import PresentationModal from "@/components/Presentations/PresentationModal";
+import EventModal from "@/components/Events/EventModal";
+import LectureModal from "@/components/Lectures/LectureModal";
+import { Article } from "@/types/Articles/articles";
+import { Presentation } from "@/types/Presentations/presentations";
+import { Event } from "@/types/Events/events";
+import { Lecture } from "@/types/Lectures/lectures";
 
 interface SearchResult {
   id: string;
@@ -43,6 +51,12 @@ function SearchPageContent() {
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
+  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
+  const [selectedPresentation, setSelectedPresentation] =
+    useState<Presentation | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
+  const [modalLoading, setModalLoading] = useState(false);
 
   const stripHtml = (html: string) => {
     return html.replace(/<[^>]*>/g, "");
@@ -80,19 +94,39 @@ function SearchPageContent() {
     }
   };
 
-  const getResultUrl = (result: SearchResult, type: string) => {
-    switch (type) {
-      case "articles":
-        return `/articles/${result.id}`;
-      case "presentations":
-        return `/presentations/${result.id}`;
-      case "events":
-        return `/events/${result.id}`;
-      case "lectures":
-        return `/lectures/${result.id}`;
-      default:
-        return "/";
+  const handleResultClick = async (result: SearchResult, type: string) => {
+    setModalLoading(true);
+    try {
+      const response = await fetch(`/api/${type}/${result.id}`);
+      if (response.ok) {
+        const data = await response.json();
+        switch (type) {
+          case "articles":
+            setSelectedArticle(data);
+            break;
+          case "presentations":
+            setSelectedPresentation(data);
+            break;
+          case "events":
+            setSelectedEvent(data);
+            break;
+          case "lectures":
+            setSelectedLecture(data);
+            break;
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching item details:", error);
+    } finally {
+      setModalLoading(false);
     }
+  };
+
+  const closeModals = () => {
+    setSelectedArticle(null);
+    setSelectedPresentation(null);
+    setSelectedEvent(null);
+    setSelectedLecture(null);
   };
 
   const getResultIcon = (type: string) => {
@@ -257,12 +291,14 @@ function SearchPageContent() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <Link
-                              href={getResultUrl(result, result.type)}
-                              className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors"
+                            <button
+                              onClick={() =>
+                                handleResultClick(result, result.type)
+                              }
+                              className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors text-left"
                             >
                               {result.title}
-                            </Link>
+                            </button>
                             <div className="mt-2 text-gray-600 line-clamp-3">
                               {result.description
                                 ? stripHtml(result.description)
@@ -363,6 +399,15 @@ function SearchPageContent() {
             </p>
           </div>
         )}
+
+        {/* Modals */}
+        <ArticleModal article={selectedArticle} onClose={closeModals} />
+        <PresentationModal
+          presentation={selectedPresentation}
+          onClose={closeModals}
+        />
+        <EventModal event={selectedEvent} onClose={closeModals} />
+        <LectureModal lecture={selectedLecture} onClose={closeModals} />
       </div>
     </div>
   );
