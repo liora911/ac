@@ -44,6 +44,10 @@ function SearchPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
 
+  const stripHtml = (html: string) => {
+    return html.replace(/<[^>]*>/g, "");
+  };
+
   useEffect(() => {
     const q = searchParams.get("q");
     if (q && q.trim().length >= 2) {
@@ -260,8 +264,12 @@ function SearchPageContent() {
                               {result.title}
                             </Link>
                             <div className="mt-2 text-gray-600 line-clamp-3">
-                              {result.description ||
-                                result.content?.substring(0, 200) + "..."}
+                              {result.description
+                                ? stripHtml(result.description)
+                                : result.content
+                                ? stripHtml(result.content).substring(0, 200) +
+                                  "..."
+                                : ""}
                             </div>
                             <div className="mt-3 flex items-center gap-4 text-sm text-gray-500">
                               {result.category && (

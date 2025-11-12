@@ -56,7 +56,7 @@ export default function Header() {
         className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 backdrop-blur-sm shadow-lg px-4 py-3 sm:py-4"
         role="banner"
       >
-        <div className="max-w-6xl mx-auto flex flex-wrap justify-between items-center">
+        <div className="flex flex-wrap justify-between items-center">
           <Link
             href="/"
             className="text-2xl font-extrabold tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
@@ -70,70 +70,74 @@ export default function Header() {
           >
             A.Elitzur
           </Link>
-          <div className="flex items-center space-x-4">
-            <GlobalSearch />
-            {session && <Clock />}
-            <button
-              className="sm:hidden text-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-all duration-200 hover:scale-110"
-              onClick={() => setMenuOpen((prev) => !prev)}
-              aria-label={
-                menuOpen ? "Close navigation menu" : "Open navigation menu"
-              }
-              aria-expanded={menuOpen}
-              aria-controls="mobile-navigation"
-            >
-              <div className="relative">
-                <MdMenu
-                  size={24}
-                  className={`transition-all duration-300 ${
-                    menuOpen ? "opacity-0 rotate-180" : "opacity-100 rotate-0"
+          <nav
+            className="hidden sm:flex items-center space-x-6 text-base font-medium"
+            role="navigation"
+            aria-label="Main navigation"
+          >
+            {visibleNavItems.map(({ label, href, className, icon }) => {
+              const IconComponent = icon ? IconMap[icon] : null;
+              const isActive = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`flex items-center gap-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-all duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 ${
+                    className || ""
                   }`}
-                  aria-hidden="true"
-                />
-                <MdClose
-                  size={24}
-                  className={`absolute top-0 left-0 transition-all duration-300 ${
-                    menuOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-180"
-                  }`}
-                  aria-hidden="true"
-                />
-              </div>
-            </button>
-            <nav
-              className="hidden sm:flex items-center space-x-6 text-base font-medium"
-              role="navigation"
-              aria-label="Main navigation"
-            >
-              {visibleNavItems.map(({ label, href, className, icon }) => {
-                const IconComponent = icon ? IconMap[icon] : null;
-                const isActive = pathname === href;
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    className={`flex items-center gap-2 text-gray-700 hover:text-blue-600 hover:scale-105 transition-all duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 ${
-                      className || ""
+                  style={{
+                    textDecoration: pathname === href ? "underline" : "none",
+                    textDecorationColor:
+                      pathname === href ? "#007bff" : undefined,
+                    textUnderlineOffset: pathname === href ? "4px" : undefined,
+                  }}
+                  aria-current={isActive ? "page" : undefined}
+                >
+                  {IconComponent && (
+                    <IconComponent size={20} aria-hidden="true" />
+                  )}
+                  {t(label)}
+                </Link>
+              );
+            })}
+          </nav>
+          <div className="flex items-center space-x-10">
+            <div className="flex items-center space-x-2">
+              <GlobalSearch />
+              {session && <Clock />}
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                className="sm:hidden text-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-all duration-200 hover:scale-110"
+                onClick={() => setMenuOpen((prev) => !prev)}
+                aria-label={
+                  menuOpen ? "Close navigation menu" : "Open navigation menu"
+                }
+                aria-expanded={menuOpen}
+                aria-controls="mobile-navigation"
+              >
+                <div className="relative">
+                  <MdMenu
+                    size={24}
+                    className={`transition-all duration-300 ${
+                      menuOpen ? "opacity-0 rotate-180" : "opacity-100 rotate-0"
                     }`}
-                    style={{
-                      textDecoration: pathname === href ? "underline" : "none",
-                      textDecorationColor:
-                        pathname === href ? "#007bff" : undefined,
-                      textUnderlineOffset:
-                        pathname === href ? "4px" : undefined,
-                    }}
-                    aria-current={isActive ? "page" : undefined}
-                  >
-                    {IconComponent && (
-                      <IconComponent size={20} aria-hidden="true" />
-                    )}
-                    {t(label)}
-                  </Link>
-                );
-              })}
-            </nav>
-
-            <div className="relative shrink-0">
-              <LocaleSelect value={locale} onChange={setLocale} />
+                    aria-hidden="true"
+                  />
+                  <MdClose
+                    size={24}
+                    className={`absolute top-0 left-0 transition-all duration-300 ${
+                      menuOpen
+                        ? "opacity-100 rotate-0"
+                        : "opacity-0 -rotate-180"
+                    }`}
+                    aria-hidden="true"
+                  />
+                </div>
+              </button>
+              <div className="relative shrink-0">
+                <LocaleSelect value={locale} onChange={setLocale} />
+              </div>
             </div>
           </div>
         </div>

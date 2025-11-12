@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { MdSearch, MdClose } from "react-icons/md";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface SearchResult {
   id: string;
@@ -30,6 +31,7 @@ interface SearchResults {
 }
 
 export default function GlobalSearch() {
+  const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -200,7 +202,7 @@ export default function GlobalSearch() {
     : [];
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-sm">
+    <div ref={searchRef} className="relative w-full max-w-sm p-0 m-0">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
           <MdSearch className="h-5 w-5 text-gray-400" />
@@ -211,7 +213,7 @@ export default function GlobalSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
-          placeholder="Search articles, presentations, events, lectures..."
+          placeholder={t("globalSearch.placeholder")}
           className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
           aria-label="Global search"
           aria-expanded={isOpen}
@@ -295,28 +297,6 @@ export default function GlobalSearch() {
                                 <div className="font-medium text-gray-900 truncate">
                                   {result.title}
                                 </div>
-                                <div className="text-sm text-gray-600 line-clamp-2">
-                                  {result.description ||
-                                    result.content?.substring(0, 100) + "..."}
-                                </div>
-                                {result.category && (
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    Category: {result.category.name}
-                                  </div>
-                                )}
-                                {(result.eventDate || result.date) && (
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    Date:{" "}
-                                    {new Date(
-                                      result.eventDate || result.date!
-                                    ).toLocaleDateString()}
-                                  </div>
-                                )}
-                                {result.location && (
-                                  <div className="text-xs text-gray-500 mt-1">
-                                    Location: {result.location}
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>

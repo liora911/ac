@@ -216,5 +216,8 @@
     "deleteButton": "Delete",
     "deleteConfirm": "Are you sure you want to delete this article?",
     "deleteError": "Error deleting article. Please try again."
+  },
+  "globalSearch": {
+    "placeholder": "I'm looking for..."
   }
 }

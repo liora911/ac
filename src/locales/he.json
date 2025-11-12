@@ -216,5 +216,8 @@
     "deleteButton": "מחק",
     "deleteConfirm": "האם אתה בטוח שברצונך למחוק מאמר זה?",
     "deleteError": "שגיאה במחיקת המאמר. אנא נסה שוב."
+  },
+  "globalSearch": {
+    "placeholder": "אני מחפש..."
   }
 }
