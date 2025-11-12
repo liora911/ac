@@ -168,19 +168,19 @@ export default function ElitzurDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                   {/* System & Environment Panel */}
                   <div className="space-y-6">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         שעה ומזג אוויר
                       </h3>
                       <div className="grid grid-cols-1 gap-4">
-                        {/* <div>
+                        <div>
                           <Clock />
                         </div>
                         <div>
                           <Weather />
-                        </div> */}
+                        </div>
                       </div>
-                    </div>
+                    </div> */}
 
                     {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
