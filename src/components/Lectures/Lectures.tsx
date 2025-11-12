@@ -223,9 +223,6 @@ const Lectures: React.FC<LecturesProps> = ({
                         {lecture.description.replace(/<[^>]*>?/gm, "")}
                       </p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                        <span>
-                          By: {lecture.author?.name || lecture.author?.email}
-                        </span>
                         <span>Duration: {lecture.duration} min</span>
                       </div>
                     </div>
