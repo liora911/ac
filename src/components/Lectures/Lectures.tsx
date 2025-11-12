@@ -217,7 +217,7 @@ const Lectures: React.FC<LecturesProps> = ({
                         {lecture.title}
                       </h3>
                       <p className="text-gray-600 text-sm line-clamp-2">
-                        {lecture.description}
+                        {lecture.description.replace(/<[^>]*>?/gm, "")}
                       </p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                         <span>

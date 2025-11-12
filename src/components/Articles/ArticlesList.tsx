@@ -282,7 +282,7 @@ export default function ArticlesList({
                           </Link>
                         </h3>
                         <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                          {article.excerpt}
+                          {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
                         </p>
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
                           <span>By: {article.author.name || "Anonymous"}</span>
@@ -508,7 +508,7 @@ function ArticleCard({
           </span> */}
           {article.excerpt && (
             <p className="text-gray-600 text-sm mt-1 line-clamp-3">
-              {article.excerpt}
+              {article.excerpt.replace(/<[^>]*>?/gm, "")}
             </p>
           )}
         </div>

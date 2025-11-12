@@ -444,12 +444,9 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                       <h3 className="text-xl font-semibold mb-3 text-gray-900">
                         {presentation.title}
                       </h3>
-                      <p
-                        className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{
-                          __html: presentation.description,
-                        }}
-                      />
+                      <p className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none">
+                        {presentation.description.replace(/<[^>]*>?/gm, "")}
+                      </p>
                       <div className="flex justify-between items-center text-sm text-gray-500">
                         <span>
                           {t("presentationsPage.imagesLabel")}:{" "}
@@ -506,12 +503,9 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
                           {presentation.title}
                         </h3>
-                        <p
-                          className="text-gray-600 text-sm line-clamp-2"
-                          dangerouslySetInnerHTML={{
-                            __html: presentation.description,
-                          }}
-                        />
+                        <p className="text-gray-600 text-sm line-clamp-2">
+                          {presentation.description.replace(/<[^>]*>?/gm, "")}
+                        </p>
                         <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
                           <span>
                             {t("presentationsPage.imagesLabel")}:{" "}
