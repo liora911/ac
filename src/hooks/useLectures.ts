@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Lecture, Category } from "../types/Lectures/lectures";
 
-// Query keys
 export const lecturesKeys = {
   all: ["lectures"] as const,
   lists: () => [...lecturesKeys.all, "list"] as const,
@@ -10,7 +9,6 @@ export const lecturesKeys = {
   detail: (id: string) => [...lecturesKeys.details(), id] as const,
 };
 
-// Fetch all lectures (categories with lectures)
 export function useLectures() {
   return useQuery<Category[], Error>({
     queryKey: lecturesKeys.lists(),
@@ -21,12 +19,11 @@ export function useLectures() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }
 
-// Fetch single lecture by ID
 export function useLecture(id: string | undefined) {
   return useQuery({
     queryKey: lecturesKeys.detail(id!),
@@ -48,7 +45,6 @@ export function useLecture(id: string | undefined) {
   });
 }
 
-// Create new lecture
 export function useCreateLecture() {
   const queryClient = useQueryClient();
 
@@ -74,7 +70,6 @@ export function useCreateLecture() {
   });
 }
 
-// Update existing lecture
 export function useUpdateLecture() {
   const queryClient = useQueryClient();
 
@@ -106,7 +101,6 @@ export function useUpdateLecture() {
   });
 }
 
-// Delete lecture
 export function useDeleteLecture() {
   const queryClient = useQueryClient();
 

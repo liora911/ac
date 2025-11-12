@@ -33,7 +33,6 @@ const Contact = () => {
       message: "",
     };
 
-    // Name validation
     if (!formData.name.trim()) {
       newErrors.name = "שם מלא הוא שדה חובה";
     } else if (formData.name.trim().length < 2) {
@@ -42,21 +41,18 @@ const Contact = () => {
       newErrors.name = "שם יכול להכיל רק אותיות ורווחים";
     }
 
-    // Email validation
     if (!formData.email.trim()) {
       newErrors.email = "כתובת אימייל היא שדה חובה";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
       newErrors.email = "כתובת אימייל לא תקינה";
     }
 
-    // Subject validation
     if (!formData.subject.trim()) {
       newErrors.subject = "נושא הוא שדה חובה";
     } else if (formData.subject.trim().length < 5) {
       newErrors.subject = "נושא חייב להכיל לפחות 5 תווים";
     }
 
-    // Message validation
     if (!formData.message.trim()) {
       newErrors.message = "הודעה היא שדה חובה";
     } else if (formData.message.trim().length < 10) {
@@ -76,7 +72,6 @@ const Contact = () => {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name as keyof typeof errors]) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -311,7 +306,6 @@ const Contact = () => {
           </motion.div>
         </motion.form>
 
-        {/* Success Modal */}
         <AnimatePresence>
           {showSuccessModal && (
             <motion.div

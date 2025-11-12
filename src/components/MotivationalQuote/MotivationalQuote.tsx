@@ -39,7 +39,6 @@ const MotivationalQuote: React.FC = () => {
   ];
 
   useEffect(() => {
-    // Select a random quote
     const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
     setQuote(randomQuote);
     setLoading(false);

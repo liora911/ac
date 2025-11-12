@@ -9,13 +9,8 @@ type IndentOptions = {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     indent: {
-      /**
-       * Set the indent attribute
-       */
       indent: () => ReturnType;
-      /**
-       * Unset the indent attribute
-       */
+
       outdent: () => ReturnType;
     };
   }
@@ -51,7 +46,7 @@ export const Indent = Extension.create<IndentOptions>({
               }
               return {
                 "data-indent": attributes.indent,
-                style: `margin-left: ${attributes.indent * 20}px`, // Adjust 20px as needed for your desired indent size
+                style: `margin-left: ${attributes.indent * 20}px`,
               };
             },
           },

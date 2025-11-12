@@ -290,7 +290,7 @@ export default function CreateLectureForm({
             value={formData.videoUrl}
             onChange={handleChange}
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder="https://" //"
+            placeholder="https://"
           />
         </div>
 
@@ -374,7 +374,7 @@ export default function CreateLectureForm({
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
                 className="w-full p-3 bg-gray-700 text-white border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-                placeholder="https://" //"
+                placeholder="https://"
               />
             </div>
           </div>

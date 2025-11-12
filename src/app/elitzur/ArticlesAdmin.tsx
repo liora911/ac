@@ -37,7 +37,6 @@ export default function ArticlesAdmin() {
   );
   const { showSuccess, showError } = useNotification();
 
-  // Filters / state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 350);
 
@@ -66,7 +65,6 @@ export default function ArticlesAdmin() {
   const updateMutation = useUpdateArticle();
   const deleteMutation = useDeleteArticle();
 
-  // Reset to first page when filters change (except page itself)
   useEffect(() => {
     setPage(1);
   }, [status, categoryId, debouncedSearch, limit]);
@@ -108,7 +106,6 @@ export default function ArticlesAdmin() {
   };
 
   const onChangeCategory = (article: Article, newCategoryId: string) => {
-    // Allow clearing category with empty string
     updateMutation.mutate(
       { id: article.id, categoryId: newCategoryId || undefined },
       {
@@ -155,7 +152,6 @@ export default function ArticlesAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
       <div
         className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         role="region"
@@ -263,7 +259,6 @@ export default function ArticlesAdmin() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table
@@ -463,7 +458,6 @@ export default function ArticlesAdmin() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <nav className="flex justify-center" aria-label="Articles pagination">
           <div className="flex items-center space-x-2" role="group">

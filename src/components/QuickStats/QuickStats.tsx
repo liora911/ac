@@ -36,7 +36,6 @@ const QuickStats: React.FC = () => {
           ? await presentationsRes.json()
           : null;
 
-        // Extract counts correctly based on API response structure
         const articles = articlesData?.total || articlesData?.length || 0;
         const events = Array.isArray(eventsData) ? eventsData.length : 0;
         const lectures = Array.isArray(lecturesData)

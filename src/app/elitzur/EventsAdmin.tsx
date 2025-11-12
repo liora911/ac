@@ -29,7 +29,6 @@ export default function EventsAdmin() {
   );
   const { showSuccess, showError } = useNotification();
 
-  // Filters / state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 350);
 
@@ -44,7 +43,6 @@ export default function EventsAdmin() {
   const updateMutation = useUpdateEvent();
   const deleteMutation = useDeleteEvent();
 
-  // Filter events client-side since API doesn't have filtering yet
   const filteredEvents = useMemo(() => {
     if (!data) return [];
 
@@ -54,14 +52,13 @@ export default function EventsAdmin() {
         event.description.toLowerCase().includes(debouncedSearch.toLowerCase());
       const matchesCategory =
         categoryId === "" || event.categoryId === categoryId;
-      // For now, assume all events are active unless we add status field
+
       const matchesStatus = status === "" || status === "active";
 
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [data, debouncedSearch, categoryId, status]);
 
-  // Pagination
   const total = filteredEvents.length;
   const totalPages = Math.ceil(total / limit);
   const paginatedEvents = filteredEvents.slice(
@@ -69,7 +66,6 @@ export default function EventsAdmin() {
     page * limit
   );
 
-  // Reset to first page when filters change
   useEffect(() => {
     setPage(1);
   }, [status, categoryId, debouncedSearch, limit]);
@@ -130,7 +126,6 @@ export default function EventsAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
       <div
         className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         role="region"
@@ -238,7 +233,6 @@ export default function EventsAdmin() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table
@@ -461,7 +455,6 @@ export default function EventsAdmin() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <nav className="flex justify-center" aria-label="Events pagination">
           <div className="flex items-center space-x-2" role="group">

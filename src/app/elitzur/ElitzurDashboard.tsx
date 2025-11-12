@@ -30,7 +30,6 @@ export default function ElitzurDashboard() {
 
   return (
     <div className="flex gap-6">
-      {/* Mobile menu button */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         className="md:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-white shadow-lg border border-gray-200"
@@ -39,7 +38,6 @@ export default function ElitzurDashboard() {
         {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
       <aside
         className={`w-60 shrink-0 fixed md:relative top-0 left-0 h-full z-40 bg-white md:bg-transparent border-r md:border-r-0 transition-transform duration-300 ease-in-out ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -69,7 +67,7 @@ export default function ElitzurDashboard() {
                     type="button"
                     onClick={() => {
                       !isDisabled && setActive(tab.key);
-                      setSidebarOpen(false); // Close sidebar on mobile after selection
+                      setSidebarOpen(false);
                     }}
                     className={[
                       "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
@@ -121,7 +119,6 @@ export default function ElitzurDashboard() {
         </div>
       </aside>
 
-      {/* Overlay for mobile */}
       {sidebarOpen && (
         <div
           className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
@@ -130,7 +127,6 @@ export default function ElitzurDashboard() {
         />
       )}
 
-      {/* Content */}
       <section
         className="flex-1 overflow-hidden md:ml-0"
         role="tabpanel"
@@ -156,7 +152,6 @@ export default function ElitzurDashboard() {
 
             {session && (
               <div className="space-y-8">
-                {/* Quick Stats - Full Width */}
                 <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                   <h2 className="text-xl font-semibold text-gray-900 mb-6">
                     סקירה מהירה
@@ -164,9 +159,7 @@ export default function ElitzurDashboard() {
                   <QuickStats />
                 </div>
 
-                {/* Main Dashboard Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  {/* System & Environment Panel */}
                   <div className="space-y-6">
                     {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">

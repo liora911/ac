@@ -35,7 +35,6 @@ export default function SettingsAdmin() {
     text: string;
   } | null>(null);
 
-  // Load settings from localStorage on mount
   useEffect(() => {
     const savedSettings = localStorage.getItem("siteSettings");
     if (savedSettings) {
@@ -59,12 +58,10 @@ export default function SettingsAdmin() {
     setMessage(null);
 
     try {
-      // Save to localStorage (in a real app, this would be an API call)
       localStorage.setItem("siteSettings", JSON.stringify(settings));
 
       setMessage({ type: "success", text: "Settings saved successfully!" });
 
-      // Clear message after 3 seconds
       setTimeout(() => setMessage(null), 3000);
     } catch (error) {
       setMessage({
@@ -113,7 +110,6 @@ export default function SettingsAdmin() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* General Settings */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             General Settings
@@ -157,7 +153,6 @@ export default function SettingsAdmin() {
           </div>
         </div>
 
-        {/* Contact Information */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             Contact Information
@@ -203,7 +198,6 @@ export default function SettingsAdmin() {
           </div>
         </div>
 
-        {/* System Settings */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             System Settings
@@ -253,7 +247,6 @@ export default function SettingsAdmin() {
           </div>
         </div>
 
-        {/* Save Button */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions</h3>
           <button

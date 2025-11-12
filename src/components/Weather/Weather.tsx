@@ -16,7 +16,6 @@ const Weather: React.FC = () => {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Using wttr.in for public weather data (no API key required)
         const response = await fetch("https://wttr.in/Jerusalem?format=j1");
         if (!response.ok) throw new Error("Failed to fetch weather");
         const data = await response.json();

@@ -257,7 +257,7 @@ export async function POST(request: NextRequest) {
         published: status === "PUBLISHED",
         authorId: user.id,
         direction,
-        categoryId: categoryId || null, // Add categoryId here
+        categoryId: categoryId || null,
       },
       include: {
         author: {

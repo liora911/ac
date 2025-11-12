@@ -322,7 +322,7 @@ export default function CreateArticleForm({
                 value={formData.articleImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://" //"
+                placeholder="https://"
               />
             </div>
             <div>
@@ -335,7 +335,7 @@ export default function CreateArticleForm({
                 value={formData.publisherImage}
                 onChange={handleChange}
                 className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
-                placeholder="https://" //"
+                placeholder="https://"
               />
             </div>
           </div>

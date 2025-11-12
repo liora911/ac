@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
 
     const searchTerm = query.trim();
 
-    // Search articles
     const articles = await prisma.article.findMany({
       where: {
         OR: [
@@ -44,7 +43,6 @@ export async function GET(request: NextRequest) {
       take: 10,
     });
 
-    // Search presentations
     const presentations = await prisma.presentation.findMany({
       where: {
         OR: [
@@ -69,7 +67,6 @@ export async function GET(request: NextRequest) {
       take: 10,
     });
 
-    // Search events
     const events = await prisma.event.findMany({
       where: {
         OR: [
@@ -92,7 +89,6 @@ export async function GET(request: NextRequest) {
       take: 10,
     });
 
-    // Search lectures
     const lectures = await prisma.lecture.findMany({
       where: {
         OR: [

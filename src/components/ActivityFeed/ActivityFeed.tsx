@@ -28,7 +28,6 @@ const ActivityFeed: React.FC = () => {
 
         const activities: ActivityItem[] = [];
 
-        // Process articles
         if (articlesRes.ok) {
           const articlesData = await articlesRes.json();
           const recentArticles = articlesData.articles.slice(0, 3);
@@ -44,7 +43,6 @@ const ActivityFeed: React.FC = () => {
           });
         }
 
-        // Process events
         if (eventsRes.ok) {
           const eventsData = await eventsRes.json();
           const recentEvents = eventsData.slice(0, 2);
@@ -60,7 +58,6 @@ const ActivityFeed: React.FC = () => {
           });
         }
 
-        // Sort by timestamp and take top 5
         activities.sort(
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()

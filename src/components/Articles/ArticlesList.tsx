@@ -51,7 +51,7 @@ export default function ArticlesList({
     isLoading,
     error,
     isFetching,
-    refetch, // Add refetch from useArticles
+    refetch,
   } = searchQuery
     ? useSearchArticles(searchQuery, {
         page: currentPage,
@@ -249,7 +249,7 @@ export default function ArticlesList({
                 key={article.id}
                 article={article}
                 isAuthorized={!!isAuthorized}
-                onDeleteSuccess={refetch} // Pass refetch to ArticleCard
+                onDeleteSuccess={refetch}
               />
             ))}
           </div>
@@ -406,7 +406,7 @@ export default function ArticlesList({
 interface ArticleCardProps {
   article: Article;
   isAuthorized: boolean;
-  onDeleteSuccess: () => void; // Add onDeleteSuccess prop
+  onDeleteSuccess: () => void;
 }
 
 function ArticleCard({
@@ -451,8 +451,8 @@ function ArticleCard({
           throw new Error(`Failed to delete article: ${response.statusText}`);
         }
 
-        onDeleteSuccess(); // Call the callback to refresh the list
-        router.push("/articles"); // Redirect to articles list after deletion
+        onDeleteSuccess();
+        router.push("/articles");
       } catch (error) {
         setErrorMessage(t("articleCard.deleteError") as string);
         setErrorModalOpen(true);

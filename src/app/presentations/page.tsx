@@ -11,7 +11,6 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
 import { Grid3X3, List } from "lucide-react";
 
-// Lazy load heavy components
 const CreatePresentationForm = dynamic(
   () => import("@/components/CreatePresentation/create_presentation"),
   {
@@ -78,7 +77,6 @@ const PresentationsPage = () => {
         const data: PresentationCategory[] = await response.json();
         setPresentationCategoriesData(data);
 
-        // If no category is selected from localStorage, select a random one
         if (!selectedCategoryId && data.length > 0) {
           const categoriesWithPresentations = data.filter(
             (category) => category.presentations.length > 0
@@ -258,9 +256,9 @@ const PresentationsPage = () => {
                 altText: currentBannerAlt,
               }}
               onCategorySelect={handleCategorySelect}
-              session={session} // Pass session
-              isAuthorized={isAuthorized} // Pass isAuthorized
-              onPresentationDeleted={handlePresentationCreated} // Callback to refresh data
+              session={session}
+              isAuthorized={isAuthorized}
+              onPresentationDeleted={handlePresentationCreated}
               viewMode="grid"
             />
           </Suspense>
@@ -285,9 +283,9 @@ interface PresentationsGridProps {
   initialSelectedCategoryId: string | null;
   initialBannerInfo: { imageUrl: string | null; altText: string } | null;
   onCategorySelect: (categoryId: string | null) => void;
-  session: Session | null; // Add session to props
-  isAuthorized: boolean; // Add isAuthorized to props
-  onPresentationDeleted: () => void; // Add callback for deletion
+  session: Session | null;
+  isAuthorized: boolean;
+  onPresentationDeleted: () => void;
   viewMode?: "grid" | "list";
 }
 
@@ -297,9 +295,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   initialSelectedCategoryId,
   initialBannerInfo,
   onCategorySelect,
-  session, // Destructure session
-  isAuthorized, // Destructure isAuthorized
-  onPresentationDeleted, // Destructure onPresentationDeleted
+  session,
+  onPresentationDeleted,
   viewMode: initialViewMode = "grid",
 }) => {
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
@@ -324,7 +321,6 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           throw new Error("Failed to delete presentation");
         }
 
-        // Call the callback to refresh the presentation data on the parent component
         onPresentationDeleted();
       } catch (error) {
         setErrorMessage(t("presentationsPage.deleteFailed") as string);
@@ -433,7 +429,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {selectedCategory.presentations.map((presentation) => {
                 const isAuthor =
-                  presentation.author?.email === session?.user?.email; // Need session here
+                  presentation.author?.email === session?.user?.email;
                 return (
                   <div
                     key={presentation.id}

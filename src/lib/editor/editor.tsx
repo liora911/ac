@@ -61,7 +61,7 @@ export default function TiptapEditor({
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
 
   const editor = useEditor({
-    immediatelyRender: false, // Fix Tiptap SSR hydration mismatch
+    immediatelyRender: false,
     extensions: [
       StarterKit.configure({
         bulletList: {
@@ -237,7 +237,6 @@ export default function TiptapEditor({
         theme === "dark" ? "border-gray-600" : "border-gray-300"
       } ${className}`}
     >
-      {/* Toolbar */}
       <div
         className={`sticky top-16 z-10 border-b p-2 rounded-t-md overflow-x-auto ${
           theme === "dark"
@@ -246,7 +245,6 @@ export default function TiptapEditor({
         }`}
       >
         <div className="flex flex-wrap gap-1 min-w-max">
-          {/* Undo/Redo */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -268,7 +266,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Text Formatting */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -317,7 +314,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Colors & Highlight */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -349,7 +345,6 @@ export default function TiptapEditor({
             />
           </div>
 
-          {/* Font Size */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -391,7 +386,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Headings */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -433,7 +427,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Lists */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -462,7 +455,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Alignment */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -502,7 +494,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Special Elements */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -530,7 +521,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Links & Media */}
           <div
             className={`flex border-r pr-2 mr-2 ${
               theme === "dark" ? "border-gray-600" : "border-gray-300"
@@ -559,8 +549,6 @@ export default function TiptapEditor({
             </ToolbarButton>
           </div>
 
-          {/* Text Direction */}
-          {/* Text Direction */}
           <div className="flex">
             <ToolbarButton
               onClick={() => {
@@ -604,7 +592,6 @@ export default function TiptapEditor({
         </div>
       </div>
 
-      {/* Link Modal */}
       {isLinkModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
@@ -652,7 +639,6 @@ export default function TiptapEditor({
         </div>
       )}
 
-      {/* Image Modal */}
       {isImageModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div
@@ -724,7 +710,6 @@ export default function TiptapEditor({
         </div>
       )}
 
-      {/* Video Modal */}
       {isVideoModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div

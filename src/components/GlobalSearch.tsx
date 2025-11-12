@@ -41,7 +41,6 @@ export default function GlobalSearch() {
   const inputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  // Debounced search
   useEffect(() => {
     const timer = setTimeout(() => {
       if (query.trim().length >= 2) {
@@ -54,7 +53,6 @@ export default function GlobalSearch() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Handle keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen || !results) return;
@@ -96,7 +94,6 @@ export default function GlobalSearch() {
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, results, selectedIndex]);
 
-  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -247,7 +244,6 @@ export default function GlobalSearch() {
             </div>
           ) : (
             <div>
-              {/* Results by type */}
               {[
                 {
                   type: "articles",
@@ -306,7 +302,6 @@ export default function GlobalSearch() {
                   )
               )}
 
-              {/* View all results link */}
               <div className="p-3 bg-gray-50 border-t border-gray-100">
                 <button
                   onClick={() => {

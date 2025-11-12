@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import type { Event } from "../types/Events/events";
 
-// Query keys
 export const eventsKeys = {
   all: ["events"] as const,
   lists: () => [...eventsKeys.all, "list"] as const,
@@ -10,7 +9,6 @@ export const eventsKeys = {
   detail: (id: string) => [...eventsKeys.details(), id] as const,
 };
 
-// Fetch all events
 export function useEvents() {
   return useQuery<Event[], Error>({
     queryKey: eventsKeys.lists(),
@@ -21,12 +19,11 @@ export function useEvents() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }
 
-// Fetch single event by ID
 export function useEvent(id: string | undefined) {
   return useQuery({
     queryKey: eventsKeys.detail(id!),
@@ -48,7 +45,6 @@ export function useEvent(id: string | undefined) {
   });
 }
 
-// Create new event
 export function useCreateEvent() {
   const queryClient = useQueryClient();
 
@@ -74,7 +70,6 @@ export function useCreateEvent() {
   });
 }
 
-// Update existing event
 export function useUpdateEvent() {
   const queryClient = useQueryClient();
 
@@ -106,7 +101,6 @@ export function useUpdateEvent() {
   });
 }
 
-// Delete event
 export function useDeleteEvent() {
   const queryClient = useQueryClient();
 

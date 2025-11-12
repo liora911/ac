@@ -10,19 +10,16 @@ import type {
   ArticlesQueryParams,
   CreateArticleRequest,
   UpdateArticleRequest,
-  ArticleCategory, // Use ArticleCategory instead of Category
+  ArticleCategory,
 } from "../types/Articles/articles";
 
-// Query keys for categories
 export const categoryKeys = {
   all: ["categories"] as const,
   lists: () => [...categoryKeys.all, "list"] as const,
 };
 
-// Fetch all categories
 export function useCategories() {
   return useQuery<ArticleCategory[], Error>({
-    // Use ArticleCategory here
     queryKey: categoryKeys.lists(),
     queryFn: async () => {
       const response = await fetch("/api/categories");
@@ -31,12 +28,11 @@ export function useCategories() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 60, // 1 hour
-    gcTime: 1000 * 60 * 60 * 6, // 6 hours
+    staleTime: 1000 * 60 * 60,
+    gcTime: 1000 * 60 * 60 * 6,
   });
 }
 
-// Query keys
 export const articlesKeys = {
   all: ["articles"] as const,
   lists: () => [...articlesKeys.all, "list"] as const,
@@ -46,7 +42,6 @@ export const articlesKeys = {
   detail: (id: string) => [...articlesKeys.details(), id] as const,
 };
 
-// Fetch articles with pagination and filtering
 export function useArticles(params: ArticlesQueryParams = {}) {
   return useQuery({
     queryKey: articlesKeys.list(params),
@@ -65,12 +60,11 @@ export function useArticles(params: ArticlesQueryParams = {}) {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }
 
-// Fetch single article by ID
 export function useArticle(id: string | undefined) {
   return useQuery({
     queryKey: articlesKeys.detail(id!),
@@ -87,12 +81,11 @@ export function useArticle(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }
 
-// Create new article
 export function useCreateArticle() {
   const queryClient = useQueryClient();
 
@@ -112,16 +105,13 @@ export function useCreateArticle() {
       return response.json();
     },
     onSuccess: (newArticle) => {
-      // Invalidate and refetch articles list
       queryClient.invalidateQueries({ queryKey: articlesKeys.lists() });
 
-      // Add the new article to the cache
       queryClient.setQueryData(articlesKeys.detail(newArticle.id), newArticle);
     },
   });
 }
 
-// Update existing article
 export function useUpdateArticle() {
   const queryClient = useQueryClient();
 
@@ -144,19 +134,16 @@ export function useUpdateArticle() {
       return response.json();
     },
     onSuccess: (updatedArticle) => {
-      // Update the article in cache
       queryClient.setQueryData(
         articlesKeys.detail(updatedArticle.id),
         updatedArticle
       );
 
-      // Invalidate articles list to refetch
       queryClient.invalidateQueries({ queryKey: articlesKeys.lists() });
     },
   });
 }
 
-// Delete article
 export function useDeleteArticle() {
   const queryClient = useQueryClient();
 
@@ -172,21 +159,17 @@ export function useDeleteArticle() {
       }
     },
     onSuccess: (_, deletedId) => {
-      // Remove from cache
       queryClient.removeQueries({ queryKey: articlesKeys.detail(deletedId) });
 
-      // Invalidate articles list
       queryClient.invalidateQueries({ queryKey: articlesKeys.lists() });
     },
   });
 }
 
-// Hook for paginated articles (alternative to infinite scrolling)
 export function useArticlesPage(params: ArticlesQueryParams = {}) {
   return useArticles(params);
 }
 
-// Hook for article search
 export function useSearchArticles(
   searchQuery: string,
   params: Omit<ArticlesQueryParams, "search"> = {}
@@ -220,12 +203,11 @@ export function useSearchArticles(
       return response.json();
     },
     enabled: !!searchQuery.trim(),
-    staleTime: 1000 * 60 * 2, // 2 minutes for search results
-    gcTime: 1000 * 60 * 10, // 10 minutes
+    staleTime: 1000 * 60 * 2,
+    gcTime: 1000 * 60 * 10,
   });
 }
 
-// Hook for featured articles
 export function useFeaturedArticles(limit: number = 5) {
   return useArticles({
     featured: true,
@@ -235,7 +217,6 @@ export function useFeaturedArticles(limit: number = 5) {
   });
 }
 
-// Hook for articles by category
 export function useArticlesByCategory(
   categoryId: string | undefined,
   params: Omit<ArticlesQueryParams, "categoryId"> = {}

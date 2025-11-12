@@ -35,7 +35,6 @@ export default function PresentationsAdmin() {
   );
   const { showSuccess, showError } = useNotification();
 
-  // Filters / state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 350);
 
@@ -49,7 +48,6 @@ export default function PresentationsAdmin() {
   const updateMutation = useUpdatePresentation();
   const deleteMutation = useDeletePresentation();
 
-  // Reset to first page when filters change (except page itself)
   useEffect(() => {
     setPage(1);
   }, [status, categoryId, debouncedSearch, limit]);
@@ -65,13 +63,11 @@ export default function PresentationsAdmin() {
     );
   }
 
-  // Flatten presentations from categories
   const allPresentations = useMemo(() => {
     if (!data) return [];
     return data.flatMap((category) => category.presentations);
   }, [data]);
 
-  // Filter presentations
   const filteredPresentations = useMemo(() => {
     let filtered = allPresentations;
 
@@ -96,7 +92,6 @@ export default function PresentationsAdmin() {
     return filtered;
   }, [allPresentations, debouncedSearch, status, categoryId]);
 
-  // Paginate
   const paginatedPresentations = useMemo(() => {
     const start = (page - 1) * limit;
     const end = start + limit;
@@ -176,7 +171,6 @@ export default function PresentationsAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
       <div
         className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         role="region"
@@ -279,7 +273,6 @@ export default function PresentationsAdmin() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table
@@ -478,7 +471,6 @@ export default function PresentationsAdmin() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <nav
           className="flex justify-center"

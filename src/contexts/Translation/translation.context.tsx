@@ -36,7 +36,6 @@ export const TranslationProvider = ({
 
   useEffect(() => {
     localStorage.setItem("locale", locale);
-    // Update document direction and lang based on locale
     if (typeof window !== "undefined") {
       document.documentElement.dir = locale === "he" ? "rtl" : "ltr";
       document.documentElement.lang = locale;

@@ -6,7 +6,6 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-// Lazy load the heavy ArticlesList component
 const ArticlesList = dynamic(
   () => import("@/components/Articles/ArticlesList"),
   {

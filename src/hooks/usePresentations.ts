@@ -4,7 +4,6 @@ import type {
   PresentationCategory,
 } from "../types/Presentations/presentations";
 
-// Query keys
 export const presentationsKeys = {
   all: ["presentations"] as const,
   lists: () => [...presentationsKeys.all, "list"] as const,
@@ -13,7 +12,6 @@ export const presentationsKeys = {
   detail: (id: string) => [...presentationsKeys.details(), id] as const,
 };
 
-// Fetch all presentations (categories with presentations)
 export function usePresentations() {
   return useQuery<PresentationCategory[], Error>({
     queryKey: presentationsKeys.lists(),
@@ -26,12 +24,11 @@ export function usePresentations() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5, // 5 minutes
-    gcTime: 1000 * 60 * 30, // 30 minutes
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
   });
 }
 
-// Fetch single presentation by ID
 export function usePresentation(id: string | undefined) {
   return useQuery({
     queryKey: presentationsKeys.detail(id!),
@@ -53,7 +50,6 @@ export function usePresentation(id: string | undefined) {
   });
 }
 
-// Create new presentation
 export function useCreatePresentation() {
   const queryClient = useQueryClient();
 
@@ -82,7 +78,6 @@ export function useCreatePresentation() {
   });
 }
 
-// Update existing presentation
 export function useUpdatePresentation() {
   const queryClient = useQueryClient();
 
@@ -114,7 +109,6 @@ export function useUpdatePresentation() {
   });
 }
 
-// Delete presentation
 export function useDeletePresentation() {
   const queryClient = useQueryClient();
 

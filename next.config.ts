@@ -27,7 +27,6 @@ const nextConfig: NextConfig = {
     ],
   },
   webpack: (config, { isServer }) => {
-    // Optimize bundle splitting
     if (!isServer) {
       config.optimization = config.optimization || {};
       if (

@@ -77,8 +77,7 @@ export default function ArticleForm({
         }
         const data: ArticleCategory[] = await response.json();
         setCategories(data);
-      } catch (error) {
-      }
+      } catch (error) {}
     };
 
     fetchCategories();
@@ -107,8 +106,7 @@ export default function ArticleForm({
       } else {
         router.push("/articles");
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleInputChange = <K extends keyof ArticleFormData>(
@@ -248,7 +246,7 @@ export default function ArticleForm({
                 handleInputChange("featuredImage", e.target.value)
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://" //"
+              placeholder="https://"
             />
           </div>
 
@@ -460,7 +458,6 @@ export default function ArticleForm({
           </div>
         </form>
 
-        {/* Validation Modal */}
         <Modal
           isOpen={validationModalOpen}
           onClose={() => setValidationModalOpen(false)}

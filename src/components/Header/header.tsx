@@ -60,7 +60,6 @@ export default function Header() {
       href: "#",
       icon: "MdSearch",
       onClick: () => {
-        // Trigger search focus or open search modal
         const searchInput = document.querySelector(
           'input[aria-label="Global search"]'
         ) as HTMLInputElement;

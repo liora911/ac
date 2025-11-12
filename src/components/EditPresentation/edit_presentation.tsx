@@ -362,7 +362,7 @@ export default function EditPresentationForm({
                 value={url}
                 onChange={(e) => handleImageUrlChange(index, e.target.value)}
                 className="flex-1 p-3 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
-                placeholder="https://" //"
+                placeholder="https://"
               />
               <button
                 type="button"

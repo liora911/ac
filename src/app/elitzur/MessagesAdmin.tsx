@@ -131,7 +131,6 @@ export default function MessagesAdmin() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Messages List */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">Messages</h3>
           {messages.length === 0 ? (
@@ -200,7 +199,6 @@ export default function MessagesAdmin() {
           )}
         </div>
 
-        {/* Message Detail */}
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">
             Message Details

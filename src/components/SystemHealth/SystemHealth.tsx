@@ -19,7 +19,6 @@ const SystemHealth: React.FC = () => {
   useEffect(() => {
     const checkHealth = async () => {
       try {
-        // Check database health by testing API endpoints
         const responses = await Promise.allSettled([
           fetch("/api/articles?limit=1"),
           fetch("/api/events"),
@@ -34,10 +33,8 @@ const SystemHealth: React.FC = () => {
           ? "error"
           : "warning";
 
-        // API health is based on our own status
         const apiStatus = "healthy";
 
-        // Storage health (simulated - in real app would check file storage)
         const storageStatus = "healthy";
 
         setHealth({

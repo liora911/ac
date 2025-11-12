@@ -1,5 +1,5 @@
 import { Extension } from "@tiptap/core";
-import "@tiptap/extension-text-style"; // Required for TextStyle
+import "@tiptap/extension-text-style";
 
 type LineHeightOptions = {
   types: string[];
@@ -8,13 +8,8 @@ type LineHeightOptions = {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     lineHeight: {
-      /**
-       * Set the line height
-       */
       setLineHeight: (lineHeight: string) => ReturnType;
-      /**
-       * Unset the line height
-       */
+
       unsetLineHeight: () => ReturnType;
     };
   }

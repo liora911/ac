@@ -1,5 +1,5 @@
 import { Extension } from "@tiptap/core";
-import "@tiptap/extension-text-style"; // Required for TextStyle
+import "@tiptap/extension-text-style";
 
 type FontSizeOptions = {
   types: string[];
@@ -8,13 +8,8 @@ type FontSizeOptions = {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     fontSize: {
-      /**
-       * Set the font size
-       */
       setFontSize: (size: string) => ReturnType;
-      /**
-       * Unset the font size
-       */
+
       unsetFontSize: () => ReturnType;
     };
   }

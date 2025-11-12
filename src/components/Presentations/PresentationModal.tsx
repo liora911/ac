@@ -37,12 +37,10 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
         </button>
 
         <div className="p-6">
-          {/* Title */}
           <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
             {presentation.title}
           </h1>
 
-          {/* Images */}
           {presentation.imageUrls.length > 0 && (
             <div className="mb-6">
               <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
@@ -109,7 +107,6 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             </div>
           )}
 
-          {/* Description */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Description
@@ -120,7 +117,6 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             />
           </div>
 
-          {/* Content */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Content
@@ -131,7 +127,6 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             />
           </div>
 
-          {/* Footer */}
           <div className="text-center text-gray-500 border-t border-gray-200 pt-6">
             <p>
               Created by:{" "}

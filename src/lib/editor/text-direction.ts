@@ -7,13 +7,8 @@ type TextDirectionOptions = {
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     textDirection: {
-      /**
-       * Set the text direction
-       */
       setTextDirection: (direction: "ltr" | "rtl") => ReturnType;
-      /**
-       * Unset the text direction
-       */
+
       unsetTextDirection: () => ReturnType;
     };
   }

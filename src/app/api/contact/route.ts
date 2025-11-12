@@ -5,7 +5,6 @@ export async function POST(request: NextRequest) {
   try {
     const { name, email, subject, message } = await request.json();
 
-    // Validate required fields
     if (!name || !email || !subject || !message) {
       return NextResponse.json(
         { error: "All fields are required" },
@@ -13,7 +12,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Additional validation
     if (name.trim().length < 2) {
       return NextResponse.json(
         { error: "Name must be at least 2 characters long" },
@@ -42,7 +40,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Save to database
     const newMessage = await prisma.message.create({
       data: {
         name: name.trim(),

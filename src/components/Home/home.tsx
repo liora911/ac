@@ -5,7 +5,6 @@ import React, { useState, Suspense } from "react";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 
-// Lazy load icons to reduce initial bundle size
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
   {
@@ -24,7 +23,7 @@ const FaYoutube = dynamic(
 );
 
 const Home = () => {
-  const { t, locale, setLocale } = useTranslation();
+  const { t } = useTranslation();
   const [showBio, setShowBio] = useState(false);
 
   const containerVariants = {
@@ -220,7 +219,7 @@ const Home = () => {
               }
             >
               <motion.a
-                href="https://" //"
+                href="https://"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[var(--primary)] hover:text-[var(--primary)]/80 text-2xl cursor-pointer"
@@ -242,7 +241,7 @@ const Home = () => {
               }
             >
               <motion.a
-                href="https://" //"
+                href="https://"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-red-600 hover:text-red-800 text-2xl cursor-pointer"

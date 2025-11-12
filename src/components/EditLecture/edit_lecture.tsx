@@ -316,7 +316,7 @@ export default function EditLectureForm({
             value={formData.videoUrl}
             onChange={handleChange}
             className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
-            placeholder="https://" //"
+            placeholder="https://"
           />
         </div>
 
@@ -414,7 +414,7 @@ export default function EditLectureForm({
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
                 className="w-full p-3 bg-gray-100 text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
-                placeholder="https://" //"
+                placeholder="https://"
               />
             </div>
           </div>

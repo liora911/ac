@@ -159,13 +159,11 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
       className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 min-h-[calc(100vh-200px)]"
       style={{ direction: "rtl" }}
     >
-      {/* Header with Filters */}
       <div className="mb-8">
         <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
           כל האירועים
         </h2>
 
-        {/* Search and Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-6">
           <div className="relative flex-1">
             <Search
@@ -219,7 +217,6 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
         </div>
       </div>
 
-      {/* Events Display */}
       {viewMode === "grid" ? (
         <motion.div
           layout
@@ -337,7 +334,6 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
         </motion.div>
       )}
 
-      {/* Event Modal */}
       <EventModal
         event={selectedEvent}
         isOpen={isModalOpen}

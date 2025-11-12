@@ -319,7 +319,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               onChange={handleChange}
               required
               className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-              placeholder="https://" //"
+              placeholder="https://"
             />
           </div>
         )}
@@ -373,7 +373,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             value={formData.bannerImageUrl}
             onChange={handleChange}
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="https://" //"
+            placeholder="https://"
           />
         </div>
 

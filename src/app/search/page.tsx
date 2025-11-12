@@ -189,13 +189,11 @@ function SearchPageContent() {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Search Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             Search Results
           </h1>
 
-          {/* Search Form */}
           <form onSubmit={handleSearch} className="max-w-2xl">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -220,7 +218,6 @@ function SearchPageContent() {
           </form>
         </div>
 
-        {/* Loading State */}
         {isLoading && (
           <div className="text-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
@@ -228,10 +225,8 @@ function SearchPageContent() {
           </div>
         )}
 
-        {/* Results */}
         {!isLoading && results && (
           <>
-            {/* Results Summary */}
             <div className="mb-6">
               <p className="text-gray-600">
                 {results.total === 0
@@ -242,7 +237,6 @@ function SearchPageContent() {
               </p>
             </div>
 
-            {/* Tabs */}
             {results.total > 0 && (
               <div className="mb-6">
                 <div className="border-b border-gray-200">
@@ -276,7 +270,6 @@ function SearchPageContent() {
               </div>
             )}
 
-            {/* Results List */}
             {results.total > 0 && (
               <div className="space-y-4">
                 {filteredResults.map((result) => (
@@ -333,7 +326,6 @@ function SearchPageContent() {
                           <div className="flex-shrink-0 ml-4">
                             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
                               {result.type.slice(0, -1)}{" "}
-                              {/* Remove 's' from plural */}
                             </span>
                           </div>
                         </div>
@@ -344,7 +336,6 @@ function SearchPageContent() {
               </div>
             )}
 
-            {/* No Results */}
             {results.total === 0 && !isLoading && (
               <div className="text-center py-12">
                 <MdSearch className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -386,7 +377,6 @@ function SearchPageContent() {
           </>
         )}
 
-        {/* Initial State */}
         {!isLoading && !results && (
           <div className="text-center py-12">
             <MdSearch className="mx-auto h-12 w-12 text-gray-400 mb-4" />
@@ -400,7 +390,6 @@ function SearchPageContent() {
           </div>
         )}
 
-        {/* Modals */}
         <ArticleModal article={selectedArticle} onClose={closeModals} />
         <PresentationModal
           presentation={selectedPresentation}

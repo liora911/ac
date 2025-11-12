@@ -8,7 +8,6 @@ import { CategoryDef } from "@/types/Lectures/lectures";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
-// Lazy load heavy components
 const Lectures = dynamic(() => import("@/components/Lectures/Lectures"), {
   loading: () => (
     <div className="flex justify-center items-center py-12">

@@ -31,7 +31,6 @@ export default function LecturesAdmin() {
   );
   const { showSuccess, showError } = useNotification();
 
-  // Filters / state
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 350);
 
@@ -45,7 +44,6 @@ export default function LecturesAdmin() {
   const updateMutation = useUpdateLecture();
   const deleteMutation = useDeleteLecture();
 
-  // Flatten lectures from categories and subcategories
   const allLectures = useMemo(() => {
     if (!data) return [];
 
@@ -69,7 +67,6 @@ export default function LecturesAdmin() {
     return lectures;
   }, [data]);
 
-  // Filter lectures client-side
   const filteredLectures = useMemo(() => {
     return allLectures.filter((lecture) => {
       const matchesSearch =
@@ -87,7 +84,6 @@ export default function LecturesAdmin() {
     });
   }, [allLectures, debouncedSearch, categoryId, categories]);
 
-  // Pagination
   const total = filteredLectures.length;
   const totalPages = Math.ceil(total / limit);
   const paginatedLectures = filteredLectures.slice(
@@ -95,7 +91,6 @@ export default function LecturesAdmin() {
     page * limit
   );
 
-  // Reset to first page when filters change
   useEffect(() => {
     setPage(1);
   }, [categoryId, debouncedSearch, limit]);
@@ -158,7 +153,6 @@ export default function LecturesAdmin() {
         </div>
       </div>
 
-      {/* Filters */}
       <div
         className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm"
         role="region"
@@ -246,7 +240,6 @@ export default function LecturesAdmin() {
         </div>
       </div>
 
-      {/* Table */}
       <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
           <table
@@ -415,7 +408,6 @@ export default function LecturesAdmin() {
         </div>
       </div>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <nav className="flex justify-center" aria-label="Lectures pagination">
           <div className="flex items-center space-x-2" role="group">

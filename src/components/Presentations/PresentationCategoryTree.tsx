@@ -46,7 +46,7 @@ const PresentationCategoryTree: React.FC<PresentationCategoryTreeProps> = ({
             {category.subcategories && category.subcategories.length > 0 && (
               <button
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent category selection when clicking the toggle
+                  e.stopPropagation();
                   toggleCategory(category.id);
                 }}
                 className="ml-2 p-1 rounded-full hover:bg-slate-600/50 focus:outline-none cursor-pointer transition-colors"

@@ -15,7 +15,7 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Avshalom Elitzur", // This will be handled by the TranslationProvider
+  title: "Avshalom Elitzur",
   description:
     "Physicist & Philosopher | TSVF, Quantum Paradoxes, and Foundations",
 };
@@ -31,7 +31,6 @@ export default function RootLayout({
         className={`${poppins.className} antialiased focus-visible:outline-2 focus-visible:outline-blue-500`}
         suppressHydrationWarning={true}
       >
-        {/* Skip to main content link */}
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded-md z-50"

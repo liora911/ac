@@ -51,7 +51,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
         </button>
 
         <div className="p-6">
-          {/* Header */}
           <header className="mb-6">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
@@ -96,7 +95,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
             )}
           </header>
 
-          {/* Featured Image */}
           {article.featuredImage && (
             <div className="mb-6">
               <div className="relative h-64 rounded-lg overflow-hidden">
@@ -110,14 +108,12 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
             </div>
           )}
 
-          {/* Content */}
           <div
             className="prose prose-lg max-w-none text-gray-800 leading-relaxed mb-6"
             dir={article.direction || (locale === "en" ? "ltr" : "rtl")}
             dangerouslySetInnerHTML={{ __html: article.content }}
           />
 
-          {/* Footer */}
           <footer className="border-t border-gray-200 pt-6">
             {article.tags && article.tags.length > 0 && (
               <div className="mb-4">
@@ -150,7 +146,6 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
                   <p className="font-medium text-gray-900">
                     {article.author.name || "Anonymous"}
                   </p>
-                  <p className="text-gray-600 text-sm">Copyleft 2024</p>
                 </div>
               </div>
             </div>

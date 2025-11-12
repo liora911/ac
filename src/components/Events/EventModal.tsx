@@ -27,7 +27,6 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
         </button>
 
         <div className="p-6">
-          {/* Banner Image */}
           {event.bannerImageUrl && (
             <div className="w-full aspect-video mb-6 rounded-lg overflow-hidden bg-gray-100">
               <Image
@@ -40,12 +39,10 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
             </div>
           )}
 
-          {/* Title */}
           <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
             {event.title}
           </h1>
 
-          {/* Details */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Event Details
@@ -87,7 +84,6 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
             </div>
           </div>
 
-          {/* Description */}
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Description
@@ -98,7 +94,6 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
             />
           </div>
 
-          {/* Footer */}
           <div className="text-center text-gray-500 border-t border-gray-200 pt-6">
             <p>Created by: {event.author.name || event.author.email}</p>
             <p className="text-sm mt-1">

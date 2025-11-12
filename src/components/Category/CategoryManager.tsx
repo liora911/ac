@@ -154,14 +154,12 @@ export default function CategoryManager() {
   return (
     <div className="w-full max-w-5xl mx-auto">
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
-        {/* Header */}
         <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
           <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
             {loading ? "Loading…" : `${categories.length} total`}
           </span>
         </div>
 
-        {/* Body */}
         <div className="p-6">
           {error && (
             <div
@@ -173,7 +171,6 @@ export default function CategoryManager() {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Add Category */}
             <div className="md:col-span-1">
               <div className="h-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                 <h3 className="text-sm font-semibold text-gray-900">
@@ -212,7 +209,6 @@ export default function CategoryManager() {
               </div>
             </div>
 
-            {/* Categories List */}
             <div className="md:col-span-2">
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
