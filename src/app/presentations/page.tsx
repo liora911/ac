@@ -181,7 +181,7 @@ const PresentationsPage = () => {
           <h1 className="text-4xl font-bold text-gray-900">
             {t("presentationsPage.title")}
           </h1>
-          {isAuthorized && (
+          {/* {isAuthorized && (
             <button
               onClick={() => setShowCreateForm(!showCreateForm)}
               className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors text-lg font-semibold rtl cursor-pointer"
@@ -190,7 +190,7 @@ const PresentationsPage = () => {
                 ? t("presentationsPage.cancelButton")
                 : t("presentationsPage.createPresentationButton")}
             </button>
-          )}
+          )} */}
         </div>
 
         {showCreateForm && isAuthorized && (
@@ -462,7 +462,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                         </span>
                       </div>
                     </div>
-                    {isAuthorized && isAuthor && (
+                    {/* {isAuthorized && isAuthor && (
                       <div className="flex justify-end mt-4">
                         <button
                           onClick={(e) => {
@@ -474,7 +474,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           🗑️ {t("presentationsPage.deleteButton")}
                         </button>
                       </div>
-                    )}
+                    )} */}
                   </div>
                 );
               })}
@@ -521,7 +521,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           </span>
                         </div>
                       </div>
-                      {isAuthorized && isAuthor && (
+                      {/* {isAuthorized && isAuthor && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -531,7 +531,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                         >
                           🗑️ {t("presentationsPage.deleteButton")}
                         </button>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 );

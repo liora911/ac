@@ -110,14 +110,14 @@ export default function PresentationDetailPage() {
           >
             ← {t("presentationDetail.backToPresentations")}
           </button>
-          {isAuthorized && isAuthor && (
+          {/* {isAuthorized && isAuthor && (
             <button
               onClick={() => router.push(`/edit-presentation/${id}`)}
               className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
               ✏️ {t("presentationDetail.editButton")}
             </button>
-          )}
+          )} */}
         </div>
 
         {}

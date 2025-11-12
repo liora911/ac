@@ -295,7 +295,7 @@ export default function ArticlesList({
                           </span>
                         </div>
                       </div>
-                      {isAuthorized && (
+                      {/* {isAuthorized && (
                         <div className="flex space-x-2 ml-4">
                           <Link
                             href={`/articles/${article.id}/edit`}
@@ -323,7 +323,7 @@ export default function ArticlesList({
                             Delete
                           </button>
                         </div>
-                      )}
+                      )} */}
                     </div>
                   </div>
                 </div>
@@ -347,14 +347,14 @@ export default function ArticlesList({
                 )
               : t("articlesPage.noArticlesAvailable")}
           </p>
-          {isAuthorized && (
+          {/* {isAuthorized && (
             <Link
               href="/articles/create"
               className="inline-flex items-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
               {t("articlesPage.createFirstArticle")}
             </Link>
-          )}
+          )} */}
         </div>
       )}
 
@@ -553,7 +553,7 @@ function ArticleCard({
         )}
 
         {}
-        {isAuthorized && (
+        {/* {isAuthorized && (
           <div className="mt-4 flex space-x-2">
             <Link
               href={`/articles/${article.id}/edit`}
@@ -568,7 +568,7 @@ function ArticleCard({
               {t("articleCard.deleteButton")}
             </button>
           </div>
-        )}
+        )} */}
       </div>
       {errorModalOpen && (
         <Modal

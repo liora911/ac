@@ -57,7 +57,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
         >
           צפה בהרצאה
         </button>
-        {isAuthorized && isAuthor && (
+        {/* {isAuthorized && isAuthor && (
           <div className="flex space-x-2">
             <button
               onClick={(e) => {
@@ -78,7 +78,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
               🗑️ מחק
             </button>
           </div>
-        )}
+        )} */}
       </div>
     </div>
   );

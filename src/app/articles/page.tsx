@@ -50,7 +50,7 @@ export default function ArticlesPage() {
             >
               {t("articlesPage.description")}
             </p>
-            {isAuthorized && (
+            {/* {isAuthorized && (
               <div className="mt-6">
                 <Link href="/articles/create" passHref>
                   <button className="bg-blue-600 text-white px-6 py-3 rounded-md text-lg font-medium hover:bg-blue-700 transition-colors duration-200 cursor-pointer">
@@ -58,7 +58,7 @@ export default function ArticlesPage() {
                   </button>
                 </Link>
               </div>
-            )}
+            )} */}
           </div>
         </div>
       </div>
