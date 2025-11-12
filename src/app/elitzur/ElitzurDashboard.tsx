@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
@@ -20,34 +20,13 @@ import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import { Menu, X } from "lucide-react";
-
-type TabKey =
-  | "user"
-  | "categories"
-  | "articles"
-  | "events"
-  | "lectures"
-  | "presentations"
-  | "messages"
-  | "settings"
-  | "themes";
-
-const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
-  { key: "user", label: "החשבון שלך" },
-  { key: "categories", label: "קטגוריות" },
-  { key: "articles", label: "מאמרים" },
-  { key: "events", label: "אירועים" },
-  { key: "lectures", label: "הרצאות" },
-  { key: "presentations", label: "מצגות" },
-  { key: "messages", label: "הודעות" },
-  { key: "settings", label: "הגדרות מערכת" },
-  { key: "themes", label: "ערכות נושא" },
-];
+import { TabKey, TABS } from "@/constants/ElitzurTabs";
 
 export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const [active, setActive] = useState<TabKey>("user");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const tabs = useMemo(() => TABS, []);
 
   return (
     <div className="flex gap-6">
@@ -81,7 +60,7 @@ export default function ElitzurDashboard() {
               role="tablist"
               aria-labelledby="navigation-heading"
             >
-              {TABS.map((tab) => {
+              {tabs.map((tab) => {
                 const isActive = active === tab.key;
                 const isDisabled = !!tab.disabled;
                 return (
