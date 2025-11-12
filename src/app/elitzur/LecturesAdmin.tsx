@@ -148,15 +148,6 @@ export default function LecturesAdmin() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Lectures Management
-          </h2>
-          <p className="mt-1 text-sm text-gray-600">
-            Create, search, filter and manage lectures.
-          </p>
-        </div>
-
         <div className="flex items-center gap-2">
           <Link
             href="/create-lecture"

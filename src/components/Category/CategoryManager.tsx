@@ -156,15 +156,6 @@ export default function CategoryManager() {
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
         {/* Header */}
         <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
-          <div>
-            <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
-              Manage Categories
-            </h2>
-            <p className="mt-1 text-sm text-gray-500">
-              Create, rename, and remove categories. Changes are applied
-              immediately.
-            </p>
-          </div>
           <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
             {loading ? "Loading…" : `${categories.length} total`}
           </span>

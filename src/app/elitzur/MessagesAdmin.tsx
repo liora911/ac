@@ -125,14 +125,6 @@ export default function MessagesAdmin() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-            Messages Management
-          </h2>
-          <p className="mt-1 text-sm text-gray-600">
-            View and manage contact form submissions.
-          </p>
-        </div>
         <div className="text-sm text-gray-500">
           Total: {messages.length} messages
         </div>
