@@ -151,14 +151,14 @@ export default function ArticleDetailPage() {
               ← {t("articleDetail.backToArticles")}
             </button>
 
-            {isAuthorized && (
+            {/* {isAuthorized && (
               <Link
                 href={`/articles/${article.id}/edit`}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
               >
                 {t("articleDetail.editButton")}
               </Link>
-            )}
+            )} */}
           </div>
         </div>
       </div>
@@ -317,14 +317,14 @@ export default function ArticleDetailPage() {
               >
                 📄 הורד PDF
               </button>
-              {isAuthorized && (
+              {/* {isAuthorized && (
                 <Link
                   href={`/articles/${article.id}/edit`}
                   className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                 >
                   {t("articleDetail.editButton")}
                 </Link>
-              )}
+              )} */}
             </div>
           </div>
         </footer>
