@@ -3,4 +3,5 @@ export interface NavItem {
   href: string;
   className?: string;
   icon?: string;
+  onClick?: () => void;
 }
