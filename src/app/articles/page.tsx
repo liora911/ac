@@ -1,7 +1,6 @@
 "use client";
 
 import React, { Suspense } from "react";
-import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
@@ -32,7 +31,7 @@ export default function ArticlesPage() {
       {}
       <div className="shadow-sm">
         <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8"
+          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[300px]"
           style={{
             backgroundImage: "url('/bookwrite.webp')",
             backgroundSize: "cover",
