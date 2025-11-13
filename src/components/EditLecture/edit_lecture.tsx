@@ -7,6 +7,7 @@ import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface EditLectureFormProps {
   lectureId: string;
@@ -45,6 +46,7 @@ export default function EditLectureForm({
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const isAuthorized = !!(
     session?.user?.email &&
@@ -293,6 +295,7 @@ export default function EditLectureForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder="הכנס תיאור להרצאה"
+            theme={theme}
           />
           <input
             type="hidden"
