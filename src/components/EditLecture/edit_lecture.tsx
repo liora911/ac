@@ -7,6 +7,7 @@ import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useTheme } from "@/contexts/ThemeContext";
 
 interface EditLectureFormProps {
   lectureId: string;
@@ -45,6 +46,7 @@ export default function EditLectureForm({
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
+  const { theme } = useTheme();
 
   const isAuthorized = !!(
     session?.user?.email &&
@@ -101,10 +103,18 @@ export default function EditLectureForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div
+        className={`max-w-xl mx-auto p-6 ${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+        } rounded-lg shadow-md`}
+      >
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+          <p
+            className={`mt-2 ${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            }`}
+          >
             {status === "loading" ? t("loading") : t("loadingLectureData")}
           </p>
         </div>
@@ -114,12 +124,22 @@ export default function EditLectureForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div
+        className={`max-w-xl mx-auto p-6 ${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+        } rounded-lg shadow-md`}
+      >
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
             נדרשת התחברות
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי לערוך הרצאות</p>
+          <p
+            className={`${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            } rtl`}
+          >
+            עליך להתחבר כדי לערוך הרצאות
+          </p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
@@ -133,11 +153,27 @@ export default function EditLectureForm({
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div
+        className={`max-w-xl mx-auto p-6 ${
+          theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+        } rounded-lg shadow-md`}
+      >
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה לערוך הרצאות באתר זה</p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+          <p
+            className={`${
+              theme === "dark" ? "text-gray-300" : "text-gray-600"
+            } rtl`}
+          >
+            אין לך הרשאה לערוך הרצאות באתר זה
+          </p>
+          <p
+            className={`text-sm ${
+              theme === "dark" ? "text-gray-400" : "text-gray-500"
+            } mt-2`}
+          >
+            {session?.user?.email}
+          </p>
         </div>
       </div>
     );
@@ -241,8 +277,18 @@ export default function EditLectureForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת הרצאה</h2>
+    <div
+      className={`max-w-xl mx-auto p-6 ${
+        theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
+      } rounded-lg shadow-md`}
+    >
+      <h2
+        className={`text-3xl font-bold mb-4 text-center rtl ${
+          theme === "dark" ? "text-white" : ""
+        }`}
+      >
+        עריכת הרצאה
+      </h2>
 
       <p className="text-sm text-green-600 text-center mb-8">
         מחובר כ: {session?.user?.email}
@@ -264,7 +310,9 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             כותרת ההרצאה *
           </label>
@@ -275,7 +323,11 @@ export default function EditLectureForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            className={`w-full p-4 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-gray-600"
+                : "bg-white text-gray-900 border-gray-300"
+            } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl`}
             placeholder="הכנס כותרת להרצאה"
           />
         </div>
@@ -283,7 +335,9 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             תיאור ההרצאה *
           </label>
@@ -293,6 +347,7 @@ export default function EditLectureForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder="הכנס תיאור להרצאה"
+            theme={theme}
           />
           <input
             type="hidden"
@@ -305,7 +360,9 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="videoUrl"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             קישור לוידאו (YouTube וכו')
           </label>
@@ -315,7 +372,11 @@ export default function EditLectureForm({
             name="videoUrl"
             value={formData.videoUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+            className={`w-full p-4 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-gray-600"
+                : "bg-white text-gray-900 border-gray-300"
+            } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
             placeholder="https://"
           />
         </div>
@@ -323,7 +384,9 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="duration"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             משך זמן (דקות) *
           </label>
@@ -334,7 +397,11 @@ export default function EditLectureForm({
             value={formData.duration}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+            className={`w-full p-4 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-gray-600"
+                : "bg-white text-gray-900 border-gray-300"
+            } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
             placeholder="למשל: 60 דקות"
           />
         </div>
@@ -342,7 +409,9 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="date"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             תאריך (אופציונלי)
           </label>
@@ -352,14 +421,20 @@ export default function EditLectureForm({
             name="date"
             value={formData.date}
             onChange={handleChange}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className={`w-full p-4 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-gray-600"
+                : "bg-white text-gray-900 border-gray-300"
+            } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent`}
           />
         </div>
 
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className={`block text-lg font-semibold mb-3 ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl`}
           >
             קטגוריה *
           </label>
@@ -370,7 +445,11 @@ export default function EditLectureForm({
             onChange={handleChange}
             required
             disabled={categoriesLoading}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
+            className={`w-full p-4 ${
+              theme === "dark"
+                ? "bg-gray-700 text-white border-gray-600"
+                : "bg-white text-gray-900 border-gray-300"
+            } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl`}
           >
             <option value="">
               {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
@@ -379,8 +458,16 @@ export default function EditLectureForm({
           </select>
         </div>
 
-        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <summary className="cursor-pointer text-lg font-semibold text-gray-900 rtl mb-3">
+        <details
+          className={`border ${
+            theme === "dark" ? "border-gray-600" : "border-gray-200"
+          } rounded-lg p-4 ${theme === "dark" ? "bg-gray-700" : "bg-gray-50"}`}
+        >
+          <summary
+            className={`cursor-pointer text-lg font-semibold ${
+              theme === "dark" ? "text-white" : "text-gray-900"
+            } rtl mb-3`}
+          >
             תמונת ההרצאה (אופציונלי)
           </summary>
           <div className="mt-4 space-y-4">
@@ -405,7 +492,11 @@ export default function EditLectureForm({
               )}
             </div>
             <div>
-              <label className="block text-base font-medium mb-2 text-gray-700 rtl">
+              <label
+                className={`block text-base font-medium mb-2 ${
+                  theme === "dark" ? "text-gray-200" : "text-gray-700"
+                } rtl`}
+              >
                 או הכנס קישור לתמונה
               </label>
               <input
@@ -413,7 +504,11 @@ export default function EditLectureForm({
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-100 text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                className={`w-full p-3 ${
+                  theme === "dark"
+                    ? "bg-gray-600 text-white border-gray-500"
+                    : "bg-gray-100 text-gray-900 border-gray-300"
+                } rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500`}
                 placeholder="https://"
               />
             </div>

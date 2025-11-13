@@ -563,32 +563,6 @@ export default function TiptapEditor({
               {currentDirection === "rtl" ? "RTL" : "LTR"}
             </ToolbarButton>
           </div>
-          {/* <div className="flex">
-            <ToolbarButton
-              onClick={() => {
-                // Toggle RTL class on the editor content
-                const currentElement = editor.view.dom;
-                const hasRTL = currentElement.classList.contains("rtl-text");
-                if (hasRTL) {
-                  currentElement.classList.remove("rtl-text");
-                  currentElement.style.direction = "";
-                } else {
-                  currentElement.classList.add("rtl-text");
-                  currentElement.style.direction = "rtl";
-                }
-                // Also update the placeholder direction
-                const placeholder =
-                  currentElement.querySelector("[data-placeholder]");
-                if (placeholder) {
-                  (placeholder as HTMLElement).style.direction =
-                    currentElement.style.direction;
-                }
-              }}
-              title="Toggle Text Direction (RTL/LTR)"
-            >
-              ↔
-            </ToolbarButton>
-          </div> */}
         </div>
       </div>
 
