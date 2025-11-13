@@ -101,7 +101,7 @@ export default function EditLectureForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-2 text-gray-600">
@@ -242,7 +242,7 @@ export default function EditLectureForm({
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת הרצאה</h2>
+      <h2 className="text-2xl font-bold mb-2 text-center rtl">עריכת הרצאה</h2>
 
       <p className="text-sm text-green-600 text-center mb-8">
         מחובר כ: {session?.user?.email}
@@ -379,7 +379,7 @@ export default function EditLectureForm({
           </select>
         </div>
 
-        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+        <details className="border border-gray-200 rounded-lg p-4">
           <summary className="cursor-pointer text-lg font-semibold text-gray-900 rtl mb-3">
             תמונת ההרצאה (אופציונלי)
           </summary>
