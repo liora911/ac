@@ -135,6 +135,17 @@
     "tagsTitle": "תגיות",
     "copyleftNote": "מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים"
   },
+  "lectureDetail": {
+    "loading": "טוען הרצאה...",
+    "errorTitle": "שגיאה בטעינת ההרצאה",
+    "errorGeneric": "ההרצאה לא נמצאה.",
+    "backToLectures": "חזרה להרצאות",
+    "notFoundTitle": "הרצאה לא נמצאה",
+    "notFoundMessage": "ההרצאה שאתה מחפש אינה קיימת.",
+    "editButton": "ערוך הרצאה",
+    "duration": "משך בדקות",
+    "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים."
+  },
   "articlesPage": {
     "title": "מאמרים",
     "description": "חקור את אוסף המאמרים שלנו המכסים נושאים שונים בפיזיקה, פילוסופיה ומחקר מדעי.",

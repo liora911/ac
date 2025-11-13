@@ -123,6 +123,17 @@
     "tagsTitle": "Tags",
     "copyleftNote": "This article is available for free download, no copyright."
   },
+  "lectureDetail": {
+    "loading": "Loading lecture...",
+    "errorTitle": "Error loading lecture",
+    "errorGeneric": "The lecture could not be found.",
+    "backToLectures": "Back to Lectures",
+    "notFoundTitle": "Lecture not found",
+    "notFoundMessage": "The lecture you're looking for doesn't exist.",
+    "editButton": "Edit Lecture",
+    "duration": "Duration in minutes",
+    "copyleftNote": "This lecture is available for free viewing, no copyright."
+  },
   "editLecturePage": {
     "title": "Edit Lecture"
   },
