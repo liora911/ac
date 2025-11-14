@@ -13,7 +13,7 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-6">
+      <div className="backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-6xl w-full max-h-[95vh] overflow-y-auto relative p-6">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-slate-400 hover:text-gray-300 text-2xl font-bold cursor-pointer transition-colors"
@@ -24,7 +24,7 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
           {lecture.title}
         </h3>
         {lecture.videoUrl && (
-          <div className="aspect-w-16 aspect-h-9 mb-4">
+          <div className="aspect-w-16 aspect-h-6 mb-4">
             <iframe
               src={lecture.videoUrl}
               title={lecture.title}
