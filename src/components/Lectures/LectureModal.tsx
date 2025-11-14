@@ -24,15 +24,20 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
           {lecture.title}
         </h3>
         {lecture.videoUrl && (
-          <div className="aspect-w-16 aspect-h-6 mb-4">
-            <iframe
-              src={lecture.videoUrl}
-              title={lecture.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="rounded-lg w-full h-full shadow-lg"
-            ></iframe>
+          <div className="mb-4">
+            <div
+              className="relative w-full overflow-hidden rounded-lg shadow-lg"
+              style={{ paddingTop: "56.25%" }} // 16:9 aspect ratio
+            >
+              <iframe
+                src={lecture.videoUrl}
+                title={lecture.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              ></iframe>
+            </div>
           </div>
         )}
         <div
