@@ -359,7 +359,9 @@ export default function EventsAdmin() {
 
                     <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       <div>
-                        <time dateTime={event.eventDate.toISOString()}>
+                        <time
+                          dateTime={new Date(event.eventDate).toISOString()}
+                        >
                           {new Date(event.eventDate).toLocaleDateString()}
                         </time>
                       </div>
@@ -407,7 +409,7 @@ export default function EventsAdmin() {
 
                     <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       <time
-                        dateTime={(
+                        dateTime={new Date(
                           event.updatedAt || event.createdAt
                         ).toISOString()}
                       >
