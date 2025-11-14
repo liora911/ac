@@ -178,6 +178,10 @@ export default function GlobalSearch() {
   const handleInputFocus = () => {
     if (results) {
       setIsOpen(true);
+    } else {
+      // When the user focuses the input with no query yet,
+      // load a default set of results so the dropdown shows options.
+      performSearch("");
     }
   };
 

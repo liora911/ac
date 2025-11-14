@@ -6,7 +6,9 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");
 
-    if (!query || query.trim().length < 2) {
+    // If no "q" parameter at all, return empty result set.
+    // An empty string (q="") is treated as a wildcard that matches all items.
+    if (query === null) {
       return NextResponse.json({
         articles: [],
         presentations: [],
@@ -17,6 +19,127 @@ export async function GET(request: NextRequest) {
     }
 
     const searchTerm = query.trim();
+
+    // When searchTerm is empty (e.g. user just focused the global search input),
+    // return a mixed set of up to 10 random-ish items across all types,
+    // instead of the entire database.
+    if (searchTerm === "") {
+      const [articles, presentations, events, lectures] = await Promise.all([
+        prisma.article.findMany({
+          where: {
+            published: true,
+          },
+          select: {
+            id: true,
+            title: true,
+            content: true,
+            createdAt: true,
+            updatedAt: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 10,
+        }),
+        prisma.presentation.findMany({
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            createdAt: true,
+            updatedAt: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: { updatedAt: "desc" },
+          take: 10,
+        }),
+        prisma.event.findMany({
+          where: {
+            published: true,
+          },
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            eventDate: true,
+            location: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+          orderBy: { eventDate: "desc" },
+          take: 10,
+        }),
+        prisma.lecture.findMany({
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            date: true,
+            createdAt: true,
+            updatedAt: true,
+            category: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+          orderBy: { createdAt: "desc" },
+          take: 10,
+        }),
+      ]);
+
+      const combined = [
+        ...articles.map((item) => ({ ...item, __type: "articles" as const })),
+        ...presentations.map((item) => ({
+          ...item,
+          __type: "presentations" as const,
+        })),
+        ...events.map((item) => ({ ...item, __type: "events" as const })),
+        ...lectures.map((item) => ({ ...item, __type: "lectures" as const })),
+      ];
+
+      // Simple shuffle and take first 10 to get a mixed sample.
+      const shuffled = combined.sort(() => Math.random() - 0.5);
+      const limited = shuffled.slice(0, 10);
+
+      const mixedArticles = limited
+        .filter((item) => item.__type === "articles")
+        .map(({ __type, ...rest }) => rest);
+      const mixedPresentations = limited
+        .filter((item) => item.__type === "presentations")
+        .map(({ __type, ...rest }) => rest);
+      const mixedEvents = limited
+        .filter((item) => item.__type === "events")
+        .map(({ __type, ...rest }) => rest);
+      const mixedLectures = limited
+        .filter((item) => item.__type === "lectures")
+        .map(({ __type, ...rest }) => rest);
+
+      const total =
+        mixedArticles.length +
+        mixedPresentations.length +
+        mixedEvents.length +
+        mixedLectures.length;
+
+      return NextResponse.json({
+        articles: mixedArticles,
+        presentations: mixedPresentations,
+        events: mixedEvents,
+        lectures: mixedLectures,
+        total,
+        query: searchTerm,
+      });
+    }
 
     const articles = await prisma.article.findMany({
       where: {
