@@ -7,14 +7,10 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 export default function EditLecturePage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const [lectureId, setLectureId] = React.useState<string>("");
   const { t, locale } = useTranslation();
-
-  React.useEffect(() => {
-    params.then((p) => setLectureId(p.id));
-  }, [params]);
+  const lectureId = params.id;
 
   return (
     <div
@@ -25,7 +21,7 @@ export default function EditLecturePage({
         <h1 className="text-4xl font-bold text-center mb-8 text-white">
           {t("editLecturePage.title")}
         </h1>
-        {lectureId && <EditLectureForm lectureId={lectureId} />}
+        <EditLectureForm lectureId={lectureId} />
       </div>
     </div>
   );
