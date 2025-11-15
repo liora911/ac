@@ -4,10 +4,46 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Presentation } from "@/types/Presentations/presentations";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface PresentationModalProps {
   presentation: Presentation | null;
   onClose: () => void;
+}
+
+/**
+ * Given a Google Slides URL, build an embeddable URL and a direct PDF export URL (when possible).
+ */
+function getGoogleSlidesEmbedAndPdfUrls(rawUrl?: string | null): {
+  embedUrl?: string;
+  pdfUrl?: string;
+} {
+  if (!rawUrl) return { embedUrl: undefined, pdfUrl: undefined };
+
+  try {
+    const url = new URL(rawUrl);
+
+    // Handle standard Google Slides URLs: https://docs.google.com/presentation/d/{FILE_ID}/edit...
+    if (
+      url.hostname.includes("docs.google.com") &&
+      url.pathname.includes("/presentation/d/")
+    ) {
+      const parts = url.pathname.split("/");
+      const dIndex = parts.indexOf("d");
+      const fileId =
+        dIndex !== -1 && parts[dIndex + 1] ? parts[dIndex + 1] : null;
+
+      if (fileId) {
+        const embedUrl = `https://docs.google.com/presentation/d/${fileId}/embed?start=false&loop=false&delayms=3000`;
+        const pdfUrl = `https://docs.google.com/presentation/d/${fileId}/export/pdf`;
+        return { embedUrl, pdfUrl };
+      }
+    }
+  } catch {
+    // Fallback to raw URL if parsing fails
+  }
+
+  return { embedUrl: rawUrl, pdfUrl: undefined };
 }
 
 const PresentationModal: React.FC<PresentationModalProps> = ({
@@ -17,14 +53,48 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
+  const { showSuccess, showError, showWarning } = useNotification();
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
   if (!presentation) return null;
 
   const total = presentation.imageUrls.length;
+  const hasGoogleSlidesUrl = Boolean(presentation.googleSlidesUrl);
 
-  const next = () => setCurrentImageIndex((i) => (i + 1) % total);
-  const prev = () => setCurrentImageIndex((i) => (i - 1 + total) % total);
+  const shareLink =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/presentations/${presentation.id}`
+      : `/presentations/${presentation.id}`;
+
+  const { embedUrl, pdfUrl } = getGoogleSlidesEmbedAndPdfUrls(
+    presentation.googleSlidesUrl
+  );
+
+  const next = () => setCurrentImageIndex((i) => (i + 1) % Math.max(total, 1));
+  const prev = () =>
+    setCurrentImageIndex(
+      (i) => (i - 1 + Math.max(total, 1)) % Math.max(total, 1)
+    );
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(shareLink);
+      showSuccess("קישור למצגת הועתק");
+      setIsShareModalOpen(false);
+    } catch (error) {
+      showError("שגיאה בהעתקת הקישור");
+    }
+  };
+
+  const handleDownloadPdf = () => {
+    if (pdfUrl) {
+      window.open(pdfUrl, "_blank", "noopener,noreferrer");
+    } else {
+      showWarning("לא ניתן ליצור PDF עבור קישור המצגת הזה");
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -37,9 +107,50 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
         </button>
 
         <div className="p-6">
-          <h1 className="text-3xl font-bold text-gray-900 mb-6 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4 text-center">
             {presentation.title}
           </h1>
+
+          {hasGoogleSlidesUrl && (
+            <div className="mb-6">
+              <div className="mb-3 flex flex-wrap justify-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsShareModalOpen(true)}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-800 text-sm font-medium hover:bg-gray-200 transition-colors cursor-pointer border border-gray-300"
+                >
+                  <span>🔗 Share</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDownloadPdf}
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors cursor-pointer"
+                >
+                  <span>📄 Download PDF</span>
+                </button>
+                <a
+                  href={presentation.googleSlidesUrl as string}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors cursor-pointer"
+                >
+                  <span>Open in Google Slides</span>
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </div>
+
+              {embedUrl && (
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                  <iframe
+                    src={embedUrl}
+                    title={presentation.title}
+                    className="w-full h-full border-0"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+            </div>
+          )}
 
           {presentation.imageUrls.length > 0 && (
             <div className="mb-6">
@@ -138,6 +249,43 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             </p>
           </div>
         </div>
+
+        {isShareModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+            <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-md">
+              <h2 className="text-lg font-semibold mb-3 text-gray-900">
+                Share this presentation
+              </h2>
+              <p className="text-sm text-gray-600 mb-3">
+                Copy the link below to share this presentation.
+              </p>
+              <div className="flex items-center gap-2 mb-4">
+                <input
+                  type="text"
+                  readOnly
+                  value={shareLink}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm bg-gray-50 text-gray-800"
+                />
+                <button
+                  type="button"
+                  onClick={handleCopyLink}
+                  className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
+                >
+                  Copy
+                </button>
+              </div>
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsShareModalOpen(false)}
+                  className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

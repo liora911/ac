@@ -28,6 +28,7 @@ export default function PresentationDetailPage() {
   const isAuthor = presentation?.author.email === session?.user?.email;
 
   const total = presentation?.imageUrls.length ?? 0;
+  const hasGoogleSlidesUrl = Boolean(presentation?.googleSlidesUrl);
 
   const next = () => setCurrentImageIndex((i) => (i + 1) % total);
   const prev = () => setCurrentImageIndex((i) => (i - 1 + total) % total);
@@ -124,6 +125,24 @@ export default function PresentationDetailPage() {
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 text-center">
           {presentation.title}
         </h1>
+
+        {hasGoogleSlidesUrl && (
+          <div className="mb-8 flex flex-col items-center gap-3">
+            <a
+              href={presentation.googleSlidesUrl as string}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors cursor-pointer shadow"
+            >
+              <span>פתח מצגת ב-Google Slides / Drive</span>
+              <span aria-hidden="true">↗</span>
+            </a>
+            <p className="text-sm text-gray-300 text-center max-w-xl">
+              הקישור נפתח בלשונית חדשה. ניתן לערוך את המצגת ישירות ב-Google
+              Slides.
+            </p>
+          </div>
+        )}
 
         {}
         {presentation.imageUrls.length > 0 && (

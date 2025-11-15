@@ -139,6 +139,7 @@ model Presentation {
   title           String
   description     String
   content         String
+  googleSlidesUrl String?
   imageUrls       String[]
   published       Boolean  @default(true)
   categoryId      String

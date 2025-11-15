@@ -32,7 +32,7 @@ export async function GET() {
     return NextResponse.json(categories);
   } catch (error) {
     return NextResponse.json(
-      { error: "Failed to fetch presentations" },
+      { error: `Failed to fetch presentations - ${error}` },
       { status: 500 }
     );
   }
@@ -54,7 +54,14 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { title, description, content, imageUrls, categoryId } = body;
+    const {
+      title,
+      description,
+      content,
+      imageUrls,
+      categoryId,
+      googleSlidesUrl,
+    } = body;
 
     if (!title || !description || !content || !categoryId) {
       return NextResponse.json(
@@ -87,6 +94,7 @@ export async function POST(request: NextRequest) {
         title,
         description,
         content,
+        googleSlidesUrl: googleSlidesUrl || null,
         imageUrls: imageUrls || [],
         categoryId,
         authorId: user.id,

@@ -34,6 +34,7 @@ export default function EditPresentationForm({
     title: "",
     description: "",
     content: "",
+    googleSlidesUrl: "",
     imageUrls: [] as string[],
     categoryId: "",
   });
@@ -71,6 +72,7 @@ export default function EditPresentationForm({
             title: presentation.title || "",
             description: presentation.description || "",
             content: presentation.content || "",
+            googleSlidesUrl: presentation.googleSlidesUrl || "",
             imageUrls: presentation.imageUrls || [],
             categoryId: presentation.category?.id || "",
           });
@@ -326,6 +328,27 @@ export default function EditPresentationForm({
             value={formData.content}
             required
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="googleSlidesUrl"
+            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+          >
+            קישור למצגת ב-Google Slides / Google Drive (אופציונלי)
+          </label>
+          <input
+            type="url"
+            id="googleSlidesUrl"
+            name="googleSlidesUrl"
+            value={formData.googleSlidesUrl}
+            onChange={handleChange}
+            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            placeholder="https://docs.google.com/presentation/..."
+          />
+          <p className="mt-2 text-sm text-gray-500 rtl">
+            ניתן להדביק כאן קישור שיתוף מ-Google Slides או Google Drive.
+          </p>
         </div>
 
         <div>

@@ -3,6 +3,10 @@ export interface Presentation {
   title: string;
   description: string;
   content: string;
+  /**
+   * Optional link to external slides (e.g. Google Slides / Google Drive URL)
+   */
+  googleSlidesUrl?: string;
   imageUrls: string[];
   published: boolean;
   categoryId: string;
@@ -38,12 +42,14 @@ export interface PresentationDetailProps {
   imageUrls: string[];
   description: string;
   content: string;
+  googleSlidesUrl?: string;
 }
 
 export interface CreatePresentationData {
   title: string;
   description: string;
   content: string;
+  googleSlidesUrl?: string;
   imageUrls: string[];
   categoryId: string;
 }

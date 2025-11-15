@@ -28,6 +28,7 @@ export default function CreatePresentationForm({
     title: "",
     description: "",
     content: "",
+    googleSlidesUrl: "",
     imageUrls: [] as string[],
     categoryId: "",
   });
@@ -132,6 +133,7 @@ export default function CreatePresentationForm({
         title: "",
         description: "",
         content: "",
+        googleSlidesUrl: "",
         imageUrls: [],
         categoryId: "",
       });
@@ -297,6 +299,27 @@ export default function CreatePresentationForm({
             value={formData.content}
             required
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="googleSlidesUrl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
+            קישור למצגת ב-Google Slides / Google Drive (אופציונלי)
+          </label>
+          <input
+            type="url"
+            id="googleSlidesUrl"
+            name="googleSlidesUrl"
+            value={formData.googleSlidesUrl}
+            onChange={handleChange}
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            placeholder="https://docs.google.com/presentation/..."
+          />
+          <p className="mt-2 text-sm text-gray-400 rtl">
+            ניתן להדביק כאן קישור שיתוף מ-Google Slides או Google Drive.
+          </p>
         </div>
 
         <div>

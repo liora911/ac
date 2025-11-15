@@ -86,20 +86,19 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { title, description, content, imageUrls, categoryId } = body;
+    const {
+      title,
+      description,
+      content,
+      imageUrls,
+      categoryId,
+      googleSlidesUrl,
+    } = body;
 
-    if (
-      !title ||
-      !description ||
-      !content ||
-      !categoryId ||
-      !imageUrls ||
-      imageUrls.length === 0
-    ) {
+    if (!title || !description || !content || !categoryId) {
       return NextResponse.json(
         {
-          error:
-            "Title, description, content, categoryId, and imageUrls are required",
+          error: "Title, description, content, and categoryId are required",
         },
         { status: 400 }
       );
@@ -122,7 +121,8 @@ export async function PUT(
         title,
         description,
         content,
-        imageUrls,
+        googleSlidesUrl: googleSlidesUrl || null,
+        imageUrls: imageUrls || [],
         categoryId,
       },
       include: {
