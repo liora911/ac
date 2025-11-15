@@ -10,7 +10,8 @@ export async function GET() {
       throw new Error("Database connection not available");
     }
 
-    const categories = await prisma.category.findMany({
+    // Fetch all categories with their presentations; we'll build a tree in memory
+    const prismaCategories = await prisma.category.findMany({
       include: {
         presentations: {
           include: {
@@ -27,9 +28,49 @@ export async function GET() {
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    return NextResponse.json(categories);
+    type TreeCategory = {
+      id: string;
+      name: string;
+      bannerImageUrl: string | null;
+      parentId: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+      presentations: (typeof prismaCategories)[number]["presentations"];
+      subcategories: TreeCategory[];
+    };
+
+    const byId = new Map<string, TreeCategory>();
+
+    prismaCategories.forEach((cat) => {
+      byId.set(cat.id, {
+        id: cat.id,
+        name: cat.name,
+        bannerImageUrl: cat.bannerImageUrl,
+        parentId: cat.parentId,
+        createdAt: cat.createdAt,
+        updatedAt: cat.updatedAt,
+        presentations: cat.presentations,
+        subcategories: [],
+      });
+    });
+
+    const roots: TreeCategory[] = [];
+
+    byId.forEach((cat) => {
+      if (cat.parentId && byId.has(cat.parentId)) {
+        const parent = byId.get(cat.parentId)!;
+        parent.subcategories.push(cat);
+      } else {
+        roots.push(cat);
+      }
+    });
+
+    return NextResponse.json(roots);
   } catch (error) {
     return NextResponse.json(
       { error: `Failed to fetch presentations - ${error}` },

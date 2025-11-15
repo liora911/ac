@@ -7,14 +7,10 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 export default function EditPresentationPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const [presentationId, setPresentationId] = React.useState<string>("");
   const { t, locale } = useTranslation();
-
-  React.useEffect(() => {
-    params.then((p) => setPresentationId(p.id));
-  }, [params]);
+  const presentationId = params.id;
 
   return (
     <div
@@ -25,9 +21,7 @@ export default function EditPresentationPage({
         <h1 className="text-4xl font-bold text-center mb-8 text-white">
           {t("editPresentationPage.title")}
         </h1>
-        {presentationId && (
-          <EditPresentationForm presentationId={presentationId} />
-        )}
+        <EditPresentationForm presentationId={presentationId} />
       </div>
     </div>
   );

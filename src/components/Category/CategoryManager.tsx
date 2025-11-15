@@ -5,13 +5,20 @@ import React, { useState, useEffect } from "react";
 interface Category {
   id: string;
   name: string;
+  parentId?: string | null;
 }
 
 export default function CategoryManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryParentId, setNewCategoryParentId] = useState<string | "">(
+    ""
+  );
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editedCategoryName, setEditedCategoryName] = useState("");
+  const [editedCategoryParentId, setEditedCategoryParentId] = useState<
+    string | ""
+  >("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,7 +61,10 @@ export default function CategoryManager() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: newCategoryName.trim() }),
+        body: JSON.stringify({
+          name: newCategoryName.trim(),
+          parentId: newCategoryParentId || null,
+        }),
       });
 
       if (!response.ok) {
@@ -70,6 +80,7 @@ export default function CategoryManager() {
       }
 
       setNewCategoryName("");
+      setNewCategoryParentId("");
       await fetchCategories();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to add category";
@@ -94,7 +105,10 @@ export default function CategoryManager() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name: editedCategoryName.trim() }),
+        body: JSON.stringify({
+          name: editedCategoryName.trim(),
+          parentId: editedCategoryParentId || null,
+        }),
       });
 
       if (!response.ok) {
@@ -111,6 +125,7 @@ export default function CategoryManager() {
 
       setEditingCategory(null);
       setEditedCategoryName("");
+      setEditedCategoryParentId("");
       await fetchCategories();
     } catch (err) {
       const msg =
@@ -198,6 +213,24 @@ export default function CategoryManager() {
                     />
                   </div>
 
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700">
+                      Parent category (optional)
+                    </label>
+                    <select
+                      value={newCategoryParentId}
+                      onChange={(e) => setNewCategoryParentId(e.target.value)}
+                      className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                    >
+                      <option value="">No parent (top-level)</option>
+                      {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
                   <button
                     type="submit"
                     disabled={saving || !newCategoryName.trim()}
@@ -248,15 +281,33 @@ export default function CategoryManager() {
                             onSubmit={handleEditCategory}
                             className="flex w-full items-center gap-2"
                           >
-                            <input
-                              type="text"
-                              value={editedCategoryName}
-                              onChange={(e) =>
-                                setEditedCategoryName(e.target.value)
-                              }
-                              className="flex-1 rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
-                              autoFocus
-                            />
+                            <div className="flex-1 space-y-2">
+                              <input
+                                type="text"
+                                value={editedCategoryName}
+                                onChange={(e) =>
+                                  setEditedCategoryName(e.target.value)
+                                }
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                                autoFocus
+                              />
+                              <select
+                                value={editedCategoryParentId}
+                                onChange={(e) =>
+                                  setEditedCategoryParentId(e.target.value)
+                                }
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+                              >
+                                <option value="">No parent (top-level)</option>
+                                {categories
+                                  .filter((cat) => cat.id !== category.id)
+                                  .map((cat) => (
+                                    <option key={cat.id} value={cat.id}>
+                                      {cat.name}
+                                    </option>
+                                  ))}
+                              </select>
+                            </div>
                             <button
                               type="submit"
                               disabled={saving || !editedCategoryName.trim()}
@@ -269,6 +320,7 @@ export default function CategoryManager() {
                               onClick={() => {
                                 setEditingCategory(null);
                                 setEditedCategoryName("");
+                                setEditedCategoryParentId("");
                               }}
                               className="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
                             >
@@ -285,6 +337,9 @@ export default function CategoryManager() {
                                 onClick={() => {
                                   setEditingCategory(category);
                                   setEditedCategoryName(category.name);
+                                  setEditedCategoryParentId(
+                                    category.parentId || ""
+                                  );
                                 }}
                                 className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                               >
