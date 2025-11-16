@@ -130,25 +130,38 @@ export default function ElitzurDashboard() {
         id={`panel-${active}`}
       >
         {active === "user" && (
-          <div className="space-y-8 max-w-full">
-            <div>
-              <h1
-                className="text-2xl md:text-3xl font-bold text-gray-900"
-                id="user-heading"
-              >
-                משתמש
-              </h1>
-              <p className="mt-2 text-sm text-gray-600">
-                נהל את פרטי המשתמש שלך והתחבר או התנתק מהמערכת.
-              </p>
-              <div className="mt-6">
-                <LoginForm />
+          <div className="space-y-8 max-w-5xl mx-auto px-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-baseline sm:justify-between">
+              <div>
+                <h1
+                  className="text-2xl md:text-3xl font-bold text-gray-900"
+                  id="user-heading"
+                >
+                  משתמש
+                </h1>
+                <p className="mt-2 text-sm text-gray-600">
+                  נהל את פרטי המשתמש שלך והתחבר או התנתק מהמערכת.
+                </p>
               </div>
             </div>
 
+            {!session && (
+              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <h2 className="text-xl font-semibold text-gray-900">
+                  התחברות למערכת
+                </h2>
+                <p className="mt-2 text-sm text-gray-600">
+                  התחבר כדי לראות סטטיסטיקות ופעילות אחרונה בחשבון שלך.
+                </p>
+                <div className="mt-6">
+                  <LoginForm />
+                </div>
+              </div>
+            )}
+
             {session && (
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
-                <div className="lg:col-span-2 space-y-8">
+              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 items-start">
+                <div className="xl:col-span-2 space-y-8">
                   <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                     <h2 className="text-xl font-semibold text-gray-900 mb-6">
                       סקירה מהירה
@@ -157,12 +170,14 @@ export default function ElitzurDashboard() {
                   </div>
                 </div>
 
-                <div className="space-y-6">
-                  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                <div className="xl:col-span-1">
+                  <div className="h-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                       פעילות אחרונה
                     </h3>
-                    <ActivityFeed />
+                    <div className="mt-2 flex-1 overflow-hidden">
+                      <ActivityFeed />
+                    </div>
                   </div>
                 </div>
               </div>
