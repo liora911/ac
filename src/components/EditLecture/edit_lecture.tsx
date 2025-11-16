@@ -17,7 +17,7 @@ interface EditLectureFormProps {
 type CategoryNode = {
   id: string;
   name: string;
-  subcategories?: CategoryNode[];
+  parentId?: string | null;
 };
 
 export default function EditLectureForm({
@@ -221,22 +221,28 @@ export default function EditLectureForm({
   const renderCategoryOptions = () => {
     const options: React.ReactElement[] = [];
 
-    categories.forEach((category: CategoryNode) => {
+    const topLevelCategories = categories.filter(
+      (category) => !category.parentId
+    );
+
+    topLevelCategories.forEach((category) => {
       options.push(
         <option key={category.id} value={category.id}>
           ▶ {category.name}
         </option>
       );
 
-      if (category.subcategories && category.subcategories.length > 0) {
-        category.subcategories.forEach((sub: CategoryNode) => {
-          options.push(
-            <option key={sub.id} value={sub.id}>
-              &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
-            </option>
-          );
-        });
-      }
+      const subcategories = categories.filter(
+        (sub) => sub.parentId === category.id
+      );
+
+      subcategories.forEach((sub) => {
+        options.push(
+          <option key={sub.id} value={sub.id}>
+            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
+          </option>
+        );
+      });
     });
 
     return options;

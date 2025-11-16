@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import UploadImage from "@/components/Upload/upload";
@@ -11,6 +11,12 @@ import dynamic from "next/dynamic";
 const TiptapEditor = dynamic(() => import("@/lib/editor/editor"), {
   ssr: false,
 });
+
+type CategoryNode = {
+  id: string;
+  name: string;
+  parentId?: string | null;
+};
 
 interface EditArticleFormProps {
   articleId: string;
@@ -45,8 +51,8 @@ export default function EditArticleForm({
   const [publisherImageFile, setPublisherImageFile] = useState<File | null>(
     null
   );
-  const [categories, setCategories] = useState<any[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState(true);
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
 
   const isAuthorized =
     session?.user?.email &&
@@ -229,6 +235,36 @@ export default function EditArticleForm({
     }));
   };
 
+  const renderCategoryOptions = () => {
+    const options: React.ReactElement[] = [];
+
+    const topLevelCategories = categories.filter(
+      (category) => !category.parentId
+    );
+
+    topLevelCategories.forEach((category) => {
+      options.push(
+        <option key={category.id} value={category.id}>
+          ▶ {category.name}
+        </option>
+      );
+
+      const subcategories = categories.filter(
+        (sub) => sub.parentId === category.id
+      );
+
+      subcategories.forEach((sub) => {
+        options.push(
+          <option key={sub.id} value={sub.id}>
+            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
+          </option>
+        );
+      });
+    });
+
+    return options;
+  };
+
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
       <h2 className="text-2xl font-bold mb-2 text-center rtl">עריכת מאמר</h2>
@@ -316,11 +352,7 @@ export default function EditArticleForm({
             <option value="">
               {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
             </option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.id}>
-                {category.name}
-              </option>
-            ))}
+            {renderCategoryOptions()}
           </select>
         </div>
 
