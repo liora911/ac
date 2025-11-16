@@ -230,5 +230,8 @@
   },
   "globalSearch": {
     "placeholder": "אני מחפש..."
+  },
+  "footer": {
+    "contact": "להזמנות: avshalom@iyar.org.il"
   }
 }

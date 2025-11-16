@@ -230,5 +230,8 @@
   },
   "globalSearch": {
     "placeholder": "I'm looking for..."
+  },
+  "footer": {
+    "contact": "Contact: avshalom@iyar.org.il"
   }
 }
