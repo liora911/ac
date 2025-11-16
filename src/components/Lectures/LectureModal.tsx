@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { X } from "lucide-react";
 import { Lecture } from "@/types/Lectures/lectures";
 
 interface LectureModalProps {
@@ -15,10 +16,12 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
     <div className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="backdrop-blur-md rounded-xl shadow-2xl border border-slate-700/50 max-w-6xl w-full max-h-[95vh] overflow-y-auto relative p-6">
         <button
+          type="button"
           onClick={onClose}
-          className="absolute top-3 right-3 text-slate-400 hover:text-gray-300 text-2xl font-bold cursor-pointer transition-colors"
+          className="absolute top-3 right-3 inline-flex items-center justify-center w-9 h-9 rounded-full bg-slate-800/80 text-slate-200 hover:bg-slate-700 hover:text-white border border-slate-600/70 shadow-sm cursor-pointer transition-colors"
+          aria-label="Close modal"
         >
-          &times;
+          <X className="w-5 h-5" aria-hidden="true" />
         </button>
         <h3 className="text-3xl font-bold text-gray-300 mb-4">
           {lecture.title}
