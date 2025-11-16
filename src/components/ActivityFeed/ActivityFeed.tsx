@@ -58,6 +58,78 @@ const ActivityFeed: React.FC = () => {
           });
         }
 
+        if (lecturesRes.ok) {
+          const lecturesData = await lecturesRes.json();
+
+          const flattenLectures = (categories: any[]): any[] => {
+            const result: any[] = [];
+
+            const traverse = (cats: any[]) => {
+              cats.forEach((cat) => {
+                if (cat.lectures && Array.isArray(cat.lectures)) {
+                  result.push(...cat.lectures);
+                }
+                if (cat.subcategories && Array.isArray(cat.subcategories)) {
+                  traverse(cat.subcategories);
+                }
+              });
+            };
+
+            traverse(categories);
+            return result;
+          };
+
+          const allLectures = flattenLectures(lecturesData).slice(0, 3);
+
+          allLectures.forEach((lecture: any) => {
+            activities.push({
+              id: `lecture-${lecture.id}`,
+              type: "lecture",
+              title: lecture.title,
+              action: "created",
+              timestamp: lecture.date || lecture.createdAt,
+              author: lecture.author?.name || "Unknown",
+            });
+          });
+        }
+
+        if (presentationsRes.ok) {
+          const presentationsData = await presentationsRes.json();
+
+          const flattenPresentations = (categories: any[]): any[] => {
+            const result: any[] = [];
+
+            const traverse = (cats: any[]) => {
+              cats.forEach((cat) => {
+                if (cat.presentations && Array.isArray(cat.presentations)) {
+                  result.push(...cat.presentations);
+                }
+                if (cat.subcategories && Array.isArray(cat.subcategories)) {
+                  traverse(cat.subcategories);
+                }
+              });
+            };
+
+            traverse(categories);
+            return result;
+          };
+
+          const allPresentations = flattenPresentations(
+            presentationsData
+          ).slice(0, 3);
+
+          allPresentations.forEach((presentation: any) => {
+            activities.push({
+              id: `presentation-${presentation.id}`,
+              type: "presentation",
+              title: presentation.title,
+              action: "created",
+              timestamp: presentation.createdAt,
+              author: presentation.author?.name || "Unknown",
+            });
+          });
+        }
+
         activities.sort(
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
