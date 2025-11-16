@@ -100,10 +100,10 @@ export default function EditPresentationForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
+          <p className="mt-2 text-gray-300">
             {status === "loading" ? t("loading") : t("loadingPresentationData")}
           </p>
         </div>
@@ -113,15 +113,15 @@ export default function EditPresentationForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
             נדרשת התחברות
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי לערוך מצגות</p>
+          <p className="text-gray-300 rtl">עליך להתחבר כדי לערוך מצגות</p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
+            className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-md hover:bg-indigo-600 cursor-pointer"
           >
             התחבר
           </button>
@@ -132,11 +132,11 @@ export default function EditPresentationForm({
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה לערוך מצגות באתר זה</p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
+          <p className="text-gray-300 rtl">אין לך הרשאה לערוך מצגות באתר זה</p>
+          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
         </div>
       </div>
     );
@@ -247,10 +247,10 @@ export default function EditPresentationForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
+    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
       <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת מצגת</h2>
 
-      <p className="text-sm text-green-600 text-center mb-8">
+      <p className="text-sm text-green-400 text-center mb-8">
         מחובר כ: {session?.user?.email}
       </p>
 
@@ -258,19 +258,19 @@ export default function EditPresentationForm({
         <div
           className={`mb-6 p-4 rounded-md ${
             message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
+              ? "bg-green-900 text-green-200 border border-green-700"
+              : "bg-red-900 text-red-200 border border-red-700"
           }`}
         >
           {message.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             כותרת המצגת *
           </label>
@@ -281,7 +281,7 @@ export default function EditPresentationForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
             placeholder="הכנס כותרת למצגת"
           />
         </div>
@@ -289,7 +289,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             תיאור המצגת *
           </label>
@@ -299,6 +299,7 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder="הכנס תיאור למצגת"
+            theme="dark"
           />
           <input
             type="hidden"
@@ -311,7 +312,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="content"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             תוכן המצגת *
           </label>
@@ -321,6 +322,7 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, content: value }))
             }
             placeholder="הכנס את תוכן המצגת"
+            theme="dark"
           />
           <input
             type="hidden"
@@ -333,7 +335,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="googleSlidesUrl"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             קישור למצגת ב-Google Slides / Google Drive (אופציונלי)
           </label>
@@ -343,10 +345,10 @@ export default function EditPresentationForm({
             name="googleSlidesUrl"
             value={formData.googleSlidesUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
             placeholder="https://docs.google.com/presentation/..."
           />
-          <p className="mt-2 text-sm text-gray-500 rtl">
+          <p className="mt-2 text-sm text-gray-400 rtl">
             ניתן להדביק כאן קישור שיתוף מ-Google Slides או Google Drive.
           </p>
         </div>
@@ -354,7 +356,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             קטגוריה *
           </label>
@@ -365,7 +367,7 @@ export default function EditPresentationForm({
             onChange={handleChange}
             required
             disabled={categoriesLoading}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
           >
             <option value="">
               {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
@@ -375,7 +377,7 @@ export default function EditPresentationForm({
         </div>
 
         <div>
-          <label className="block text-lg font-semibold mb-3 text-gray-900 rtl">
+          <label className="block text-lg font-semibold mb-3 text-white rtl">
             קישורי תמונות (אופציונלי)
           </label>
           {formData.imageUrls.map((url, index) => (
@@ -384,7 +386,7 @@ export default function EditPresentationForm({
                 type="url"
                 value={url}
                 onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                className="flex-1 p-3 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500"
+                className="flex-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
                 placeholder="https://"
               />
               <button
@@ -399,7 +401,7 @@ export default function EditPresentationForm({
           <button
             type="button"
             onClick={addImageUrl}
-            className="w-full p-3 bg-gray-100 text-gray-900 border border-gray-300 rounded-md hover:bg-gray-200 cursor-pointer"
+            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 cursor-pointer"
           >
             הוסף קישור תמונה
           </button>
@@ -408,7 +410,7 @@ export default function EditPresentationForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           {isLoading ? "מעדכן מצגת..." : "עדכן מצגת"}
         </button>
