@@ -18,6 +18,7 @@ function formatLecture(lec: LectureWithAuthor) {
     date: lec.date || undefined,
     bannerImageUrl: lec.bannerImageUrl || undefined,
     author: lec.author,
+    createdAt: lec.createdAt,
   };
 }
 

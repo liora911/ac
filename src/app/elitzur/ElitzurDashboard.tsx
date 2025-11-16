@@ -66,7 +66,7 @@ export default function ElitzurDashboard() {
                       setSidebarOpen(false);
                     }}
                     className={[
-                      "w-full text-left px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
+                      "w-full text-center px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                       isActive
                         ? "bg-blue-600 text-white shadow"
                         : "text-gray-700 hover:bg-gray-100",
