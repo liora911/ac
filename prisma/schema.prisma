@@ -184,3 +184,13 @@ model Message {
 
   @@map("messages")
 }
+
+model HomeContent {
+  id          String   @id @default("home")
+  imageUrl    String?
+  photoCredit String?
+  bioHtml     String
+  updatedAt   DateTime @updatedAt
+
+  @@map("home_content")
+}

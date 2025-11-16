@@ -5,13 +5,8 @@ import { useSession } from "next-auth/react";
 import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
-import Clock from "@/components/Clock/Clock";
-import Weather from "@/components/Weather/Weather";
 import QuickStats from "@/components/QuickStats/QuickStats";
 import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
-import QuickActions from "@/components/QuickActions/QuickActions";
-import SystemHealth from "@/components/SystemHealth/SystemHealth";
-import MotivationalQuote from "@/components/MotivationalQuote/MotivationalQuote";
 import ThemeToggle from "@/components/ThemeToggle";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
@@ -19,6 +14,7 @@ import LecturesAdmin from "./LecturesAdmin";
 import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import SettingsAdmin from "./SettingsAdmin";
+import HomeAdmin from "./HomeAdmin";
 import { Menu, X } from "lucide-react";
 import { TabKey, TABS } from "@/constants/ElitzurTabs";
 
@@ -160,30 +156,8 @@ export default function ElitzurDashboard() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  <div className="space-y-6">
-                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        שעה ומזג אוויר
-                      </h3>
-                      <div className="grid grid-cols-1 gap-4">
-                        <div>
-                          <Clock />
-                        </div>
-                        <div>
-                          <Weather />
-                        </div>
-                      </div>
-                    </div> */}
+                  <div className="space-y-6"></div>
 
-                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        מצב המערכת
-                      </h3>
-                      <SystemHealth />
-                    </div> */}
-                  </div>
-
-                  {/* Activity & Motivation Panel */}
                   <div className="space-y-6">
                     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">
@@ -191,17 +165,16 @@ export default function ElitzurDashboard() {
                       </h3>
                       <ActivityFeed />
                     </div>
-
-                    {/* <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        מוטיבציה יומית
-                      </h3>
-                      <MotivationalQuote />
-                    </div> */}
                   </div>
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {active === "home" && (
+          <div>
+            <HomeAdmin />
           </div>
         )}
 
