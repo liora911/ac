@@ -8,6 +8,7 @@ import AuthSessionProvider from "@/components/Auth/authSessionProvider";
 import QueryProvider from "@/lib/react-query/QueryProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -46,9 +47,10 @@ export default function RootLayout({
                     <Header />
                     <main
                       id="main-content"
-                      className="flex-grow flex flex-col pt-16"
+                      className="flex-grow flex flex-col pt-20"
                       role="main"
                     >
+                      <Breadcrumbs />
                       {children}
                     </main>
                     <Footer />

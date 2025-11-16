@@ -231,6 +231,11 @@
   "globalSearch": {
     "placeholder": "I'm looking for..."
   },
+  "breadcrumbs": {
+    "home": "Home",
+    "ariaLabel": "Breadcrumb navigation",
+    "adminDashboard": "Admin panel"
+  },
   "footer": {
     "contact": "Contact: avshalom@iyar.org.il"
   }
