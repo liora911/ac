@@ -13,7 +13,10 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
   setSelectedCategoryIdDirectly,
 }) => {
   return (
-    <ul className={`ml-${level * 4} space-y-2`}>
+    <ul
+      className="space-y-2"
+      style={{ marginLeft: level * 16, marginTop: level > 0 ? 8 : 0 }}
+    >
       {categories.map((category) => (
         <li key={category.id}>
           <div
@@ -29,6 +32,12 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
               onClick={() => {
                 onSelectCategory(category);
                 setSelectedCategoryIdDirectly(category.id);
+                if (
+                  category.subcategories &&
+                  category.subcategories.length > 0
+                ) {
+                  toggleCategory(category.id);
+                }
               }}
             >
               {category.name} ({category.lectures.length})
@@ -42,7 +51,7 @@ const CategoryTree: React.FC<CategoryTreeProps> = ({
                 className="ml-2 p-1 rounded-full hover:bg-slate-600/50 focus:outline-none cursor-pointer transition-colors"
               >
                 <span
-                  className={`transform transition-transform bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent ${
+                  className={`transform transition-transform text-white ${
                     expandedCategories[category.id] ? "rotate-90" : "rotate-0"
                   }`}
                 >

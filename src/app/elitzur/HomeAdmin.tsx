@@ -105,7 +105,7 @@ export default function HomeAdmin() {
                 htmlFor="home-image-url"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                כתובת תמונה לדף הבית
+                כתובת התמונה
               </label>
               <input
                 id="home-image-url"
@@ -158,11 +158,6 @@ export default function HomeAdmin() {
         {/* Bio editor */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">ביוגרפיה</h3>
-          <p className="mb-2 text-sm text-gray-600">
-            טקסט זה יופיע כאשר המשתמש לוחץ על "קרא עוד..." בדף הבית. ניתן להשתמש
-            בכלי העריכה כדי לעצב את הטקסט, להוסיף קישורים, תמונות ועוד.
-          </p>
-
           <TiptapEditor
             value={bioHtml}
             onChange={setBioHtml}
