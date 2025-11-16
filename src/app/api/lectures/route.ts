@@ -27,26 +27,9 @@ export async function GET() {
       throw new Error("Database connection not available");
     }
 
-    const categories = await prisma.category.findMany({
+    // Fetch all categories with their lectures; we'll build a proper tree in memory
+    const prismaCategories = await prisma.category.findMany({
       include: {
-        subcategories: {
-          include: {
-            lectures: {
-              include: {
-                author: {
-                  select: {
-                    name: true,
-                    email: true,
-                    image: true,
-                  },
-                },
-              },
-              orderBy: {
-                createdAt: "desc",
-              },
-            },
-          },
-        },
         lectures: {
           include: {
             author: {
@@ -62,27 +45,47 @@ export async function GET() {
           },
         },
       },
+      orderBy: {
+        createdAt: "asc",
+      },
     });
 
-    const formattedCategories: Category[] = categories.map(
-      (cat: CategoryWithLectures) => ({
+    type TreeCategory = {
+      id: string;
+      name: string;
+      bannerImageUrl?: string;
+      parentId: string | null;
+      lectures: ReturnType<typeof formatLecture>[];
+      subcategories: TreeCategory[];
+    };
+
+    const byId = new Map<string, TreeCategory>();
+
+    // First pass: create a map of all categories
+    prismaCategories.forEach((cat) => {
+      byId.set(cat.id, {
         id: cat.id,
         name: cat.name,
         bannerImageUrl: cat.bannerImageUrl || undefined,
+        parentId: cat.parentId,
         lectures: cat.lectures.map(formatLecture),
-        subcategories: cat.subcategories.map(
-          (sub: SubcategoryWithLectures) => ({
-            id: sub.id,
-            name: sub.name,
-            bannerImageUrl: sub.bannerImageUrl || undefined,
-            lectures: sub.lectures.map(formatLecture),
-            subcategories: [],
-          })
-        ),
-      })
-    );
+        subcategories: [],
+      });
+    });
 
-    return NextResponse.json(formattedCategories);
+    const roots: TreeCategory[] = [];
+
+    // Second pass: wire up parents and children
+    byId.forEach((cat) => {
+      if (cat.parentId && byId.has(cat.parentId)) {
+        const parent = byId.get(cat.parentId)!;
+        parent.subcategories.push(cat);
+      } else {
+        roots.push(cat);
+      }
+    });
+
+    return NextResponse.json(roots);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lecture data" },
