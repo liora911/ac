@@ -112,12 +112,9 @@ export default function HomeAdmin() {
                 type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="לדוגמה: /acpfp2.png או כתובת מלאה https://..."
+                placeholder=":https://example.com/image.jpg"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
-              <p className="mt-1 text-xs text-gray-500">
-                מומלץ להשתמש בקובץ שנמצא בתיקיית /public (למשל: /myphoto.jpg).
-              </p>
             </div>
 
             <div>
