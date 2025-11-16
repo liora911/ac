@@ -289,6 +289,24 @@ interface PresentationsGridProps {
   viewMode?: "grid" | "list";
 }
 
+const findCategoryById = (
+  categories: PresentationCategory[],
+  id: string | null
+): PresentationCategory | undefined => {
+  if (!id) return undefined;
+
+  for (const category of categories) {
+    if (category.id === id) return category;
+
+    if (category.subcategories && category.subcategories.length > 0) {
+      const match = findCategoryById(category.subcategories, id);
+      if (match) return match;
+    }
+  }
+
+  return undefined;
+};
+
 const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   categories,
   onBannerUpdate,
@@ -359,15 +377,13 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const setSelectedCategoryIdDirectly = (categoryId: string) => {
     setSelectedCategoryId(categoryId);
     onCategorySelect(categoryId);
-    const category = categories.find((cat) => cat.id === categoryId);
+    const category = findCategoryById(categories, categoryId);
     if (category) {
       onBannerUpdate(category.bannerImageUrl, category.name);
     }
   };
 
-  const selectedCategory = categories.find(
-    (cat) => cat.id === selectedCategoryId
-  );
+  const selectedCategory = findCategoryById(categories, selectedCategoryId);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
