@@ -147,24 +147,22 @@ export default function ElitzurDashboard() {
             </div>
 
             {session && (
-              <div className="space-y-8">
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                    סקירה מהירה
-                  </h2>
-                  <QuickStats />
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div className="lg:col-span-2 space-y-8">
+                  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                      סקירה מהירה
+                    </h2>
+                    <QuickStats />
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                  <div className="space-y-6"></div>
-
-                  <div className="space-y-6">
-                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        פעילות אחרונה
-                      </h3>
-                      <ActivityFeed />
-                    </div>
+                <div className="space-y-6">
+                  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                      פעילות אחרונה
+                    </h3>
+                    <ActivityFeed />
                   </div>
                 </div>
               </div>
