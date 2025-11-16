@@ -451,11 +451,6 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           {t("presentationsPage.imagesLabel")}:{" "}
                           {presentation.imageUrls.length}
                         </span>
-                        <span>
-                          {t("presentationsPage.byLabel")}:{" "}
-                          {presentation.author.name ||
-                            presentation.author.email}
-                        </span>
                       </div>
                     </div>
                     {/* {isAuthorized && isAuthor && (
@@ -509,11 +504,6 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           <span>
                             {t("presentationsPage.imagesLabel")}:{" "}
                             {presentation.imageUrls.length}
-                          </span>
-                          <span>
-                            {t("presentationsPage.byLabel")}:{" "}
-                            {presentation.author.name ||
-                              presentation.author.email}
                           </span>
                         </div>
                       </div>

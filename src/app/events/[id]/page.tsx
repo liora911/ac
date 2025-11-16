@@ -171,10 +171,6 @@ export default function EventDetailPage() {
 
         {}
         <div className="mt-8 text-center text-gray-400">
-          <p>
-            {t("eventDetail.createdByLabel")}:{" "}
-            {event.author.name || event.author.email}
-          </p>
           <p className="text-sm mt-1">
             {t("eventDetail.categoryLabel")}: {event.category.name} •{" "}
             {t("eventDetail.createdAtLabel")}:{" "}
