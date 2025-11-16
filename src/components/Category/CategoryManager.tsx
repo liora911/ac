@@ -329,9 +329,20 @@ export default function CategoryManager() {
                           </form>
                         ) : (
                           <>
-                            <span className="truncate text-sm font-medium text-gray-900">
-                              {category.name}
-                            </span>
+                            <div className="flex-1 min-w-0">
+                              <div className="truncate text-sm font-medium text-gray-900">
+                                {category.name}
+                              </div>
+                              <div className="mt-0.5 text-xs text-gray-500">
+                                {category.parentId
+                                  ? `Subcategory of ${
+                                      categories.find(
+                                        (c) => c.id === category.parentId
+                                      )?.name || "Unknown parent"
+                                    }`
+                                  : "Top-level category"}
+                              </div>
+                            </div>
                             <div className="flex items-center gap-2">
                               <button
                                 onClick={() => {
