@@ -249,41 +249,30 @@ export default function EditLectureForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto rounded-2xl border border-cyan-500/40 bg-slate-950/70 p-8 shadow-[0_0_45px_rgba(8,47,73,0.9)] backdrop-blur">
-      <div className="mb-8 border-b border-slate-700 pb-4">
-        <p className="text-[11px] font-mono uppercase tracking-[0.35em] text-cyan-400 text-center rtl">
-          Quantum Lecture Control Panel
-        </p>
-        <h2 className="mt-3 text-3xl font-semibold tracking-tight text-cyan-200 text-center rtl">
-          עריכת הרצאה
-        </h2>
-        <p className="mt-3 flex items-center justify-center text-[11px] font-mono text-emerald-300/80">
-          <span className="rounded-full border border-emerald-500/60 bg-emerald-950/40 px-3 py-1">
-            SESSION · {session?.user?.email}
-          </span>
-        </p>
-      </div>
+    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
+      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת הרצאה</h2>
+
+      <p className="text-sm text-green-400 text-center mb-8">
+        מחובר כ: {session?.user?.email}
+      </p>
 
       {message && (
         <div
-          className={`mb-8 rounded-xl border px-4 py-3 text-sm font-mono ${
+          className={`mb-6 p-4 rounded-md ${
             message.type === "success"
-              ? "border-emerald-500/60 bg-emerald-950/60 text-emerald-200"
-              : "border-rose-500/70 bg-rose-950/70 text-rose-100"
+              ? "bg-green-900 text-green-200 border border-green-700"
+              : "bg-red-900 text-red-200 border border-red-700"
           }`}
         >
           {message.text}
         </div>
       )}
 
-      <form
-        onSubmit={handleSubmit}
-        className="space-y-6 text-sm text-slate-100"
-      >
-        <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
           <label
             htmlFor="title"
-            className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             כותרת ההרצאה *
           </label>
@@ -294,168 +283,136 @@ export default function EditLectureForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60 placeholder-slate-500 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
             placeholder="הכנס כותרת להרצאה"
           />
-          <p className="mt-1 text-[11px] text-slate-500 rtl">
-            שם מדויק ומדעי מקל על חיפוש והפניות עתידיות.
-          </p>
         </div>
 
-        <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
+        <div>
           <label
             htmlFor="description"
-            className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
           >
             תיאור ההרצאה *
           </label>
-          <div className="mt-2 rounded-lg border border-slate-700 bg-slate-950/60 px-2 py-2">
-            <TiptapEditor
-              value={formData.description}
-              onChange={(value) =>
-                setFormData((prev) => ({ ...prev, description: value }))
-              }
-              placeholder="הכנס תיאור להרצאה"
-              theme={theme}
-            />
-          </div>
+          <TiptapEditor
+            value={formData.description}
+            onChange={(value) =>
+              setFormData((prev) => ({ ...prev, description: value }))
+            }
+            placeholder="הכנס תיאור להרצאה"
+            theme={theme}
+          />
           <input
             type="hidden"
             name="description"
             value={formData.description}
             required
           />
-          <p className="mt-1 text-[11px] text-slate-500 rtl">
-            נסח את התיאור כתקציר מדעי: רקע, שיטה ותוצאה מרכזית.
-          </p>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
-            <label
-              htmlFor="videoUrl"
-              className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
-            >
-              קישור לוידאו
-            </label>
-            <input
-              type="url"
-              id="videoUrl"
-              name="videoUrl"
-              value={formData.videoUrl}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60 placeholder-slate-500"
-              placeholder="https://"
-            />
-            <p className="mt-1 text-[11px] text-slate-500 rtl">
-              קישור להרצאה מוקלטת או שידור חי.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
-            <label
-              htmlFor="duration"
-              className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
-            >
-              משך זמן (דקות) *
-            </label>
-            <input
-              type="text"
-              id="duration"
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              required
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60 placeholder-slate-500"
-              placeholder="למשל: 60"
-            />
-            <p className="mt-1 text-[11px] text-slate-500 rtl">
-              זמן משוער בדקות – חשוב לתכנון לוח זמנים.
-            </p>
-          </div>
+        <div>
+          <label
+            htmlFor="videoUrl"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
+            קישור לוידאו (YouTube וכו')
+          </label>
+          <input
+            type="url"
+            id="videoUrl"
+            name="videoUrl"
+            value={formData.videoUrl}
+            onChange={handleChange}
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+            placeholder="https://"
+          />
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
-            <label
-              htmlFor="date"
-              className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
-            >
-              תאריך (אופציונלי)
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60"
-            />
-            <p className="mt-1 text-[11px] text-slate-500 rtl">
-              ציין תאריך אם ההרצאה מתוזמנת לאירוע מסוים.
-            </p>
-          </div>
-
-          <div className="rounded-xl border border-slate-700/80 bg-slate-950/50 p-4 shadow-[0_0_0_1px_rgba(15,23,42,1)]">
-            <label
-              htmlFor="categoryId"
-              className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl"
-            >
-              קטגוריה *
-            </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              disabled={categoriesLoading}
-              className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60 disabled:cursor-not-allowed disabled:opacity-50 rtl"
-            >
-              <option value="">
-                {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
-              </option>
-              {renderCategoryOptions()}
-            </select>
-            <p className="mt-1 text-[11px] text-slate-500 rtl">
-              השתמש בקטגוריות לפי תחומי מחקר ותתי-תחומים.
-            </p>
-          </div>
+        <div>
+          <label
+            htmlFor="duration"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
+            משך זמן (דקות) *
+          </label>
+          <input
+            type="text"
+            id="duration"
+            name="duration"
+            value={formData.duration}
+            onChange={handleChange}
+            required
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+            placeholder="למשל: 60 דקות"
+          />
         </div>
 
-        <details className="group rounded-xl border border-dashed border-slate-700/80 bg-slate-950/40 p-4 transition-colors">
-          <summary className="flex cursor-pointer items-center justify-between text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl">
-            <span>תמונת ההרצאה (אופציונלי)</span>
-            <span className="text-[10px] text-cyan-400 group-open:hidden">
-              + expand
-            </span>
-            <span className="hidden text-[10px] text-cyan-400 group-open:inline">
-              − collapse
-            </span>
+        <div>
+          <label
+            htmlFor="date"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
+            תאריך (אופציונלי)
+          </label>
+          <input
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="categoryId"
+            className="block text-lg font-semibold mb-3 text-white rtl"
+          >
+            קטגוריה *
+          </label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            value={formData.categoryId}
+            onChange={handleChange}
+            required
+            disabled={categoriesLoading}
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
+          >
+            <option value="">
+              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+            </option>
+            {renderCategoryOptions()}
+          </select>
+        </div>
+
+        <details className="border border-gray-600 rounded-lg p-4 bg-gray-800">
+          <summary className="cursor-pointer text-lg font-semibold text-white rtl mb-3">
+            תמונת ההרצאה (אופציונלי)
           </summary>
           <div className="mt-4 space-y-4">
+            <UploadImage
+              onImageSelect={setBannerImageFile}
+              currentImage={formData.bannerImageUrl}
+              label=""
+              placeholder="PNG, JPG, GIF עד 5MB"
+            />
+            {formData.bannerImageUrl && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData((prev) => ({ ...prev, bannerImageUrl: "" }));
+                  setBannerImageFile(null);
+                }}
+                className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
+              >
+                הסר תמונה
+              </button>
+            )}
             <div>
-              <UploadImage
-                onImageSelect={setBannerImageFile}
-                currentImage={formData.bannerImageUrl}
-                label=""
-                placeholder="PNG, JPG, GIF עד 5MB"
-              />
-              {formData.bannerImageUrl && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, bannerImageUrl: "" }));
-                    setBannerImageFile(null);
-                  }}
-                  className="mt-2 rounded-md border border-rose-500/70 bg-rose-950/70 px-3 py-1 text-xs font-mono text-rose-100 transition hover:border-rose-400 hover:bg-rose-900 cursor-pointer"
-                >
-                  הסר תמונה
-                </button>
-              )}
-            </div>
-            <div>
-              <label className="mb-2 block text-[11px] font-mono uppercase tracking-[0.35em] text-slate-300 rtl">
+              <label className="block text-base font-medium mb-2 text-gray-200 rtl">
                 או הכנס קישור לתמונה
               </label>
               <input
@@ -463,12 +420,9 @@ export default function EditLectureForm({
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-950/70 px-4 py-3 text-sm text-slate-50 shadow-inner focus:border-cyan-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/60 placeholder-slate-500"
+                className="w-full p-3 bg-gray-700 text-white border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
                 placeholder="https://"
               />
-              <p className="mt-1 text-[11px] text-slate-500 rtl">
-                ניתן להשתמש בגרף, תרשים או תמונה מניסוי רלוונטי.
-              </p>
             </div>
           </div>
         </details>
@@ -476,7 +430,7 @@ export default function EditLectureForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="relative mt-4 flex w-full items-center justify-center overflow-hidden rounded-xl border border-cyan-400/80 bg-gradient-to-r from-cyan-500 via-sky-500 to-emerald-500 px-6 py-3 text-xs font-mono uppercase tracking-[0.4em] text-slate-950 shadow-[0_0_40px_rgba(34,211,238,0.7)] transition hover:shadow-[0_0_55px_rgba(34,211,238,0.95)] focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:ring-offset-2 focus:ring-offset-slate-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
           {isLoading ? "מעדכן הרצאה..." : "עדכן הרצאה"}
         </button>
