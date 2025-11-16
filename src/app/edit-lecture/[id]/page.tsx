@@ -9,8 +9,8 @@ export default function EditLecturePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [lectureId, setLectureId] = React.useState<string>("");
   const { t, locale } = useTranslation();
+  const [lectureId, setLectureId] = React.useState<string>("");
 
   React.useEffect(() => {
     params.then((p) => setLectureId(p.id));
