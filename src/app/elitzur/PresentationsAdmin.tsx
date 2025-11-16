@@ -428,7 +428,7 @@ export default function PresentationsAdmin() {
                     </td>
 
                     <td className="px-4 py-3 text-sm text-gray-600" role="cell">
-                      <time dateTime={p.updatedAt.toISOString()}>
+                      <time dateTime={new Date(p.updatedAt).toISOString()}>
                         {new Date(p.updatedAt).toLocaleString()}
                       </time>
                     </td>

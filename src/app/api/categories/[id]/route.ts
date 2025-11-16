@@ -40,7 +40,7 @@ export async function PUT(
   try {
     const { id } = await params;
 
-    const { name } = await request.json();
+    const { name, parentId } = await request.json();
     if (!name) {
       return NextResponse.json(
         { error: "Category name is required" },
@@ -50,7 +50,10 @@ export async function PUT(
 
     const updatedCategory = await prisma.category.update({
       where: { id },
-      data: { name },
+      data: {
+        name,
+        parentId: parentId ?? null,
+      },
     });
 
     return NextResponse.json(updatedCategory);
