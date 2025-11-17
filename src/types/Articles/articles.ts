@@ -109,3 +109,9 @@ export interface ArticleStats {
   totalViews: number;
   averageReadTime: number;
 }
+
+export interface ArticleFormProps {
+  article?: Article;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+}

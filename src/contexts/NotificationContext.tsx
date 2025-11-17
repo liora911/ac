@@ -1,14 +1,8 @@
 "use client";
 
+import { NotificationContextType } from "@/types/NotificationContext/notification";
 import { createContext, useContext } from "react";
 import toast, { Toaster } from "react-hot-toast";
-
-interface NotificationContextType {
-  showSuccess: (message: string) => void;
-  showError: (message: string) => void;
-  showInfo: (message: string) => void;
-  showWarning: (message: string) => void;
-}
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
   undefined

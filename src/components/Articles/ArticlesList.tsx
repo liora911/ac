@@ -51,7 +51,6 @@ export default function ArticlesList({
     isLoading,
     error,
     isFetching,
-    refetch,
   } = searchQuery
     ? useSearchArticles(searchQuery, {
         page: currentPage,
@@ -249,7 +248,9 @@ export default function ArticlesList({
                 key={article.id}
                 article={article}
                 isAuthorized={!!isAuthorized}
-                onDeleteSuccess={refetch}
+                onDeleteSuccess={() => {
+                  console.log("update interface then delete");
+                }}
               />
             ))}
           </div>
@@ -295,35 +296,6 @@ export default function ArticlesList({
                           </span>
                         </div>
                       </div>
-                      {/* {isAuthorized && (
-                        <div className="flex space-x-2 ml-4">
-                          <Link
-                            href={`/articles/${article.id}/edit`}
-                            className="text-sm text-blue-600 hover:text-blue-800 transition-colors"
-                          >
-                            Edit
-                          </Link>
-                          <button
-                            onClick={() => {
-                              if (
-                                confirm(
-                                  t("articleCard.deleteConfirm") as string
-                                )
-                              ) {
-                                const response = fetch(
-                                  `/api/articles/${article.id}`,
-                                  {
-                                    method: "DELETE",
-                                  }
-                                ).then(() => refetch());
-                              }
-                            }}
-                            className="text-sm text-red-600 hover:text-red-800 transition-colors"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )} */}
                     </div>
                   </div>
                 </div>
@@ -347,14 +319,6 @@ export default function ArticlesList({
                 )
               : t("articlesPage.noArticlesAvailable")}
           </p>
-          {/* {isAuthorized && (
-            <Link
-              href="/articles/create"
-              className="inline-flex items-center mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-            >
-              {t("articlesPage.createFirstArticle")}
-            </Link>
-          )} */}
         </div>
       )}
 
@@ -409,13 +373,8 @@ interface ArticleCardProps {
   onDeleteSuccess: () => void;
 }
 
-function ArticleCard({
-  article,
-  isAuthorized,
-  onDeleteSuccess,
-}: ArticleCardProps) {
+function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   const { t } = useTranslation();
-  const router = useRouter();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
 
@@ -437,26 +396,6 @@ function ArticleCard({
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  const handleDelete = async () => {
-    if (confirm(t("articleCard.deleteConfirm") as string)) {
-      try {
-        const response = await fetch(`/api/articles/${article.id}`, {
-          method: "DELETE",
-        });
-
-        if (!response.ok) {
-          throw new Error(`Failed to delete article: ${response.statusText}`);
-        }
-
-        onDeleteSuccess();
-        router.push("/articles");
-      } catch (error) {
-        setErrorMessage(t("articleCard.deleteError") as string);
-        setErrorModalOpen(true);
-      }
     }
   };
 
@@ -551,24 +490,6 @@ function ArticleCard({
             </span>
           </div>
         )}
-
-        {}
-        {/* {isAuthorized && (
-          <div className="mt-4 flex space-x-2">
-            <Link
-              href={`/articles/${article.id}/edit`}
-              className="text-sm text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
-            >
-              {t("articleCard.editButton")}
-            </Link>
-            <button
-              onClick={handleDelete}
-              className="text-sm text-red-600 hover:text-red-800 transition-colors cursor-pointer"
-            >
-              {t("articleCard.deleteButton")}
-            </button>
-          </div>
-        )} */}
       </div>
       {errorModalOpen && (
         <Modal

@@ -28,16 +28,7 @@ import { TextDirection } from "./text-direction";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
-
-interface TiptapEditorProps {
-  value: string;
-  onChange: (value: string) => void;
-  placeholder?: string;
-  className?: string;
-  theme?: "light" | "dark";
-  direction?: "ltr" | "rtl";
-  onDirectionChange?: (direction: "ltr" | "rtl") => void;
-}
+import { TiptapEditorProps } from "@/types/Editor/editor";
 
 export default function TiptapEditor({
   value,

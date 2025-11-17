@@ -8,17 +8,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useTheme } from "@/contexts/ThemeContext";
-
-interface EditLectureFormProps {
-  lectureId: string;
-  onSuccess?: () => void;
-}
-
-type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+import { CategoryNode, EditLectureFormProps } from "@/types/EditLecture/edit";
 
 export default function EditLectureForm({
   lectureId,
@@ -119,14 +109,16 @@ export default function EditLectureForm({
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            נדרשת התחברות
+            {t("editLectureForm.loginRequiredTitle")}
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי לערוך הרצאות</p>
+          <p className="text-gray-600 rtl">
+            {t("editLectureForm.loginRequiredMessage")}
+          </p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
           >
-            התחבר
+            {t("editLectureForm.loginButton")}
           </button>
         </div>
       </div>
@@ -137,8 +129,12 @@ export default function EditLectureForm({
     return (
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-600 rtl">אין לך הרשאה לערוך הרצאות באתר זה</p>
+          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+            {t("editLectureForm.notAuthorizedTitle")}
+          </h2>
+          <p className="text-gray-600 rtl">
+            {t("editLectureForm.notAuthorizedMessage")}
+          </p>
           <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
         </div>
       </div>
@@ -185,7 +181,10 @@ export default function EditLectureForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "ההרצאה עודכנה בהצלחה!" });
+      setMessage({
+        type: "success",
+        text: t("editLectureForm.updateSuccess") as string,
+      });
 
       if (onSuccess) {
         onSuccess();
@@ -196,7 +195,7 @@ export default function EditLectureForm({
       const messageText =
         error instanceof Error
           ? error.message
-          : "שגיאה בעדכון ההרצאה. נסה שוב.";
+          : (t("editLectureForm.updateError") as string);
       setMessage({
         type: "error",
         text: messageText,
@@ -250,10 +249,12 @@ export default function EditLectureForm({
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת הרצאה</h2>
+      <h2 className="text-3xl font-bold mb-4 text-center rtl">
+        {t("editLectureForm.title")}
+      </h2>
 
       <p className="text-sm text-green-400 text-center mb-8">
-        מחובר כ: {session?.user?.email}
+        {t("editLectureForm.loggedInAs")} {session?.user?.email}
       </p>
 
       {message && (
@@ -274,7 +275,7 @@ export default function EditLectureForm({
             htmlFor="title"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            כותרת ההרצאה *
+            {t("editLectureForm.titleLabel")}
           </label>
           <input
             type="text"
@@ -284,7 +285,7 @@ export default function EditLectureForm({
             onChange={handleChange}
             required
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס כותרת להרצאה"
+            placeholder={t("editLectureForm.titlePlaceholder")}
           />
         </div>
 
@@ -293,14 +294,14 @@ export default function EditLectureForm({
             htmlFor="description"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            תיאור ההרצאה *
+            {t("editLectureForm.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור להרצאה"
+            placeholder={t("editLectureForm.descriptionPlaceholder")}
             theme={theme}
           />
           <input
@@ -316,7 +317,7 @@ export default function EditLectureForm({
             htmlFor="videoUrl"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            קישור לוידאו (YouTube וכו')
+            {t("editLectureForm.videoUrlLabel")}
           </label>
           <input
             type="url"
@@ -334,7 +335,7 @@ export default function EditLectureForm({
             htmlFor="duration"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            משך זמן (דקות) *
+            {t("editLectureForm.durationLabel")}
           </label>
           <input
             type="text"
@@ -344,7 +345,7 @@ export default function EditLectureForm({
             onChange={handleChange}
             required
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder="למשל: 60 דקות"
+            placeholder={t("editLectureForm.durationPlaceholder")}
           />
         </div>
 
@@ -353,7 +354,7 @@ export default function EditLectureForm({
             htmlFor="date"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            תאריך (אופציונלי)
+            {t("editLectureForm.dateLabel")}
           </label>
           <input
             type="date"
@@ -370,7 +371,7 @@ export default function EditLectureForm({
             htmlFor="categoryId"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            קטגוריה *
+            {t("editLectureForm.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -382,7 +383,9 @@ export default function EditLectureForm({
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading
+                ? t("editLectureForm.loadingCategories")
+                : t("editLectureForm.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
@@ -390,14 +393,14 @@ export default function EditLectureForm({
 
         <details className="border border-gray-600 rounded-lg p-4 bg-gray-800">
           <summary className="cursor-pointer text-lg font-semibold text-white rtl mb-3">
-            תמונת ההרצאה (אופציונלי)
+            {t("editLectureForm.imageSummary")}
           </summary>
           <div className="mt-4 space-y-4">
             <UploadImage
               onImageSelect={setBannerImageFile}
               currentImage={formData.bannerImageUrl}
               label=""
-              placeholder="PNG, JPG, GIF עד 5MB"
+              placeholder={t("editLectureForm.imagePlaceholder")}
             />
             {formData.bannerImageUrl && (
               <button
@@ -408,12 +411,12 @@ export default function EditLectureForm({
                 }}
                 className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
               >
-                הסר תמונה
+                {t("editLectureForm.removeImageButton")}
               </button>
             )}
             <div>
               <label className="block text-base font-medium mb-2 text-gray-200 rtl">
-                או הכנס קישור לתמונה
+                {t("editLectureForm.imageUrlLabel")}
               </label>
               <input
                 type="url"
@@ -432,7 +435,9 @@ export default function EditLectureForm({
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          {isLoading ? "מעדכן הרצאה..." : "עדכן הרצאה"}
+          {isLoading
+            ? t("editLectureForm.submitUpdating")
+            : t("editLectureForm.submit")}
         </button>
       </form>
     </div>

@@ -2,13 +2,9 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 import { useNotification } from "./NotificationContext";
+import { ThemeContextType } from "@/types/ThemeContext/theme";
 
 type Theme = "light" | "dark";
-
-interface ThemeContextType {
-  theme: Theme;
-  toggleTheme: () => void;
-}
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 

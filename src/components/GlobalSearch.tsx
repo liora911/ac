@@ -4,31 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { MdSearch, MdClose } from "react-icons/md";
 import { useTranslation } from "@/hooks/useTranslation";
-
-interface SearchResult {
-  id: string;
-  title: string;
-  description?: string;
-  content?: string;
-  eventDate?: string;
-  date?: string;
-  location?: string;
-  category?: {
-    id: string;
-    name: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface SearchResults {
-  articles: SearchResult[];
-  presentations: SearchResult[];
-  events: SearchResult[];
-  lectures: SearchResult[];
-  total: number;
-  query: string;
-}
+import { SearchResult, SearchResults } from "@/types/GlobalSearch/globalsearch";
 
 export default function GlobalSearch() {
   const { t } = useTranslation();
@@ -179,8 +155,6 @@ export default function GlobalSearch() {
     if (results) {
       setIsOpen(true);
     } else {
-      // When the user focuses the input with no query yet,
-      // load a default set of results so the dropdown shows options.
       performSearch("");
     }
   };

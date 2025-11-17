@@ -7,7 +7,6 @@ import { usePathname } from "next/navigation";
 import LocaleSelect from "../LocaleSelect/locale-select";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import Clock from "../Clock/Clock";
 import GlobalSearch from "../GlobalSearch";
 import {
   MdArticle,
@@ -44,7 +43,7 @@ export default function Header() {
     ...(session
       ? [
           {
-            label: "הגדרות",
+            label: "header.adminSettings",
             href: "/elitzur",
             className: "text-red-600 font-semibold",
             icon: "PersonIcon",
@@ -56,7 +55,7 @@ export default function Header() {
   const mobileNavItems = [
     ...visibleNavItems,
     {
-      label: "חפש",
+      label: "globalSearch.menuItem",
       href: "#",
       icon: "MdSearch",
       onClick: () => {
@@ -86,14 +85,14 @@ export default function Header() {
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
             }}
-            aria-label="Avshalom Elitzur - Home"
+            aria-label={t("header.brandAriaLabel")}
           >
             A.Elitzur
           </Link>
           <nav
             className="hidden sm:flex items-center space-x-6 text-base font-medium"
             role="navigation"
-            aria-label="Main navigation"
+            aria-label={t("header.mainNavigation")}
           >
             {visibleNavItems.map(({ label, href, className, icon }) => {
               const IconComponent = icon ? IconMap[icon] : null;
@@ -132,7 +131,9 @@ export default function Header() {
                 className="sm:hidden text-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-all duration-200 hover:scale-110"
                 onClick={() => setMenuOpen((prev) => !prev)}
                 aria-label={
-                  menuOpen ? "Close navigation menu" : "Open navigation menu"
+                  menuOpen
+                    ? t("header.closeNavigationMenu")
+                    : t("header.openNavigationMenu")
                 }
                 aria-expanded={menuOpen}
                 aria-controls="mobile-navigation"

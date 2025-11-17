@@ -5,17 +5,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
-
-type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
-
-interface EditEventFormProps {
-  eventId: string;
-  onSuccess?: () => void;
-}
+import { useTranslation } from "@/contexts/Translation/translation.context";
+import { CategoryNode, EditEventFormProps } from "@/types/EditEvent/edit";
 
 export default function EditEventForm({
   eventId,
@@ -23,6 +14,7 @@ export default function EditEventForm({
 }: EditEventFormProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [message, setMessage] = useState<{
@@ -83,10 +75,16 @@ export default function EditEventForm({
             categoryId: event.categoryId || "",
           });
         } else {
-          setMessage({ type: "error", text: "שגיאה בטעינת האירוע" });
+          setMessage({
+            type: "error",
+            text: t("editEventForm.loadError"),
+          });
         }
       } catch (error) {
-        setMessage({ type: "error", text: "שגיאה בטעינת האירוע" });
+        setMessage({
+          type: "error",
+          text: t("editEventForm.loadError"),
+        });
       } finally {
         setIsFetching(false);
       }
@@ -104,7 +102,9 @@ export default function EditEventForm({
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
           <p className="mt-2 text-gray-600">
-            {status === "loading" ? "טוען..." : "טוען נתוני אירוע..."}
+            {status === "loading"
+              ? t("editEventForm.loadingGeneric")
+              : t("editEventForm.loadingEventData")}
           </p>
         </div>
       </div>
@@ -116,14 +116,16 @@ export default function EditEventForm({
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            נדרשת התחברות
+            {t("editEventForm.loginRequiredTitle")}
           </h2>
-          <p className="text-gray-600 rtl">עליך להתחבר כדי לערוך אירועים</p>
+          <p className="text-gray-600 rtl">
+            {t("editEventForm.loginRequiredMessage")}
+          </p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
           >
-            התחבר
+            {t("editEventForm.loginButton")}
           </button>
         </div>
       </div>
@@ -134,9 +136,11 @@ export default function EditEventForm({
     return (
       <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">אין הרשאה</h2>
+          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+            {t("editEventForm.notAuthorizedTitle")}
+          </h2>
           <p className="text-gray-600 rtl">
-            אין לך הרשאה לערוך אירועים באתר זה
+            {t("editEventForm.notAuthorizedMessage")}
           </p>
           <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
         </div>
@@ -168,7 +172,10 @@ export default function EditEventForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "האירוע עודכן בהצלחה!" });
+      setMessage({
+        type: "success",
+        text: t("editEventForm.updateSuccess"),
+      });
 
       if (onSuccess) {
         onSuccess();
@@ -179,7 +186,7 @@ export default function EditEventForm({
       const messageText =
         error instanceof Error
           ? error.message
-          : "שגיאה בעדכון האירוע. נסה שוב.";
+          : (t("editEventForm.updateError") as string);
       setMessage({
         type: "error",
         text: messageText,
@@ -233,10 +240,12 @@ export default function EditEventForm({
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת אירוע</h2>
+      <h2 className="text-3xl font-bold mb-4 text-center rtl">
+        {t("editEventForm.title")}
+      </h2>
 
       <p className="text-sm text-green-600 text-center mb-8">
-        מחובר כ: {session?.user?.email}
+        {t("editEventForm.loggedInAs")} {session?.user?.email}
       </p>
 
       {message && (
@@ -257,7 +266,7 @@ export default function EditEventForm({
             htmlFor="title"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            כותרת האירוע *
+            {t("editEventForm.titleLabel")}
           </label>
           <input
             type="text"
@@ -267,7 +276,7 @@ export default function EditEventForm({
             onChange={handleChange}
             required
             className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
-            placeholder="הכנס כותרת לאירוע"
+            placeholder={t("editEventForm.titlePlaceholder")}
           />
         </div>
 
@@ -276,14 +285,14 @@ export default function EditEventForm({
             htmlFor="description"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            תיאור האירוע *
+            {t("editEventForm.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור לאירוע"
+            placeholder={t("editEventForm.descriptionPlaceholder")}
           />
           <input
             type="hidden"
@@ -298,7 +307,7 @@ export default function EditEventForm({
             htmlFor="eventType"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            סוג האירוע *
+            {t("editEventForm.eventTypeLabel")}
           </label>
           <select
             id="eventType"
@@ -308,9 +317,11 @@ export default function EditEventForm({
             required
             className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
           >
-            <option value="">בחר סוג אירוע</option>
-            <option value="in-person">פרונטלי</option>
-            <option value="online">אונליין</option>
+            <option value="">{t("editEventForm.eventTypePlaceholder")}</option>
+            <option value="in-person">
+              {t("editEventForm.eventTypeInPerson")}
+            </option>
+            <option value="online">{t("editEventForm.eventTypeOnline")}</option>
           </select>
         </div>
 
@@ -320,7 +331,7 @@ export default function EditEventForm({
               htmlFor="location"
               className="block text-lg font-semibold mb-3 text-gray-900 rtl"
             >
-              מיקום *
+              {t("editEventForm.locationLabel")}
             </label>
             <input
               type="text"
@@ -330,7 +341,7 @@ export default function EditEventForm({
               onChange={handleChange}
               required
               className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
-              placeholder="הכנס מיקום האירוע"
+              placeholder={t("editEventForm.locationPlaceholder")}
             />
           </div>
         )}
@@ -341,7 +352,7 @@ export default function EditEventForm({
               htmlFor="onlineUrl"
               className="block text-lg font-semibold mb-3 text-gray-900 rtl"
             >
-              קישור לאירוע *
+              {t("editEventForm.onlineUrlLabel")}
             </label>
             <input
               type="url"
@@ -361,7 +372,7 @@ export default function EditEventForm({
             htmlFor="eventDate"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            תאריך האירוע *
+            {t("editEventForm.eventDateLabel")}
           </label>
           <input
             type="date"
@@ -379,7 +390,7 @@ export default function EditEventForm({
             htmlFor="eventTime"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            שעת האירוע (אופציונלי)
+            {t("editEventForm.eventTimeLabel")}
           </label>
           <input
             type="time"
@@ -396,7 +407,7 @@ export default function EditEventForm({
             htmlFor="bannerImageUrl"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            קישור לתמונת באנר (אופציונלי)
+            {t("editEventForm.bannerImageUrlLabel")}
           </label>
           <input
             type="url"
@@ -414,7 +425,7 @@ export default function EditEventForm({
             htmlFor="categoryId"
             className="block text-lg font-semibold mb-3 text-gray-900 rtl"
           >
-            קטגוריה *
+            {t("editEventForm.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -426,7 +437,9 @@ export default function EditEventForm({
             className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading
+                ? t("editEventForm.loadingCategories")
+                : t("editEventForm.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
@@ -437,7 +450,9 @@ export default function EditEventForm({
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          {isLoading ? "מעדכן אירוע..." : "עדכן אירוע"}
+          {isLoading
+            ? t("editEventForm.submitUpdating")
+            : t("editEventForm.submit")}
         </button>
       </form>
     </div>

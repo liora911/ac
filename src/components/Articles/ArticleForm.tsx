@@ -8,17 +8,12 @@ import {
   Article,
   ArticleCategory,
   ArticleStatus,
+  ArticleFormProps,
 } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-
-interface ArticleFormProps {
-  article?: Article;
-  onSuccess?: () => void;
-  onCancel?: () => void;
-}
 
 export default function ArticleForm({
   article,

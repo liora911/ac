@@ -1,10 +1,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+
 import { useRouter } from "next/navigation";
 import { Lecture } from "@/types/Lectures/lectures";
-import { ALLOWED_EMAILS } from "@/constants/auth";
 import Modal from "@/components/Modal/Modal";
 
 interface LectureCardProps {
@@ -18,7 +17,6 @@ const LectureCard: React.FC<LectureCardProps> = ({
   onLectureClick,
   onDeleteLecture,
 }) => {
-  const { data: session } = useSession();
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [lectureUrl, setLectureUrl] = useState("");
@@ -28,12 +26,6 @@ const LectureCard: React.FC<LectureCardProps> = ({
       setLectureUrl(`${window.location.origin}/lectures/${lecture.id}`);
     }
   }, [lecture.id]);
-
-  const isAuthorized =
-    session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-
-  const isAuthor = lecture.author?.email === session?.user?.email;
 
   const handleCopyLink = async () => {
     if (!lectureUrl) return;
@@ -90,28 +82,6 @@ const LectureCard: React.FC<LectureCardProps> = ({
             <span>🔗</span>
           </button>
         </div>
-        {/* {isAuthorized && isAuthor && (
-         <div className="flex space-x-2">
-           <button
-             onClick={(e) => {
-               e.stopPropagation();
-               router.push(`/edit-lecture/${lecture.id}`);
-             }}
-             className="bg-slate-600 text-white px-3 py-2 rounded-lg hover:bg-slate-500 transition-colors text-sm cursor-pointer"
-           >
-             ✏️ ערוך
-           </button>
-           <button
-             onClick={(e) => {
-               e.stopPropagation();
-               onDeleteLecture(lecture.id);
-             }}
-             className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-500 transition-colors text-sm cursor-pointer"
-           >
-             🗑️ מחק
-           </button>
-         </div>
-       )} */}
       </div>
       <Modal
         isOpen={isShareOpen}

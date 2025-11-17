@@ -29,7 +29,7 @@ export default function EditArticleForm({
 }: EditArticleFormProps) {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const { locale } = useTranslation();
+  const { t, locale } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [message, setMessage] = useState<{
@@ -89,10 +89,16 @@ export default function EditArticleForm({
             direction: article.direction || (locale === "en" ? "ltr" : "rtl"),
           });
         } else {
-          setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
+          setMessage({
+            type: "error",
+            text: t("editArticleForm.loadError"),
+          });
         }
       } catch (error) {
-        setMessage({ type: "error", text: "שגיאה בטעינת המאמר" });
+        setMessage({
+          type: "error",
+          text: t("editArticleForm.loadError"),
+        });
       } finally {
         setIsFetching(false);
       }
@@ -109,7 +115,9 @@ export default function EditArticleForm({
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">טוען נתונים...</p>
+          <p className="mt-2 text-gray-600">
+            {t("editArticleForm.loadingGeneric")}
+          </p>
         </div>
       </div>
     );
@@ -118,7 +126,9 @@ export default function EditArticleForm({
   if (!session || !isAuthorized) {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <p className="text-center text-red-600">אינך מורשה לערוך מאמרים.</p>
+        <p className="text-center text-red-600">
+          {t("editArticleForm.notAuthorized")}
+        </p>
       </div>
     );
   }
@@ -128,7 +138,9 @@ export default function EditArticleForm({
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">טוען נתוני מאמר...</p>
+          <p className="mt-2 text-gray-600">
+            {t("editArticleForm.loadingArticleData")}
+          </p>
         </div>
       </div>
     );
@@ -147,7 +159,10 @@ export default function EditArticleForm({
     e.preventDefault();
 
     if (!formData.title.trim()) {
-      setMessage({ type: "error", text: "כותרת המאמר נדרשת" });
+      setMessage({
+        type: "error",
+        text: t("editArticleForm.titleRequired"),
+      });
       return;
     }
     if (
@@ -155,11 +170,17 @@ export default function EditArticleForm({
       formData.content.trim() === "" ||
       formData.content.replace(/<[^>]*>/g, "").trim() === ""
     ) {
-      setMessage({ type: "error", text: "תוכן המאמר נדרש" });
+      setMessage({
+        type: "error",
+        text: t("editArticleForm.contentRequired"),
+      });
       return;
     }
     if (!formData.publisherName.trim()) {
-      setMessage({ type: "error", text: "שם המחבר נדרש" });
+      setMessage({
+        type: "error",
+        text: t("editArticleForm.authorRequired"),
+      });
       return;
     }
 
@@ -199,7 +220,10 @@ export default function EditArticleForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "המאמר עודכן בהצלחה!" });
+      setMessage({
+        type: "success",
+        text: t("editArticleForm.updateSuccess"),
+      });
 
       if (onSuccess) {
         onSuccess();
@@ -209,7 +233,7 @@ export default function EditArticleForm({
     } catch (error: any) {
       setMessage({
         type: "error",
-        text: error.message || "שגיאה בעדכון המאמר. נסה שוב.",
+        text: error.message || (t("editArticleForm.updateError") as string),
       });
     } finally {
       setIsLoading(false);
@@ -267,10 +291,12 @@ export default function EditArticleForm({
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-2 text-center rtl">עריכת מאמר</h2>
+      <h2 className="text-2xl font-bold mb-2 text-center rtl">
+        {t("editArticleForm.title")}
+      </h2>
 
       <p className="text-sm text-green-600 text-center mb-6">
-        מחובר כ: {session?.user?.email}
+        {t("editArticleForm.loggedInAs")} {session?.user?.email}
       </p>
 
       {message && (
@@ -288,7 +314,7 @@ export default function EditArticleForm({
       <form onSubmit={handleSubmit} className="space-y-6" noValidate>
         <div>
           <label htmlFor="title" className="block text-sm font-medium mb-2 rtl">
-            כותרת המאמר *
+            {t("editArticleForm.titleLabel")}
           </label>
           <input
             type="text"
@@ -297,18 +323,18 @@ export default function EditArticleForm({
             value={formData.title}
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-            placeholder="הכנס כותרת למאמר"
+            placeholder={t("editArticleForm.titlePlaceholder")}
           />
         </div>
 
         <div>
           <label className="block text-sm font-medium mb-2 rtl">
-            תוכן המאמר *
+            {t("editArticleForm.contentLabel")}
           </label>
           <TiptapEditor
             value={formData.content}
             onChange={handleContentChange}
-            placeholder="כתוב את תוכן המאמר כאן..."
+            placeholder={t("editArticleForm.contentPlaceholder")}
             direction={formData.direction}
             onDirectionChange={(direction) =>
               setFormData((prev) => ({ ...prev, direction }))
@@ -321,7 +347,7 @@ export default function EditArticleForm({
             htmlFor="publisherName"
             className="block text-sm font-medium mb-2 rtl"
           >
-            שם המחבר *
+            {t("editArticleForm.authorLabel")}
           </label>
           <input
             type="text"
@@ -330,7 +356,7 @@ export default function EditArticleForm({
             value={formData.publisherName}
             onChange={handleChange}
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-            placeholder="הכנס שם המחבר"
+            placeholder={t("editArticleForm.authorPlaceholder")}
           />
         </div>
 
@@ -339,7 +365,7 @@ export default function EditArticleForm({
             htmlFor="categoryId"
             className="block text-sm font-medium mb-2 rtl"
           >
-            קטגוריה *
+            {t("editArticleForm.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -350,7 +376,9 @@ export default function EditArticleForm({
             className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading
+                ? t("editArticleForm.loadingCategories")
+                : t("editArticleForm.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
@@ -360,8 +388,8 @@ export default function EditArticleForm({
           <UploadImage
             onImageSelect={setArticleImageFile}
             currentImage={formData.articleImage}
-            label="תמונת המאמר"
-            placeholder="PNG, JPG, GIF עד 5MB"
+            label={t("editArticleForm.articleImageLabel")}
+            placeholder={t("editArticleForm.imagePlaceholder")}
           />
           {formData.articleImage && (
             <button
@@ -372,7 +400,7 @@ export default function EditArticleForm({
               }}
               className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
             >
-              הסר תמונה
+              {t("editArticleForm.removeImageButton")}
             </button>
           )}
         </div>
@@ -381,8 +409,8 @@ export default function EditArticleForm({
           <UploadImage
             onImageSelect={setPublisherImageFile}
             currentImage={formData.publisherImage}
-            label="תמונת המחבר"
-            placeholder="PNG, JPG, GIF עד 5MB"
+            label={t("editArticleForm.authorImageLabel")}
+            placeholder={t("editArticleForm.imagePlaceholder")}
           />
           {formData.publisherImage && (
             <button
@@ -393,19 +421,19 @@ export default function EditArticleForm({
               }}
               className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
             >
-              הסר תמונה
+              {t("editArticleForm.removeImageButton")}
             </button>
           )}
         </div>
 
         <details className="border border-gray-200 rounded p-3">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
-            או הכנס קישורי תמונות (אופציונלי)
+            {t("editArticleForm.imageLinksSummary")}
           </summary>
           <div className="mt-3 space-y-3">
             <div>
               <label className="block text-sm font-medium mb-1 rtl">
-                קישור תמונת המאמר
+                {t("editArticleForm.articleImageUrlLabel")}
               </label>
               <input
                 type="url"
@@ -418,7 +446,7 @@ export default function EditArticleForm({
             </div>
             <div>
               <label className="block text-sm font-medium mb-1 rtl">
-                קישור תמונת המחבר
+                {t("editArticleForm.authorImageUrlLabel")}
               </label>
               <input
                 type="url"
@@ -437,7 +465,7 @@ export default function EditArticleForm({
             htmlFor="readDuration"
             className="block text-sm font-medium mb-2 rtl"
           >
-            זמן קריאה (דקות)
+            {t("editArticleForm.readDurationLabel")}
           </label>
           <input
             type="number"
@@ -456,7 +484,9 @@ export default function EditArticleForm({
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          {isLoading ? "מעדכן מאמר..." : "עדכן מאמר"}
+          {isLoading
+            ? t("editArticleForm.submitUpdating")
+            : t("editArticleForm.submit")}
         </button>
       </form>
     </div>

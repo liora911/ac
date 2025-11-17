@@ -79,13 +79,13 @@ export default function EditPresentationForm({
         } else {
           setMessage({
             type: "error",
-            text: t("loadingPresentationData") as string,
+            text: t("editPresentationForm.loadError") as string,
           });
         }
       } catch (error) {
         setMessage({
           type: "error",
-          text: t("loadingPresentationData") as string,
+          text: t("editPresentationForm.loadError") as string,
         });
       } finally {
         setIsFetching(false);
@@ -104,7 +104,9 @@ export default function EditPresentationForm({
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
           <p className="mt-2 text-gray-300">
-            {status === "loading" ? t("loading") : t("loadingPresentationData")}
+            {status === "loading"
+              ? t("editPresentationForm.loadingGeneric")
+              : t("editPresentationForm.loadingPresentationData")}
           </p>
         </div>
       </div>
@@ -116,14 +118,16 @@ export default function EditPresentationForm({
       <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
           <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            נדרשת התחברות
+            {t("editPresentationForm.loginRequiredTitle")}
           </h2>
-          <p className="text-gray-300 rtl">עליך להתחבר כדי לערוך מצגות</p>
+          <p className="text-gray-300 rtl">
+            {t("editPresentationForm.loginRequiredMessage")}
+          </p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-md hover:bg-indigo-600 cursor-pointer"
           >
-            התחבר
+            {t("editPresentationForm.loginButton")}
           </button>
         </div>
       </div>
@@ -134,8 +138,12 @@ export default function EditPresentationForm({
     return (
       <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-300 rtl">אין לך הרשאה לערוך מצגות באתר זה</p>
+          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
+            {t("editPresentationForm.notAuthorizedTitle")}
+          </h2>
+          <p className="text-gray-300 rtl">
+            {t("editPresentationForm.notAuthorizedMessage")}
+          </p>
           <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
         </div>
       </div>
@@ -167,7 +175,10 @@ export default function EditPresentationForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "המצגת עודכנה בהצלחה!" });
+      setMessage({
+        type: "success",
+        text: t("editPresentationForm.updateSuccess") as string,
+      });
 
       if (onSuccess) {
         onSuccess();
@@ -176,7 +187,9 @@ export default function EditPresentationForm({
       }
     } catch (error) {
       const messageText =
-        error instanceof Error ? error.message : "שגיאה בעדכון המצגת. נסה שוב.";
+        error instanceof Error
+          ? error.message
+          : (t("editPresentationForm.updateError") as string);
       setMessage({
         type: "error",
         text: messageText,
@@ -254,10 +267,12 @@ export default function EditPresentationForm({
 
   return (
     <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">עריכת מצגת</h2>
+      <h2 className="text-3xl font-bold mb-4 text-center rtl">
+        {t("editPresentationForm.title")}
+      </h2>
 
       <p className="text-sm text-green-400 text-center mb-8">
-        מחובר כ: {session?.user?.email}
+        {t("editPresentationForm.loggedInAs")} {session?.user?.email}
       </p>
 
       {message && (
@@ -278,7 +293,7 @@ export default function EditPresentationForm({
             htmlFor="title"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            כותרת המצגת *
+            {t("editPresentationForm.titleLabel")}
           </label>
           <input
             type="text"
@@ -288,7 +303,7 @@ export default function EditPresentationForm({
             onChange={handleChange}
             required
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס כותרת למצגת"
+            placeholder={t("editPresentationForm.titlePlaceholder")}
           />
         </div>
 
@@ -297,14 +312,14 @@ export default function EditPresentationForm({
             htmlFor="description"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            תיאור המצגת *
+            {t("editPresentationForm.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור למצגת"
+            placeholder={t("editPresentationForm.descriptionPlaceholder")}
             theme="dark"
           />
           <input
@@ -320,14 +335,14 @@ export default function EditPresentationForm({
             htmlFor="content"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            תוכן המצגת *
+            {t("editPresentationForm.contentLabel")}
           </label>
           <TiptapEditor
             value={formData.content}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, content: value }))
             }
-            placeholder="הכנס את תוכן המצגת"
+            placeholder={t("editPresentationForm.contentPlaceholder")}
             theme="dark"
           />
           <input
@@ -343,7 +358,7 @@ export default function EditPresentationForm({
             htmlFor="googleSlidesUrl"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            קישור למצגת ב-Google Slides / Google Drive (אופציונלי)
+            {t("editPresentationForm.googleSlidesUrlLabel")}
           </label>
           <input
             type="url"
@@ -355,7 +370,7 @@ export default function EditPresentationForm({
             placeholder="https://docs.google.com/presentation/..."
           />
           <p className="mt-2 text-sm text-gray-400 rtl">
-            ניתן להדביק כאן קישור שיתוף מ-Google Slides או Google Drive.
+            {t("editPresentationForm.googleSlidesHelpText")}
           </p>
         </div>
 
@@ -364,7 +379,7 @@ export default function EditPresentationForm({
             htmlFor="categoryId"
             className="block text-lg font-semibold mb-3 text-white rtl"
           >
-            קטגוריה *
+            {t("editPresentationForm.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -376,7 +391,9 @@ export default function EditPresentationForm({
             className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading
+                ? t("editPresentationForm.loadingCategories")
+                : t("editPresentationForm.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
@@ -384,7 +401,7 @@ export default function EditPresentationForm({
 
         <div>
           <label className="block text-lg font-semibold mb-3 text-white rtl">
-            קישורי תמונות (אופציונלי)
+            {t("editPresentationForm.imageLinksLabel")}
           </label>
           {formData.imageUrls.map((url, index) => (
             <div key={index} className="flex gap-2 mb-2">
@@ -400,7 +417,7 @@ export default function EditPresentationForm({
                 onClick={() => removeImageUrl(index)}
                 className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer"
               >
-                הסר
+                {t("editPresentationForm.removeImageButton")}
               </button>
             </div>
           ))}
@@ -409,7 +426,7 @@ export default function EditPresentationForm({
             onClick={addImageUrl}
             className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 cursor-pointer"
           >
-            הוסף קישור תמונה
+            {t("editPresentationForm.addImageButton")}
           </button>
         </div>
 
@@ -418,7 +435,9 @@ export default function EditPresentationForm({
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          {isLoading ? "מעדכן מצגת..." : "עדכן מצגת"}
+          {isLoading
+            ? t("editPresentationForm.submitUpdating")
+            : t("editPresentationForm.submit")}
         </button>
       </form>
     </div>

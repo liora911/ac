@@ -3,15 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-
-interface SiteSettings {
-  siteTitle: string;
-  siteDescription: string;
-  contactEmail: string;
-  contactPhone: string;
-  maintenanceMode: boolean;
-  allowRegistration: boolean;
-}
+import { SiteSettings } from "@/types/SiteSettings/settings";
 
 export default function SettingsAdmin() {
   const { data: session } = useSession();
