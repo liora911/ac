@@ -13,14 +13,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const { showInfo } = useNotification();
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    if (savedTheme) {
+    const savedTheme = localStorage.getItem("theme") as Theme | null;
+
+    if (savedTheme === "light" || savedTheme === "dark") {
       setTheme(savedTheme);
     } else {
-      const prefersDark = window.matchMedia(
-        "(prefers-color-scheme: dark)"
-      ).matches;
-      setTheme(prefersDark ? "dark" : "light");
+      // Default to light theme for first-time visitors and incognito sessions
+      setTheme("light");
     }
   }, []);
 
