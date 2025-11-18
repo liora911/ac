@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useArticle } from "@/hooks/useArticles";
+import { useEvent } from "@/hooks/useEvents";
+import { useLecture } from "@/hooks/useLectures";
+import { usePresentation } from "@/hooks/usePresentations";
 
 type CrumbTemplate = {
   href?: string;
@@ -66,11 +69,11 @@ export default function Breadcrumbs() {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
 
-  // Detect article-related pages so we can replace the ID segment with the article title
+  // Detect resource-related pages so we can replace ID segments with their titles
   const cleanPath = pathname?.split("?")[0] ?? "";
   const pathSegments = cleanPath.split("/").filter(Boolean);
 
-  // Support:
+  // Articles:
   // - /articles/[id]
   // - /articles/[id]/...
   // - /edit-article/[id]
@@ -81,8 +84,41 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : undefined;
 
-  // Will be a no-op (disabled query) when articleId is undefined
+  // Events:
+  // - /events/[id]
+  // - /edit-event/[id]
+  const eventId =
+    pathSegments[0] === "events" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : pathSegments[0] === "edit-event" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : undefined;
+
+  // Lectures:
+  // - /lectures/[id]
+  // - /edit-lecture/[id]
+  const lectureId =
+    pathSegments[0] === "lectures" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : pathSegments[0] === "edit-lecture" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : undefined;
+
+  // Presentations:
+  // - /presentations/[id]
+  // - /edit-presentation/[id]
+  const presentationId =
+    pathSegments[0] === "presentations" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : pathSegments[0] === "edit-presentation" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : undefined;
+
+  // These queries will be no-ops (disabled) when the corresponding ID is undefined
   const { data: article } = useArticle(articleId);
+  const { data: event } = useEvent(eventId);
+  const { data: lecture } = useLecture(lectureId);
+  const { data: presentation } = usePresentation(presentationId);
 
   if (!pathname || pathname === "/") {
     return null;
@@ -90,17 +126,50 @@ export default function Breadcrumbs() {
 
   let templates = buildCrumbs(pathname);
 
-  // Replace any crumb whose raw segment is the article ID with the article title
-  // This covers:
-  // - /articles/[id]
-  // - /articles/[id]/edit (ID crumb is not the current one)
-  // - /edit-article/[id]
+  // Replace any crumb whose raw segment matches a known resource ID with its title.
+  // Articles:
   if (articleId && article?.title) {
     templates = templates.map((template) =>
       template.rawSegment === articleId
         ? {
             ...template,
             label: article.title,
+          }
+        : template
+    );
+  }
+
+  // Events:
+  if (eventId && event?.title) {
+    templates = templates.map((template) =>
+      template.rawSegment === eventId
+        ? {
+            ...template,
+            label: event.title,
+          }
+        : template
+    );
+  }
+
+  // Lectures:
+  if (lectureId && lecture?.title) {
+    templates = templates.map((template) =>
+      template.rawSegment === lectureId
+        ? {
+            ...template,
+            label: lecture.title,
+          }
+        : template
+    );
+  }
+
+  // Presentations:
+  if (presentationId && presentation?.title) {
+    templates = templates.map((template) =>
+      template.rawSegment === presentationId
+        ? {
+            ...template,
+            label: presentation.title,
           }
         : template
     );
