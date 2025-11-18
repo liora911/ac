@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -12,7 +13,7 @@ type CrumbTemplate = {
   href?: string;
   labelKey?: string;
   rawSegment?: string;
-  label?: string;
+  label?: ReactNode;
   isCurrent?: boolean;
 };
 
@@ -41,7 +42,6 @@ function buildCrumbs(pathname: string): CrumbTemplate[] {
 
   const crumbs: CrumbTemplate[] = [];
 
-  // Home
   crumbs.push({
     href: "/",
     labelKey: "breadcrumbs.home",
@@ -69,14 +69,9 @@ export default function Breadcrumbs() {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
 
-  // Detect resource-related pages so we can replace ID segments with their titles
   const cleanPath = pathname?.split("?")[0] ?? "";
   const pathSegments = cleanPath.split("/").filter(Boolean);
 
-  // Articles:
-  // - /articles/[id]
-  // - /articles/[id]/...
-  // - /edit-article/[id]
   const articleId =
     pathSegments[0] === "articles" && !!pathSegments[1]
       ? (pathSegments[1] as string)
@@ -84,9 +79,6 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : undefined;
 
-  // Events:
-  // - /events/[id]
-  // - /edit-event/[id]
   const eventId =
     pathSegments[0] === "events" && !!pathSegments[1]
       ? (pathSegments[1] as string)
@@ -94,9 +86,6 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : undefined;
 
-  // Lectures:
-  // - /lectures/[id]
-  // - /edit-lecture/[id]
   const lectureId =
     pathSegments[0] === "lectures" && !!pathSegments[1]
       ? (pathSegments[1] as string)
@@ -104,9 +93,6 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : undefined;
 
-  // Presentations:
-  // - /presentations/[id]
-  // - /edit-presentation/[id]
   const presentationId =
     pathSegments[0] === "presentations" && !!pathSegments[1]
       ? (pathSegments[1] as string)
@@ -114,11 +100,11 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : undefined;
 
-  // These queries will be no-ops (disabled) when the corresponding ID is undefined
-  const { data: article } = useArticle(articleId);
-  const { data: event } = useEvent(eventId);
-  const { data: lecture } = useLecture(lectureId);
-  const { data: presentation } = usePresentation(presentationId);
+  const { data: article, isLoading: isArticleLoading } = useArticle(articleId);
+  const { data: event, isLoading: isEventLoading } = useEvent(eventId);
+  const { data: lecture, isLoading: isLectureLoading } = useLecture(lectureId);
+  const { data: presentation, isLoading: isPresentationLoading } =
+    usePresentation(presentationId);
 
   if (!pathname || pathname === "/") {
     return null;
@@ -126,8 +112,6 @@ export default function Breadcrumbs() {
 
   let templates = buildCrumbs(pathname);
 
-  // Replace any crumb whose raw segment matches a known resource ID with its title.
-  // Articles:
   if (articleId && article?.title) {
     templates = templates.map((template) =>
       template.rawSegment === articleId
@@ -139,7 +123,6 @@ export default function Breadcrumbs() {
     );
   }
 
-  // Events:
   if (eventId && event?.title) {
     templates = templates.map((template) =>
       template.rawSegment === eventId
@@ -151,7 +134,6 @@ export default function Breadcrumbs() {
     );
   }
 
-  // Lectures:
   if (lectureId && lecture?.title) {
     templates = templates.map((template) =>
       template.rawSegment === lectureId
@@ -163,7 +145,6 @@ export default function Breadcrumbs() {
     );
   }
 
-  // Presentations:
   if (presentationId && presentation?.title) {
     templates = templates.map((template) =>
       template.rawSegment === presentationId
@@ -181,11 +162,38 @@ export default function Breadcrumbs() {
 
   const crumbs = templates.map((template, index) => {
     const isLast = index === templates.length - 1;
-    const label = template.label
-      ? template.label
-      : template.labelKey
-      ? t(template.labelKey)
-      : decodeURIComponent(template.rawSegment ?? "");
+
+    const isResourceIdSegment =
+      !!template.rawSegment &&
+      ((articleId &&
+        template.rawSegment === articleId &&
+        isArticleLoading &&
+        !article) ||
+        (eventId &&
+          template.rawSegment === eventId &&
+          isEventLoading &&
+          !event) ||
+        (lectureId &&
+          template.rawSegment === lectureId &&
+          isLectureLoading &&
+          !lecture) ||
+        (presentationId &&
+          template.rawSegment === presentationId &&
+          isPresentationLoading &&
+          !presentation));
+
+    const label: ReactNode = isResourceIdSegment ? (
+      <span
+        className="inline-block h-3 w-3 animate-spin rounded-full border-2 border-gray-300 border-t-transparent align-middle"
+        aria-label="Loading"
+      />
+    ) : template.label ? (
+      template.label
+    ) : template.labelKey ? (
+      t(template.labelKey)
+    ) : (
+      decodeURIComponent(template.rawSegment ?? "")
+    );
 
     return {
       href: template.href,
