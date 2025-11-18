@@ -65,16 +65,20 @@ export default function Breadcrumbs() {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
 
-  // Detect article detail pages to replace the ID with the article title
+  // Detect article-related pages so we can replace the ID segment with the article title
   const cleanPath = pathname?.split("?")[0] ?? "";
   const pathSegments = cleanPath.split("/").filter(Boolean);
-  const isArticleDetailPage =
-    pathSegments[0] === "articles" &&
-    !!pathSegments[1] &&
-    pathSegments.length === 2;
-  const articleId = isArticleDetailPage
-    ? (pathSegments[1] as string)
-    : undefined;
+
+  // Support:
+  // - /articles/[id]
+  // - /articles/[id]/...
+  // - /edit-article/[id]
+  const articleId =
+    pathSegments[0] === "articles" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : pathSegments[0] === "edit-article" && !!pathSegments[1]
+      ? (pathSegments[1] as string)
+      : undefined;
 
   // Will be a no-op (disabled query) when articleId is undefined
   const { data: article } = useArticle(articleId);
@@ -85,10 +89,14 @@ export default function Breadcrumbs() {
 
   let templates = buildCrumbs(pathname);
 
-  // For /articles/[id] pages, replace the last segment (ID) with the article title
+  // Replace any crumb whose raw segment is the article ID with the article title
+  // This covers:
+  // - /articles/[id]
+  // - /articles/[id]/edit (ID crumb is not the current one)
+  // - /edit-article/[id]
   if (articleId && article?.title) {
     templates = templates.map((template) =>
-      template.rawSegment === articleId && template.isCurrent
+      template.rawSegment === articleId
         ? {
             ...template,
             label: article.title,

@@ -146,6 +146,8 @@ export async function GET(request: NextRequest) {
         email: article.author.email ?? undefined,
         image: article.author.image ?? undefined,
       },
+      publisherName: article.publisherName,
+      publisherImage: article.publisherImage ?? undefined,
       categoryId: article.categoryId ?? undefined,
       category: article.category
         ? {
@@ -302,6 +304,8 @@ export async function POST(request: NextRequest) {
         email: article.author.email ?? undefined,
         image: article.author.image ?? undefined,
       },
+      publisherName: article.publisherName,
+      publisherImage: article.publisherImage ?? undefined,
       categoryId: article.categoryId ?? undefined,
       category: article.category
         ? {

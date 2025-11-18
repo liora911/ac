@@ -73,6 +73,8 @@ export async function GET(
         email: article.author.email ?? undefined,
         image: article.author.image ?? undefined,
       },
+      publisherName: article.publisherName,
+      publisherImage: article.publisherImage ?? undefined,
       categoryId: article.categoryId ?? undefined,
       category: article.category
         ? {

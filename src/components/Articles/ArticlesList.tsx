@@ -468,6 +468,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
                 src={article.author.image}
                 alt={
                   article.author.name ||
+                  article.publisherName ||
                   (t("articleCard.authorAnonymous") as string)
                 }
                 width={24}
@@ -475,9 +476,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
                 className="rounded-full"
               />
             )}
-            <span>
-              {article.publisherName || article.author.name || "Anonymous"}
-            </span>
+            <span>{article.publisherName || article.author.name}</span>
           </div>
           <div className="flex items-center space-x-4">
             <span>
