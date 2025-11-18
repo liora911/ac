@@ -452,6 +452,25 @@ export default function TiptapEditor({
             }`}
           >
             <ToolbarButton
+              onClick={() => editor.chain().focus().indent().run()}
+              title="Increase Indent"
+            >
+              ⇥
+            </ToolbarButton>
+            <ToolbarButton
+              onClick={() => editor.chain().focus().outdent().run()}
+              title="Decrease Indent"
+            >
+              ⇤
+            </ToolbarButton>
+          </div>
+
+          <div
+            className={`flex border-r pr-2 mr-2 ${
+              theme === "dark" ? "border-gray-600" : "border-gray-300"
+            }`}
+          >
+            <ToolbarButton
               onClick={() => editor.chain().focus().setTextAlign("left").run()}
               isActive={editor.isActive({ textAlign: "left" })}
               title="Align Left"
@@ -493,9 +512,9 @@ export default function TiptapEditor({
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
               isActive={editor.isActive("blockquote")}
-              title="Blockquote"
+              title="Quote"
             >
-              "
+              Quote
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleCodeBlock().run()}
