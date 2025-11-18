@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useArticle } from "@/hooks/useArticles";
 
 type CrumbTemplate = {
   href?: string;
   labelKey?: string;
   rawSegment?: string;
+  label?: string;
   isCurrent?: boolean;
 };
 
@@ -63,11 +65,37 @@ export default function Breadcrumbs() {
   const pathname = usePathname();
   const { t, locale } = useTranslation();
 
+  // Detect article detail pages to replace the ID with the article title
+  const cleanPath = pathname?.split("?")[0] ?? "";
+  const pathSegments = cleanPath.split("/").filter(Boolean);
+  const isArticleDetailPage =
+    pathSegments[0] === "articles" &&
+    !!pathSegments[1] &&
+    pathSegments.length === 2;
+  const articleId = isArticleDetailPage
+    ? (pathSegments[1] as string)
+    : undefined;
+
+  // Will be a no-op (disabled query) when articleId is undefined
+  const { data: article } = useArticle(articleId);
+
   if (!pathname || pathname === "/") {
     return null;
   }
 
-  const templates = buildCrumbs(pathname);
+  let templates = buildCrumbs(pathname);
+
+  // For /articles/[id] pages, replace the last segment (ID) with the article title
+  if (articleId && article?.title) {
+    templates = templates.map((template) =>
+      template.rawSegment === articleId && template.isCurrent
+        ? {
+            ...template,
+            label: article.title,
+          }
+        : template
+    );
+  }
 
   if (templates.length === 0) {
     return null;
@@ -75,7 +103,9 @@ export default function Breadcrumbs() {
 
   const crumbs = templates.map((template, index) => {
     const isLast = index === templates.length - 1;
-    const label = template.labelKey
+    const label = template.label
+      ? template.label
+      : template.labelKey
       ? t(template.labelKey)
       : decodeURIComponent(template.rawSegment ?? "");
 

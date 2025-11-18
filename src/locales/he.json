@@ -32,8 +32,8 @@
   "presentations": {
     "title": "תחומי המחקר שלי מגוונים, וכוללים מכניקת קוונטים, תורת היחסות, תרמודינמיקה, ביולוגיה אבולוציונית, פסיכואנליזה ופילוסופיית התודעה.",
     "description": "כאן תמצאו מצגות שלי בנושאים שונים. הן זמינות להורדה חינם.",
-    "download": "Download Presentation",
-    "viewOnline": "View Online"
+    "download": "הורד מצגת",
+    "viewOnline": "צפה אונליין"
   },
   "app": {
     "title": "אבשלום אליצור"
@@ -212,6 +212,9 @@
     "metaDescriptionPlaceholder": "תיאור SEO (אופציונלי)",
     "keywordsLabel": "מילות מפתח",
     "addKeywordPlaceholder": "הוסף מילת מפתח",
+    "publisherNameLabel": "שם המחבר",
+    "publisherNamePlaceholder": "הכנס שם המחבר",
+    "publisherImageUrlLabel": "קישור תמונת המחבר",
     "savingButton": "שומר...",
     "updateArticleButton": "עדכן מאמר"
   },

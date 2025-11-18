@@ -213,6 +213,8 @@ export async function POST(request: NextRequest) {
       categoryId,
       status = "DRAFT",
       direction = "ltr",
+      publisherName,
+      publisherImage,
     } = body;
 
     if (!title || !content) {
@@ -251,8 +253,8 @@ export async function POST(request: NextRequest) {
         title,
         content,
         articleImage: featuredImage,
-        publisherName: user.name || "Anonymous",
-        publisherImage: user.image,
+        publisherName: publisherName || user.name || "Anonymous",
+        publisherImage: publisherImage || user.image,
         readDuration: Math.max(1, Math.ceil(content.length / 1000)),
         published: status === "PUBLISHED",
         authorId: user.id,

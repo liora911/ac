@@ -39,6 +39,8 @@ export default function ArticleForm({
     metaTitle: article?.metaTitle || "",
     metaDescription: article?.metaDescription || "",
     keywords: article?.keywords || [],
+    publisherName: article?.author?.name || session?.user?.name || "",
+    publisherImage: article?.author?.image || session?.user?.image || "",
   });
 
   const [tagInput, setTagInput] = useState("");
@@ -243,6 +245,40 @@ export default function ArticleForm({
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               placeholder="https://"
             />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("articleForm.publisherNameLabel")}
+              </label>
+              <input
+                type="text"
+                value={formData.publisherName}
+                onChange={(e) =>
+                  handleInputChange("publisherName", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder={
+                  t("articleForm.publisherNamePlaceholder") as string
+                }
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("articleForm.publisherImageUrlLabel")}
+              </label>
+              <input
+                type="url"
+                value={formData.publisherImage || ""}
+                onChange={(e) =>
+                  handleInputChange("publisherImage", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://"
+              />
+            </div>
           </div>
 
           <div>

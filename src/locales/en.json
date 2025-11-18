@@ -212,6 +212,9 @@
     "metaDescriptionPlaceholder": "SEO description (optional)",
     "keywordsLabel": "Keywords",
     "addKeywordPlaceholder": "Add a keyword",
+    "publisherNameLabel": "Publisher name",
+    "publisherNamePlaceholder": "Enter publisher name",
+    "publisherImageUrlLabel": "Publisher image URL",
     "savingButton": "Saving...",
     "updateArticleButton": "Update Article"
   },

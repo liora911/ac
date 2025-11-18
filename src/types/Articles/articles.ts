@@ -61,6 +61,8 @@ export interface CreateArticleRequest {
   metaTitle?: string;
   metaDescription?: string;
   keywords?: string[];
+  publisherName?: string;
+  publisherImage?: string;
 }
 
 export interface UpdateArticleRequest extends Partial<CreateArticleRequest> {
@@ -100,6 +102,8 @@ export interface ArticleFormData {
   metaTitle: string;
   metaDescription: string;
   keywords: string[];
+  publisherName: string;
+  publisherImage?: string;
 }
 
 export interface ArticleStats {

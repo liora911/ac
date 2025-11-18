@@ -62,7 +62,6 @@ export default function CreateArticlePage() {
             {t("articlesPage.createArticleDescription")}
           </p>
         </div>
-
         <ArticleForm onSuccess={handleSuccess} onCancel={handleCancel} />
       </div>
     </div>
