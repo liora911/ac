@@ -24,6 +24,7 @@ const STATIC_SEGMENT_KEYS: Record<string, string> = {
   "edit-lecture": "editLecturePage.title",
   "edit-presentation": "editPresentationPage.title",
   "create-lecture": "createLecturePage.title",
+  edit: "breadcrumbs.edit",
 };
 
 function buildCrumbs(pathname: string): CrumbTemplate[] {
