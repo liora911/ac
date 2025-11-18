@@ -18,7 +18,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     if (savedTheme === "light" || savedTheme === "dark") {
       setTheme(savedTheme);
     } else {
-      // Default to light theme for first-time visitors and incognito sessions
       setTheme("light");
     }
   }, []);

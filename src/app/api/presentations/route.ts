@@ -10,7 +10,6 @@ export async function GET() {
       throw new Error("Database connection not available");
     }
 
-    // Fetch all categories with their presentations; we'll build a tree in memory
     const prismaCategories = await prisma.category.findMany({
       include: {
         presentations: {

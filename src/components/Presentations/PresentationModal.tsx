@@ -23,7 +23,6 @@ function getGoogleSlidesEmbedAndPdfUrls(rawUrl?: string | null): {
   try {
     const url = new URL(rawUrl);
 
-    // Handle standard Google Slides URLs: https://docs.google.com/presentation/d/{FILE_ID}/edit...
     if (
       url.hostname.includes("docs.google.com") &&
       url.pathname.includes("/presentation/d/")
@@ -39,9 +38,7 @@ function getGoogleSlidesEmbedAndPdfUrls(rawUrl?: string | null): {
         return { embedUrl, pdfUrl };
       }
     }
-  } catch {
-    // Fallback to raw URL if parsing fails
-  }
+  } catch {}
 
   return { embedUrl: rawUrl, pdfUrl: undefined };
 }

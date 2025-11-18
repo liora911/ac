@@ -32,9 +32,7 @@ function getGoogleSlidesEmbedAndPdfUrls(rawUrl?: string | null): {
         return { embedUrl, pdfUrl };
       }
     }
-  } catch {
-    // Fallback to raw URL if parsing fails
-  }
+  } catch {}
 
   return { embedUrl: rawUrl, pdfUrl: undefined };
 }
