@@ -146,6 +146,8 @@ export async function PUT(
       metaDescription,
       keywords,
       direction,
+      publisherName,
+      publisherImage,
     } = body;
 
     if (categoryId) {
@@ -184,6 +186,10 @@ export async function PUT(
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
     if (direction !== undefined) updateData.direction = direction;
+    if (publisherName !== undefined) updateData.publisherName = publisherName;
+    if (publisherImage !== undefined) {
+      updateData.publisherImage = publisherImage;
+    }
     if (categoryId !== undefined) {
       updateData.category = categoryId
         ? { connect: { id: categoryId } }

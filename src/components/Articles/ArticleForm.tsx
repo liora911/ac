@@ -39,8 +39,16 @@ export default function ArticleForm({
     metaTitle: article?.metaTitle || "",
     metaDescription: article?.metaDescription || "",
     keywords: article?.keywords || [],
-    publisherName: article?.author?.name || session?.user?.name || "",
-    publisherImage: article?.author?.image || session?.user?.image || "",
+    publisherName:
+      article?.publisherName ||
+      article?.author?.name ||
+      session?.user?.name ||
+      "",
+    publisherImage:
+      article?.publisherImage ||
+      article?.author?.image ||
+      session?.user?.image ||
+      "",
   });
 
   const [tagInput, setTagInput] = useState("");
