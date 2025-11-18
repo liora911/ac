@@ -87,7 +87,7 @@ export default function Header() {
             }}
             aria-label={t("header.brandAriaLabel")}
           >
-            A.Elitzur
+            Avshalom C. Elitzur
           </Link>
           <nav
             className="hidden sm:flex items-center space-x-6 text-base font-medium"
