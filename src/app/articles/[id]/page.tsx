@@ -291,7 +291,9 @@ export default function ArticleDetailPage() {
               )}
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  {article.author.name || t("articleCard.authorAnonymous")}
+                  {article.author.name ||
+                    article.publisherName ||
+                    t("articleCard.authorAnonymous")}
                 </h3>
                 <p className="text-gray-600 mt-1">
                   {t("articleDetail.copyleftNote")}
