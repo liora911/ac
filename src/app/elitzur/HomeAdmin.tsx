@@ -94,7 +94,6 @@ export default function HomeAdmin() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Image + photo credit */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
             תמונה וקרדיט
@@ -139,7 +138,6 @@ export default function HomeAdmin() {
                 <p className="text-sm font-medium text-gray-700 mb-2">
                   תצוגה מקדימה:
                 </p>
-                {/* Simple preview using native img to avoid Next/Image here */}
                 <div className="border border-dashed border-gray-300 rounded-md p-3 flex justify-center">
                   <img
                     src={imageUrl}
@@ -152,7 +150,6 @@ export default function HomeAdmin() {
           </div>
         </div>
 
-        {/* Bio editor */}
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">ביוגרפיה</h3>
           <TiptapEditor

@@ -135,7 +135,6 @@ export default function TiptapEditor({
     }
   }, [value, editor]);
 
-  // In your TiptapEditor component
   useEffect(() => {
     if (editor && direction !== currentDirection) {
       setCurrentDirection(direction);

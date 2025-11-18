@@ -28,7 +28,6 @@ export async function GET() {
       throw new Error("Database connection not available");
     }
 
-    // Fetch all categories with their lectures; we'll build a proper tree in memory
     const prismaCategories = await prisma.category.findMany({
       include: {
         lectures: {
@@ -62,7 +61,6 @@ export async function GET() {
 
     const byId = new Map<string, TreeCategory>();
 
-    // First pass: create a map of all categories
     prismaCategories.forEach((cat) => {
       byId.set(cat.id, {
         id: cat.id,
@@ -76,7 +74,6 @@ export async function GET() {
 
     const roots: TreeCategory[] = [];
 
-    // Second pass: wire up parents and children
     byId.forEach((cat) => {
       if (cat.parentId && byId.has(cat.parentId)) {
         const parent = byId.get(cat.parentId)!;

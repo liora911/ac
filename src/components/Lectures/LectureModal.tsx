@@ -30,7 +30,7 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
           <div className="mb-4">
             <div
               className="relative w-full overflow-hidden rounded-lg shadow-lg"
-              style={{ paddingTop: "56.25%" }} // 16:9 aspect ratio
+              style={{ paddingTop: "56.25%" }}
             >
               <iframe
                 src={lecture.videoUrl}
