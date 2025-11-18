@@ -141,27 +141,7 @@ export default function ArticleDetailPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between">
-            <button
-              onClick={() => router.push("/articles")}
-              className="text-blue-600 hover:text-blue-800 transition-colors flex items-center cursor-pointer"
-            >
-              ← {t("articleDetail.backToArticles")}
-            </button>
-
-            {/* {isAuthorized && (
-              <Link
-                href={`/articles/${article.id}/edit`}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
-              >
-                {t("articleDetail.editButton")}
-              </Link>
-            )} */}
-          </div>
-        </div>
-      </div>
+      <div className="bg-white shadow-sm"></div>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {}
