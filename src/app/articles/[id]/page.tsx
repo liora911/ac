@@ -212,7 +212,7 @@ export default function ArticleDetailPage() {
                 )}
                 <div>
                   <p className="font-medium text-gray-900">
-                    {article.author.name || t("articleCard.authorAnonymous")}
+                    {article.publisherName || t("articleCard.authorAnonymous")}
                   </p>
                   <p className="text-sm text-gray-500">
                     {formatDate(article.createdAt)}
