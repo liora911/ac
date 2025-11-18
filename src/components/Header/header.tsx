@@ -75,10 +75,10 @@ export default function Header() {
         className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 backdrop-blur-sm shadow-lg px-4 py-3 sm:py-4"
         role="banner"
       >
-        <div className="flex flex-wrap justify-between items-center">
+        <div className="flex flex-nowrap items-center justify-between gap-2 sm:gap-4 min-w-0">
           <Link
             href="/"
-            className="text-2xl font-extrabold tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+            className="flex-shrink min-w-0 max-w-[80%] text-lg sm:text-2xl font-extrabold tracking-tight cursor-pointer hover:scale-105 transition-transform duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 whitespace-normal leading-tight"
             style={{
               background: "linear-gradient(135deg, #007bff 0%, #6610f2 100%)",
               backgroundClip: "text",
