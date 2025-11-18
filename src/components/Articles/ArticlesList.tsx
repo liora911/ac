@@ -289,7 +289,12 @@ export default function ArticlesList({
                           {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
                         </p>
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>By: {article.author.name || "Anonymous"}</span>
+                          <span>
+                            By:{" "}
+                            {article.publisherName ||
+                              article.author.name ||
+                              "Anonymous"}
+                          </span>
                           <span>{article.readTime} min read</span>
                           <span>
                             {new Date(article.createdAt).toLocaleDateString()}
@@ -471,7 +476,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
               />
             )}
             <span>
-              {article.author.name || t("articleCard.authorAnonymous")}
+              {article.publisherName || article.author.name || "Anonymous"}
             </span>
           </div>
           <div className="flex items-center space-x-4">

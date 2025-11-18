@@ -21,6 +21,8 @@ export interface Article {
   categoryId?: string;
   category?: ArticleCategory;
   tags?: ArticleTag[];
+  publisherName?: string;
+  publisherImage?: string;
 }
 
 export interface ArticleAuthor {
