@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Lecture } from "@/types/Lectures/lectures";
 import Modal from "@/components/Modal/Modal";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface LectureCardProps {
   lecture: Lecture;
@@ -20,6 +21,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
   const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [lectureUrl, setLectureUrl] = useState("");
+  const { showSuccess, showError } = useNotification();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -33,9 +35,13 @@ const LectureCard: React.FC<LectureCardProps> = ({
     try {
       if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(lectureUrl);
+        showSuccess("הלינק להרצאה הועתק ללוח");
+      } else {
+        showError("לא ניתן להעתיק לינק בדפדפן זה");
       }
     } catch (error) {
       console.error("Failed to copy lecture URL", error);
+      showError("אירעה שגיאה בהעתקת הלינק להרצאה");
     }
   };
 
