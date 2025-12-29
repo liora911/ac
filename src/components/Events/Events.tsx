@@ -12,6 +12,7 @@ import {
   Search,
   X,
 } from "lucide-react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface EventsProps {
   onBannerUpdate: (imageUrl: string | null, altText: string) => void;
@@ -25,6 +26,7 @@ interface EventModalProps {
 }
 
 const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose }) => {
+  const { t } = useTranslation();
   if (!event) return null;
 
   return (
@@ -92,12 +94,12 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose }) => {
                       rel="noopener noreferrer"
                       className="hover:text-green-200 underline"
                     >
-                      קישור לאירוע מקוון
+                      {t("eventModal.onlineEventLink")}
                     </a>
                   </div>
                 )}
                 <div className="text-sm text-purple-300">
-                  קטגוריה: {event.category.name}
+                  {t("eventModal.category")} {event.category.name}
                 </div>
                 <div
                   className="prose prose-invert max-w-none text-gray-200 leading-relaxed"
@@ -113,6 +115,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose }) => {
 };
 
 const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
+  const { t, locale } = useTranslation();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -141,7 +144,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
   if (!eventsData) {
     return (
       <div className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl">
-        טוען נתוני אירועים...
+        {t("events.loadingData")}
       </div>
     );
   }
@@ -149,7 +152,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
   if (eventsData.length === 0) {
     return (
       <div className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl">
-        אין אירועים זמינים כרגע.
+        {t("events.noEventsAvailable")}
       </div>
     );
   }
@@ -157,11 +160,11 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
   return (
     <div
       className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 min-h-[calc(100vh-200px)]"
-      style={{ direction: "rtl" }}
+      style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="mb-8">
         <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
-          כל האירועים
+          {t("events.allEvents")}
         </h2>
 
         <div className="flex flex-col md:flex-row gap-4 mb-6">
@@ -172,7 +175,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
             />
             <input
               type="text"
-              placeholder="חפש אירועים..."
+              placeholder={t("events.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-cyan-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
@@ -184,7 +187,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
             onChange={(e) => setSelectedCategory(e.target.value)}
             className="px-4 py-3 border border-cyan-500/30 rounded-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
           >
-            <option value="all">כל הקטגוריות</option>
+            <option value="all">{t("events.allCategories")}</option>
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category}

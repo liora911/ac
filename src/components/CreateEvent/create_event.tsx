@@ -4,6 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type CategoryNode = {
   id: string;
@@ -16,6 +17,7 @@ interface CreateEventFormProps {
 }
 
 export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
+  const { t, locale } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -65,7 +67,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div className="text-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
           <p className="mt-2 text-gray-300">
-            {status === "loading" ? "טוען..." : "טוען קטגוריות..."}
+            {status === "loading" ? t("createEvent.loading") : t("createEvent.loadingCategories")}
           </p>
         </div>
       </div>
@@ -74,17 +76,17 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            נדרשת התחברות
+          <h2 className="text-xl font-bold text-red-400 mb-4">
+            {t("createEvent.loginRequiredTitle")}
           </h2>
-          <p className="text-gray-300 rtl">עליך להתחבר כדי ליצור אירועים</p>
+          <p className="text-gray-300">{t("createEvent.loginRequiredMessage")}</p>
           <button
             onClick={() => (window.location.href = "/elitzur")}
             className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
           >
-            התחבר
+            {t("createEvent.loginButton")}
           </button>
         </div>
       </div>
@@ -93,11 +95,11 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
+      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
         <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-300 rtl">
-            אין לך הרשאה ליצור אירועים באתר זה
+          <h2 className="text-xl font-bold text-red-400 mb-4">{t("createEvent.notAuthorizedTitle")}</h2>
+          <p className="text-gray-300">
+            {t("createEvent.notAuthorizedMessage")}
           </p>
           <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
         </div>
@@ -129,7 +131,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "האירוע נוצר בהצלחה!" });
+      setMessage({ type: "success", text: t("createEvent.successMessage") });
 
       setFormData({
         title: "",
@@ -150,7 +152,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
       const messageText =
         error instanceof Error
           ? error.message
-          : "שגיאה ביצירת האירוע. נסה שוב.";
+          : t("createEvent.errorMessage");
       setMessage({
         type: "error",
         text: messageText,
@@ -203,13 +205,13 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        יצירת אירוע חדש
+    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
+      <h2 className="text-3xl font-bold mb-4 text-center">
+        {t("createEvent.title")}
       </h2>
 
       <p className="text-sm text-green-400 text-center mb-8">
-        מחובר כ: {session?.user?.email}
+        {t("createEvent.loggedInAs")} {session?.user?.email}
       </p>
 
       {message && (
@@ -228,9 +230,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            כותרת האירוע *
+            {t("createEvent.titleLabel")}
           </label>
           <input
             type="text"
@@ -239,24 +241,24 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס כותרת לאירוע"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+            placeholder={t("createEvent.titlePlaceholder")}
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            תיאור האירוע *
+            {t("createEvent.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור לאירוע"
+            placeholder={t("createEvent.descriptionPlaceholder")}
             theme="dark"
           />
           <input
@@ -270,9 +272,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="eventType"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            סוג האירוע *
+            {t("createEvent.eventTypeLabel")}
           </label>
           <select
             id="eventType"
@@ -280,11 +282,11 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             value={formData.eventType}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           >
-            <option value="">בחר סוג אירוע</option>
-            <option value="in-person">פרונטלי</option>
-            <option value="online">אונליין</option>
+            <option value="">{t("createEvent.eventTypePlaceholder")}</option>
+            <option value="in-person">{t("createEvent.eventTypeInPerson")}</option>
+            <option value="online">{t("createEvent.eventTypeOnline")}</option>
           </select>
         </div>
 
@@ -292,9 +294,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           <div>
             <label
               htmlFor="location"
-              className="block text-lg font-semibold mb-3 text-white rtl"
+              className="block text-lg font-semibold mb-3 text-white"
             >
-              מיקום *
+              {t("createEvent.locationLabel")}
             </label>
             <input
               type="text"
@@ -303,8 +305,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               value={formData.location}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-              placeholder="הכנס מיקום האירוע"
+              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+              placeholder={t("createEvent.locationPlaceholder")}
             />
           </div>
         )}
@@ -313,9 +315,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           <div>
             <label
               htmlFor="onlineUrl"
-              className="block text-lg font-semibold mb-3 text-white rtl"
+              className="block text-lg font-semibold mb-3 text-white"
             >
-              קישור לאירוע *
+              {t("createEvent.onlineUrlLabel")}
             </label>
             <input
               type="url"
@@ -324,7 +326,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               value={formData.onlineUrl}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
               placeholder="https://"
             />
           </div>
@@ -333,9 +335,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="eventDate"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            תאריך האירוע *
+            {t("createEvent.eventDateLabel")}
           </label>
           <input
             type="date"
@@ -351,9 +353,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="eventTime"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            שעת האירוע (אופציונלי)
+            {t("createEvent.eventTimeLabel")}
           </label>
           <input
             type="time"
@@ -361,16 +363,16 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             name="eventTime"
             value={formData.eventTime}
             onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
           />
         </div>
 
         <div>
           <label
             htmlFor="bannerImageUrl"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            קישור לתמונת באנר (אופציונלי)
+            {t("createEvent.bannerImageUrlLabel")}
           </label>
           <input
             type="url"
@@ -378,7 +380,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             name="bannerImageUrl"
             value={formData.bannerImageUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
             placeholder="https://"
           />
         </div>
@@ -386,9 +388,9 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-lg font-semibold mb-3 text-white"
           >
-            קטגוריה *
+            {t("createEvent.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -397,10 +399,10 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             onChange={handleChange}
             required
             disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
+            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading ? t("createEvent.loadingCategories") : t("createEvent.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
@@ -411,7 +413,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           disabled={isLoading}
           className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
         >
-          {isLoading ? "יוצר אירוע..." : "צור אירוע"}
+          {isLoading ? t("createEvent.submitCreating") : t("createEvent.submit")}
         </button>
       </form>
     </div>
