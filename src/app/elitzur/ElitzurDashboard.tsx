@@ -6,6 +6,7 @@ import LoginForm from "@/components/Login/login";
 import CategoryManager from "@/components/Category/CategoryManager";
 import SignOutButton from "@/components/Auth/SignOutButton";
 import QuickStats from "@/components/QuickStats/QuickStats";
+import QuickActions from "@/components/QuickActions/QuickActions";
 import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
 import ThemeToggle from "@/components/ThemeToggle";
 import ArticlesAdmin from "./ArticlesAdmin";
@@ -160,23 +161,31 @@ export default function ElitzurDashboard() {
             )}
 
             {session && (
-              <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 items-start">
-                <div className="xl:col-span-2 space-y-8">
-                  <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                    <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                      סקירה מהירה
-                    </h2>
-                    <QuickStats />
-                  </div>
+              <div className="space-y-6">
+                {/* Quick Actions - Single Row */}
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                  <QuickActions />
                 </div>
 
-                <div className="xl:col-span-1">
-                  <div className="h-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                      פעילות אחרונה
-                    </h3>
-                    <div className="mt-2 flex-1 overflow-hidden">
-                      <ActivityFeed />
+                {/* Stats and Activity Grid */}
+                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8 items-start">
+                  <div className="xl:col-span-2 space-y-8">
+                    <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                        סקירה מהירה
+                      </h2>
+                      <QuickStats />
+                    </div>
+                  </div>
+
+                  <div className="xl:col-span-1">
+                    <div className="h-full rounded-xl border border-gray-200 bg-white p-6 shadow-sm flex flex-col">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                        פעילות אחרונה
+                      </h3>
+                      <div className="mt-2 flex-1 overflow-hidden">
+                        <ActivityFeed />
+                      </div>
                     </div>
                   </div>
                 </div>

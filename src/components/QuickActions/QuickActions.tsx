@@ -2,38 +2,45 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import {
+  FileText,
+  Video,
+  Presentation,
+  CalendarPlus,
+  Plus,
+} from "lucide-react";
 
 const QuickActions: React.FC = () => {
   const router = useRouter();
 
   const actions = [
     {
-      label: "מאמר חדש",
-      icon: "✍️",
-      description: "צור מאמר חדש",
+      label: "Add Article",
+      labelHe: "הוסף מאמר",
+      icon: FileText,
       path: "/articles/create",
-      color: "from-blue-500 to-blue-600",
+      gradient: "from-blue-500 to-indigo-600",
     },
     {
-      label: "אירוע חדש",
-      icon: "📅",
-      description: "תכנן אירוע חדש",
-      path: "/create-event",
-      color: "from-green-500 to-green-600",
-    },
-    {
-      label: "הרצאה חדשה",
-      icon: "🎓",
-      description: "הוסף הרצאה חדשה",
+      label: "Add Lecture",
+      labelHe: "הוסף הרצאה",
+      icon: Video,
       path: "/create-lecture",
-      color: "from-purple-500 to-purple-600",
+      gradient: "from-purple-500 to-pink-600",
     },
     {
-      label: "מצגת חדשה",
-      icon: "📊",
-      description: "צור מצגת חדשה",
+      label: "Add Presentation",
+      labelHe: "הוסף מצגת",
+      icon: Presentation,
       path: "/edit-presentation/new",
-      color: "from-orange-500 to-orange-600",
+      gradient: "from-orange-500 to-amber-600",
+    },
+    {
+      label: "Add Event",
+      labelHe: "הוסף אירוע",
+      icon: CalendarPlus,
+      path: "/create-event",
+      gradient: "from-green-500 to-emerald-600",
     },
   ];
 
@@ -42,24 +49,44 @@ const QuickActions: React.FC = () => {
   };
 
   return (
-    <div className="p-6 rounded-lg bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        פעולות מהירות
-      </h3>
-      <div className="grid grid-cols-2 gap-3">
-        {actions.map((action, index) => (
-          <button
-            key={index}
-            onClick={() => handleActionClick(action.path)}
-            className={`p-4 rounded-lg bg-gradient-to-br ${action.color} text-white hover:shadow-lg transition-all duration-200 transform hover:scale-105 text-left group`}
-          >
-            <div className="flex items-center gap-3 mb-2">
-              <div className="text-2xl">{action.icon}</div>
-              <div className="font-semibold text-sm">{action.label}</div>
-            </div>
-            <div className="text-xs opacity-90">{action.description}</div>
-          </button>
-        ))}
+    <div className="space-y-4">
+      <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        {actions.map((action, index) => {
+          const IconComponent = action.icon;
+          return (
+            <button
+              key={index}
+              onClick={() => handleActionClick(action.path)}
+              className={`group relative overflow-hidden rounded-xl bg-gradient-to-br ${action.gradient} p-4 text-white shadow-md transition-all duration-300 hover:shadow-xl hover:scale-[1.03] active:scale-[0.98] cursor-pointer`}
+            >
+              {/* Hover overlay */}
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
+
+              {/* Content */}
+              <div className="relative flex flex-col items-center gap-2">
+                {/* Icon with plus badge */}
+                <div className="relative">
+                  <div className="p-2.5 bg-white/20 rounded-lg backdrop-blur-sm group-hover:bg-white/30 transition-colors duration-300">
+                    <IconComponent className="w-5 h-5" />
+                  </div>
+                  {/* Plus badge */}
+                  <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <Plus className="w-2.5 h-2.5 text-gray-700" strokeWidth={3} />
+                  </div>
+                </div>
+
+                {/* Label */}
+                <span className="text-xs font-medium text-center leading-tight">
+                  {action.labelHe}
+                </span>
+              </div>
+
+              {/* Shine effect */}
+              <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+            </button>
+          );
+        })}
       </div>
     </div>
   );
