@@ -23,12 +23,94 @@ import CodeBlock from "@tiptap/extension-code-block";
 import Blockquote from "@tiptap/extension-blockquote";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Youtube from "@tiptap/extension-youtube";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { TextDirection } from "./text-direction";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
 import { TiptapEditorProps } from "@/types/Editor/editor";
+import {
+  Bold,
+  Italic,
+  Underline as UnderlineIcon,
+  Strikethrough,
+  Code,
+  RemoveFormatting,
+  Undo,
+  Redo,
+  AlignLeft,
+  AlignCenter,
+  AlignRight,
+  AlignJustify,
+  List,
+  ListOrdered,
+  CheckSquare,
+  Quote,
+  Minus,
+  Link as LinkIcon,
+  Image as ImageIcon,
+  Table as TableIcon,
+  Youtube as YoutubeIcon,
+  ChevronDown,
+  Heading1,
+  Heading2,
+  Heading3,
+  Pilcrow,
+  IndentIncrease,
+  IndentDecrease,
+  Type,
+} from "lucide-react";
+
+// Tooltip Component
+const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
+  return (
+    <div className="relative group/tooltip">
+      {children}
+      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 text-xs font-medium text-white bg-gray-900 rounded-md opacity-0 group-hover/tooltip:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+        {text}
+        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
+      </div>
+    </div>
+  );
+};
+
+// Dropdown Component
+const Dropdown = ({
+  trigger,
+  children,
+  isOpen,
+  onToggle,
+}: {
+  trigger: React.ReactNode;
+  children: React.ReactNode;
+  isOpen: boolean;
+  onToggle: () => void;
+}) => {
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        if (isOpen) onToggle();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, onToggle]);
+
+  return (
+    <div className="relative" ref={dropdownRef}>
+      <button type="button" onClick={onToggle} className="flex items-center">
+        {trigger}
+      </button>
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg py-1 z-50 min-w-[140px]">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default function TiptapEditor({
   value,
@@ -39,9 +121,7 @@ export default function TiptapEditor({
   direction = "ltr",
   onDirectionChange,
 }: TiptapEditorProps) {
-  const [currentDirection, setCurrentDirection] = useState<"ltr" | "rtl">(
-    direction
-  );
+  const [currentDirection, setCurrentDirection] = useState<"ltr" | "rtl">(direction);
   const [linkUrl, setLinkUrl] = useState("");
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState("");
@@ -50,76 +130,48 @@ export default function TiptapEditor({
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
       StarterKit.configure({
-        bulletList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
-        orderedList: {
-          keepMarks: true,
-          keepAttributes: false,
-        },
+        bulletList: { keepMarks: true, keepAttributes: false },
+        orderedList: { keepMarks: true, keepAttributes: false },
       }),
-      TextAlign.configure({
-        types: ["heading", "paragraph"],
-      }),
+      TextAlign.configure({ types: ["heading", "paragraph"] }),
       Underline,
-      Placeholder.configure({
-        placeholder,
-      }),
+      Placeholder.configure({ placeholder }),
       Link.configure({
         openOnClick: false,
-        HTMLAttributes: {
-          class: "text-blue-600 underline hover:text-blue-800",
-        },
+        HTMLAttributes: { class: "text-blue-600 underline hover:text-blue-800" },
       }),
       Image.configure({
-        HTMLAttributes: {
-          class: "rounded-lg max-w-full h-auto",
-        },
+        HTMLAttributes: { class: "rounded-lg max-w-full h-auto" },
       }),
-      Table.configure({
-        resizable: true,
-      }),
+      Table.configure({ resizable: true }),
       TableRow,
       TableHeader,
       TableCell,
       TextStyle,
       Color,
-      Highlight.configure({
-        multicolor: true,
-      }),
+      Highlight.configure({ multicolor: true }),
       BulletList,
       OrderedList,
       ListItem,
       TaskList,
-      TaskItem.configure({
-        nested: true,
-      }),
+      TaskItem.configure({ nested: true }),
       CodeBlock,
       Blockquote,
       HorizontalRule,
-      TextDirection.configure({
-        types: ["heading", "paragraph", "listItem"],
-      }),
+      TextDirection.configure({ types: ["heading", "paragraph", "listItem"] }),
       FontSize,
       LineHeight,
       Indent,
-      Youtube.configure({
-        controls: true,
-        nocookie: true,
-        modestBranding: true,
-      }),
+      Youtube.configure({ controls: true, nocookie: true, modestBranding: true }),
     ],
     content: value || "",
-    onUpdate: ({ editor }) => {
-      const html = editor.getHTML();
-      onChange(html);
-    },
+    onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
         class: `min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none ${
@@ -142,9 +194,8 @@ export default function TiptapEditor({
     }
   }, [direction, editor, currentDirection]);
 
-  if (!editor) {
-    return null;
-  }
+  if (!editor) return null;
+
   const ToolbarButton = ({
     onClick,
     isActive,
@@ -157,32 +208,48 @@ export default function TiptapEditor({
     children: React.ReactNode;
     title: string;
     disabled?: boolean;
-  }) => {
-    const baseClasses =
-      "px-2 py-1 text-xs border disabled:opacity-50 disabled:cursor-not-allowed";
-    const themeClasses =
-      theme === "dark"
-        ? `border-gray-600 text-white hover:bg-gray-700 focus:bg-gray-700 ${
-            isActive ? "bg-blue-600 border-blue-500" : ""
-          }`
-        : `border-gray-300 hover:bg-gray-200 focus:bg-gray-200 ${
-            isActive ? "bg-blue-100 border-blue-300" : ""
-          }`;
-
-    return (
+  }) => (
+    <Tooltip text={title}>
       <button
         type="button"
         onClick={onClick}
         disabled={disabled}
-        className={`${baseClasses} ${themeClasses} ${
-          !disabled ? "cursor-pointer" : ""
-        }`}
-        title={title}
+        className={`w-8 h-8 flex items-center justify-center rounded-md transition-colors ${
+          disabled
+            ? "opacity-40 cursor-not-allowed"
+            : "cursor-pointer hover:bg-gray-100"
+        } ${isActive ? "bg-blue-100 text-blue-600" : "text-gray-700"}`}
       >
         {children}
       </button>
-    );
-  };
+    </Tooltip>
+  );
+
+  const DropdownItem = ({
+    onClick,
+    isActive,
+    icon: Icon,
+    label,
+  }: {
+    onClick: () => void;
+    isActive?: boolean;
+    icon?: any;
+    label: string;
+  }) => (
+    <button
+      type="button"
+      onClick={() => {
+        onClick();
+        setOpenDropdown(null);
+      }}
+      className={`w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-gray-50 transition-colors ${
+        isActive ? "bg-blue-50 text-blue-600" : "text-gray-700"
+      }`}
+    >
+      {Icon && <Icon className="w-4 h-4" />}
+      <span>{label}</span>
+    </button>
+  );
 
   const addLink = () => {
     if (linkUrl) {
@@ -206,11 +273,7 @@ export default function TiptapEditor({
   };
 
   const addTable = () => {
-    editor
-      .chain()
-      .focus()
-      .insertTable({ rows: 3, cols: 3, withHeaderRow: true })
-      .run();
+    editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
   };
 
   const addVideo = () => {
@@ -221,344 +284,269 @@ export default function TiptapEditor({
     }
   };
 
+  const getActiveHeading = () => {
+    if (editor.isActive("heading", { level: 1 })) return "H1";
+    if (editor.isActive("heading", { level: 2 })) return "H2";
+    if (editor.isActive("heading", { level: 3 })) return "H3";
+    return "P";
+  };
+
+  const getActiveAlignment = () => {
+    if (editor.isActive({ textAlign: "center" })) return AlignCenter;
+    if (editor.isActive({ textAlign: "right" })) return AlignRight;
+    if (editor.isActive({ textAlign: "justify" })) return AlignJustify;
+    return AlignLeft;
+  };
+
+  const ActiveAlignIcon = getActiveAlignment();
+
   return (
-    <div
-      className={`border rounded-md ${
-        theme === "dark" ? "border-gray-600" : "border-gray-300"
-      } ${className}`}
-    >
-      <div
-        className={`sticky top-16 z-10 border-b p-2 rounded-t-md overflow-x-auto ${
-          theme === "dark"
-            ? "border-gray-700 bg-gray-800"
-            : "border-gray-200 bg-gray-50"
-        }`}
-      >
-        <div className="flex flex-wrap gap-1 min-w-max">
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
+    <div className={`border border-gray-200 rounded-xl overflow-hidden bg-white ${className}`}>
+      {/* Toolbar */}
+      <div className="sticky top-16 z-10 border-b border-gray-100 bg-gray-50 p-2">
+        <div className="flex flex-wrap items-center gap-1">
+          {/* Undo/Redo */}
+          <div className="flex items-center gap-0.5 pr-2 border-r border-gray-200">
             <ToolbarButton
               onClick={() => editor.chain().focus().undo().run()}
               disabled={!editor.can().undo()}
               title="Undo (Ctrl+Z)"
             >
-              ↩
+              <Undo className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().redo().run()}
               disabled={!editor.can().redo()}
               title="Redo (Ctrl+Y)"
             >
-              ↪
+              <Redo className="w-4 h-4" />
             </ToolbarButton>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
+          {/* Heading Dropdown */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "heading"}
+              onToggle={() => setOpenDropdown(openDropdown === "heading" ? null : "heading")}
+              trigger={
+                <div className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm font-medium text-gray-700">
+                  <Type className="w-4 h-4" />
+                  <span>{getActiveHeading()}</span>
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              }
+            >
+              <DropdownItem
+                onClick={() => editor.chain().focus().setParagraph().run()}
+                isActive={editor.isActive("paragraph")}
+                icon={Pilcrow}
+                label="Paragraph"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+                isActive={editor.isActive("heading", { level: 1 })}
+                icon={Heading1}
+                label="Heading 1"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+                isActive={editor.isActive("heading", { level: 2 })}
+                icon={Heading2}
+                label="Heading 2"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+                isActive={editor.isActive("heading", { level: 3 })}
+                icon={Heading3}
+                label="Heading 3"
+              />
+            </Dropdown>
+          </div>
+
+          {/* Text Formatting */}
+          <div className="flex items-center gap-0.5 px-2 border-l border-r border-gray-200">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBold().run()}
               isActive={editor.isActive("bold")}
               title="Bold (Ctrl+B)"
             >
-              <strong>B</strong>
+              <Bold className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleItalic().run()}
               isActive={editor.isActive("italic")}
               title="Italic (Ctrl+I)"
             >
-              <em>I</em>
+              <Italic className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleUnderline().run()}
               isActive={editor.isActive("underline")}
               title="Underline (Ctrl+U)"
             >
-              <u>U</u>
+              <UnderlineIcon className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleStrike().run()}
               isActive={editor.isActive("strike")}
               title="Strikethrough"
             >
-              <s>S</s>
+              <Strikethrough className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleCode().run()}
               isActive={editor.isActive("code")}
               title="Inline Code"
             >
-              {"</>"}
+              <Code className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().unsetAllMarks().run()}
               title="Clear Formatting"
             >
-              ✖
+              <RemoveFormatting className="w-4 h-4" />
             </ToolbarButton>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <input
-              type="color"
-              onChange={(e) =>
-                editor.chain().focus().setColor(e.target.value).run()
-              }
-              className={`w-8 h-6 border rounded cursor-pointer ${
-                theme === "dark" ? "border-gray-600" : "border-gray-300"
-              }`}
-              title="Text Color"
-            />
-            <input
-              type="color"
-              onChange={(e) =>
-                editor
-                  .chain()
-                  .focus()
-                  .toggleHighlight({ color: e.target.value })
-                  .run()
-              }
-              className={`w-8 h-6 border rounded cursor-pointer ml-1 ${
-                theme === "dark" ? "border-gray-600" : "border-gray-300"
-              }`}
-              title="Highlight Color"
-            />
+          {/* Colors */}
+          <div className="flex items-center gap-1 px-2 border-r border-gray-200">
+            <Tooltip text="Text Color">
+              <input
+                type="color"
+                onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+                className="w-8 h-8 rounded-md border border-gray-200 cursor-pointer p-0.5"
+              />
+            </Tooltip>
+            <Tooltip text="Highlight">
+              <input
+                type="color"
+                onChange={(e) => editor.chain().focus().toggleHighlight({ color: e.target.value }).run()}
+                className="w-8 h-8 rounded-md border border-gray-200 cursor-pointer p-0.5"
+                defaultValue="#ffff00"
+              />
+            </Tooltip>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <select
-              onChange={(e) =>
-                editor.chain().focus().setFontSize(e.target.value).run()
+          {/* Alignment Dropdown */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "align"}
+              onToggle={() => setOpenDropdown(openDropdown === "align" ? null : "align")}
+              trigger={
+                <div className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-gray-700">
+                  <ActiveAlignIcon className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3" />
+                </div>
               }
-              value={
-                editor.isActive("textStyle")
-                  ? editor.getAttributes("textStyle").fontSize || ""
-                  : ""
-              }
-              className={`px-2 py-1 text-xs border rounded cursor-pointer ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-white"
-                  : "border-gray-300 bg-white"
-              }`}
-              title="Font Size"
             >
-              <option value="">Size</option>
-              <option value="12px">12px</option>
-              <option value="14px">14px</option>
-              <option value="16px">16px</option>
-              <option value="18px">18px</option>
-              <option value="20px">20px</option>
-              <option value="24px">24px</option>
-              <option value="28px">28px</option>
-              <option value="32px">32px</option>
-              <option value="36px">36px</option>
-            </select>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().unsetFontSize().run()}
-              disabled={!editor.isActive("textStyle", { fontSize: true })}
-              title="Clear Font Size"
-            >
-              Clear Size
-            </ToolbarButton>
+              <DropdownItem
+                onClick={() => editor.chain().focus().setTextAlign("left").run()}
+                isActive={editor.isActive({ textAlign: "left" })}
+                icon={AlignLeft}
+                label="Align Left"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().setTextAlign("center").run()}
+                isActive={editor.isActive({ textAlign: "center" })}
+                icon={AlignCenter}
+                label="Align Center"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().setTextAlign("right").run()}
+                isActive={editor.isActive({ textAlign: "right" })}
+                icon={AlignRight}
+                label="Align Right"
+              />
+              <DropdownItem
+                onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+                isActive={editor.isActive({ textAlign: "justify" })}
+                icon={AlignJustify}
+                label="Justify"
+              />
+            </Dropdown>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 1 }).run()
-              }
-              isActive={editor.isActive("heading", { level: 1 })}
-              title="Heading 1"
-            >
-              H1
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 2 }).run()
-              }
-              isActive={editor.isActive("heading", { level: 2 })}
-              title="Heading 2"
-            >
-              H2
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().toggleHeading({ level: 3 }).run()
-              }
-              isActive={editor.isActive("heading", { level: 3 })}
-              title="Heading 3"
-            >
-              H3
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().setParagraph().run()}
-              isActive={editor.isActive("paragraph")}
-              title="Paragraph"
-            >
-              P
-            </ToolbarButton>
-          </div>
-
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
+          {/* Lists */}
+          <div className="flex items-center gap-0.5 px-2 border-l border-r border-gray-200">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBulletList().run()}
               isActive={editor.isActive("bulletList")}
               title="Bullet List"
             >
-              •
+              <List className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleOrderedList().run()}
               isActive={editor.isActive("orderedList")}
               title="Numbered List"
             >
-              1.
+              <ListOrdered className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleTaskList().run()}
               isActive={editor.isActive("taskList")}
               title="Task List"
             >
-              ☑
+              <CheckSquare className="w-4 h-4" />
+            </ToolbarButton>
+            <ToolbarButton onClick={() => editor.chain().focus().indent().run()} title="Indent">
+              <IndentIncrease className="w-4 h-4" />
+            </ToolbarButton>
+            <ToolbarButton onClick={() => editor.chain().focus().outdent().run()} title="Outdent">
+              <IndentDecrease className="w-4 h-4" />
             </ToolbarButton>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <ToolbarButton
-              onClick={() => editor.chain().focus().indent().run()}
-              title="Increase Indent"
-            >
-              ⇥
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().outdent().run()}
-              title="Decrease Indent"
-            >
-              ⇤
-            </ToolbarButton>
-          </div>
-
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <ToolbarButton
-              onClick={() => editor.chain().focus().setTextAlign("left").run()}
-              isActive={editor.isActive({ textAlign: "left" })}
-              title="Align Left"
-            >
-              ⟵
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().setTextAlign("center").run()
-              }
-              isActive={editor.isActive({ textAlign: "center" })}
-              title="Align Center"
-            >
-              ⟷
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().setTextAlign("right").run()}
-              isActive={editor.isActive({ textAlign: "right" })}
-              title="Align Right"
-            >
-              ⟶
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() =>
-                editor.chain().focus().setTextAlign("justify").run()
-              }
-              isActive={editor.isActive({ textAlign: "justify" })}
-              title="Justify"
-            >
-              ⟷
-            </ToolbarButton>
-          </div>
-
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
+          {/* Blocks */}
+          <div className="flex items-center gap-0.5 px-2 border-r border-gray-200">
             <ToolbarButton
               onClick={() => editor.chain().focus().toggleBlockquote().run()}
               isActive={editor.isActive("blockquote")}
               title="Quote"
             >
-              Quote
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => editor.chain().focus().toggleCodeBlock().run()}
-              isActive={editor.isActive("codeBlock")}
-              title="Code Block"
-            >
-              📄
+              <Quote className="w-4 h-4" />
             </ToolbarButton>
             <ToolbarButton
               onClick={() => editor.chain().focus().setHorizontalRule().run()}
-              title="Horizontal Rule"
+              title="Horizontal Line"
             >
-              ―
+              <Minus className="w-4 h-4" />
             </ToolbarButton>
           </div>
 
-          <div
-            className={`flex border-r pr-2 mr-2 ${
-              theme === "dark" ? "border-gray-600" : "border-gray-300"
-            }`}
-          >
-            <ToolbarButton
-              onClick={() => setIsLinkModalOpen(true)}
-              title="Insert Link"
+          {/* Insert Dropdown */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "insert"}
+              onToggle={() => setOpenDropdown(openDropdown === "insert" ? null : "insert")}
+              trigger={
+                <div className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm font-medium text-gray-700">
+                  <span>Insert</span>
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              }
             >
-              🔗
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => setIsImageModalOpen(true)}
-              title="Insert Image"
-            >
-              🖼
-            </ToolbarButton>
-            <ToolbarButton onClick={addTable} title="Insert Table">
-              📊
-            </ToolbarButton>
-            <ToolbarButton
-              onClick={() => setIsVideoModalOpen(true)}
-              title="Insert Video"
-            >
-              🎞
-            </ToolbarButton>
+              <DropdownItem
+                onClick={() => { setIsLinkModalOpen(true); setOpenDropdown(null); }}
+                icon={LinkIcon}
+                label="Link"
+              />
+              <DropdownItem
+                onClick={() => { setIsImageModalOpen(true); setOpenDropdown(null); }}
+                icon={ImageIcon}
+                label="Image"
+              />
+              <DropdownItem onClick={addTable} icon={TableIcon} label="Table" />
+              <DropdownItem
+                onClick={() => { setIsVideoModalOpen(true); setOpenDropdown(null); }}
+                icon={YoutubeIcon}
+                label="YouTube Video"
+              />
+            </Dropdown>
           </div>
 
-          <div className="flex">
+          {/* Direction Toggle */}
+          <div className="ml-auto">
             <ToolbarButton
               onClick={() => {
                 const newDirection = currentDirection === "ltr" ? "rtl" : "ltr";
@@ -569,182 +557,122 @@ export default function TiptapEditor({
               isActive={currentDirection === "rtl"}
               title="Toggle Text Direction (RTL/LTR)"
             >
-              {currentDirection === "rtl" ? "RTL" : "LTR"}
+              <span className="text-xs font-bold">{currentDirection === "rtl" ? "RTL" : "LTR"}</span>
             </ToolbarButton>
           </div>
         </div>
       </div>
 
+      {/* Link Modal */}
       {isLinkModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`p-4 rounded-lg shadow-lg ${
-              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
-            }`}
-          >
-            <h3
-              className={`text-lg font-semibold mb-2 ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Insert Link
-            </h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Insert Link</h3>
             <input
               type="url"
               value={linkUrl}
               onChange={(e) => setLinkUrl(e.target.value)}
               placeholder="https://example.com"
-              className={`w-full p-2 border rounded mb-2 ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  : "border-gray-300"
-              }`}
+              className="w-full p-3 border border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="flex gap-2">
-              <button
-                onClick={addLink}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-              >
-                Add Link
-              </button>
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsLinkModalOpen(false)}
-                className={`px-4 py-2 rounded cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-gray-600 text-white hover:bg-gray-700"
-                    : "bg-gray-600 text-white hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Cancel
+              </button>
+              <button
+                onClick={addLink}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Add Link
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Image Modal */}
       {isImageModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`p-4 rounded-lg shadow-lg ${
-              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
-            }`}
-          >
-            <h3
-              className={`text-lg font-semibold mb-2 ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Insert Image
-            </h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Insert Image</h3>
             <input
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
-              className={`w-full p-2 border rounded mb-2 ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  : "border-gray-300"
-              }`}
+              className="w-full p-3 border border-gray-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="flex gap-2 mb-2">
+            <div className="flex gap-3 mb-4">
               <input
                 type="number"
                 value={imageWidth}
                 onChange={(e) => setImageWidth(e.target.value)}
                 placeholder="Width (px)"
-                className={`flex-1 p-2 border rounded ${
-                  theme === "dark"
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "border-gray-300"
-                }`}
+                className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <input
                 type="number"
                 value={imageHeight}
                 onChange={(e) => setImageHeight(e.target.value)}
                 placeholder="Height (px)"
-                className={`flex-1 p-2 border rounded ${
-                  theme === "dark"
-                    ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                    : "border-gray-300"
-                }`}
+                className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
-            <div className="flex gap-2">
-              <button
-                onClick={addImage}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-              >
-                Add Image
-              </button>
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsImageModalOpen(false)}
-                className={`px-4 py-2 rounded cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-gray-600 text-white hover:bg-gray-700"
-                    : "bg-gray-600 text-white hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Cancel
+              </button>
+              <button
+                onClick={addImage}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Add Image
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Video Modal */}
       {isVideoModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div
-            className={`p-4 rounded-lg shadow-lg ${
-              theme === "dark" ? "bg-gray-800 text-white" : "bg-white"
-            }`}
-          >
-            <h3
-              className={`text-lg font-semibold mb-2 ${
-                theme === "dark" ? "text-white" : "text-gray-900"
-              }`}
-            >
-              Insert Video
-            </h3>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Insert YouTube Video</h3>
             <input
               type="url"
               value={videoUrl}
               onChange={(e) => setVideoUrl(e.target.value)}
-              placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-              className={`w-full p-2 border rounded mb-2 ${
-                theme === "dark"
-                  ? "bg-gray-700 border-gray-600 text-white placeholder-gray-400"
-                  : "border-gray-300"
-              }`}
+              placeholder="https://www.youtube.com/watch?v=..."
+              className="w-full p-3 border border-gray-200 rounded-lg mb-4 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <div className="flex gap-2">
-              <button
-                onClick={addVideo}
-                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 cursor-pointer"
-              >
-                Add Video
-              </button>
+            <div className="flex justify-end gap-3">
               <button
                 onClick={() => setIsVideoModalOpen(false)}
-                className={`px-4 py-2 rounded cursor-pointer ${
-                  theme === "dark"
-                    ? "bg-gray-600 text-white hover:bg-gray-700"
-                    : "bg-gray-600 text-white hover:bg-gray-700"
-                }`}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
               >
                 Cancel
+              </button>
+              <button
+                onClick={addVideo}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                Add Video
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Editor Content */}
       <EditorContent
         editor={editor}
-        className={`focus-within:ring-2 focus-within:ring-blue-500 rounded-b-md ${
-          theme === "dark" ? "text-white" : ""
-        }`}
+        className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset"
       />
 
       <style jsx global>{`
@@ -776,21 +704,24 @@ export default function TiptapEditor({
           padding-left: 1.5em;
         }
         .ProseMirror blockquote {
-          border-left: 3px solid #ccc;
+          border-left: 3px solid #d1d5db;
           padding-left: 1em;
           margin: 1em 0;
           font-style: italic;
+          color: #6b7280;
         }
         .ProseMirror code {
-          background: #f1f1f1;
+          background: #f3f4f6;
           padding: 0.2em 0.4em;
-          border-radius: 3px;
+          border-radius: 4px;
           font-family: monospace;
+          font-size: 0.9em;
         }
         .ProseMirror pre {
-          background: #f8f8f8;
+          background: #1f2937;
+          color: #e5e7eb;
           padding: 1em;
-          border-radius: 4px;
+          border-radius: 8px;
           overflow-x: auto;
         }
         .ProseMirror table {
@@ -800,19 +731,19 @@ export default function TiptapEditor({
         }
         .ProseMirror td,
         .ProseMirror th {
-          border: 1px solid #ccc;
+          border: 1px solid #d1d5db;
           padding: 0.5em;
         }
         .ProseMirror th {
-          background: #f8f8f8;
-          font-weight: bold;
+          background: #f9fafb;
+          font-weight: 600;
         }
         .ProseMirror img {
           max-width: 100%;
           height: auto;
         }
         .ProseMirror .is-editor-empty:first-child::before {
-          color: #adb5bd;
+          color: #9ca3af;
           content: attr(data-placeholder);
           float: left;
           height: 0;
@@ -825,6 +756,7 @@ export default function TiptapEditor({
         .ProseMirror-task-item {
           display: flex;
           align-items: flex-start;
+          gap: 0.5em;
         }
         .ProseMirror-task-item > label {
           user-select: none;
