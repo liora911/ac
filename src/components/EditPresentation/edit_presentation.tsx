@@ -100,10 +100,10 @@ export default function EditPresentationForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-          <p className="mt-2 text-gray-300">
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
             {status === "loading"
               ? t("editPresentationForm.loadingGeneric")
               : t("editPresentationForm.loadingPresentationData")}
@@ -115,37 +115,33 @@ export default function EditPresentationForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            {t("editPresentationForm.loginRequiredTitle")}
-          </h2>
-          <p className="text-gray-300 rtl">
-            {t("editPresentationForm.loginRequiredMessage")}
-          </p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-indigo-500 text-white px-6 py-2 rounded-md hover:bg-indigo-600 cursor-pointer"
-          >
-            {t("editPresentationForm.loginButton")}
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editPresentationForm.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editPresentationForm.loginRequiredMessage")}
+        </p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("editPresentationForm.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            {t("editPresentationForm.notAuthorizedTitle")}
-          </h2>
-          <p className="text-gray-300 rtl">
-            {t("editPresentationForm.notAuthorizedMessage")}
-          </p>
-          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editPresentationForm.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editPresentationForm.notAuthorizedMessage")}
+        </p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -266,21 +262,22 @@ export default function EditPresentationForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        {t("editPresentationForm.title")}
-      </h2>
-
-      <p className="text-sm text-green-400 text-center mb-8">
-        {t("editPresentationForm.loggedInAs")} {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 rtl">
+          {t("editPresentationForm.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("editPresentationForm.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-900 text-green-200 border border-green-700"
-              : "bg-red-900 text-red-200 border border-red-700"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -291,7 +288,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editPresentationForm.titleLabel")}
           </label>
@@ -302,7 +299,7 @@ export default function EditPresentationForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder={t("editPresentationForm.titlePlaceholder")}
           />
         </div>
@@ -310,7 +307,7 @@ export default function EditPresentationForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editPresentationForm.descriptionLabel")}
           </label>
@@ -320,20 +317,13 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder={t("editPresentationForm.descriptionPlaceholder")}
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
           />
         </div>
 
         <div>
           <label
             htmlFor="content"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editPresentationForm.contentLabel")}
           </label>
@@ -343,102 +333,101 @@ export default function EditPresentationForm({
               setFormData((prev) => ({ ...prev, content: value }))
             }
             placeholder={t("editPresentationForm.contentPlaceholder")}
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="content"
-            value={formData.content}
-            required
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="googleSlidesUrl"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editPresentationForm.googleSlidesUrlLabel")}
-          </label>
-          <input
-            type="url"
-            id="googleSlidesUrl"
-            name="googleSlidesUrl"
-            value={formData.googleSlidesUrl}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="https://docs.google.com/presentation/..."
-          />
-          <p className="mt-2 text-sm text-gray-400 rtl">
-            {t("editPresentationForm.googleSlidesHelpText")}
-          </p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="googleSlidesUrl"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editPresentationForm.googleSlidesUrlLabel")}
+            </label>
+            <input
+              type="url"
+              id="googleSlidesUrl"
+              name="googleSlidesUrl"
+              value={formData.googleSlidesUrl}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+              placeholder="https://docs.google.com/presentation/..."
+            />
+            <p className="mt-1 text-xs text-gray-500 rtl">
+              {t("editPresentationForm.googleSlidesHelpText")}
+            </p>
+          </div>
+
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editPresentationForm.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("editPresentationForm.loadingCategories")
+                  : t("editPresentationForm.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
         <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editPresentationForm.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("editPresentationForm.loadingCategories")
-                : t("editPresentationForm.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
-
-        <div>
-          <label className="block text-lg font-semibold mb-3 text-white rtl">
+          <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
             {t("editPresentationForm.imageLinksLabel")}
           </label>
-          {formData.imageUrls.map((url, index) => (
-            <div key={index} className="flex gap-2 mb-2">
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                className="flex-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-                placeholder="https://"
-              />
-              <button
-                type="button"
-                onClick={() => removeImageUrl(index)}
-                className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer"
-              >
-                {t("editPresentationForm.removeImageButton")}
-              </button>
-            </div>
-          ))}
+          <div className="space-y-2">
+            {formData.imageUrls.map((url, index) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  type="url"
+                  value={url}
+                  onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="https://"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImageUrl(index)}
+                  className="px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium cursor-pointer transition-colors"
+                >
+                  {t("editPresentationForm.removeImageButton")}
+                </button>
+              </div>
+            ))}
+          </div>
           <button
             type="button"
             onClick={addImageUrl}
-            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 cursor-pointer"
+            className="mt-3 w-full p-3 border border-gray-300 border-dashed rounded-lg text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors"
           >
             {t("editPresentationForm.addImageButton")}
           </button>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading
-            ? t("editPresentationForm.submitUpdating")
-            : t("editPresentationForm.submit")}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+          >
+            {isLoading
+              ? t("editPresentationForm.submitUpdating")
+              : t("editPresentationForm.submit")}
+          </button>
+        </div>
       </form>
     </div>
   );

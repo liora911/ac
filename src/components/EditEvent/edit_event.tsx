@@ -98,10 +98,10 @@ export default function EditEventForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
             {status === "loading"
               ? t("editEventForm.loadingGeneric")
               : t("editEventForm.loadingEventData")}
@@ -113,37 +113,33 @@ export default function EditEventForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            {t("editEventForm.loginRequiredTitle")}
-          </h2>
-          <p className="text-gray-600 rtl">
-            {t("editEventForm.loginRequiredMessage")}
-          </p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-          >
-            {t("editEventForm.loginButton")}
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editEventForm.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editEventForm.loginRequiredMessage")}
+        </p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("editEventForm.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            {t("editEventForm.notAuthorizedTitle")}
-          </h2>
-          <p className="text-gray-600 rtl">
-            {t("editEventForm.notAuthorizedMessage")}
-          </p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editEventForm.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editEventForm.notAuthorizedMessage")}
+        </p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -239,18 +235,19 @@ export default function EditEventForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        {t("editEventForm.title")}
-      </h2>
-
-      <p className="text-sm text-green-600 text-center mb-8">
-        {t("editEventForm.loggedInAs")} {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 rtl">
+          {t("editEventForm.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("editEventForm.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
               ? "bg-green-50 text-green-800 border border-green-200"
               : "bg-red-50 text-red-800 border border-red-200"
@@ -260,11 +257,11 @@ export default function EditEventForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editEventForm.titleLabel")}
           </label>
@@ -275,7 +272,7 @@ export default function EditEventForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder={t("editEventForm.titlePlaceholder")}
           />
         </div>
@@ -283,7 +280,7 @@ export default function EditEventForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editEventForm.descriptionLabel")}
           </label>
@@ -294,42 +291,63 @@ export default function EditEventForm({
             }
             placeholder={t("editEventForm.descriptionPlaceholder")}
           />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
-          />
         </div>
 
-        <div>
-          <label
-            htmlFor="eventType"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
-          >
-            {t("editEventForm.eventTypeLabel")}
-          </label>
-          <select
-            id="eventType"
-            name="eventType"
-            value={formData.eventType}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-          >
-            <option value="">{t("editEventForm.eventTypePlaceholder")}</option>
-            <option value="in-person">
-              {t("editEventForm.eventTypeInPerson")}
-            </option>
-            <option value="online">{t("editEventForm.eventTypeOnline")}</option>
-          </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="eventType"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editEventForm.eventTypeLabel")}
+            </label>
+            <select
+              id="eventType"
+              name="eventType"
+              value={formData.eventType}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+            >
+              <option value="">{t("editEventForm.eventTypePlaceholder")}</option>
+              <option value="in-person">
+                {t("editEventForm.eventTypeInPerson")}
+              </option>
+              <option value="online">{t("editEventForm.eventTypeOnline")}</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editEventForm.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("editEventForm.loadingCategories")
+                  : t("editEventForm.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
         {formData.eventType === "in-person" && (
           <div>
             <label
               htmlFor="location"
-              className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
             >
               {t("editEventForm.locationLabel")}
             </label>
@@ -340,7 +358,7 @@ export default function EditEventForm({
               value={formData.location}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
               placeholder={t("editEventForm.locationPlaceholder")}
             />
           </div>
@@ -350,7 +368,7 @@ export default function EditEventForm({
           <div>
             <label
               htmlFor="onlineUrl"
-              className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
             >
               {t("editEventForm.onlineUrlLabel")}
             </label>
@@ -361,51 +379,53 @@ export default function EditEventForm({
               value={formData.onlineUrl}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
               placeholder="https://"
             />
           </div>
         )}
 
-        <div>
-          <label
-            htmlFor="eventDate"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
-          >
-            {t("editEventForm.eventDateLabel")}
-          </label>
-          <input
-            type="date"
-            id="eventDate"
-            name="eventDate"
-            value={formData.eventDate}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="eventDate"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editEventForm.eventDateLabel")}
+            </label>
+            <input
+              type="date"
+              id="eventDate"
+              name="eventDate"
+              value={formData.eventDate}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="eventTime"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
-          >
-            {t("editEventForm.eventTimeLabel")}
-          </label>
-          <input
-            type="time"
-            id="eventTime"
-            name="eventTime"
-            value={formData.eventTime}
-            onChange={handleChange}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-          />
+          <div>
+            <label
+              htmlFor="eventTime"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editEventForm.eventTimeLabel")}
+            </label>
+            <input
+              type="time"
+              id="eventTime"
+              name="eventTime"
+              value={formData.eventTime}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+            />
+          </div>
         </div>
 
         <div>
           <label
             htmlFor="bannerImageUrl"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editEventForm.bannerImageUrlLabel")}
           </label>
@@ -415,45 +435,22 @@ export default function EditEventForm({
             name="bannerImageUrl"
             value={formData.bannerImageUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder-gray-500 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder="https://"
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-gray-900 rtl"
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
           >
-            {t("editEventForm.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-4 bg-white text-gray-900 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("editEventForm.loadingCategories")
-                : t("editEventForm.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
+            {isLoading
+              ? t("editEventForm.submitUpdating")
+              : t("editEventForm.submit")}
+          </button>
         </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading
-            ? t("editEventForm.submitUpdating")
-            : t("editEventForm.submit")}
-        </button>
       </form>
     </div>
   );

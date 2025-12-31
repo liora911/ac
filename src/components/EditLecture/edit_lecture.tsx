@@ -7,7 +7,6 @@ import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { useTheme } from "@/contexts/ThemeContext";
 import { CategoryNode, EditLectureFormProps } from "@/types/EditLecture/edit";
 
 export default function EditLectureForm({
@@ -36,7 +35,6 @@ export default function EditLectureForm({
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
-  const { theme } = useTheme();
 
   const isAuthorized = !!(
     session?.user?.email &&
@@ -93,10 +91,10 @@ export default function EditLectureForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
             {status === "loading" ? t("loading") : t("loadingLectureData")}
           </p>
         </div>
@@ -106,37 +104,33 @@ export default function EditLectureForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            {t("editLectureForm.loginRequiredTitle")}
-          </h2>
-          <p className="text-gray-600 rtl">
-            {t("editLectureForm.loginRequiredMessage")}
-          </p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-          >
-            {t("editLectureForm.loginButton")}
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editLectureForm.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editLectureForm.loginRequiredMessage")}
+        </p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("editLectureForm.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
-            {t("editLectureForm.notAuthorizedTitle")}
-          </h2>
-          <p className="text-gray-600 rtl">
-            {t("editLectureForm.notAuthorizedMessage")}
-          </p>
-          <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+          {t("editLectureForm.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600 rtl">
+          {t("editLectureForm.notAuthorizedMessage")}
+        </p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -248,21 +242,22 @@ export default function EditLectureForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        {t("editLectureForm.title")}
-      </h2>
-
-      <p className="text-sm text-green-400 text-center mb-8">
-        {t("editLectureForm.loggedInAs")} {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 rtl">
+          {t("editLectureForm.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("editLectureForm.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-900 text-green-200 border border-green-700"
-              : "bg-red-900 text-red-200 border border-red-700"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -273,7 +268,7 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editLectureForm.titleLabel")}
           </label>
@@ -284,7 +279,7 @@ export default function EditLectureForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder={t("editLectureForm.titlePlaceholder")}
           />
         </div>
@@ -292,7 +287,7 @@ export default function EditLectureForm({
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editLectureForm.descriptionLabel")}
           </label>
@@ -302,97 +297,94 @@ export default function EditLectureForm({
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder={t("editLectureForm.descriptionPlaceholder")}
-            theme={theme}
-          />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="videoUrl"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editLectureForm.videoUrlLabel")}
-          </label>
-          <input
-            type="url"
-            id="videoUrl"
-            name="videoUrl"
-            value={formData.videoUrl}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder="https://"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="videoUrl"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editLectureForm.videoUrlLabel")}
+            </label>
+            <input
+              type="url"
+              id="videoUrl"
+              name="videoUrl"
+              value={formData.videoUrl}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="https://"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="duration"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editLectureForm.durationLabel")}
+            </label>
+            <input
+              type="text"
+              id="duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder={t("editLectureForm.durationPlaceholder")}
+            />
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="duration"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editLectureForm.durationLabel")}
-          </label>
-          <input
-            type="text"
-            id="duration"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder={t("editLectureForm.durationPlaceholder")}
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editLectureForm.dateLabel")}
+            </label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editLectureForm.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("editLectureForm.loadingCategories")
+                  : t("editLectureForm.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="date"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editLectureForm.dateLabel")}
-          </label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            {t("editLectureForm.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("editLectureForm.loadingCategories")
-                : t("editLectureForm.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
-
-        <details className="border border-gray-600 rounded-lg p-4 bg-gray-800">
-          <summary className="cursor-pointer text-lg font-semibold text-white rtl mb-3">
+        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
             {t("editLectureForm.imageSummary")}
           </summary>
           <div className="mt-4 space-y-4">
@@ -409,13 +401,13 @@ export default function EditLectureForm({
                   setFormData((prev) => ({ ...prev, bannerImageUrl: "" }));
                   setBannerImageFile(null);
                 }}
-                className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
+                className="text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
               >
                 {t("editLectureForm.removeImageButton")}
               </button>
             )}
             <div>
-              <label className="block text-base font-medium mb-2 text-gray-200 rtl">
+              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
                 {t("editLectureForm.imageUrlLabel")}
               </label>
               <input
@@ -423,22 +415,24 @@ export default function EditLectureForm({
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-700 text-white border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
           </div>
         </details>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading
-            ? t("editLectureForm.submitUpdating")
-            : t("editLectureForm.submit")}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+          >
+            {isLoading
+              ? t("editLectureForm.submitUpdating")
+              : t("editLectureForm.submit")}
+          </button>
+        </div>
       </form>
     </div>
   );

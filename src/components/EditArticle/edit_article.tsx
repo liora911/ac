@@ -112,10 +112,10 @@ export default function EditArticleForm({
 
   if (status === "loading" || isFetching || categoriesLoading) {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
             {t("editArticleForm.loadingGeneric")}
           </p>
         </div>
@@ -125,23 +125,10 @@ export default function EditArticleForm({
 
   if (!session || !isAuthorized) {
     return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <p className="text-center text-red-600">
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <p className="text-red-600">
           {t("editArticleForm.notAuthorized")}
         </p>
-      </div>
-    );
-  }
-
-  if (isFetching || categoriesLoading) {
-    return (
-      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">
-            {t("editArticleForm.loadingArticleData")}
-          </p>
-        </div>
       </div>
     );
   }
@@ -290,18 +277,19 @@ export default function EditArticleForm({
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-2 text-center rtl">
-        {t("editArticleForm.title")}
-      </h2>
-
-      <p className="text-sm text-green-600 text-center mb-6">
-        {t("editArticleForm.loggedInAs")} {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 rtl">
+          {t("editArticleForm.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("editArticleForm.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-4 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
               ? "bg-green-50 text-green-800 border border-green-200"
               : "bg-red-50 text-red-800 border border-red-200"
@@ -311,9 +299,9 @@ export default function EditArticleForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
         <div>
-          <label htmlFor="title" className="block text-sm font-medium mb-2 rtl">
+          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2 rtl">
             {t("editArticleForm.titleLabel")}
           </label>
           <input
@@ -322,13 +310,13 @@ export default function EditArticleForm({
             name="title"
             value={formData.title}
             onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder={t("editArticleForm.titlePlaceholder")}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2 rtl">
+          <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
             {t("editArticleForm.contentLabel")}
           </label>
           <TiptapEditor
@@ -342,97 +330,101 @@ export default function EditArticleForm({
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="publisherName"
-            className="block text-sm font-medium mb-2 rtl"
-          >
-            {t("editArticleForm.authorLabel")}
-          </label>
-          <input
-            type="text"
-            id="publisherName"
-            name="publisherName"
-            value={formData.publisherName}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent rtl"
-            placeholder={t("editArticleForm.authorPlaceholder")}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-sm font-medium mb-2 rtl"
-          >
-            {t("editArticleForm.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            disabled={categoriesLoading}
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("editArticleForm.loadingCategories")
-                : t("editArticleForm.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
-
-        <div>
-          <UploadImage
-            onImageSelect={setArticleImageFile}
-            currentImage={formData.articleImage}
-            label={t("editArticleForm.articleImageLabel")}
-            placeholder={t("editArticleForm.imagePlaceholder")}
-          />
-          {formData.articleImage && (
-            <button
-              type="button"
-              onClick={() => {
-                setFormData((prev) => ({ ...prev, articleImage: "" }));
-                setArticleImageFile(null);
-              }}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="publisherName"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
             >
-              {t("editArticleForm.removeImageButton")}
-            </button>
-          )}
-        </div>
+              {t("editArticleForm.authorLabel")}
+            </label>
+            <input
+              type="text"
+              id="publisherName"
+              name="publisherName"
+              value={formData.publisherName}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+              placeholder={t("editArticleForm.authorPlaceholder")}
+            />
+          </div>
 
-        <div>
-          <UploadImage
-            onImageSelect={setPublisherImageFile}
-            currentImage={formData.publisherImage}
-            label={t("editArticleForm.authorImageLabel")}
-            placeholder={t("editArticleForm.imagePlaceholder")}
-          />
-          {formData.publisherImage && (
-            <button
-              type="button"
-              onClick={() => {
-                setFormData((prev) => ({ ...prev, publisherImage: "" }));
-                setPublisherImageFile(null);
-              }}
-              className="mt-2 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 text-sm cursor-pointer"
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
             >
-              {t("editArticleForm.removeImageButton")}
-            </button>
-          )}
+              {t("editArticleForm.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("editArticleForm.loadingCategories")
+                  : t("editArticleForm.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
-        <details className="border border-gray-200 rounded p-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <UploadImage
+              onImageSelect={setArticleImageFile}
+              currentImage={formData.articleImage}
+              label={t("editArticleForm.articleImageLabel")}
+              placeholder={t("editArticleForm.imagePlaceholder")}
+            />
+            {formData.articleImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData((prev) => ({ ...prev, articleImage: "" }));
+                  setArticleImageFile(null);
+                }}
+                className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              >
+                {t("editArticleForm.removeImageButton")}
+              </button>
+            )}
+          </div>
+
+          <div>
+            <UploadImage
+              onImageSelect={setPublisherImageFile}
+              currentImage={formData.publisherImage}
+              label={t("editArticleForm.authorImageLabel")}
+              placeholder={t("editArticleForm.imagePlaceholder")}
+            />
+            {formData.publisherImage && (
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData((prev) => ({ ...prev, publisherImage: "" }));
+                  setPublisherImageFile(null);
+                }}
+                className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              >
+                {t("editArticleForm.removeImageButton")}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
             {t("editArticleForm.imageLinksSummary")}
           </summary>
-          <div className="mt-3 space-y-3">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1 rtl">
+              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
                 {t("editArticleForm.articleImageUrlLabel")}
               </label>
               <input
@@ -440,12 +432,12 @@ export default function EditArticleForm({
                 name="articleImage"
                 value={formData.articleImage}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 rtl">
+              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
                 {t("editArticleForm.authorImageUrlLabel")}
               </label>
               <input
@@ -453,17 +445,17 @@ export default function EditArticleForm({
                 name="publisherImage"
                 value={formData.publisherImage}
                 onChange={handleChange}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
           </div>
         </details>
 
-        <div>
+        <div className="max-w-xs">
           <label
             htmlFor="readDuration"
-            className="block text-sm font-medium mb-2 rtl"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
           >
             {t("editArticleForm.readDurationLabel")}
           </label>
@@ -475,19 +467,21 @@ export default function EditArticleForm({
             onChange={handleChange}
             min="1"
             max="60"
-            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading
-            ? t("editArticleForm.submitUpdating")
-            : t("editArticleForm.submit")}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+          >
+            {isLoading
+              ? t("editArticleForm.submitUpdating")
+              : t("editArticleForm.submit")}
+          </button>
+        </div>
       </form>
     </div>
   );

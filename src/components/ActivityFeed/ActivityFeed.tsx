@@ -244,13 +244,13 @@ const ActivityFeed: React.FC = () => {
     setOpenMenuId(null);
     switch (activity.type) {
       case "article":
-        router.push(`/articles/${activity.rawId}/edit`);
+        router.push(`/edit-article/${activity.rawId}`);
         break;
       case "event":
-        router.push(`/events/${activity.rawId}/edit`);
+        router.push(`/edit-event/${activity.rawId}`);
         break;
       case "lecture":
-        router.push(`/lectures/${activity.rawId}/edit`);
+        router.push(`/edit-lecture/${activity.rawId}`);
         break;
       case "presentation":
         router.push(`/edit-presentation/${activity.rawId}`);

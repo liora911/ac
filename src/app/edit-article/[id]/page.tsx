@@ -18,13 +18,10 @@ export default function EditArticlePage({
 
   return (
     <div
-      className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-900">
-          {t("editArticlePage.title")}
-        </h1>
+      <div className="max-w-5xl">
         {articleId && <EditArticleForm articleId={articleId} />}
       </div>
     </div>
