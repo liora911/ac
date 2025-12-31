@@ -162,7 +162,15 @@ export default function ElitzurDashboard() {
 
             {session && (
               <div className="space-y-6">
-                {/* Quick Actions - Single Row */}
+                {/* Quick Stats */}
+                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                    סקירה מהירה
+                  </h2>
+                  <QuickStats />
+                </div>
+
+                {/* Quick Actions */}
                 <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
                   <QuickActions />
                 </div>
@@ -173,14 +181,6 @@ export default function ElitzurDashboard() {
                     פעילות אחרונה
                   </h3>
                   <ActivityFeed />
-                </div>
-
-                {/* Quick Stats */}
-                <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                  <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                    סקירה מהירה
-                  </h2>
-                  <QuickStats />
                 </div>
               </div>
             )}

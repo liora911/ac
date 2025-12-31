@@ -1,9 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+  FileText,
+  CalendarDays,
+  Video,
+  Presentation,
+  MoreVertical,
+  Eye,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 interface ActivityItem {
   id: string;
+  rawId: string;
   type: "article" | "event" | "lecture" | "presentation";
   title: string;
   action: "created" | "updated";
@@ -12,8 +24,23 @@ interface ActivityItem {
 }
 
 const ActivityFeed: React.FC = () => {
+  const router = useRouter();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpenMenuId(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const fetchRecentActivities = async () => {
@@ -34,6 +61,7 @@ const ActivityFeed: React.FC = () => {
           recentArticles.forEach((article: any) => {
             activities.push({
               id: `article-${article.id}`,
+              rawId: article.id,
               type: "article",
               title: article.title,
               action: "created",
@@ -49,6 +77,7 @@ const ActivityFeed: React.FC = () => {
           recentEvents.forEach((event: any) => {
             activities.push({
               id: `event-${event.id}`,
+              rawId: event.id,
               type: "event",
               title: event.title,
               action: "created",
@@ -84,6 +113,7 @@ const ActivityFeed: React.FC = () => {
           allLectures.forEach((lecture: any) => {
             activities.push({
               id: `lecture-${lecture.id}`,
+              rawId: lecture.id,
               type: "lecture",
               title: lecture.title,
               action: "created",
@@ -121,6 +151,7 @@ const ActivityFeed: React.FC = () => {
           allPresentations.forEach((presentation: any) => {
             activities.push({
               id: `presentation-${presentation.id}`,
+              rawId: presentation.id,
               type: "presentation",
               title: presentation.title,
               action: "created",
@@ -134,7 +165,7 @@ const ActivityFeed: React.FC = () => {
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
-        setActivities(activities.slice(0, 5));
+        setActivities(activities.slice(0, 8));
       } catch (error) {
         console.error("Failed to fetch activities:", error);
       } finally {
@@ -148,15 +179,30 @@ const ActivityFeed: React.FC = () => {
   const getActivityIcon = (type: string) => {
     switch (type) {
       case "article":
-        return "📝";
+        return { icon: FileText, bg: "bg-blue-100", color: "text-blue-600" };
       case "event":
-        return "📅";
+        return { icon: CalendarDays, bg: "bg-green-100", color: "text-green-600" };
       case "lecture":
-        return "🎓";
+        return { icon: Video, bg: "bg-purple-100", color: "text-purple-600" };
       case "presentation":
-        return "📊";
+        return { icon: Presentation, bg: "bg-orange-100", color: "text-orange-600" };
       default:
-        return "📄";
+        return { icon: FileText, bg: "bg-gray-100", color: "text-gray-600" };
+    }
+  };
+
+  const getTypeLabelHe = (type: string) => {
+    switch (type) {
+      case "article":
+        return "מאמר";
+      case "event":
+        return "אירוע";
+      case "lecture":
+        return "הרצאה";
+      case "presentation":
+        return "מצגת";
+      default:
+        return "";
     }
   };
 
@@ -170,65 +216,178 @@ const ActivityFeed: React.FC = () => {
     if (diffInHours < 1) return "לפני פחות משעה";
     if (diffInHours < 24) return `לפני ${diffInHours} שעות`;
     const diffInDays = Math.floor(diffInHours / 24);
-    return `לפני ${diffInDays} ימים`;
+    if (diffInDays === 1) return "אתמול";
+    if (diffInDays < 7) return `לפני ${diffInDays} ימים`;
+    if (diffInDays < 30) return `לפני ${Math.floor(diffInDays / 7)} שבועות`;
+    return `לפני ${Math.floor(diffInDays / 30)} חודשים`;
+  };
+
+  const handleView = (activity: ActivityItem) => {
+    setOpenMenuId(null);
+    switch (activity.type) {
+      case "article":
+        router.push(`/articles/${activity.rawId}`);
+        break;
+      case "event":
+        router.push(`/events`);
+        break;
+      case "lecture":
+        router.push(`/lectures/${activity.rawId}`);
+        break;
+      case "presentation":
+        router.push(`/presentations/${activity.rawId}`);
+        break;
+    }
+  };
+
+  const handleEdit = (activity: ActivityItem) => {
+    setOpenMenuId(null);
+    switch (activity.type) {
+      case "article":
+        router.push(`/articles/${activity.rawId}/edit`);
+        break;
+      case "event":
+        router.push(`/events/${activity.rawId}/edit`);
+        break;
+      case "lecture":
+        router.push(`/lectures/${activity.rawId}/edit`);
+        break;
+      case "presentation":
+        router.push(`/edit-presentation/${activity.rawId}`);
+        break;
+    }
+  };
+
+  const handleDelete = async (activity: ActivityItem) => {
+    if (!confirm(`האם אתה בטוח שברצונך למחוק את ${getTypeLabelHe(activity.type)} "${activity.title}"?`)) {
+      setOpenMenuId(null);
+      return;
+    }
+
+    setDeleting(activity.id);
+    setOpenMenuId(null);
+
+    try {
+      const endpoint = `/${activity.type}s/${activity.rawId}`;
+      const response = await fetch(`/api${endpoint}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        setActivities((prev) => prev.filter((a) => a.id !== activity.id));
+      } else {
+        alert("שגיאה במחיקה");
+      }
+    } catch (error) {
+      console.error("Failed to delete:", error);
+      alert("שגיאה במחיקה");
+    } finally {
+      setDeleting(null);
+    }
   };
 
   if (loading) {
     return (
-      <div className="p-6 rounded-lg bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">
-          פעילות אחרונה
-        </h3>
-        <div className="space-y-3">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="animate-pulse">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-indigo-300 rounded-full"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-indigo-300 rounded mb-1"></div>
-                  <div className="h-3 bg-indigo-200 rounded w-1/2"></div>
-                </div>
-              </div>
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div
+            key={i}
+            className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 animate-pulse"
+          >
+            <div className="w-9 h-9 bg-gray-200 rounded-lg"></div>
+            <div className="flex-1">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
             </div>
-          ))}
-        </div>
+            <div className="w-8 h-8 bg-gray-200 rounded"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (activities.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-500">
+        אין פעילות אחרונה
       </div>
     );
   }
 
   return (
-    <div className="p-6 rounded-lg bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 shadow-sm">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        פעילות אחרונה
-      </h3>
-      <div className="space-y-4">
-        {activities.length === 0 ? (
-          <p className="text-sm text-gray-500 text-center py-4">
-            אין פעילות אחרונה
-          </p>
-        ) : (
-          activities.map((activity) => (
+    <div className="space-y-1" ref={menuRef}>
+      {activities.map((activity) => {
+        const { icon: IconComponent, bg, color } = getActivityIcon(activity.type);
+        const isMenuOpen = openMenuId === activity.id;
+        const isDeleting = deleting === activity.id;
+
+        return (
+          <div
+            key={activity.id}
+            className={`flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group ${
+              isDeleting ? "opacity-50 pointer-events-none" : ""
+            }`}
+          >
+            {/* Icon */}
             <div
-              key={activity.id}
-              className="flex items-start gap-3 p-3 rounded-md bg-white/50 hover:bg-white/70 transition-colors"
+              className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center flex-shrink-0`}
             >
-              <div className="text-xl">{getActivityIcon(activity.type)}</div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
-                  {activity.title}
-                </p>
-                <p className="text-xs text-gray-600">
-                  {activity.action === "created" ? "נוצר" : "עודכן"} על ידי{" "}
-                  {activity.author}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatTimeAgo(activity.timestamp)}
-                </p>
+              <IconComponent className={`w-4 h-4 ${color}`} />
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">
+                {activity.title}
+              </p>
+              <div className="flex items-center gap-2 text-xs text-gray-500">
+                <span className={`px-1.5 py-0.5 rounded ${bg} ${color} font-medium`}>
+                  {getTypeLabelHe(activity.type)}
+                </span>
+                <span>•</span>
+                <span>{formatTimeAgo(activity.timestamp)}</span>
               </div>
             </div>
-          ))
-        )}
-      </div>
+
+            {/* Kebab Menu */}
+            <div className="relative">
+              <button
+                onClick={() => setOpenMenuId(isMenuOpen ? null : activity.id)}
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+                aria-label="פעולות"
+              >
+                <MoreVertical className="w-4 h-4 text-gray-500" />
+              </button>
+
+              {isMenuOpen && (
+                <div className="absolute left-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <button
+                    onClick={() => handleView(activity)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
+                    <span>צפייה</span>
+                  </button>
+                  <button
+                    onClick={() => handleEdit(activity)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                  >
+                    <Pencil className="w-4 h-4" />
+                    <span>עריכה</span>
+                  </button>
+                  <button
+                    onClick={() => handleDelete(activity)}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>מחיקה</span>
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };
