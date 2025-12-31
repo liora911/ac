@@ -505,5 +505,31 @@
     "listView": "List view",
     "noResults": "No events found",
     "tryDifferentSearch": "Try adjusting your search or filter criteria"
+  },
+  "searchPage": {
+    "title": "Search Results",
+    "searchPlaceholder": "Search articles, presentations, events, lectures...",
+    "searchButton": "Search",
+    "searching": "Searching...",
+    "loading": "Loading search...",
+    "noResultsFor": "No results found for",
+    "foundResults": "Found {count} results for",
+    "foundResult": "Found 1 result for",
+    "tabs": {
+      "all": "All",
+      "articles": "Articles",
+      "presentations": "Presentations",
+      "events": "Events",
+      "lectures": "Lectures"
+    },
+    "noDescription": "No description available",
+    "noResultsTitle": "No results found",
+    "noResultsMessage": "Try adjusting your search terms or browse our content categories.",
+    "browseArticles": "Browse Articles",
+    "browsePresentations": "Browse Presentations",
+    "browseEvents": "Browse Events",
+    "browseLectures": "Browse Lectures",
+    "searchOurContent": "Search our content",
+    "enterSearchTerm": "Enter a search term above to find articles, presentations, events, and lectures."
   }
 }

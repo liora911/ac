@@ -505,5 +505,31 @@
     "listView": "תצוגת רשימה",
     "noResults": "לא נמצאו אירועים",
     "tryDifferentSearch": "נסה לשנות את החיפוש או הסינון"
+  },
+  "searchPage": {
+    "title": "תוצאות חיפוש",
+    "searchPlaceholder": "חפש מאמרים, מצגות, אירועים, הרצאות...",
+    "searchButton": "חפש",
+    "searching": "מחפש...",
+    "loading": "טוען חיפוש...",
+    "noResultsFor": "לא נמצאו תוצאות עבור",
+    "foundResults": "נמצאו {count} תוצאות עבור",
+    "foundResult": "נמצאה תוצאה אחת עבור",
+    "tabs": {
+      "all": "הכל",
+      "articles": "מאמרים",
+      "presentations": "מצגות",
+      "events": "אירועים",
+      "lectures": "הרצאות"
+    },
+    "noDescription": "אין תיאור זמין",
+    "noResultsTitle": "לא נמצאו תוצאות",
+    "noResultsMessage": "נסה לשנות את מילות החיפוש או עיין בקטגוריות התוכן שלנו.",
+    "browseArticles": "עיין במאמרים",
+    "browsePresentations": "עיין במצגות",
+    "browseEvents": "עיין באירועים",
+    "browseLectures": "עיין בהרצאות",
+    "searchOurContent": "חפש בתוכן שלנו",
+    "enterSearchTerm": "הכנס מונח חיפוש למעלה כדי למצוא מאמרים, מצגות, אירועים והרצאות."
   }
 }
