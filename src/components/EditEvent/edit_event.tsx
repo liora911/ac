@@ -176,7 +176,7 @@ export default function EditEventForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/elitzur");
+        router.push("/events");
       }
     } catch (error) {
       const messageText =

@@ -215,7 +215,7 @@ export default function EditArticleForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/articles");
+        router.push(`/articles/${articleId}`);
       }
     } catch (error: any) {
       setMessage({
