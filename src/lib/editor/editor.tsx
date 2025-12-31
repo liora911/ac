@@ -174,7 +174,7 @@ export default function TiptapEditor({
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
-        class: `min-h-[300px] p-4 focus:outline-none prose prose-sm max-w-none ${
+        class: `p-4 focus:outline-none prose prose-sm max-w-none ${
           theme === "dark" ? "prose-invert" : ""
         }`,
       },
@@ -301,9 +301,9 @@ export default function TiptapEditor({
   const ActiveAlignIcon = getActiveAlignment();
 
   return (
-    <div className={`border border-gray-200 rounded-xl overflow-hidden bg-white ${className}`}>
-      {/* Toolbar */}
-      <div className="sticky top-16 z-10 border-b border-gray-100 bg-gray-50 p-2">
+    <div className={`border border-gray-200 rounded-xl bg-white flex flex-col ${className}`}>
+      {/* Toolbar - Fixed at top of editor */}
+      <div className="flex-shrink-0 border-b border-gray-100 bg-gray-50 p-2">
         <div className="flex flex-wrap items-center gap-1">
           {/* Undo/Redo */}
           <div className="flex items-center gap-0.5 pr-2 border-r border-gray-200">
@@ -669,11 +669,13 @@ export default function TiptapEditor({
         </div>
       )}
 
-      {/* Editor Content */}
-      <EditorContent
-        editor={editor}
-        className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset"
-      />
+      {/* Editor Content - Scrollable area */}
+      <div className="flex-1 overflow-y-auto min-h-[300px] max-h-[500px]">
+        <EditorContent
+          editor={editor}
+          className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset"
+        />
+      </div>
 
       <style jsx global>{`
         .ProseMirror {
