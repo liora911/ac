@@ -28,6 +28,7 @@ const ActivityFeed: React.FC = () => {
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [menuPosition, setMenuPosition] = useState<"bottom" | "top">("bottom");
   const [deleting, setDeleting] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -352,7 +353,17 @@ const ActivityFeed: React.FC = () => {
             {/* Kebab Menu */}
             <div className="relative">
               <button
-                onClick={() => setOpenMenuId(isMenuOpen ? null : activity.id)}
+                onClick={(e) => {
+                  if (isMenuOpen) {
+                    setOpenMenuId(null);
+                  } else {
+                    const button = e.currentTarget;
+                    const rect = button.getBoundingClientRect();
+                    const spaceBelow = window.innerHeight - rect.bottom;
+                    setMenuPosition(spaceBelow < 150 ? "top" : "bottom");
+                    setOpenMenuId(activity.id);
+                  }
+                }}
                 className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
                 aria-label="פעולות"
               >
@@ -360,7 +371,11 @@ const ActivityFeed: React.FC = () => {
               </button>
 
               {isMenuOpen && (
-                <div className="absolute left-0 top-full mt-1 w-36 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                <div
+                  className={`absolute left-0 w-36 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50 ${
+                    menuPosition === "top" ? "bottom-full mb-1" : "top-full mt-1"
+                  }`}
+                >
                   <button
                     onClick={() => handleView(activity)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"

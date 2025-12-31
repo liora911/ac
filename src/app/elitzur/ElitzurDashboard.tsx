@@ -16,8 +16,35 @@ import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import HomeAdmin from "./HomeAdmin";
-import { Menu, X } from "lucide-react";
+import {
+  Menu,
+  X,
+  User,
+  Home,
+  FolderTree,
+  FileText,
+  CalendarDays,
+  Video,
+  Presentation,
+  MessageSquare,
+  Palette,
+  Settings,
+  LucideIcon,
+} from "lucide-react";
 import { TabKey, TABS } from "@/constants/ElitzurTabs";
+
+const iconMap: Record<string, LucideIcon> = {
+  User,
+  Home,
+  FolderTree,
+  FileText,
+  CalendarDays,
+  Video,
+  Presentation,
+  MessageSquare,
+  Palette,
+  Settings,
+};
 
 export default function ElitzurDashboard() {
   const { data: session } = useSession();
@@ -43,21 +70,22 @@ export default function ElitzurDashboard() {
         aria-label="Dashboard navigation"
       >
         <div className="sticky top-20 space-y-4">
-          <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
             <h2
-              className="text-sm font-semibold text-gray-900"
+              className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2"
               id="navigation-heading"
             >
               ניווט
             </h2>
             <nav
-              className="mt-2 space-y-2"
+              className="space-y-1"
               role="tablist"
               aria-labelledby="navigation-heading"
             >
               {tabs.map((tab) => {
                 const isActive = active === tab.key;
                 const isDisabled = !!tab.disabled;
+                const IconComponent = iconMap[tab.icon];
                 return (
                   <button
                     key={tab.key}
@@ -67,9 +95,9 @@ export default function ElitzurDashboard() {
                       setSidebarOpen(false);
                     }}
                     className={[
-                      "w-full text-center px-3 py-2 rounded-md text-sm font-medium transition focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all focus:outline-2 focus:outline-blue-500 focus:outline-offset-2",
                       isActive
-                        ? "bg-blue-600 text-white shadow"
+                        ? "bg-blue-600 text-white shadow-md"
                         : "text-gray-700 hover:bg-gray-100",
                       isDisabled ? "opacity-50 cursor-not-allowed" : "",
                     ].join(" ")}
@@ -80,10 +108,17 @@ export default function ElitzurDashboard() {
                     id={`tab-${tab.key}`}
                     tabIndex={isActive ? 0 : -1}
                   >
-                    {tab.label}
+                    {IconComponent && (
+                      <IconComponent
+                        className={`w-4 h-4 flex-shrink-0 ${
+                          isActive ? "text-white" : "text-gray-500"
+                        }`}
+                      />
+                    )}
+                    <span className="truncate">{tab.label}</span>
                     {isDisabled && (
                       <span
-                        className="ml-2 text-xs opacity-80"
+                        className="mr-auto text-xs opacity-80"
                         aria-label="Coming soon"
                       >
                         (בקרוב)

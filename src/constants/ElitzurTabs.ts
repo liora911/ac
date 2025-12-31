@@ -10,15 +10,22 @@ export type TabKey =
   | "settings"
   | "themes";
 
-export const TABS: { key: TabKey; label: string; disabled?: boolean }[] = [
-  { key: "user", label: "משתמש פעיל" },
-  { key: "home", label: "דף הבית" },
-  { key: "categories", label: "קטגוריות" },
-  { key: "articles", label: "מאמרים" },
-  { key: "events", label: "אירועים" },
-  { key: "lectures", label: "הרצאות" },
-  { key: "presentations", label: "מצגות" },
-  { key: "messages", label: "הודעות" },
-  { key: "themes", label: "ערכות נושא" },
-  { key: "settings", label: "הגדרות מערכת" },
+export interface Tab {
+  key: TabKey;
+  label: string;
+  icon: string;
+  disabled?: boolean;
+}
+
+export const TABS: Tab[] = [
+  { key: "user", label: "משתמש פעיל", icon: "User" },
+  { key: "home", label: "דף הבית", icon: "Home" },
+  { key: "categories", label: "קטגוריות", icon: "FolderTree" },
+  { key: "articles", label: "מאמרים", icon: "FileText" },
+  { key: "events", label: "אירועים", icon: "CalendarDays" },
+  { key: "lectures", label: "הרצאות", icon: "Video" },
+  { key: "presentations", label: "מצגות", icon: "Presentation" },
+  { key: "messages", label: "הודעות", icon: "MessageSquare" },
+  { key: "themes", label: "ערכות נושא", icon: "Palette" },
+  { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
 ];

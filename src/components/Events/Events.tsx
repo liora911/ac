@@ -31,8 +31,9 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose, locale 
   const { t } = useTranslation();
   if (!event) return null;
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
       weekday: "long",
       year: "numeric",
       month: "long",
@@ -168,8 +169,9 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
     new Map(eventsData.map((event) => [event.category.id, event.category])).values()
   );
 
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+  const formatDate = (date: Date | string) => {
+    const dateObj = date instanceof Date ? date : new Date(date);
+    return dateObj.toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
