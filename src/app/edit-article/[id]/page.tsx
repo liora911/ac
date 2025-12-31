@@ -21,7 +21,7 @@ export default function EditArticlePage({
       className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-5xl">
+      <div className="max-w-4xl mx-auto">
         {articleId && <EditArticleForm articleId={articleId} />}
       </div>
     </div>
