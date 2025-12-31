@@ -177,10 +177,10 @@ export default function GlobalSearch() {
     : [];
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-sm p-0 m-0">
+    <div ref={searchRef} className="relative w-full max-w-xs sm:max-w-sm p-0 m-0">
       <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <MdSearch className="h-5 w-5 text-gray-400" />
+        <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
+          <MdSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
         </div>
         <input
           ref={inputRef}
@@ -189,7 +189,7 @@ export default function GlobalSearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
           placeholder={t("globalSearch.placeholder")}
-          className="w-full pl-10 pr-10 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+          className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
@@ -198,17 +198,17 @@ export default function GlobalSearch() {
         {query && (
           <button
             onClick={clearSearch}
-            className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center"
             aria-label="Clear search"
           >
-            <MdClose className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+            <MdClose className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-600" />
           </button>
         )}
       </div>
 
       {isOpen && results && (
         <div
-          className="absolute z-50 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-96 overflow-y-auto"
+          className="absolute z-[60] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-[60vh] sm:max-h-96 overflow-y-auto"
           role="listbox"
         >
           {isLoading ? (
@@ -257,18 +257,18 @@ export default function GlobalSearch() {
                           <div
                             key={result.id}
                             onClick={() => handleResultClick(result, type)}
-                            className={`px-4 py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
+                            className={`px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
                               isSelected ? "bg-blue-50" : ""
                             }`}
                             role="option"
                             aria-selected={isSelected}
                           >
-                            <div className="flex items-start gap-3">
-                              <span className="text-lg">
+                            <div className="flex items-start gap-2 sm:gap-3">
+                              <span className="text-base sm:text-lg flex-shrink-0">
                                 {getResultIcon(type)}
                               </span>
                               <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 truncate">
+                                <div className="font-medium text-gray-900 text-sm sm:text-base truncate">
                                   {result.title}
                                 </div>
                               </div>

@@ -45,7 +45,7 @@ const Modal: React.FC<ModalProps> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4"
         onClick={onClose}
       >
         <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
@@ -53,7 +53,7 @@ const Modal: React.FC<ModalProps> = ({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden"
+          className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
