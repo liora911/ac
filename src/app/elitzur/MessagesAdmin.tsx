@@ -4,7 +4,8 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import LoginForm from "@/components/Login/login";
-import { Mail, User, MessageSquare, Calendar, Trash2 } from "lucide-react";
+import Modal from "@/components/Modal/Modal";
+import { Mail, User, MessageSquare, Calendar, Trash2, AlertTriangle } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 
 interface Message {
@@ -29,6 +30,9 @@ export default function MessagesAdmin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedMessage, setSelectedMessage] = useState<Message | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [messageToDelete, setMessageToDelete] = useState<Message | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (isAuthorized) {
@@ -52,13 +56,22 @@ export default function MessagesAdmin() {
     }
   };
 
-  const deleteMessage = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this message?")) {
-      return;
-    }
+  const openDeleteModal = (message: Message) => {
+    setMessageToDelete(message);
+    setDeleteModalOpen(true);
+  };
 
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setMessageToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!messageToDelete) return;
+
+    setIsDeleting(true);
     try {
-      const response = await fetch(`/api/contact/${id}`, {
+      const response = await fetch(`/api/contact/${messageToDelete.id}`, {
         method: "DELETE",
       });
 
@@ -66,13 +79,16 @@ export default function MessagesAdmin() {
         throw new Error("Failed to delete message");
       }
 
-      setMessages(messages.filter((msg) => msg.id !== id));
-      if (selectedMessage?.id === id) {
+      setMessages(messages.filter((msg) => msg.id !== messageToDelete.id));
+      if (selectedMessage?.id === messageToDelete.id) {
         setSelectedMessage(null);
       }
       showSuccess("ההודעה נמחקה בהצלחה");
+      closeDeleteModal();
     } catch (err) {
       showError("שגיאה במחיקת ההודעה");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -185,9 +201,9 @@ export default function MessagesAdmin() {
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
-                        deleteMessage(message.id);
+                        openDeleteModal(message);
                       }}
-                      className="ml-2 p-1 text-red-600 hover:text-red-800 hover:bg-red-50 rounded"
+                      className="ml-2 p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
                       title="Delete message"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -262,17 +278,19 @@ export default function MessagesAdmin() {
                   </div>
                 </div>
 
-                <div className="flex space-x-2 pt-4">
+                <div className="flex gap-3 pt-4">
                   <a
                     href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject}`}
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
+                    <Mail className="w-4 h-4" />
                     Reply via Email
                   </a>
                   <button
-                    onClick={() => deleteMessage(selectedMessage.id)}
-                    className="inline-flex items-center px-3 py-2 border border-gray-300 text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    onClick={() => openDeleteModal(selectedMessage)}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
                   >
+                    <Trash2 className="w-4 h-4" />
                     Delete
                   </button>
                 </div>
@@ -291,6 +309,60 @@ export default function MessagesAdmin() {
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        title="מחיקת הודעה"
+        hideFooter
+      >
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+            <AlertTriangle className="w-7 h-7 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            האם אתה בטוח?
+          </h3>
+          <p className="text-gray-600 text-sm mb-6">
+            פעולה זו תמחק לצמיתות את ההודעה מ-
+            <span className="font-medium text-gray-900"> {messageToDelete?.name}</span>.
+            <br />
+            לא ניתן לבטל פעולה זו.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              type="button"
+              onClick={closeDeleteModal}
+              disabled={isDeleting}
+              className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              disabled={isDeleting}
+              className="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+            >
+              {isDeleting ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  מוחק...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  מחק הודעה
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
