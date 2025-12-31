@@ -52,23 +52,7 @@ export default function Header() {
       : []),
   ];
 
-  const mobileNavItems = [
-    ...visibleNavItems,
-    {
-      label: "globalSearch.menuItem",
-      href: "#",
-      icon: "MdSearch",
-      onClick: () => {
-        const searchInput = document.querySelector(
-          'input[aria-label="Global search"]'
-        ) as HTMLInputElement;
-        if (searchInput) {
-          searchInput.focus();
-          setMenuOpen(false);
-        }
-      },
-    },
-  ];
+  const mobileNavItems = [...visibleNavItems];
   return (
     <>
       <header
@@ -171,65 +155,49 @@ export default function Header() {
           aria-label="Mobile navigation"
           id="mobile-navigation"
         >
+          {/* Mobile Search Bar */}
+          <div className="p-4 border-b border-gray-100">
+            <GlobalSearch />
+          </div>
+
           <ul className="flex flex-col p-4 space-y-1" role="menubar">
-            {mobileNavItems.map(({ label, href, className, icon, onClick }) => {
+            {mobileNavItems.map(({ label, href, className, icon }) => {
               const IconComponent = icon ? IconMap[icon] : null;
               const isActive = pathname === href;
               return (
                 <li key={href} role="none">
-                  {onClick ? (
-                    <button
-                      onClick={() => {
-                        onClick();
-                      }}
-                      className={`flex items-center gap-3 py-3 px-4 rounded-lg text-gray-800 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md transition-all duration-300 transform hover:translate-x-1 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 w-full text-left ${
-                        className || ""
+                  <Link
+                    href={href}
+                    className={`flex items-center gap-3 py-3 px-4 rounded-lg text-gray-800 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md transition-all duration-300 transform hover:translate-x-1 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 ${
+                      className || ""
+                    } ${
+                      isActive
+                        ? "bg-gradient-to-r from-blue-100 to-purple-100 shadow-md"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setMenuOpen(false);
+                    }}
+                    role="menuitem"
+                    aria-current={isActive ? "page" : undefined}
+                  >
+                    {IconComponent && (
+                      <IconComponent
+                        size={22}
+                        className={
+                          isActive ? "text-blue-600" : "text-gray-600"
+                        }
+                        aria-hidden="true"
+                      />
+                    )}
+                    <span
+                      className={`font-medium ${
+                        isActive ? "text-blue-700" : ""
                       }`}
-                      role="menuitem"
                     >
-                      {IconComponent && (
-                        <IconComponent
-                          size={22}
-                          className="text-gray-600"
-                          aria-hidden="true"
-                        />
-                      )}
-                      <span className="font-medium">{t(label)}</span>
-                    </button>
-                  ) : (
-                    <Link
-                      href={href}
-                      className={`flex items-center gap-3 py-3 px-4 rounded-lg text-gray-800 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:shadow-md transition-all duration-300 transform hover:translate-x-1 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 ${
-                        className || ""
-                      } ${
-                        isActive
-                          ? "bg-gradient-to-r from-blue-100 to-purple-100 shadow-md"
-                          : ""
-                      }`}
-                      onClick={() => {
-                        setMenuOpen(false);
-                      }}
-                      role="menuitem"
-                      aria-current={isActive ? "page" : undefined}
-                    >
-                      {IconComponent && (
-                        <IconComponent
-                          size={22}
-                          className={
-                            isActive ? "text-blue-600" : "text-gray-600"
-                          }
-                          aria-hidden="true"
-                        />
-                      )}
-                      <span
-                        className={`font-medium ${
-                          isActive ? "text-blue-700" : ""
-                        }`}
-                      >
-                        {t(label)}
-                      </span>
-                    </Link>
-                  )}
+                      {t(label)}
+                    </span>
+                  </Link>
                 </li>
               );
             })}
