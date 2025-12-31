@@ -275,57 +275,50 @@ function SearchPageContent() {
                 {filteredResults.map((result) => (
                   <div
                     key={`${result.type}-${result.id}`}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+                    onClick={() => handleResultClick(result, result.type)}
                   >
                     <div className="flex items-start gap-4">
                       <div className="flex-shrink-0 text-blue-600">
                         {getResultIcon(result.type)}
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <button
-                              onClick={() =>
-                                handleResultClick(result, result.type)
-                              }
-                              className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors text-left"
-                            >
+                      <div className="flex-1 min-w-0 overflow-hidden">
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors truncate">
                               {result.title}
-                            </button>
-                            <div className="mt-2 text-gray-600 line-clamp-3">
+                            </h3>
+                            <p className="mt-2 text-gray-600 line-clamp-2 text-sm">
                               {result.description
                                 ? stripHtml(result.description)
                                 : result.content
                                 ? stripHtml(result.content).substring(0, 200) +
                                   "..."
-                                : ""}
-                            </div>
-                            <div className="mt-3 flex items-center gap-4 text-sm text-gray-500">
+                                : "No description available"}
+                            </p>
+                            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
                               {result.category && (
-                                <span>Category: {result.category.name}</span>
+                                <span className="bg-gray-50 px-2 py-1 rounded">
+                                  {result.category.name}
+                                </span>
                               )}
                               {(result.eventDate || result.date) && (
-                                <span>
-                                  Date:{" "}
+                                <span className="bg-gray-50 px-2 py-1 rounded">
                                   {new Date(
                                     result.eventDate || result.date!
                                   ).toLocaleDateString()}
                                 </span>
                               )}
                               {result.location && (
-                                <span>Location: {result.location}</span>
+                                <span className="bg-gray-50 px-2 py-1 rounded truncate max-w-[150px]">
+                                  {result.location}
+                                </span>
                               )}
-                              <span>
-                                Updated:{" "}
-                                {new Date(
-                                  result.updatedAt
-                                ).toLocaleDateString()}
-                              </span>
                             </div>
                           </div>
-                          <div className="flex-shrink-0 ml-4">
-                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
-                              {result.type.slice(0, -1)}{" "}
+                          <div className="flex-shrink-0">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 capitalize whitespace-nowrap">
+                              {result.type.slice(0, -1)}
                             </span>
                           </div>
                         </div>

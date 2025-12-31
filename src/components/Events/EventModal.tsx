@@ -17,7 +17,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
   if (!event) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
       <div className="bg-white rounded-xl shadow-2xl border border-gray-200 max-w-4xl w-full max-h-[90vh] overflow-y-auto relative">
         <button
           onClick={onClose}
@@ -28,7 +28,7 @@ const EventModal: React.FC<EventModalProps> = ({ event, onClose }) => {
 
         <div className="p-6">
           {event.bannerImageUrl && (
-            <div className="w-full aspect-video mb-6 rounded-lg overflow-hidden bg-gray-100">
+            <div className="relative w-full aspect-video mb-6 rounded-lg overflow-hidden bg-gray-100">
               <Image
                 src={event.bannerImageUrl}
                 alt={event.title}
