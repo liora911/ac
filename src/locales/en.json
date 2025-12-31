@@ -499,6 +499,11 @@
     "noEventsAvailable": "No events available at the moment.",
     "allEvents": "All Events",
     "searchPlaceholder": "Search events...",
-    "allCategories": "All Categories"
+    "allCategories": "All Categories",
+    "eventsFound": "events found",
+    "gridView": "Grid view",
+    "listView": "List view",
+    "noResults": "No events found",
+    "tryDifferentSearch": "Try adjusting your search or filter criteria"
   }
 }

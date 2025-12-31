@@ -1,16 +1,17 @@
 "use client";
 
 import { Event } from "@/types/Events/events";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   MapPin,
   Clock,
   Globe,
-  Filter,
   Search,
   X,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -23,11 +24,21 @@ interface EventModalProps {
   event: Event | null;
   isOpen: boolean;
   onClose: () => void;
+  locale: string;
 }
 
-const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose }) => {
+const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose, locale }) => {
   const { t } = useTranslation();
   if (!event) return null;
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
   return (
     <AnimatePresence>
@@ -36,76 +47,92 @@ const EventModal: React.FC<EventModalProps> = ({ event, isOpen, onClose }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-gradient-to-br from-slate-800 via-blue-900 to-slate-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+            exit={{ scale: 0.95, opacity: 0 }}
+            className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {event.bannerImageUrl && (
-              <div className="relative h-48 md:h-64">
+              <div className="relative h-48 md:h-56">
                 <img
                   src={event.bannerImageUrl}
                   alt={event.title}
                   className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                <button
-                  onClick={onClose}
-                  className="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors"
-                >
-                  <X size={20} />
-                </button>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
             )}
-            <div className="p-6 overflow-y-auto max-h-[calc(90vh-12rem)]">
-              <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 right-4 bg-white/90 hover:bg-white text-gray-700 rounded-full p-2 transition-colors shadow-md"
+            >
+              <X size={20} />
+            </button>
+
+            <div className="p-6 overflow-y-auto max-h-[calc(90vh-14rem)]">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 {event.title}
               </h2>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-cyan-300">
-                  <Calendar size={18} />
-                  <span>
-                    {new Date(event.eventDate).toLocaleDateString("he-IL")}
-                  </span>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3 text-gray-700">
+                  <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                    <Calendar size={16} className="text-blue-600" />
+                  </div>
+                  <span className="font-medium">{formatDate(event.eventDate)}</span>
                   {event.eventTime && (
                     <>
-                      <Clock size={18} className="ml-4" />
+                      <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center ml-2">
+                        <Clock size={16} className="text-purple-600" />
+                      </div>
                       <span>{event.eventTime}</span>
                     </>
                   )}
                 </div>
+
                 {event.location && (
-                  <div className="flex items-center gap-2 text-blue-300">
-                    <MapPin size={18} />
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                      <MapPin size={16} className="text-green-600" />
+                    </div>
                     <span>{event.location}</span>
                   </div>
                 )}
+
                 {event.onlineUrl && (
-                  <div className="flex items-center gap-2 text-green-300">
-                    <Globe size={18} />
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-lg bg-cyan-100 flex items-center justify-center">
+                      <Globe size={16} className="text-cyan-600" />
+                    </div>
                     <a
                       href={event.onlineUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-green-200 underline"
+                      className="text-blue-600 hover:text-blue-700 underline font-medium"
                     >
                       {t("eventModal.onlineEventLink")}
                     </a>
                   </div>
                 )}
-                <div className="text-sm text-purple-300">
-                  {t("eventModal.category")} {event.category.name}
+
+                <div className="pt-2">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-700">
+                    {event.category.name}
+                  </span>
                 </div>
-                <div
-                  className="prose prose-invert max-w-none text-gray-200 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: event.description }}
-                />
               </div>
+
+              <div
+                className="prose prose-gray max-w-none text-gray-600 leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: event.description }}
+              />
             </div>
           </motion.div>
         </motion.div>
@@ -138,12 +165,20 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
   });
 
   const categories = Array.from(
-    new Set(eventsData.map((event) => event.category.name))
+    new Map(eventsData.map((event) => [event.category.id, event.category])).values()
   );
+
+  const formatDate = (date: string) => {
+    return new Date(date).toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
 
   if (!eventsData) {
     return (
-      <div className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl">
+      <div className="flex justify-center items-center h-64 bg-gray-50 text-gray-500 text-lg">
         {t("events.loadingData")}
       </div>
     );
@@ -151,7 +186,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
 
   if (eventsData.length === 0) {
     return (
-      <div className="flex justify-center items-center h-64 bg-gray-900 text-gray-400 text-xl">
+      <div className="flex justify-center items-center h-64 bg-gray-50 text-gray-500 text-lg">
         {t("events.noEventsAvailable")}
       </div>
     );
@@ -159,15 +194,22 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
 
   return (
     <div
-      className="p-4 md:p-6 bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 min-h-[calc(100vh-200px)]"
+      className="p-4 md:p-8 bg-gray-50 text-gray-900 min-h-[calc(100vh-200px)]"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="mb-8">
-        <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-500 bg-clip-text text-transparent">
-          {t("events.allEvents")}
-        </h2>
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            {t("events.allEvents")}
+          </h2>
+          <p className="text-gray-500">
+            {filteredEvents.length} {t("events.eventsFound")}
+          </p>
+        </div>
 
-        <div className="flex flex-col md:flex-row gap-4 mb-6">
+        {/* Filters */}
+        <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="relative flex-1">
             <Search
               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -178,169 +220,185 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
               placeholder={t("events.searchPlaceholder")}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-cyan-500/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+              className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             />
           </div>
 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-4 py-3 border border-cyan-500/30 rounded-xl text-white focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all"
+            className="px-4 py-3 bg-white border border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all cursor-pointer"
           >
             <option value="all">{t("events.allCategories")}</option>
             {categories.map((category) => (
-              <option key={category} value={category}>
-                {category}
+              <option key={category.id} value={category.id}>
+                {category.name}
               </option>
             ))}
           </select>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1 bg-white border border-gray-200 rounded-xl p-1">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-3 rounded-xl border transition-all ${
+              className={`p-2.5 rounded-lg transition-all ${
                 viewMode === "grid"
-                  ? "bg-cyan-600 border-cyan-400 text-white"
-                  : "border-cyan-500/30 text-gray-400 hover:border-cyan-400"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-500 hover:bg-gray-100"
               }`}
+              aria-label={t("events.gridView")}
             >
-              <Filter size={20} />
+              <LayoutGrid size={20} />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-3 rounded-xl border transition-all ${
+              className={`p-2.5 rounded-lg transition-all ${
                 viewMode === "list"
-                  ? "bg-cyan-600 border-cyan-400 text-white"
-                  : "border-cyan-500/30 text-gray-400 hover:border-cyan-400"
+                  ? "bg-blue-600 text-white"
+                  : "text-gray-500 hover:bg-gray-100"
               }`}
+              aria-label={t("events.listView")}
             >
-              📋
+              <List size={20} />
             </button>
           </div>
         </div>
-      </div>
 
-      {viewMode === "grid" ? (
-        <motion.div
-          layout
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <AnimatePresence>
-            {filteredEvents.map((event) => (
-              <motion.div
-                key={event.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                whileHover={{ scale: 1.02 }}
-                className="bg-gradient-to-br from-slate-800/80 via-blue-900/80 to-slate-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer overflow-hidden"
-                onClick={() => handleEventClick(event)}
-              >
-                {event.bannerImageUrl && (
-                  <div className="relative h-48">
-                    <img
-                      src={event.bannerImageUrl}
-                      alt={event.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                  </div>
-                )}
-                <div className="p-6">
-                  <h4 className="text-xl font-semibold mb-3 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent line-clamp-2">
-                    {event.title}
-                  </h4>
-                  <div className="space-y-2 text-sm text-gray-300">
-                    <div className="flex items-center gap-2">
-                      <Calendar size={16} />
-                      <span>
-                        {new Date(event.eventDate).toLocaleDateString("he-IL")}
-                      </span>
-                    </div>
-                    {event.eventTime && (
-                      <div className="flex items-center gap-2">
-                        <Clock size={16} />
-                        <span>{event.eventTime}</span>
-                      </div>
-                    )}
-                    {event.location && (
-                      <div className="flex items-center gap-2">
-                        <MapPin size={16} />
-                        <span className="truncate">{event.location}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-4 text-xs text-purple-300">
-                    {event.category.name}
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      ) : (
-        <motion.div layout className="space-y-4">
-          <AnimatePresence>
-            {filteredEvents.map((event) => (
-              <motion.div
-                key={event.id}
-                layout
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="bg-gradient-to-r from-slate-800/80 via-blue-900/80 to-slate-800/80 backdrop-blur-sm p-6 rounded-xl shadow-lg border border-cyan-500/20 hover:border-cyan-400/40 hover:shadow-cyan-500/20 transition-all duration-300 cursor-pointer"
-                onClick={() => handleEventClick(event)}
-              >
-                <div className="flex flex-col md:flex-row md:items-center gap-4">
+        {/* Events Grid/List */}
+        {viewMode === "grid" ? (
+          <motion.div
+            layout
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            <AnimatePresence>
+              {filteredEvents.map((event) => (
+                <motion.div
+                  key={event.id}
+                  layout
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 20 }}
+                  whileHover={{ y: -4 }}
+                  className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 cursor-pointer overflow-hidden group"
+                  onClick={() => handleEventClick(event)}
+                >
                   {event.bannerImageUrl && (
-                    <img
-                      src={event.bannerImageUrl}
-                      alt={event.title}
-                      className="w-full md:w-32 h-24 object-cover rounded-lg"
-                    />
+                    <div className="relative h-44 overflow-hidden">
+                      <img
+                        src={event.bannerImageUrl}
+                        alt={event.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
                   )}
-                  <div className="flex-1">
-                    <h4 className="text-xl font-semibold mb-2 bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent">
+                  <div className="p-5">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                       {event.title}
                     </h4>
-                    <div className="flex flex-wrap gap-4 text-sm text-gray-300">
-                      <div className="flex items-center gap-1">
-                        <Calendar size={14} />
-                        <span>
-                          {new Date(event.eventDate).toLocaleDateString(
-                            "he-IL"
-                          )}
-                        </span>
+                    <div className="space-y-2 text-sm text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Calendar size={16} className="text-blue-500" />
+                        <span>{formatDate(event.eventDate)}</span>
                       </div>
                       {event.eventTime && (
-                        <div className="flex items-center gap-1">
-                          <Clock size={14} />
+                        <div className="flex items-center gap-2">
+                          <Clock size={16} className="text-purple-500" />
                           <span>{event.eventTime}</span>
                         </div>
                       )}
                       {event.location && (
-                        <div className="flex items-center gap-1">
-                          <MapPin size={14} />
-                          <span>{event.location}</span>
+                        <div className="flex items-center gap-2">
+                          <MapPin size={16} className="text-green-500" />
+                          <span className="truncate">{event.location}</span>
                         </div>
                       )}
                     </div>
-                    <div className="mt-2 text-xs text-purple-300">
-                      קטגוריה: {event.category.name}
+                    <div className="mt-4">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        {event.category.name}
+                      </span>
                     </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        ) : (
+          <motion.div layout className="space-y-3">
+            <AnimatePresence>
+              {filteredEvents.map((event) => (
+                <motion.div
+                  key={event.id}
+                  layout
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="bg-white p-4 md:p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md hover:border-gray-200 transition-all duration-300 cursor-pointer group"
+                  onClick={() => handleEventClick(event)}
+                >
+                  <div className="flex flex-col md:flex-row md:items-center gap-4">
+                    {event.bannerImageUrl && (
+                      <img
+                        src={event.bannerImageUrl}
+                        alt={event.title}
+                        className="w-full md:w-28 h-20 object-cover rounded-lg"
+                      />
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
+                        {event.title}
+                      </h4>
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-gray-600">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar size={14} className="text-blue-500" />
+                          <span>{formatDate(event.eventDate)}</span>
+                        </div>
+                        {event.eventTime && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock size={14} className="text-purple-500" />
+                            <span>{event.eventTime}</span>
+                          </div>
+                        )}
+                        {event.location && (
+                          <div className="flex items-center gap-1.5">
+                            <MapPin size={14} className="text-green-500" />
+                            <span>{event.location}</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <div className="md:text-right">
+                      <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                        {event.category.name}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
+        )}
+
+        {/* No results */}
+        {filteredEvents.length === 0 && (
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+              <Search size={24} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-1">
+              {t("events.noResults")}
+            </h3>
+            <p className="text-gray-500">
+              {t("events.tryDifferentSearch")}
+            </p>
+          </div>
+        )}
+      </div>
 
       <EventModal
         event={selectedEvent}
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        locale={locale}
       />
     </div>
   );

@@ -499,6 +499,11 @@
     "noEventsAvailable": "אין אירועים זמינים כרגע.",
     "allEvents": "כל האירועים",
     "searchPlaceholder": "חפש אירועים...",
-    "allCategories": "כל הקטגוריות"
+    "allCategories": "כל הקטגוריות",
+    "eventsFound": "אירועים נמצאו",
+    "gridView": "תצוגת רשת",
+    "listView": "תצוגת רשימה",
+    "noResults": "לא נמצאו אירועים",
+    "tryDifferentSearch": "נסה לשנות את החיפוש או הסינון"
   }
 }
