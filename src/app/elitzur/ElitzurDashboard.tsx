@@ -69,7 +69,7 @@ export default function ElitzurDashboard() {
         role="complementary"
         aria-label="Dashboard navigation"
       >
-        <div className="sticky top-20 space-y-4">
+        <div className="sticky top-4 space-y-4">
           <div className="rounded-xl border border-gray-200 bg-white p-3 shadow-sm">
             <h2
               className="text-xs font-semibold text-gray-500 uppercase tracking-wider px-2 mb-2"

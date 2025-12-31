@@ -16,6 +16,8 @@ import type {
   ArticlesQueryParams,
 } from "@/types/Articles/articles";
 import LoginForm from "@/components/Login/login";
+import Modal from "@/components/Modal/Modal";
+import { AlertTriangle, Trash2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 
 type StatusFilter = "" | ArticleStatus;
@@ -44,6 +46,9 @@ export default function ArticlesAdmin() {
   const [categoryId, setCategoryId] = useState<string>("");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
 
   const queryParams: ArticlesQueryParams = useMemo(
     () => ({
@@ -120,18 +125,24 @@ export default function ArticlesAdmin() {
     );
   };
 
-  const onDelete = (article: Article) => {
-    if (
-      !confirm(
-        `Delete article "${article.title}"? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
-    deleteMutation.mutate(article.id, {
+  const openDeleteModal = (article: Article) => {
+    setArticleToDelete(article);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setArticleToDelete(null);
+  };
+
+  const confirmDelete = () => {
+    if (!articleToDelete) return;
+
+    deleteMutation.mutate(articleToDelete.id, {
       onSuccess: () => {
-        showSuccess(`המאמר "${article.title}" נמחק בהצלחה`);
+        showSuccess(`המאמר "${articleToDelete.title}" נמחק בהצלחה`);
         refetch();
+        closeDeleteModal();
       },
       onError: () => {
         showError("שגיאה במחיקת המאמר");
@@ -441,7 +452,7 @@ export default function ArticlesAdmin() {
                           Edit
                         </Link>
                         <button
-                          onClick={() => onDelete(a)}
+                          onClick={() => openDeleteModal(a)}
                           disabled={deleteMutation.isPending}
                           className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`Delete article "${a.title}"`}
@@ -503,6 +514,60 @@ export default function ArticlesAdmin() {
           </div>
         </nav>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        title="מחיקת מאמר"
+        hideFooter
+      >
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+            <AlertTriangle className="w-7 h-7 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            האם אתה בטוח?
+          </h3>
+          <p className="text-gray-600 text-sm mb-6">
+            פעולה זו תמחק לצמיתות את המאמר
+            <span className="font-medium text-gray-900"> "{articleToDelete?.title}"</span>.
+            <br />
+            לא ניתן לבטל פעולה זו.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              type="button"
+              onClick={closeDeleteModal}
+              disabled={deleteMutation.isPending}
+              className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              disabled={deleteMutation.isPending}
+              className="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+            >
+              {deleteMutation.isPending ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  מוחק...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  מחק מאמר
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

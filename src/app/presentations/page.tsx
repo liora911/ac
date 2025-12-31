@@ -9,7 +9,8 @@ import { PresentationCategory } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
-import { Grid3X3, List } from "lucide-react";
+import { Grid3X3, List, AlertTriangle, Trash2 } from "lucide-react";
+import { useNotification } from "@/contexts/NotificationContext";
 
 const CreatePresentationForm = dynamic(
   () => import("@/components/CreatePresentation/create_presentation"),
@@ -321,30 +322,52 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
     initialSelectedCategoryId
   );
   const { t } = useTranslation();
+  const { showSuccess, showError } = useNotification();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [expandedCategories, setExpandedCategories] = useState<{
     [key: string]: boolean;
   }>({});
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [presentationToDelete, setPresentationToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleDeletePresentation = async (presentationId: string) => {
-    if (window.confirm(t("presentationsPage.deleteConfirm"))) {
-      try {
-        const response = await fetch(`/api/presentations/${presentationId}`, {
-          method: "DELETE",
-        });
+  const openDeleteModal = (presentation: { id: string; title: string }) => {
+    setPresentationToDelete(presentation);
+    setDeleteModalOpen(true);
+  };
 
-        if (!response.ok) {
-          throw new Error("Failed to delete presentation");
-        }
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setPresentationToDelete(null);
+  };
 
-        onPresentationDeleted();
-      } catch (error) {
-        setErrorMessage(t("presentationsPage.deleteFailed") as string);
-        setErrorModalOpen(true);
+  const confirmDeletePresentation = async () => {
+    if (!presentationToDelete) return;
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch(`/api/presentations/${presentationToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete presentation");
       }
+
+      showSuccess(`המצגת "${presentationToDelete.title}" נמחקה בהצלחה`);
+      onPresentationDeleted();
+      closeDeleteModal();
+    } catch (error) {
+      showError(t("presentationsPage.deleteFailed") as string);
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  const handleDeletePresentation = (presentationId: string, title: string) => {
+    openDeleteModal({ id: presentationId, title });
   };
 
   useEffect(() => {
@@ -567,6 +590,68 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           />
         </Suspense>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <Suspense
+        fallback={
+          <div className="animate-pulse bg-gray-200 rounded p-4">
+            Loading...
+          </div>
+        }
+      >
+        <Modal
+          isOpen={deleteModalOpen}
+          onClose={closeDeleteModal}
+          title="מחיקת מצגת"
+          hideFooter
+        >
+          <div className="text-center">
+            <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+              <AlertTriangle className="w-7 h-7 text-red-600" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              האם אתה בטוח?
+            </h3>
+            <p className="text-gray-600 text-sm mb-6">
+              פעולה זו תמחק לצמיתות את המצגת
+              <span className="font-medium text-gray-900"> &quot;{presentationToDelete?.title}&quot;</span>.
+              <br />
+              לא ניתן לבטל פעולה זו.
+            </p>
+            <div className="flex gap-3 justify-center">
+              <button
+                type="button"
+                onClick={closeDeleteModal}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={confirmDeletePresentation}
+                disabled={isDeleting}
+                className="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    מוחק...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4" />
+                    מחק מצגת
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </Modal>
+      </Suspense>
     </div>
   );
 };

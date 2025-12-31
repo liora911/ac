@@ -11,7 +11,10 @@ import {
   Eye,
   Pencil,
   Trash2,
+  AlertTriangle,
 } from "lucide-react";
+import Modal from "@/components/Modal/Modal";
+import { useNotification } from "@/contexts/NotificationContext";
 
 interface ActivityItem {
   id: string;
@@ -25,11 +28,14 @@ interface ActivityItem {
 
 const ActivityFeed: React.FC = () => {
   const router = useRouter();
+  const { showSuccess, showError } = useNotification();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
   const [menuPosition, setMenuPosition] = useState<"bottom" | "top">("bottom");
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [activityToDelete, setActivityToDelete] = useState<ActivityItem | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -259,29 +265,38 @@ const ActivityFeed: React.FC = () => {
     }
   };
 
-  const handleDelete = async (activity: ActivityItem) => {
-    if (!confirm(`האם אתה בטוח שברצונך למחוק את ${getTypeLabelHe(activity.type)} "${activity.title}"?`)) {
-      setOpenMenuId(null);
-      return;
-    }
-
-    setDeleting(activity.id);
+  const openDeleteModal = (activity: ActivityItem) => {
+    setActivityToDelete(activity);
+    setDeleteModalOpen(true);
     setOpenMenuId(null);
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModalOpen(false);
+    setActivityToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!activityToDelete) return;
+
+    setDeleting(activityToDelete.id);
 
     try {
-      const endpoint = `/${activity.type}s/${activity.rawId}`;
+      const endpoint = `/${activityToDelete.type}s/${activityToDelete.rawId}`;
       const response = await fetch(`/api${endpoint}`, {
         method: "DELETE",
       });
 
       if (response.ok) {
-        setActivities((prev) => prev.filter((a) => a.id !== activity.id));
+        setActivities((prev) => prev.filter((a) => a.id !== activityToDelete.id));
+        showSuccess(`${getTypeLabelHe(activityToDelete.type)} "${activityToDelete.title}" נמחק בהצלחה`);
+        closeDeleteModal();
       } else {
-        alert("שגיאה במחיקה");
+        showError("שגיאה במחיקה");
       }
     } catch (error) {
       console.error("Failed to delete:", error);
-      alert("שגיאה במחיקה");
+      showError("שגיאה במחיקה");
     } finally {
       setDeleting(null);
     }
@@ -320,13 +335,13 @@ const ActivityFeed: React.FC = () => {
       {activities.map((activity) => {
         const { icon: IconComponent, bg, color } = getActivityIcon(activity.type);
         const isMenuOpen = openMenuId === activity.id;
-        const isDeleting = deleting === activity.id;
+        const isActivityDeleting = deleting === activity.id;
 
         return (
           <div
             key={activity.id}
             className={`flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors group ${
-              isDeleting ? "opacity-50 pointer-events-none" : ""
+              isActivityDeleting ? "opacity-50 pointer-events-none" : ""
             }`}
           >
             {/* Icon */}
@@ -391,7 +406,7 @@ const ActivityFeed: React.FC = () => {
                     <span>עריכה</span>
                   </button>
                   <button
-                    onClick={() => handleDelete(activity)}
+                    onClick={() => openDeleteModal(activity)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -403,6 +418,60 @@ const ActivityFeed: React.FC = () => {
           </div>
         );
       })}
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={deleteModalOpen}
+        onClose={closeDeleteModal}
+        title="מחיקת פריט"
+        hideFooter
+      >
+        <div className="text-center">
+          <div className="mx-auto w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-4">
+            <AlertTriangle className="w-7 h-7 text-red-600" />
+          </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">
+            האם אתה בטוח?
+          </h3>
+          <p className="text-gray-600 text-sm mb-6">
+            פעולה זו תמחק לצמיתות את {activityToDelete ? getTypeLabelHe(activityToDelete.type) : ""}
+            <span className="font-medium text-gray-900"> &quot;{activityToDelete?.title}&quot;</span>.
+            <br />
+            לא ניתן לבטל פעולה זו.
+          </p>
+          <div className="flex gap-3 justify-center">
+            <button
+              type="button"
+              onClick={closeDeleteModal}
+              disabled={!!deleting}
+              className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              onClick={confirmDelete}
+              disabled={!!deleting}
+              className="px-5 py-2.5 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors font-medium flex items-center gap-2 disabled:opacity-50"
+            >
+              {deleting ? (
+                <>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                  </svg>
+                  מוחק...
+                </>
+              ) : (
+                <>
+                  <Trash2 className="w-4 h-4" />
+                  מחק
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
