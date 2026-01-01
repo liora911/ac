@@ -45,7 +45,13 @@
     "bannerLoading": "טוען באנר...",
     "bannerPlaceholder": "תמונה/באנר של ההרצאות יופיע כאן",
     "errorPrefix": "שגיאה בטעינת הרצאות",
-    "noLecturesFound": "לא נמצאו הרצאות."
+    "noLecturesFound": "לא נמצאו הרצאות.",
+    "lecturesOnTopic": "הרצאות בנושא:",
+    "minutes": "דקות",
+    "duration": "משך:",
+    "noLecturesAvailable": "אין הרצאות זמינות כרגע.",
+    "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג הרצאות, או שאין הרצאות זמינות בקטגוריה זו.",
+    "loadingLectures": "טוען נתוני הרצאות..."
   },
   "presentationsPage": {
     "title": "מצגות בנושאים שונים לפי קטגוריות",

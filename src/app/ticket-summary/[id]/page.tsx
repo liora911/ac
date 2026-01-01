@@ -22,7 +22,6 @@ import {
   Download,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { generateTicketPDF } from "@/lib/pdf/generate-ticket-pdf";
 
 interface TicketData {
   id: string;
@@ -60,7 +59,6 @@ export default function TicketSummaryPage() {
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -156,40 +154,10 @@ export default function TicketSummaryPage() {
     }
   };
 
-  const downloadPDF = async () => {
+  const downloadPDF = () => {
     if (!ticket) return;
-
-    setIsDownloading(true);
-    try {
-      const filename = `ticket-${ticket.event.title.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, "-")}-${ticket.id.slice(0, 8)}.pdf`;
-      const labels = {
-        eventDetails: t("tickets.eventDetails"),
-        ticketHolder: t("tickets.ticketHolder"),
-        date: t("tickets.date"),
-        time: t("tickets.time"),
-        location: t("tickets.location"),
-        onlineLink: t("tickets.onlineLink"),
-        name: t("tickets.name"),
-        email: t("tickets.email"),
-        phone: t("tickets.phone"),
-        seats: t("tickets.seats"),
-        seat: t("tickets.seat"),
-        seatsPlural: t("tickets.seatsPlural"),
-        notes: t("tickets.notes"),
-        ticketId: t("tickets.ticketId"),
-        reservedOn: t("tickets.reservedOn"),
-        keepTicket: t("tickets.keepTicket"),
-        statusConfirmed: t("tickets.statusConfirmed"),
-        statusPending: t("tickets.statusPending"),
-        statusCancelled: t("tickets.statusCancelled"),
-        statusAttended: t("tickets.statusAttended"),
-      };
-      await generateTicketPDF(ticket, labels, locale, filename);
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    } finally {
-      setIsDownloading(false);
-    }
+    // Use browser's native print dialog - supports Hebrew and all system fonts
+    window.print();
   };
 
   if (loading) {
@@ -287,15 +255,10 @@ export default function TicketSummaryPage() {
                   </button>
                   <button
                     onClick={downloadPDF}
-                    disabled={isDownloading}
-                    className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors cursor-pointer"
                     title={t("tickets.downloadPdf")}
                   >
-                    {isDownloading ? (
-                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
-                    ) : (
-                      <Download size={20} />
-                    )}
+                    <Download size={20} />
                   </button>
                 </div>
               </div>

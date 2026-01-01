@@ -22,7 +22,7 @@ const Lectures: React.FC<LecturesProps> = ({
   lectureData,
   viewMode: initialViewMode = "grid",
 }) => {
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const { showSuccess, showError } = useNotification();
   const hasInitializedRef = useRef(false);
   const [selectedLectures, setSelectedLectures] = useState<Lecture[]>([]);
@@ -30,7 +30,7 @@ const Lectures: React.FC<LecturesProps> = ({
     string | null
   >(null);
   const [selectedCategoryName, setSelectedCategoryName] =
-    useState<string>("טוען הרצאות...");
+    useState<string>("");
   const [expandedCategories, setExpandedCategories] = useState<
     Record<string, boolean>
   >({});
@@ -69,7 +69,7 @@ const Lectures: React.FC<LecturesProps> = ({
       setSelectedLectures([]);
       onBannerUpdate(null);
       setCurrentCategoryBanner(null);
-      setSelectedCategoryName("אין הרצאות זמינות");
+      setSelectedCategoryName("");
       return;
     }
 
@@ -91,7 +91,7 @@ const Lectures: React.FC<LecturesProps> = ({
       onBannerUpdate(initialBanner);
     } else {
       setSelectedLectures([]);
-      setSelectedCategoryName("אין הרצאות זמינות");
+      setSelectedCategoryName("");
       onBannerUpdate(null);
       setCurrentCategoryBanner(null);
     }
@@ -151,7 +151,7 @@ const Lectures: React.FC<LecturesProps> = ({
   if (!lectureData) {
     return (
       <div className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl">
-        טוען נתוני הרצאות...
+        {t("lecturesPage.loadingLectures")}
       </div>
     );
   }
@@ -159,7 +159,7 @@ const Lectures: React.FC<LecturesProps> = ({
   if (lectureData.length === 0) {
     return (
       <div className="flex justify-center items-center h-64 bg-slate-900 text-slate-400 text-xl">
-        אין הרצאות זמינות כרגע.
+        {t("lecturesPage.noLecturesAvailable")}
       </div>
     );
   }
@@ -181,9 +181,9 @@ const Lectures: React.FC<LecturesProps> = ({
       <main className="relative w-full md:w-3/4 lg:w-4/5">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-gray-400">
-            הרצאות בנושא:{" "}
+            {t("lecturesPage.lecturesOnTopic")}{" "}
             <span className="bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent">
-              {selectedCategoryName}
+              {selectedCategoryName || t("lecturesPage.noLecturesAvailable")}
             </span>
           </h2>
           <div className="flex items-center space-x-1">
@@ -249,7 +249,7 @@ const Lectures: React.FC<LecturesProps> = ({
                         {lecture.description.replace(/<[^>]*>?/gm, "")}
                       </p>
                       <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                        <span>Duration: {lecture.duration} min</span>
+                        <span>{t("lecturesPage.duration")} {lecture.duration} {t("lecturesPage.minutes")}</span>
                       </div>
                     </div>
                   </div>
@@ -259,7 +259,7 @@ const Lectures: React.FC<LecturesProps> = ({
           )
         ) : (
           <p className="text-gray-400 text-lg">
-            אנא בחר קטגוריה כדי להציג הרצאות, או שאין הרצאות זמינות בקטגוריה זו.
+            {t("lecturesPage.selectCategoryPrompt")}
           </p>
         )}
 

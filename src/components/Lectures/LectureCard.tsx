@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { Lecture } from "@/types/Lectures/lectures";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Clock, Calendar, Share2, Play, Link2, Check, Mail } from "lucide-react";
 
 interface LectureCardProps {
@@ -21,6 +22,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
   const [lectureUrl, setLectureUrl] = useState("");
   const [copied, setCopied] = useState(false);
   const { showSuccess, showError } = useNotification();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -79,7 +81,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
         <div className="flex items-center gap-4 text-sm text-gray-500">
           <div className="flex items-center gap-1.5">
             <Clock className="w-4 h-4 text-purple-500" />
-            <span>{lecture.duration} דקות</span>
+            <span>{lecture.duration} {t("lecturesPage.minutes")}</span>
           </div>
           {lecture.date && (
             <div className="flex items-center gap-1.5">

@@ -45,7 +45,13 @@
     "bannerLoading": "Loading banner...",
     "bannerPlaceholder": "Lecture image/banner will appear here",
     "errorPrefix": "Error loading lectures",
-    "noLecturesFound": "No lectures found."
+    "noLecturesFound": "No lectures found.",
+    "lecturesOnTopic": "Lectures on:",
+    "minutes": "minutes",
+    "duration": "Duration:",
+    "noLecturesAvailable": "No lectures available at the moment.",
+    "selectCategoryPrompt": "Please select a category to view lectures, or there are no lectures available in this category.",
+    "loadingLectures": "Loading lecture data..."
   },
   "presentationsPage": {
     "title": "Presentations by category on various topics",
