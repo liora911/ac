@@ -206,10 +206,10 @@ export default function TicketSummaryPage() {
 
   return (
     <div
-      className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 overflow-x-hidden"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-3xl mx-auto overflow-hidden">
         {/* Back Button */}
         <Link
           href="/events"
@@ -220,7 +220,7 @@ export default function TicketSummaryPage() {
         </Link>
 
         {/* Ticket Card */}
-        <div ref={ticketRef} className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div ref={ticketRef} className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden relative">
           {/* Header with Event Image */}
           {ticket.event.bannerImageUrl && (
             <div className="relative h-48 md:h-64">
@@ -281,10 +281,10 @@ export default function TicketSummaryPage() {
               </div>
             </div>
 
-            {/* Divider */}
-            <div className="border-t border-dashed border-gray-300 my-6 relative">
-              <div className="absolute -start-8 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-50 rounded-full"></div>
-              <div className="absolute -end-8 top-1/2 -translate-y-1/2 w-8 h-8 bg-gray-50 rounded-full"></div>
+            {/* Divider - ticket punch hole effect */}
+            <div className="border-t border-dashed border-gray-300 my-6 relative mx-[-1.5rem] md:mx-[-2rem] px-6 md:px-8">
+              <div className="absolute start-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-50 rounded-full -translate-x-1/2"></div>
+              <div className="absolute end-0 top-1/2 -translate-y-1/2 w-6 h-6 bg-gray-50 rounded-full translate-x-1/2"></div>
             </div>
 
             {/* Event Details */}

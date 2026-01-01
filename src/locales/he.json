@@ -374,8 +374,9 @@
     "adminDashboard": "פאנל ניהול",
     "edit": "עריכה",
     "createNew": "יצירה חדשה",
-    "ticketAcquire": "שריון מקום",
-    "ticketSummary": "פרטי כרטיס"
+    "search": "חיפוש",
+    "reserveTicket": "שריון מקום",
+    "ticketSummary": "כרטיס"
   },
   "editEventPage": {
     "title": "עריכת אירוע"

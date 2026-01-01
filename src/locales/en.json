@@ -373,7 +373,10 @@
     "ariaLabel": "Breadcrumb navigation",
     "adminDashboard": "Admin panel",
     "edit": "Edit",
-    "createNew": "Create New"
+    "createNew": "Create New",
+    "search": "Search",
+    "reserveTicket": "Reserve Ticket",
+    "ticketSummary": "Ticket"
   },
   "editEventPage": {
     "title": "Edit Event"

@@ -18,22 +18,44 @@ type CrumbTemplate = {
 };
 
 const STATIC_SEGMENT_KEYS: Record<string, string> = {
+  // Main navigation
   articles: "nav.articles",
+  article: "nav.articles",
   presentations: "nav.presentations",
   lectures: "nav.lectures",
   events: "nav.events",
   contact: "nav.contact",
+  search: "breadcrumbs.search",
+  // Admin
   elitzur: "breadcrumbs.adminDashboard",
-  "edit-article": "editArticlePage.title",
-  "edit-lecture": "editLecturePage.title",
-  "edit-presentation": "editPresentationPage.title",
-  "edit-event": "editEventPage.title",
-  "create-lecture": "createLecture.title",
-  "create-presentation": "createPresentation.title",
-  "create-event": "createEvent.title",
+  // Edit pages (root level pattern)
+  "edit-article": "breadcrumbs.edit",
+  "edit-lecture": "breadcrumbs.edit",
+  "edit-presentation": "breadcrumbs.edit",
+  "edit-event": "breadcrumbs.edit",
+  // Create pages
+  "create-lecture": "breadcrumbs.createNew",
+  "create-presentation": "breadcrumbs.createNew",
+  "create-event": "breadcrumbs.createNew",
   create: "breadcrumbs.createNew",
+  // Nested edit (for /articles/[id]/edit pattern)
   edit: "breadcrumbs.edit",
+  // Tickets
+  "ticket-acquire": "breadcrumbs.reserveTicket",
+  "ticket-summary": "breadcrumbs.ticketSummary",
 };
+
+// Segments that should NOT be clickable (no page exists at that path)
+const NON_CLICKABLE_SEGMENTS = new Set([
+  "edit-article",
+  "edit-lecture",
+  "edit-presentation",
+  "edit-event",
+  "create-lecture",
+  "create-presentation",
+  "create-event",
+  "ticket-summary",
+]);
 
 function buildCrumbs(pathname: string): CrumbTemplate[] {
   const cleanPath = pathname.split("?")[0];
@@ -58,8 +80,12 @@ function buildCrumbs(pathname: string): CrumbTemplate[] {
     const isLast = index === segments.length - 1;
     const labelKey = STATIC_SEGMENT_KEYS[segment];
 
+    // Don't make segment clickable if it's the last one OR if it leads to a 404
+    const shouldBeClickable =
+      !isLast && !NON_CLICKABLE_SEGMENTS.has(segment);
+
     crumbs.push({
-      href: !isLast ? accumulatedPath : undefined,
+      href: shouldBeClickable ? accumulatedPath : undefined,
       labelKey,
       rawSegment: labelKey ? undefined : segment,
       isCurrent: isLast,

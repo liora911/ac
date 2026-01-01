@@ -10,44 +10,89 @@ export interface DownloadPDFOptions {
 }
 
 /**
- * Converts oklch/oklab colors to rgb format that html2canvas can parse.
- * This is needed because html2canvas doesn't support modern CSS color functions.
+ * Converts modern CSS color functions to rgb format that html2canvas can parse.
+ * This is needed because html2canvas doesn't support oklch, oklab, lch, lab, color(), etc.
+ * Must be called AFTER element is in the DOM so getComputedStyle works.
  */
 function convertModernColorsToRgb(element: HTMLElement): void {
   const allElements = element.querySelectorAll("*");
-  const elementsToProcess = [element, ...Array.from(allElements)] as HTMLElement[];
+  const elementsToProcess = [
+    element,
+    ...Array.from(allElements),
+  ] as HTMLElement[];
+
+  // Modern color functions that html2canvas doesn't support
+  const unsupportedColorPatterns = [
+    "oklch",
+    "oklab",
+    "lch",
+    "lab(",
+    "color(",
+    "color-mix",
+    "hwb(",
+  ];
+
+  const colorProperties = [
+    "color",
+    "background-color",
+    "border-color",
+    "border-top-color",
+    "border-right-color",
+    "border-bottom-color",
+    "border-left-color",
+    "outline-color",
+    "text-decoration-color",
+    "fill",
+    "stroke",
+  ];
 
   elementsToProcess.forEach((el) => {
     if (!(el instanceof HTMLElement)) return;
 
     const computedStyle = window.getComputedStyle(el);
-    const colorProperties = [
-      "color",
-      "backgroundColor",
-      "borderColor",
-      "borderTopColor",
-      "borderRightColor",
-      "borderBottomColor",
-      "borderLeftColor",
-      "outlineColor",
-      "textDecorationColor",
-      "boxShadow",
-    ];
 
     colorProperties.forEach((prop) => {
       const value = computedStyle.getPropertyValue(prop);
-      if (value && (value.includes("oklch") || value.includes("oklab"))) {
-        // Get the computed RGB value by creating a temporary element
-        const temp = document.createElement("div");
-        temp.style.color = value;
-        document.body.appendChild(temp);
-        const rgbValue = window.getComputedStyle(temp).color;
-        document.body.removeChild(temp);
+      if (!value || value === "none" || value === "transparent") return;
 
-        // Apply the RGB value directly
-        el.style.setProperty(prop, rgbValue);
+      const hasUnsupportedColor = unsupportedColorPatterns.some((pattern) =>
+        value.toLowerCase().includes(pattern)
+      );
+
+      if (hasUnsupportedColor) {
+        // The browser has already computed the RGB value internally
+        // We just need to force it to be applied as inline style
+        // by reading and re-setting the computed value
+        const rgbValue = computedStyle.getPropertyValue(prop);
+
+        // For properties that return rgb/rgba, use them directly
+        if (rgbValue.startsWith("rgb")) {
+          el.style.setProperty(prop, rgbValue, "important");
+        } else {
+          // Fallback: create temp element to get browser-computed rgb
+          const temp = document.createElement("div");
+          temp.style.cssText = `${prop}: ${value} !important; position: absolute; visibility: hidden;`;
+          document.body.appendChild(temp);
+          const computedRgb = window.getComputedStyle(temp).getPropertyValue(prop);
+          document.body.removeChild(temp);
+          if (computedRgb) {
+            el.style.setProperty(prop, computedRgb, "important");
+          }
+        }
       }
     });
+
+    // Handle box-shadow separately (can contain multiple colors)
+    const boxShadow = computedStyle.getPropertyValue("box-shadow");
+    if (boxShadow && boxShadow !== "none") {
+      const hasUnsupportedColor = unsupportedColorPatterns.some((pattern) =>
+        boxShadow.toLowerCase().includes(pattern)
+      );
+      if (hasUnsupportedColor) {
+        // Replace with a simple shadow or remove it
+        el.style.setProperty("box-shadow", "none", "important");
+      }
+    }
   });
 }
 
@@ -74,9 +119,6 @@ export async function downloadElementAsPDF(
 
   // Clone the element to manipulate it without affecting the original
   const clonedElement = element.cloneNode(true) as HTMLElement;
-
-  // Convert oklch/oklab colors to rgb for html2canvas compatibility
-  convertModernColorsToRgb(clonedElement);
 
   // Replace Next.js Image components with regular img tags for html2canvas
   const nextImages = clonedElement.querySelectorAll("img[data-nimg]");
@@ -108,12 +150,15 @@ export async function downloadElementAsPDF(
     }
   });
 
-  // Temporarily add to DOM for capture
+  // Temporarily add to DOM for capture (needed for getComputedStyle to work)
   clonedElement.style.position = "absolute";
   clonedElement.style.left = "-9999px";
   clonedElement.style.top = "0";
   clonedElement.style.width = element.offsetWidth + "px";
   document.body.appendChild(clonedElement);
+
+  // Convert modern CSS colors to rgb AFTER element is in DOM
+  convertModernColorsToRgb(clonedElement);
 
   try {
     // Wait for images to load
