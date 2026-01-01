@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,7 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { downloadElementAsPDF } from "@/lib/pdf/download-element-as-pdf";
+import { generateTicketPDF } from "@/lib/pdf/generate-ticket-pdf";
 
 interface TicketData {
   id: string;
@@ -56,7 +56,6 @@ export default function TicketSummaryPage() {
   const accessToken = params.id as string;
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
-  const ticketRef = useRef<HTMLDivElement>(null);
 
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -158,13 +157,34 @@ export default function TicketSummaryPage() {
   };
 
   const downloadPDF = async () => {
-    const element = ticketRef.current;
-    if (!element || !ticket) return;
+    if (!ticket) return;
 
     setIsDownloading(true);
     try {
       const filename = `ticket-${ticket.event.title.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, "-")}-${ticket.id.slice(0, 8)}.pdf`;
-      await downloadElementAsPDF(element, { filename });
+      const labels = {
+        eventDetails: t("tickets.eventDetails"),
+        ticketHolder: t("tickets.ticketHolder"),
+        date: t("tickets.date"),
+        time: t("tickets.time"),
+        location: t("tickets.location"),
+        onlineLink: t("tickets.onlineLink"),
+        name: t("tickets.name"),
+        email: t("tickets.email"),
+        phone: t("tickets.phone"),
+        seats: t("tickets.seats"),
+        seat: t("tickets.seat"),
+        seatsPlural: t("tickets.seatsPlural"),
+        notes: t("tickets.notes"),
+        ticketId: t("tickets.ticketId"),
+        reservedOn: t("tickets.reservedOn"),
+        keepTicket: t("tickets.keepTicket"),
+        statusConfirmed: t("tickets.statusConfirmed"),
+        statusPending: t("tickets.statusPending"),
+        statusCancelled: t("tickets.statusCancelled"),
+        statusAttended: t("tickets.statusAttended"),
+      };
+      await generateTicketPDF(ticket, labels, locale, filename);
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
@@ -220,7 +240,7 @@ export default function TicketSummaryPage() {
         </Link>
 
         {/* Ticket Card */}
-        <div ref={ticketRef} className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden relative">
+        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden relative">
           {/* Header with Event Image */}
           {ticket.event.bannerImageUrl && (
             <div className="relative h-48 md:h-64">
