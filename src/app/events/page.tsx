@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -15,6 +14,15 @@ const Events = dynamic(() => import("@/components/Events/Events"), {
     </div>
   ),
 });
+
+const FeaturedEvent = dynamic(
+  () => import("@/components/Events/FeaturedEvent"),
+  {
+    loading: () => (
+      <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
+    ),
+  }
+);
 
 const CreateEventForm = dynamic(
   () => import("@/components/CreateEvent/create_event"),
@@ -30,9 +38,6 @@ const CreateEventForm = dynamic(
 const EventsPage = () => {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
-  const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
-  const [currentBannerAlt, setCurrentBannerAlt] =
-    useState<string>("Banner Image");
   const [eventsData, setEventsData] = useState<Event[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,10 +69,39 @@ const EventsPage = () => {
     fetchEventData();
   }, []);
 
-  const handleBannerUpdate = (imageUrl: string | null, altText: string) => {
-    setCurrentBannerUrl(imageUrl);
-    setCurrentBannerAlt(altText || "Banner Image");
-  };
+  // Get the latest/featured event (most recent by event date or creation date)
+  const featuredEvent = useMemo(() => {
+    if (!eventsData || eventsData.length === 0) return null;
+
+    // Sort by event date (upcoming first) then by creation date
+    const sortedEvents = [...eventsData].sort((a, b) => {
+      const dateA = new Date(a.eventDate);
+      const dateB = new Date(b.eventDate);
+      const now = new Date();
+
+      // Prioritize upcoming events
+      const isAUpcoming = dateA >= now;
+      const isBUpcoming = dateB >= now;
+
+      if (isAUpcoming && !isBUpcoming) return -1;
+      if (!isAUpcoming && isBUpcoming) return 1;
+
+      // If both upcoming or both past, sort by date
+      if (isAUpcoming && isBUpcoming) {
+        return dateA.getTime() - dateB.getTime(); // Nearest upcoming first
+      }
+
+      return dateB.getTime() - dateA.getTime(); // Most recent past event first
+    });
+
+    return sortedEvents[0];
+  }, [eventsData]);
+
+  // Get remaining events (excluding featured)
+  const remainingEvents = useMemo(() => {
+    if (!eventsData || !featuredEvent) return eventsData || [];
+    return eventsData.filter((event) => event.id !== featuredEvent.id);
+  }, [eventsData, featuredEvent]);
 
   const handleEventCreated = () => {
     const fetchEventData = async () => {
@@ -101,6 +135,15 @@ const EventsPage = () => {
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
 
+  // Handler for featured event click - opens in modal via Events component
+  const handleFeaturedEventClick = (event: Event) => {
+    // Scroll to events section and trigger the modal
+    const eventsSection = document.getElementById("events-list");
+    if (eventsSection) {
+      eventsSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8"
@@ -127,33 +170,27 @@ const EventsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden relative">
-          {isLoading ? (
-            <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
-              <p className="text-gray-500 text-xl">
-                {t("eventsPage.bannerLoading")}
-              </p>
-            </div>
-          ) : currentBannerUrl ? (
-            <Image
-              src={currentBannerUrl}
-              alt={currentBannerAlt}
-              width={1200}
-              height={320}
-              className="object-cover w-full h-full"
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-              quality={85}
-            />
-          ) : (
-            <p className="text-gray-400 text-xl">
-              {t("eventsPage.bannerPlaceholder")}
-            </p>
-          )}
-        </div>
-
+        {/* Featured Event Section */}
         {isLoading && (
-          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-200px)] rounded-lg">
+          <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
+        )}
+
+        {!isLoading && !error && featuredEvent && (
+          <Suspense
+            fallback={
+              <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
+            }
+          >
+            <FeaturedEvent
+              event={featuredEvent}
+              onEventClick={handleFeaturedEventClick}
+            />
+          </Suspense>
+        )}
+
+        {/* Loading Skeleton */}
+        {isLoading && (
+          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-400px)] rounded-lg">
             <aside className="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
               <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
               <div className="space-y-2">
@@ -189,16 +226,23 @@ const EventsPage = () => {
           </p>
         )}
 
-        {!isLoading && !error && eventsData && (
-          <Suspense
-            fallback={
-              <div className="flex justify-center items-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-              </div>
-            }
-          >
-            <Events onBannerUpdate={handleBannerUpdate} eventsData={eventsData} />
-          </Suspense>
+        {/* Events List */}
+        {!isLoading && !error && eventsData && eventsData.length > 0 && (
+          <div id="events-list">
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+              }
+            >
+              <Events
+                onBannerUpdate={() => {}}
+                eventsData={remainingEvents.length > 0 ? remainingEvents : eventsData}
+                featuredEventId={featuredEvent?.id}
+              />
+            </Suspense>
+          </div>
         )}
 
         {!isLoading && !error && (!eventsData || eventsData.length === 0) && (

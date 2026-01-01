@@ -18,6 +18,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 interface EventsProps {
   onBannerUpdate: (imageUrl: string | null, altText: string) => void;
   eventsData: Event[];
+  featuredEventId?: string;
 }
 
 interface EventModalProps {
@@ -148,7 +149,7 @@ const EventModal: React.FC<EventModalProps> = ({
   );
 };
 
-const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
+const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData, featuredEventId }) => {
   const { t, locale } = useTranslation();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);

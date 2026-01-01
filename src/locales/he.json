@@ -514,6 +514,8 @@
     "gridView": "תצוגת רשת",
     "listView": "תצוגת רשימה",
     "noResults": "לא נמצאו אירועים",
+    "featuredEvent": "אירוע מומלץ",
+    "viewDetails": "לפרטים נוספים",
     "tryDifferentSearch": "נסה לשנות את החיפוש או הסינון"
   },
   "searchPage": {

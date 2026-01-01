@@ -514,6 +514,8 @@
     "gridView": "Grid view",
     "listView": "List view",
     "noResults": "No events found",
+    "featuredEvent": "Featured Event",
+    "viewDetails": "View Details",
     "tryDifferentSearch": "Try adjusting your search or filter criteria"
   },
   "searchPage": {
