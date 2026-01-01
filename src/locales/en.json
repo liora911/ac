@@ -644,6 +644,8 @@
     "theme": "Theme",
     "lightMode": "Light",
     "darkMode": "Dark",
-    "openSettings": "Open settings"
+    "openSettings": "Open settings",
+    "supportMessage": "Have an issue or want to report a problem?",
+    "contactUs": "Contact us"
   }
 }

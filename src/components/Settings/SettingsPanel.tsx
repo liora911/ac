@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import Link from "next/link";
 import LanguageToggle from "./LanguageToggle";
 import ThemeToggleSection from "./ThemeToggleSection";
 
@@ -90,6 +91,20 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
               {/* Theme Toggle Section */}
               <ThemeToggleSection />
+            </div>
+
+            {/* Support Footer */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 text-center">
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {t("settings.supportMessage")}{" "}
+                <Link
+                  href="/contact"
+                  onClick={onClose}
+                  className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                >
+                  {t("settings.contactUs")}
+                </Link>
+              </p>
             </div>
           </motion.div>
         </>

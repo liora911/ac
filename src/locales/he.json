@@ -663,6 +663,8 @@
     "theme": "ערכת נושא",
     "lightMode": "בהיר",
     "darkMode": "כהה",
-    "openSettings": "פתח הגדרות"
+    "openSettings": "פתח הגדרות",
+    "supportMessage": "נתקלת בבעיה או רוצה לדווח על תקלה?",
+    "contactUs": "צור קשר"
   }
 }
