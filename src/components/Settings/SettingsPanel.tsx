@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -15,6 +16,12 @@ type SettingsPanelProps = {
 export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { t, locale } = useTranslation();
   const isRTL = locale === "he";
+  const [mounted, setMounted] = useState(false);
+
+  // Ensure we only render portal on client
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
@@ -39,7 +46,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
     return () => window.removeEventListener("keydown", handleEscape);
   }, [isOpen, onClose]);
 
-  return (
+  const drawerContent = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -59,10 +66,10 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             animate={{ x: 0 }}
             exit={{ x: isRTL ? "-100%" : "100%" }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className={`fixed top-0 ${isRTL ? "left-0" : "right-0"} z-[101] h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl`}
+            className={`fixed inset-y-0 ${isRTL ? "left-0" : "right-0"} z-[101] w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl flex flex-col`}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700 shrink-0">
               <h2 className="text-xl font-bold text-gray-900 dark:text-white">
                 {t("settings.title")}
               </h2>
@@ -77,7 +84,7 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
             </div>
 
             {/* Content */}
-            <div className="p-6 space-y-8 overflow-y-auto h-[calc(100%-80px)]">
+            <div className="p-6 space-y-8 overflow-y-auto flex-1">
               {/* Language Toggle Section */}
               <LanguageToggle />
 
@@ -89,4 +96,9 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
       )}
     </AnimatePresence>
   );
+
+  // Use portal to render at document body level to escape any container constraints
+  if (!mounted) return null;
+
+  return createPortal(drawerContent, document.body);
 }
