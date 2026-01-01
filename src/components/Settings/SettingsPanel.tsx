@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -13,51 +13,80 @@ type SettingsPanelProps = {
 };
 
 export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const isRTL = locale === "he";
 
-  if (!isOpen) return null;
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Close on escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    if (isOpen) {
+      window.addEventListener("keydown", handleEscape);
+    }
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
 
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4"
-        onClick={onClose}
-      >
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
-          onClick={(e) => e.stopPropagation()}
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between p-5 border-b border-gray-100 dark:border-gray-700">
-            <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-              {t("settings.title")}
-            </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-            </button>
-          </div>
+      {isOpen && (
+        <>
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm"
+            onClick={onClose}
+          />
 
-          {/* Content */}
-          <div className="p-6 space-y-8">
-            {/* Language Toggle Section */}
-            <LanguageToggle />
+          {/* Drawer */}
+          <motion.div
+            initial={{ x: isRTL ? "-100%" : "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: isRTL ? "-100%" : "100%" }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className={`fixed top-0 ${isRTL ? "left-0" : "right-0"} z-[101] h-full w-full max-w-sm bg-white dark:bg-gray-800 shadow-2xl`}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                {t("settings.title")}
+              </h2>
+              <button
+                type="button"
+                onClick={onClose}
+                className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center transition-colors cursor-pointer"
+                aria-label="Close settings"
+              >
+                <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+              </button>
+            </div>
 
-            {/* Theme Toggle Section */}
-            <ThemeToggleSection />
-          </div>
-        </motion.div>
-      </motion.div>
+            {/* Content */}
+            <div className="p-6 space-y-8 overflow-y-auto h-[calc(100%-80px)]">
+              {/* Language Toggle Section */}
+              <LanguageToggle />
+
+              {/* Theme Toggle Section */}
+              <ThemeToggleSection />
+            </div>
+          </motion.div>
+        </>
+      )}
     </AnimatePresence>
   );
 }
