@@ -34,6 +34,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
     eventTime: "",
     bannerImageUrl: "",
     categoryId: "",
+    maxSeats: "",
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -113,6 +114,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
     try {
       const submissionData = {
         ...formData,
+        maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
       };
 
       const response = await fetch("/api/events", {
@@ -141,6 +143,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         eventTime: "",
         bannerImageUrl: "",
         categoryId: "",
+        maxSeats: "",
       });
 
       if (onSuccess) {
@@ -351,7 +354,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label
               htmlFor="eventDate"
@@ -385,6 +388,28 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+          </div>
+
+          <div>
+            <label
+              htmlFor="maxSeats"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createEvent.maxSeatsLabel")}
+            </label>
+            <input
+              type="number"
+              id="maxSeats"
+              name="maxSeats"
+              value={formData.maxSeats}
+              onChange={handleChange}
+              min={1}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder={t("createEvent.maxSeatsPlaceholder")}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              {t("createEvent.maxSeatsHelp")}
+            </p>
           </div>
         </div>
 

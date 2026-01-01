@@ -33,7 +33,32 @@ export async function GET(
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 
-    return NextResponse.json(event);
+    // Calculate remaining seats if event has maxSeats limit
+    let seatsInfo = null;
+    if (event.maxSeats !== null) {
+      const reservedSeats = await prisma.ticket.aggregate({
+        where: {
+          eventId: id,
+          status: {
+            in: ["CONFIRMED", "PENDING"],
+          },
+        },
+        _sum: {
+          numberOfSeats: true,
+        },
+      });
+
+      const totalReserved = reservedSeats._sum.numberOfSeats || 0;
+      const availableSeats = event.maxSeats - totalReserved;
+
+      seatsInfo = {
+        maxSeats: event.maxSeats,
+        reservedSeats: totalReserved,
+        availableSeats: Math.max(0, availableSeats),
+      };
+    }
+
+    return NextResponse.json({ ...event, seatsInfo });
   } catch (error) {
     console.error("Error fetching event:", error);
     return NextResponse.json(
@@ -73,6 +98,7 @@ export async function PUT(
       eventTime,
       bannerImageUrl,
       categoryId,
+      maxSeats,
     } = body;
 
     if (!title || !description || !eventType || !eventDate || !categoryId) {
@@ -126,6 +152,7 @@ export async function PUT(
         eventTime,
         bannerImageUrl,
         categoryId,
+        maxSeats: maxSeats ? parseInt(maxSeats) : null,
       },
       include: {
         author: {

@@ -31,6 +31,7 @@ export default function EditEventForm({
     eventTime: "",
     bannerImageUrl: "",
     categoryId: "",
+    maxSeats: "",
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -73,6 +74,7 @@ export default function EditEventForm({
             eventTime: event.eventTime || "",
             bannerImageUrl: event.bannerImageUrl || "",
             categoryId: event.categoryId || "",
+            maxSeats: event.maxSeats ? String(event.maxSeats) : "",
           });
         } else {
           setMessage({
@@ -385,7 +387,7 @@ export default function EditEventForm({
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
             <label
               htmlFor="eventDate"
@@ -419,6 +421,28 @@ export default function EditEventForm({
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             />
+          </div>
+
+          <div>
+            <label
+              htmlFor="maxSeats"
+              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            >
+              {t("editEventForm.maxSeatsLabel")}
+            </label>
+            <input
+              type="number"
+              id="maxSeats"
+              name="maxSeats"
+              value={formData.maxSeats}
+              onChange={handleChange}
+              min={1}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+              placeholder={t("editEventForm.maxSeatsPlaceholder")}
+            />
+            <p className="text-xs text-gray-500 mt-1 rtl">
+              {t("editEventForm.maxSeatsHelp")}
+            </p>
           </div>
         </div>
 

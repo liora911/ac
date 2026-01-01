@@ -162,6 +162,7 @@ model Event {
   eventDate       DateTime
   eventTime       String?
   bannerImageUrl  String?
+  maxSeats        Int?     // Maximum seats available (null = unlimited)
   published       Boolean  @default(false)
   categoryId      String
   category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)

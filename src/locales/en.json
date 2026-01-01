@@ -294,7 +294,10 @@
     "loadingCategories": "Loading categories...",
     "selectCategory": "Select a category",
     "submitUpdating": "Updating event...",
-    "submit": "Update event"
+    "submit": "Update event",
+    "maxSeatsLabel": "Maximum Seats",
+    "maxSeatsPlaceholder": "Leave empty for unlimited",
+    "maxSeatsHelp": "Limit the number of available seats for this event"
   },
   "editLectureForm": {
     "loginRequiredTitle": "Sign in required",
@@ -439,7 +442,10 @@
     "submitCreating": "Creating event...",
     "submit": "Create Event",
     "successMessage": "Event created successfully!",
-    "errorMessage": "Error creating event. Please try again."
+    "errorMessage": "Error creating event. Please try again.",
+    "maxSeatsLabel": "Maximum Seats",
+    "maxSeatsPlaceholder": "Leave empty for unlimited",
+    "maxSeatsHelp": "Limit the number of available seats for this event"
   },
   "createLecture": {
     "loading": "Loading...",
@@ -576,7 +582,16 @@
     "statusConfirmed": "Confirmed",
     "statusPending": "Pending",
     "statusCancelled": "Cancelled",
-    "statusAttended": "Attended"
+    "statusAttended": "Attended",
+    "downloadPdf": "Download Ticket PDF",
+    "downloadingPdf": "Downloading...",
+    "seatsRemaining": "{count} seats remaining",
+    "lastSeatsRemaining": "Only {count} seats left!",
+    "noSeatsAvailable": "No seats available",
+    "unlimitedSeats": "Unlimited seats",
+    "seatsAvailable": "seats available",
+    "eventFull": "Event is full",
+    "soldOut": "Sold Out"
   },
   "searchPage": {
     "title": "Search Results",

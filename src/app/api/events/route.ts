@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
       eventTime,
       bannerImageUrl,
       categoryId,
+      maxSeats,
     } = body;
 
     if (!title || !description || !eventType || !eventDate || !categoryId) {
@@ -128,6 +129,7 @@ export async function POST(request: NextRequest) {
         bannerImageUrl,
         categoryId,
         authorId: user.id,
+        maxSeats: maxSeats ? parseInt(maxSeats) : null,
       },
       include: {
         author: {

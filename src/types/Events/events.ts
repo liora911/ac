@@ -1,3 +1,9 @@
+export interface SeatsInfo {
+  maxSeats: number;
+  reservedSeats: number;
+  availableSeats: number;
+}
+
 export interface Event {
   id: string;
   title: string;
@@ -11,6 +17,7 @@ export interface Event {
   published: boolean;
   categoryId: string;
   authorId: string;
+  maxSeats: number | null;
   createdAt: Date;
   updatedAt: Date;
   author: {
@@ -23,6 +30,7 @@ export interface Event {
     name: string;
     bannerImageUrl: string | null;
   };
+  seatsInfo?: SeatsInfo | null;
 }
 
 export interface EventCategory {

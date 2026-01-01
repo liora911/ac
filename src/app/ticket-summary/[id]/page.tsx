@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +22,8 @@ import {
   Download,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 interface TicketData {
   id: string;
@@ -55,10 +57,12 @@ export default function TicketSummaryPage() {
   const accessToken = params.id as string;
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
+  const ticketRef = useRef<HTMLDivElement>(null);
 
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     const fetchTicket = async () => {
@@ -154,6 +158,47 @@ export default function TicketSummaryPage() {
     }
   };
 
+  const downloadPDF = async () => {
+    const element = ticketRef.current;
+    if (!element || !ticket) return;
+
+    setIsDownloading(true);
+    try {
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        foreignObjectRendering: true,
+      });
+
+      const imgData = canvas.toDataURL("image/png");
+      const pdf = new jsPDF("p", "mm", "a4");
+
+      const imgWidth = 210;
+      const pageHeight = 295;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      let heightLeft = imgHeight;
+
+      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        pdf.addPage();
+        const position = heightLeft - imgHeight;
+        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
+      const filename = `ticket-${ticket.event.title.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, "-")}-${ticket.id.slice(0, 8)}.pdf`;
+      pdf.save(filename);
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -202,7 +247,7 @@ export default function TicketSummaryPage() {
         </Link>
 
         {/* Ticket Card */}
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <div ref={ticketRef} className="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
           {/* Header with Event Image */}
           {ticket.event.bannerImageUrl && (
             <div className="relative h-48 md:h-64">
@@ -246,6 +291,18 @@ export default function TicketSummaryPage() {
                     title={t("tickets.share")}
                   >
                     <Share2 size={20} />
+                  </button>
+                  <button
+                    onClick={downloadPDF}
+                    disabled={isDownloading}
+                    className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={t("tickets.downloadPdf")}
+                  >
+                    {isDownloading ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
+                    ) : (
+                      <Download size={20} />
+                    )}
                   </button>
                 </div>
               </div>

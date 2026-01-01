@@ -294,7 +294,10 @@
     "loadingCategories": "טוען קטגוריות...",
     "selectCategory": "בחר קטגוריה",
     "submitUpdating": "מעדכן אירוע...",
-    "submit": "עדכן אירוע"
+    "submit": "עדכן אירוע",
+    "maxSeatsLabel": "מספר מקומות מקסימלי",
+    "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
+    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע"
   },
   "editLectureForm": {
     "loginRequiredTitle": "נדרשת התחברות",
@@ -441,7 +444,10 @@
     "submitCreating": "יוצר אירוע...",
     "submit": "צור אירוע",
     "successMessage": "האירוע נוצר בהצלחה!",
-    "errorMessage": "שגיאה ביצירת האירוע. נסה שוב."
+    "errorMessage": "שגיאה ביצירת האירוע. נסה שוב.",
+    "maxSeatsLabel": "מספר מקומות מקסימלי",
+    "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
+    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע"
   },
   "createLecture": {
     "loading": "טוען...",
@@ -569,7 +575,16 @@
     "seatsMin": "יש לבחור לפחות מקום אחד",
     "reservationError": "שגיאה בשריון המקום. נסה שוב.",
     "copyLink": "העתק קישור",
-    "linkCopied": "הקישור הועתק!"
+    "linkCopied": "הקישור הועתק!",
+    "downloadPdf": "הורד כרטיס PDF",
+    "downloadingPdf": "מוריד...",
+    "seatsRemaining": "נותרו {count} מקומות",
+    "lastSeatsRemaining": "נותרו {count} מקומות אחרונים!",
+    "noSeatsAvailable": "אין מקומות פנויים",
+    "unlimitedSeats": "מקומות ללא הגבלה",
+    "seatsAvailable": "מקומות זמינים",
+    "eventFull": "האירוע מלא",
+    "soldOut": "אזל"
   },
   "searchPage": {
     "title": "תוצאות חיפוש",

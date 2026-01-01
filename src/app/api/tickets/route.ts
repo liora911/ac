@@ -61,6 +61,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check seat availability if event has maxSeats limit
+    if (event.maxSeats !== null) {
+      // Count total reserved seats (only confirmed and pending tickets)
+      const reservedSeats = await prisma.ticket.aggregate({
+        where: {
+          eventId,
+          status: {
+            in: ["CONFIRMED", "PENDING"],
+          },
+        },
+        _sum: {
+          numberOfSeats: true,
+        },
+      });
+
+      const totalReserved = reservedSeats._sum.numberOfSeats || 0;
+      const availableSeats = event.maxSeats - totalReserved;
+
+      if (availableSeats <= 0) {
+        return NextResponse.json(
+          { error: "Event is fully booked", availableSeats: 0 },
+          { status: 400 }
+        );
+      }
+
+      if (numberOfSeats > availableSeats) {
+        return NextResponse.json(
+          {
+            error: `Only ${availableSeats} seats available`,
+            availableSeats,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
     // Create ticket
     const ticket = await prisma.ticket.create({
       data: {
