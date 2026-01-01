@@ -89,23 +89,23 @@ const LectureCard: React.FC<LectureCardProps> = ({
           )}
         </div>
       </div>
-      <div className="p-4 border-t border-gray-100 flex gap-2">
-        <button
-          onClick={() => onLectureClick(lecture)}
-          className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-xl hover:bg-blue-700 transition-colors text-sm font-medium flex items-center justify-center gap-2"
-        >
-          <Play className="w-4 h-4" />
-          צפה בהרצאה
-        </button>
+      <div className="p-4 border-t border-gray-100 flex justify-end gap-2">
         <button
           onClick={(e) => {
             e.stopPropagation();
             setIsShareOpen(true);
           }}
-          className="w-11 h-11 rounded-xl border border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-center"
+          className="w-10 h-10 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-center"
           aria-label="שתף"
         >
           <Share2 className="w-4 h-4 text-gray-600" />
+        </button>
+        <button
+          onClick={() => onLectureClick(lecture)}
+          className="w-10 h-10 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center shadow-md hover:shadow-lg"
+          aria-label="צפה בהרצאה"
+        >
+          <Play className="w-4 h-4 fill-current" />
         </button>
       </div>
 

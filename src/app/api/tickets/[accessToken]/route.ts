@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/prisma";
 
 // GET - Get ticket by access token (public access with token)
 export async function GET(

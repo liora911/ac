@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+import prisma from "@/lib/prisma/prisma";
 
 // POST - Create a new ticket reservation
 export async function POST(request: NextRequest) {
