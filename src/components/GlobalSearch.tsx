@@ -194,15 +194,17 @@ export default function GlobalSearch() {
     : allResults.filter(r => r.type === activeTab);
 
   // Category tabs configuration
-  const categories: { key: CategoryType; label: string; count: number }[] = results
+  const allCategories: { key: CategoryType; label: string; count: number }[] = results
     ? [
-        { key: "all", label: t("globalSearch.all") || "All", count: results.total },
-        { key: "lectures", label: t("globalSearch.lectures") || "Lectures", count: results.lectures.length },
-        { key: "events", label: t("globalSearch.events") || "Events", count: results.events.length },
-        { key: "articles", label: t("globalSearch.articles") || "Articles", count: results.articles.length },
-        { key: "presentations", label: t("globalSearch.presentations") || "Presentations", count: results.presentations.length },
-      ].filter(cat => cat.key === "all" || cat.count > 0)
+        { key: "all" as const, label: t("globalSearch.all") || "All", count: results.total },
+        { key: "lectures" as const, label: t("globalSearch.lectures") || "Lectures", count: results.lectures.length },
+        { key: "events" as const, label: t("globalSearch.events") || "Events", count: results.events.length },
+        { key: "articles" as const, label: t("globalSearch.articles") || "Articles", count: results.articles.length },
+        { key: "presentations" as const, label: t("globalSearch.presentations") || "Presentations", count: results.presentations.length },
+      ]
     : [];
+
+  const categories = allCategories.filter(cat => cat.key === "all" || cat.count > 0);
 
   return (
     <div ref={searchRef} className="relative w-full max-w-xs sm:max-w-sm p-0 m-0">
