@@ -369,7 +369,17 @@
     "home": "Home",
     "ariaLabel": "Breadcrumb navigation",
     "adminDashboard": "Admin panel",
-    "edit": "Edit"
+    "edit": "Edit",
+    "createNew": "Create New"
+  },
+  "editEventPage": {
+    "title": "Edit Event"
+  },
+  "createPresentationPage": {
+    "title": "Create New Presentation"
+  },
+  "createEventPage": {
+    "title": "Create New Event"
   },
   "footer": {
     "contact": "Contact: avshalom@iyar.org.il"

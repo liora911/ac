@@ -369,7 +369,17 @@
     "home": "דף הבית",
     "ariaLabel": "ניווט פירורי לחם",
     "adminDashboard": "פאנל ניהול",
-    "edit": "עריכה"
+    "edit": "עריכה",
+    "createNew": "יצירה חדשה"
+  },
+  "editEventPage": {
+    "title": "עריכת אירוע"
+  },
+  "createPresentationPage": {
+    "title": "יצירת מצגת חדשה"
+  },
+  "createEventPage": {
+    "title": "יצירת אירוע חדש"
   },
   "footer": {
     "contact": "להזמנות: avshalom@iyar.org.il"

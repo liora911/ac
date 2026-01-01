@@ -27,7 +27,11 @@ const STATIC_SEGMENT_KEYS: Record<string, string> = {
   "edit-article": "editArticlePage.title",
   "edit-lecture": "editLecturePage.title",
   "edit-presentation": "editPresentationPage.title",
-  "create-lecture": "createLecturePage.title",
+  "edit-event": "editEventPage.title",
+  "create-lecture": "createLecture.title",
+  "create-presentation": "createPresentation.title",
+  "create-event": "createEvent.title",
+  create: "breadcrumbs.createNew",
   edit: "breadcrumbs.edit",
 };
 

@@ -1,18 +1,35 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import Events from "@/components/Events/Events";
-import CreateEventForm from "@/components/CreateEvent/create_event";
+import dynamic from "next/dynamic";
 import Image from "next/image";
 import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
+const Events = dynamic(() => import("@/components/Events/Events"), {
+  loading: () => (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    </div>
+  ),
+});
+
+const CreateEventForm = dynamic(
+  () => import("@/components/CreateEvent/create_event"),
+  {
+    loading: () => (
+      <div className="flex justify-center items-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    ),
+  }
+);
+
 const EventsPage = () => {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
   const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
   const [currentBannerAlt, setCurrentBannerAlt] =
     useState<string>("Banner Image");
@@ -86,118 +103,106 @@ const EventsPage = () => {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-950 to-slate-800 text-gray-100 py-8"
+      className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold text-gray-900">
             {t("eventsPage.title")}
           </h1>
-          {/* {isAuthorized && (
-            <button
-              onClick={() => setShowCreateForm(!showCreateForm)}
-              className="bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white px-6 py-3 rounded-lg transition-all duration-300 text-lg font-semibold rtl shadow-lg hover:shadow-cyan-500/25 cursor-pointer"
-            >
-              {showCreateForm
-                ? t("eventsPage.cancelButton")
-                : t("eventsPage.createEventButton")}
-            </button>
-          )} */}
         </div>
 
         {showCreateForm && isAuthorized && (
           <div className="mb-8">
-            <CreateEventForm onSuccess={handleEventCreated} />
+            <Suspense
+              fallback={
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                </div>
+              }
+            >
+              <CreateEventForm onSuccess={handleEventCreated} />
+            </Suspense>
           </div>
         )}
 
-        <div className="mb-6 h-48 md:h-56 bg-gradient-to-r from-slate-800 via-blue-900 to-slate-800 rounded-lg shadow-xl flex items-center justify-center border border-cyan-500/20 overflow-hidden backdrop-blur-sm relative group">
-          {currentBannerUrl ? (
-            <>
-              <Image
-                src={currentBannerUrl}
-                alt={currentBannerAlt}
-                fill
-                className="object-cover"
-                priority
-              />
-              {}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end group-hover:from-black/70 transition-all duration-300">
-                <div className="p-4 text-white w-full">
-                  <h3
-                    className="text-lg md:text-xl font-semibold mb-1"
-                    style={{ textShadow: "1px 1px 2px rgba(0,0,0,0.7)" }}
-                  >
-                    {currentBannerAlt}
-                  </h3>
-                  {eventsData &&
-                    eventsData.find(
-                      (event) => event.title === currentBannerAlt
-                    ) && (
-                      <div className="text-xs md:text-sm opacity-85">
-                        <div className="flex flex-wrap gap-2 mb-1">
-                          <span className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">
-                            📅{" "}
-                            {new Date(
-                              eventsData.find(
-                                (event) => event.title === currentBannerAlt
-                              )?.eventDate || ""
-                            ).toLocaleDateString(dateLocale)}
-                          </span>
-                          {eventsData.find(
-                            (event) => event.title === currentBannerAlt
-                          )?.eventTime && (
-                            <span className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm">
-                              🕐{" "}
-                              {
-                                eventsData.find(
-                                  (event) => event.title === currentBannerAlt
-                                )?.eventTime
-                              }
-                            </span>
-                          )}
-                        </div>
-                        {eventsData.find(
-                          (event) => event.title === currentBannerAlt
-                        )?.location && (
-                          <div className="bg-black/40 px-2 py-1 rounded-md backdrop-blur-sm inline-block">
-                            📍{" "}
-                            {
-                              eventsData.find(
-                                (event) => event.title === currentBannerAlt
-                              )?.location
-                            }
-                          </div>
-                        )}
-                      </div>
-                    )}
-                </div>
-              </div>
-            </>
+        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden relative">
+          {isLoading ? (
+            <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
+              <p className="text-gray-500 text-xl">
+                {t("eventsPage.bannerLoading")}
+              </p>
+            </div>
+          ) : currentBannerUrl ? (
+            <Image
+              src={currentBannerUrl}
+              alt={currentBannerAlt}
+              width={1200}
+              height={320}
+              className="object-cover w-full h-full"
+              priority
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+              quality={85}
+            />
           ) : (
-            <p className="text-gray-400 text-lg">
-              {isLoading
-                ? t("eventsPage.bannerLoading")
-                : t("eventsPage.bannerPlaceholder")}
+            <p className="text-gray-400 text-xl">
+              {t("eventsPage.bannerPlaceholder")}
             </p>
           )}
         </div>
+
         {isLoading && (
-          <p className="text-center text-xl text-cyan-300">
-            {t("eventsPage.loading")}
-          </p>
+          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-200px)] rounded-lg">
+            <aside className="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
+              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+              <div className="space-y-2">
+                <div className="h-8 bg-gray-200 rounded"></div>
+                <div className="h-8 bg-gray-200 rounded w-5/6"></div>
+                <div className="h-8 bg-gray-200 rounded w-4/5"></div>
+              </div>
+            </aside>
+            <main className="w-full md:w-3/4 lg:w-4/5">
+              <div className="h-8 bg-gray-200 rounded w-1/2 mb-6 animate-pulse"></div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {[...Array(3)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 h-64 animate-pulse"
+                  >
+                    <div className="h-32 bg-gray-200 rounded-t-lg"></div>
+                    <div className="p-4">
+                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
+                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </main>
+          </div>
         )}
+
         {error && (
-          <p className="text-center text-xl text-red-400">
+          <p className="text-center text-xl text-red-500">
             {t("eventsPage.errorPrefix")}: {error}
           </p>
         )}
+
         {!isLoading && !error && eventsData && (
-          <Events onBannerUpdate={handleBannerUpdate} eventsData={eventsData} />
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center py-12">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+              </div>
+            }
+          >
+            <Events onBannerUpdate={handleBannerUpdate} eventsData={eventsData} />
+          </Suspense>
         )}
+
         {!isLoading && !error && (!eventsData || eventsData.length === 0) && (
-          <p className="text-center text-xl text-cyan-300/70">
+          <p className="text-center text-xl text-gray-400">
             {t("eventsPage.noEventsFound")}
           </p>
         )}
