@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -21,7 +21,7 @@ import {
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
-export default function TicketAcquirePage() {
+function TicketAcquireContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const eventId = searchParams.get("eventId");
@@ -496,5 +496,24 @@ export default function TicketAcquirePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+        <p className="text-gray-600 text-xl">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
+export default function TicketAcquirePage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <TicketAcquireContent />
+    </Suspense>
   );
 }
