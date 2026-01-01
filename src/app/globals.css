@@ -108,3 +108,13 @@ body {
 .dark .hover\:bg-gray-50:hover {
   background-color: var(--accent) !important;
 }
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

@@ -6,6 +6,8 @@ import { MdSearch, MdClose } from "react-icons/md";
 import { useTranslation } from "@/hooks/useTranslation";
 import { SearchResult, SearchResults } from "@/types/GlobalSearch/globalsearch";
 
+type CategoryType = "all" | "lectures" | "events" | "articles" | "presentations";
+
 export default function GlobalSearch() {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
@@ -13,8 +15,10 @@ export default function GlobalSearch() {
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [activeTab, setActiveTab] = useState<CategoryType>("all");
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const tabsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -33,18 +37,26 @@ export default function GlobalSearch() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (!isOpen || !results) return;
 
-      const allResults = [
-        ...results.articles,
-        ...results.presentations,
-        ...results.events,
-        ...results.lectures,
-      ];
+      const currentFilteredResults = activeTab === "all"
+        ? [
+            ...results.articles.map((r) => ({ ...r, type: "articles" })),
+            ...results.presentations.map((r) => ({ ...r, type: "presentations" })),
+            ...results.events.map((r) => ({ ...r, type: "events" })),
+            ...results.lectures.map((r) => ({ ...r, type: "lectures" })),
+          ]
+        : activeTab === "articles"
+        ? results.articles.map((r) => ({ ...r, type: "articles" }))
+        : activeTab === "presentations"
+        ? results.presentations.map((r) => ({ ...r, type: "presentations" }))
+        : activeTab === "events"
+        ? results.events.map((r) => ({ ...r, type: "events" }))
+        : results.lectures.map((r) => ({ ...r, type: "lectures" }));
 
       switch (e.key) {
         case "ArrowDown":
           e.preventDefault();
           setSelectedIndex((prev) =>
-            prev < allResults.length - 1 ? prev + 1 : prev
+            prev < currentFilteredResults.length - 1 ? prev + 1 : prev
           );
           break;
         case "ArrowUp":
@@ -53,9 +65,9 @@ export default function GlobalSearch() {
           break;
         case "Enter":
           e.preventDefault();
-          if (selectedIndex >= 0 && selectedIndex < allResults.length) {
-            const result = allResults[selectedIndex];
-            handleResultClick(result, getResultType(result, results));
+          if (selectedIndex >= 0 && selectedIndex < currentFilteredResults.length) {
+            const result = currentFilteredResults[selectedIndex];
+            handleResultClick(result, result.type);
           }
           break;
         case "Escape":
@@ -68,7 +80,7 @@ export default function GlobalSearch() {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, results, selectedIndex]);
+  }, [isOpen, results, selectedIndex, activeTab]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -176,6 +188,22 @@ export default function GlobalSearch() {
       ]
     : [];
 
+  // Filter results based on active tab
+  const filteredResults = activeTab === "all"
+    ? allResults
+    : allResults.filter(r => r.type === activeTab);
+
+  // Category tabs configuration
+  const categories: { key: CategoryType; label: string; count: number }[] = results
+    ? [
+        { key: "all", label: t("globalSearch.all") || "All", count: results.total },
+        { key: "lectures", label: t("globalSearch.lectures") || "Lectures", count: results.lectures.length },
+        { key: "events", label: t("globalSearch.events") || "Events", count: results.events.length },
+        { key: "articles", label: t("globalSearch.articles") || "Articles", count: results.articles.length },
+        { key: "presentations", label: t("globalSearch.presentations") || "Presentations", count: results.presentations.length },
+      ].filter(cat => cat.key === "all" || cat.count > 0)
+    : [];
+
   return (
     <div ref={searchRef} className="relative w-full max-w-xs sm:max-w-sm p-0 m-0">
       <div className="relative">
@@ -208,79 +236,86 @@ export default function GlobalSearch() {
 
       {isOpen && results && (
         <div
-          className="absolute z-[60] w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg max-h-[60vh] sm:max-h-96 overflow-y-auto"
+          className="absolute z-[60] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden"
           role="listbox"
         >
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
-              Searching...
+              {t("globalSearch.searching") || "Searching..."}
             </div>
           ) : results.total === 0 ? (
-            <div className="p-4 text-center text-gray-500">
-              No results found for "{results.query}"
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
+              {t("globalSearch.noResults") || "No results found for"} "{results.query}"
             </div>
           ) : (
-            <div>
-              {[
-                {
-                  type: "articles",
-                  label: "Articles",
-                  items: results.articles,
-                },
-                {
-                  type: "presentations",
-                  label: "Presentations",
-                  items: results.presentations,
-                },
-                { type: "events", label: "Events", items: results.events },
-                {
-                  type: "lectures",
-                  label: "Lectures",
-                  items: results.lectures,
-                },
-              ].map(
-                ({ type, label, items }) =>
-                  items.length > 0 && (
-                    <div key={type}>
-                      <div className="px-4 py-2 bg-gray-50 border-b border-gray-100">
-                        <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                          {label} ({items.length})
-                        </span>
-                      </div>
-                      {items.map((result, index) => {
-                        const globalIndex = allResults.findIndex(
-                          (r) => r.id === result.id
-                        );
-                        const isSelected = selectedIndex === globalIndex;
-                        return (
-                          <div
-                            key={result.id}
-                            onClick={() => handleResultClick(result, type)}
-                            className={`px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer border-b border-gray-100 last:border-b-0 hover:bg-gray-50 ${
-                              isSelected ? "bg-blue-50" : ""
-                            }`}
-                            role="option"
-                            aria-selected={isSelected}
-                          >
-                            <div className="flex items-start gap-2 sm:gap-3">
-                              <span className="text-base sm:text-lg flex-shrink-0">
-                                {getResultIcon(type)}
-                              </span>
-                              <div className="flex-1 min-w-0">
-                                <div className="font-medium text-gray-900 text-sm sm:text-base truncate">
-                                  {result.title}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )
-              )}
+            <div className="flex flex-col">
+              {/* Scrollable Tabs */}
+              <div
+                ref={tabsRef}
+                className="flex overflow-x-auto border-b border-gray-200 dark:border-gray-700 scrollbar-hide"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {categories.map((cat) => (
+                  <button
+                    key={cat.key}
+                    onClick={() => {
+                      setActiveTab(cat.key);
+                      setSelectedIndex(-1);
+                    }}
+                    className={`flex-shrink-0 px-3 py-2 text-xs font-medium whitespace-nowrap transition-colors border-b-2 cursor-pointer ${
+                      activeTab === cat.key
+                        ? "border-blue-500 text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30"
+                        : "border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    {cat.label} ({cat.count})
+                  </button>
+                ))}
+              </div>
 
-              <div className="p-3 bg-gray-50 border-t border-gray-100">
+              {/* Results List */}
+              <div className="max-h-[50vh] sm:max-h-80 overflow-y-auto">
+                {filteredResults.length === 0 ? (
+                  <div className="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
+                    {t("globalSearch.noResultsInCategory") || "No results in this category"}
+                  </div>
+                ) : (
+                  filteredResults.map((result, index) => {
+                    const isSelected = selectedIndex === index;
+                    return (
+                      <div
+                        key={`${result.type}-${result.id}`}
+                        onClick={() => handleResultClick(result, result.type)}
+                        className={`px-3 sm:px-4 py-2.5 sm:py-3 cursor-pointer border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700 ${
+                          isSelected ? "bg-blue-50 dark:bg-blue-900/30" : ""
+                        }`}
+                        role="option"
+                        aria-selected={isSelected}
+                      >
+                        <div className="flex items-start gap-2 sm:gap-3">
+                          <span className="text-base sm:text-lg flex-shrink-0">
+                            {getResultIcon(result.type)}
+                          </span>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-gray-900 dark:text-gray-100 text-sm sm:text-base truncate">
+                              {result.title}
+                            </div>
+                            {activeTab === "all" && (
+                              <span className="text-xs text-gray-500 dark:text-gray-400 capitalize">
+                                {result.type}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+
+              {/* View All Button */}
+              <div className="p-3 bg-gray-50 dark:bg-gray-700/50 border-t border-gray-100 dark:border-gray-700">
                 <button
                   onClick={() => {
                     router.push(
@@ -290,9 +325,9 @@ export default function GlobalSearch() {
                     setQuery("");
                     setResults(null);
                   }}
-                  className="w-full text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+                  className="w-full text-center text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium cursor-pointer"
                 >
-                  View all {results.total} results
+                  {t("globalSearch.viewAll") || "View all"} {results.total} {t("globalSearch.results") || "results"}
                 </button>
               </div>
             </div>

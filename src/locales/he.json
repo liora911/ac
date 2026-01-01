@@ -365,7 +365,17 @@
   },
   "globalSearch": {
     "placeholder": "אני מחפש...",
-    "menuItem": "חפש"
+    "menuItem": "חפש",
+    "all": "הכל",
+    "lectures": "הרצאות",
+    "events": "אירועים",
+    "articles": "מאמרים",
+    "presentations": "מצגות",
+    "searching": "מחפש...",
+    "noResults": "לא נמצאו תוצאות עבור",
+    "noResultsInCategory": "אין תוצאות בקטגוריה זו",
+    "viewAll": "צפה בכל",
+    "results": "תוצאות"
   },
   "header": {
     "adminSettings": "הגדרות מנהל",

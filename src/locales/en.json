@@ -365,7 +365,17 @@
   },
   "globalSearch": {
     "placeholder": "I'm looking for...",
-    "menuItem": "Search"
+    "menuItem": "Search",
+    "all": "All",
+    "lectures": "Lectures",
+    "events": "Events",
+    "articles": "Articles",
+    "presentations": "Presentations",
+    "searching": "Searching...",
+    "noResults": "No results found for",
+    "noResultsInCategory": "No results in this category",
+    "viewAll": "View all",
+    "results": "results"
   },
   "header": {
     "adminSettings": "Admin settings",
