@@ -4,7 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
-import { useTranslation } from "@/hooks/useTranslation";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 type CategoryNode = {
   id: string;
@@ -17,7 +17,7 @@ interface CreateEventFormProps {
 }
 
 export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -63,11 +63,13 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-          <p className="mt-2 text-gray-300">
-            {status === "loading" ? t("createEvent.loading") : t("createEvent.loadingCategories")}
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
+            {status === "loading"
+              ? t("createEvent.loading")
+              : t("createEvent.loadingCategories")}
           </p>
         </div>
       </div>
@@ -76,33 +78,29 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4">
-            {t("createEvent.loginRequiredTitle")}
-          </h2>
-          <p className="text-gray-300">{t("createEvent.loginRequiredMessage")}</p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-          >
-            {t("createEvent.loginButton")}
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createEvent.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600">{t("createEvent.loginRequiredMessage")}</p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("createEvent.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4">{t("createEvent.notAuthorizedTitle")}</h2>
-          <p className="text-gray-300">
-            {t("createEvent.notAuthorizedMessage")}
-          </p>
-          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createEvent.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600">{t("createEvent.notAuthorizedMessage")}</p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -150,9 +148,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
       }
     } catch (error) {
       const messageText =
-        error instanceof Error
-          ? error.message
-          : t("createEvent.errorMessage");
+        error instanceof Error ? error.message : t("createEvent.errorMessage");
       setMessage({
         type: "error",
         text: messageText,
@@ -205,21 +201,22 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md" style={{ direction: locale === "he" ? "rtl" : "ltr" }}>
-      <h2 className="text-3xl font-bold mb-4 text-center">
-        {t("createEvent.title")}
-      </h2>
-
-      <p className="text-sm text-green-400 text-center mb-8">
-        {t("createEvent.loggedInAs")} {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          {t("createEvent.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("createEvent.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-900 text-green-200 border border-green-700"
-              : "bg-red-900 text-red-200 border border-red-700"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -230,7 +227,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
             {t("createEvent.titleLabel")}
           </label>
@@ -241,7 +238,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder={t("createEvent.titlePlaceholder")}
           />
         </div>
@@ -249,7 +246,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
             {t("createEvent.descriptionLabel")}
           </label>
@@ -259,42 +256,64 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               setFormData((prev) => ({ ...prev, description: value }))
             }
             placeholder={t("createEvent.descriptionPlaceholder")}
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="eventType"
-            className="block text-lg font-semibold mb-3 text-white"
-          >
-            {t("createEvent.eventTypeLabel")}
-          </label>
-          <select
-            id="eventType"
-            name="eventType"
-            value={formData.eventType}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          >
-            <option value="">{t("createEvent.eventTypePlaceholder")}</option>
-            <option value="in-person">{t("createEvent.eventTypeInPerson")}</option>
-            <option value="online">{t("createEvent.eventTypeOnline")}</option>
-          </select>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="eventType"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createEvent.eventTypeLabel")}
+            </label>
+            <select
+              id="eventType"
+              name="eventType"
+              value={formData.eventType}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">{t("createEvent.eventTypePlaceholder")}</option>
+              <option value="in-person">
+                {t("createEvent.eventTypeInPerson")}
+              </option>
+              <option value="online">{t("createEvent.eventTypeOnline")}</option>
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createEvent.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("createEvent.loadingCategories")
+                  : t("createEvent.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
         {formData.eventType === "in-person" && (
           <div>
             <label
               htmlFor="location"
-              className="block text-lg font-semibold mb-3 text-white"
+              className="block text-sm font-medium text-gray-700 mb-2"
             >
               {t("createEvent.locationLabel")}
             </label>
@@ -305,7 +324,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               value={formData.location}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder={t("createEvent.locationPlaceholder")}
             />
           </div>
@@ -315,7 +334,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
           <div>
             <label
               htmlFor="onlineUrl"
-              className="block text-lg font-semibold mb-3 text-white"
+              className="block text-sm font-medium text-gray-700 mb-2"
             >
               {t("createEvent.onlineUrlLabel")}
             </label>
@@ -326,51 +345,53 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               value={formData.onlineUrl}
               onChange={handleChange}
               required
-              className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder="https://"
             />
           </div>
         )}
 
-        <div>
-          <label
-            htmlFor="eventDate"
-            className="block text-lg font-semibold mb-3 text-white"
-          >
-            {t("createEvent.eventDateLabel")}
-          </label>
-          <input
-            type="date"
-            id="eventDate"
-            name="eventDate"
-            value={formData.eventDate}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 rtl"
-          />
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="eventDate"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createEvent.eventDateLabel")}
+            </label>
+            <input
+              type="date"
+              id="eventDate"
+              name="eventDate"
+              value={formData.eventDate}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
 
-        <div>
-          <label
-            htmlFor="eventTime"
-            className="block text-lg font-semibold mb-3 text-white"
-          >
-            {t("createEvent.eventTimeLabel")}
-          </label>
-          <input
-            type="time"
-            id="eventTime"
-            name="eventTime"
-            value={formData.eventTime}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          />
+          <div>
+            <label
+              htmlFor="eventTime"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createEvent.eventTimeLabel")}
+            </label>
+            <input
+              type="time"
+              id="eventTime"
+              name="eventTime"
+              value={formData.eventTime}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
         </div>
 
         <div>
           <label
             htmlFor="bannerImageUrl"
-            className="block text-lg font-semibold mb-3 text-white"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
             {t("createEvent.bannerImageUrlLabel")}
           </label>
@@ -380,41 +401,22 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             name="bannerImageUrl"
             value={formData.bannerImageUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="https://"
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white"
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
           >
-            {t("createEvent.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50"
-          >
-            <option value="">
-              {categoriesLoading ? t("createEvent.loadingCategories") : t("createEvent.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
+            {isLoading
+              ? t("createEvent.submitCreating")
+              : t("createEvent.submit")}
+          </button>
         </div>
-
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading ? t("createEvent.submitCreating") : t("createEvent.submit")}
-        </button>
       </form>
     </div>
   );

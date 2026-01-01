@@ -4,6 +4,7 @@ import React, { useState, FormEvent, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 type CategoryNode = {
   id: string;
@@ -18,6 +19,7 @@ interface CreatePresentationFormProps {
 export default function CreatePresentationForm({
   onSuccess,
 }: CreatePresentationFormProps) {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -60,11 +62,13 @@ export default function CreatePresentationForm({
 
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-          <p className="mt-2 text-gray-300">
-            {status === "loading" ? "טוען..." : "טוען קטגוריות..."}
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
+            {status === "loading"
+              ? t("createPresentation.loading")
+              : t("createPresentation.loadingCategories")}
           </p>
         </div>
       </div>
@@ -73,31 +77,33 @@ export default function CreatePresentationForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            נדרשת התחברות
-          </h2>
-          <p className="text-gray-300 rtl">עליך להתחבר כדי ליצור מצגות</p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-          >
-            התחבר
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createPresentation.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600">
+          {t("createPresentation.loginRequiredMessage")}
+        </p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("createPresentation.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-300 rtl">אין לך הרשאה ליצור מצגות באתר זה</p>
-          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createPresentation.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600">
+          {t("createPresentation.notAuthorizedMessage")}
+        </p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -127,7 +133,10 @@ export default function CreatePresentationForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "המצגת נוצרה בהצלחה!" });
+      setMessage({
+        type: "success",
+        text: t("createPresentation.successMessage"),
+      });
 
       setFormData({
         title: "",
@@ -143,7 +152,9 @@ export default function CreatePresentationForm({
       }
     } catch (error) {
       const messageText =
-        error instanceof Error ? error.message : "שגיאה ביצירת המצגת. נסה שוב.";
+        error instanceof Error
+          ? error.message
+          : t("createPresentation.errorMessage");
       setMessage({
         type: "error",
         text: messageText,
@@ -220,21 +231,22 @@ export default function CreatePresentationForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        יצירת מצגת חדשה
-      </h2>
-
-      <p className="text-sm text-green-400 text-center mb-8">
-        מחובר כ: {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          {t("createPresentation.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("createPresentation.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-900 text-green-200 border border-green-700"
-              : "bg-red-900 text-red-200 border border-red-700"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -245,9 +257,9 @@ export default function CreatePresentationForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            כותרת המצגת *
+            {t("createPresentation.titleLabel")}
           </label>
           <input
             type="text"
@@ -256,63 +268,49 @@ export default function CreatePresentationForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס כותרת למצגת"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder={t("createPresentation.titlePlaceholder")}
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            תיאור המצגת *
+            {t("createPresentation.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור למצגת"
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
+            placeholder={t("createPresentation.descriptionPlaceholder")}
           />
         </div>
 
         <div>
           <label
             htmlFor="content"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            תוכן המצגת *
+            {t("createPresentation.contentLabel")}
           </label>
           <TiptapEditor
             value={formData.content}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, content: value }))
             }
-            placeholder="הכנס את תוכן המצגת"
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="content"
-            value={formData.content}
-            required
+            placeholder={t("createPresentation.contentPlaceholder")}
           />
         </div>
 
         <div>
           <label
             htmlFor="googleSlidesUrl"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            קישור למצגת ב-Google Slides / Google Drive (אופציונלי)
+            {t("createPresentation.googleSlidesUrlLabel")}
           </label>
           <input
             type="url"
@@ -320,20 +318,20 @@ export default function CreatePresentationForm({
             name="googleSlidesUrl"
             value={formData.googleSlidesUrl}
             onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="https://docs.google.com/presentation/..."
           />
-          <p className="mt-2 text-sm text-gray-400 rtl">
-            ניתן להדביק כאן קישור שיתוף מ-Google Slides או Google Drive.
+          <p className="mt-2 text-sm text-gray-500">
+            {t("createPresentation.googleSlidesHelpText")}
           </p>
         </div>
 
         <div>
           <label
             htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            קטגוריה *
+            {t("createPresentation.categoryLabel")}
           </label>
           <select
             id="categoryId"
@@ -342,18 +340,20 @@ export default function CreatePresentationForm({
             onChange={handleChange}
             required
             disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
           >
             <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
+              {categoriesLoading
+                ? t("createPresentation.loadingCategories")
+                : t("createPresentation.selectCategory")}
             </option>
             {renderCategoryOptions()}
           </select>
         </div>
 
         <div>
-          <label className="block text-lg font-semibold mb-3 text-white rtl">
-            קישורי תמונות (אופציונלי)
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            {t("createPresentation.imageLinksLabel")}
           </label>
           {formData.imageUrls.map((url, index) => (
             <div key={index} className="flex gap-2 mb-2">
@@ -361,34 +361,38 @@ export default function CreatePresentationForm({
                 type="url"
                 value={url}
                 onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                className="flex-1 p-3 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+                className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
               <button
                 type="button"
                 onClick={() => removeImageUrl(index)}
-                className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 cursor-pointer"
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer"
               >
-                הסר
+                {t("createPresentation.removeImageButton")}
               </button>
             </div>
           ))}
           <button
             type="button"
             onClick={addImageUrl}
-            className="w-full p-3 bg-gray-700 text-white border border-gray-600 rounded-md hover:bg-gray-600 cursor-pointer"
+            className="w-full p-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 cursor-pointer"
           >
-            הוסף קישור תמונה
+            {t("createPresentation.addImageButton")}
           </button>
         </div>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading ? "יוצר מצגת..." : "צור מצגת"}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+          >
+            {isLoading
+              ? t("createPresentation.submitCreating")
+              : t("createPresentation.submit")}
+          </button>
+        </div>
       </form>
     </div>
   );

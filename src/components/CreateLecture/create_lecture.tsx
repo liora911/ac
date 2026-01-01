@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 type CategoryNode = {
   id: string;
@@ -19,6 +20,7 @@ interface CreateLectureFormProps {
 export default function CreateLectureForm({
   onSuccess,
 }: CreateLectureFormProps) {
+  const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState<{
@@ -63,11 +65,13 @@ export default function CreateLectureForm({
 
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-          <p className="mt-2 text-gray-300">
-            {status === "loading" ? "טוען..." : "טוען קטגוריות..."}
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center gap-3">
+          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
+          <p className="text-gray-600">
+            {status === "loading"
+              ? t("createLecture.loading")
+              : t("createLecture.loadingCategories")}
           </p>
         </div>
       </div>
@@ -76,31 +80,29 @@ export default function CreateLectureForm({
 
   if (status === "unauthenticated") {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">
-            נדרשת התחברות
-          </h2>
-          <p className="text-gray-300 rtl">עליך להתחבר כדי ליצור הרצאות</p>
-          <button
-            onClick={() => (window.location.href = "/elitzur")}
-            className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 cursor-pointer"
-          >
-            התחבר
-          </button>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createLecture.loginRequiredTitle")}
+        </h2>
+        <p className="text-gray-600">{t("createLecture.loginRequiredMessage")}</p>
+        <button
+          onClick={() => (window.location.href = "/elitzur")}
+          className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
+        >
+          {t("createLecture.loginButton")}
+        </button>
       </div>
     );
   }
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h2 className="text-xl font-bold text-red-400 mb-4 rtl">אין הרשאה</h2>
-          <p className="text-gray-300 rtl">אין לך הרשאה ליצור הרצאות באתר זה</p>
-          <p className="text-sm text-gray-400 mt-2">{session?.user?.email}</p>
-        </div>
+      <div className="p-6 bg-white rounded-xl border border-gray-200">
+        <h2 className="text-xl font-bold text-red-600 mb-4">
+          {t("createLecture.notAuthorizedTitle")}
+        </h2>
+        <p className="text-gray-600">{t("createLecture.notAuthorizedMessage")}</p>
+        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -145,7 +147,7 @@ export default function CreateLectureForm({
         throw new Error(data.error || `HTTP error! status: ${response.status}`);
       }
 
-      setMessage({ type: "success", text: "ההרצאה נוצרה בהצלחה!" });
+      setMessage({ type: "success", text: t("createLecture.successMessage") });
 
       setFormData({
         title: "",
@@ -163,9 +165,7 @@ export default function CreateLectureForm({
       }
     } catch (error) {
       const messageText =
-        error instanceof Error
-          ? error.message
-          : "שגיאה ביצירת ההרצאה. נסה שוב.";
+        error instanceof Error ? error.message : t("createLecture.errorMessage");
       setMessage({
         type: "error",
         text: messageText,
@@ -218,21 +218,22 @@ export default function CreateLectureForm({
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-gray-900 text-white rounded-lg shadow-md">
-      <h2 className="text-3xl font-bold mb-4 text-center rtl">
-        יצירת הרצאה חדשה
-      </h2>
-
-      <p className="text-sm text-green-400 text-center mb-8">
-        מחובר כ: {session?.user?.email}
-      </p>
+    <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-gray-900">
+          {t("createLecture.title")}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          {t("createLecture.loggedInAs")} {session?.user?.email}
+        </p>
+      </div>
 
       {message && (
         <div
-          className={`mb-6 p-4 rounded-md ${
+          className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-900 text-green-200 border border-green-700"
-              : "bg-red-900 text-red-200 border border-red-700"
+              ? "bg-green-50 text-green-800 border border-green-200"
+              : "bg-red-50 text-red-800 border border-red-200"
           }`}
         >
           {message.text}
@@ -243,9 +244,9 @@ export default function CreateLectureForm({
         <div>
           <label
             htmlFor="title"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            כותרת ההרצאה *
+            {t("createLecture.titleLabel")}
           </label>
           <input
             type="text"
@@ -254,145 +255,148 @@ export default function CreateLectureForm({
             value={formData.title}
             onChange={handleChange}
             required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400 rtl"
-            placeholder="הכנס כותרת להרצאה"
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            placeholder={t("createLecture.titlePlaceholder")}
           />
         </div>
 
         <div>
           <label
             htmlFor="description"
-            className="block text-lg font-semibold mb-3 text-white rtl"
+            className="block text-sm font-medium text-gray-700 mb-2"
           >
-            תיאור ההרצאה *
+            {t("createLecture.descriptionLabel")}
           </label>
           <TiptapEditor
             value={formData.description}
             onChange={(value) =>
               setFormData((prev) => ({ ...prev, description: value }))
             }
-            placeholder="הכנס תיאור להרצאה"
-            theme="dark"
-          />
-          <input
-            type="hidden"
-            name="description"
-            value={formData.description}
-            required
+            placeholder={t("createLecture.descriptionPlaceholder")}
           />
         </div>
 
-        <div>
-          <label
-            htmlFor="videoUrl"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            קישור לוידאו (YouTube וכו')
-          </label>
-          <input
-            type="url"
-            id="videoUrl"
-            name="videoUrl"
-            value={formData.videoUrl}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder="https://"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="videoUrl"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createLecture.videoUrlLabel")}
+            </label>
+            <input
+              type="url"
+              id="videoUrl"
+              name="videoUrl"
+              value={formData.videoUrl}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="https://"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="duration"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createLecture.durationLabel")}
+            </label>
+            <input
+              type="text"
+              id="duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              required
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder={t("createLecture.durationPlaceholder")}
+            />
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="duration"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            משך זמן (דקות) *
-          </label>
-          <input
-            type="text"
-            id="duration"
-            name="duration"
-            value={formData.duration}
-            onChange={handleChange}
-            required
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
-            placeholder="למשל: 60 דקות"
-          />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="date"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createLecture.dateLabel")}
+            </label>
+            <input
+              type="date"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="categoryId"
+              className="block text-sm font-medium text-gray-700 mb-2"
+            >
+              {t("createLecture.categoryLabel")}
+            </label>
+            <select
+              id="categoryId"
+              name="categoryId"
+              value={formData.categoryId}
+              onChange={handleChange}
+              required
+              disabled={categoriesLoading}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
+            >
+              <option value="">
+                {categoriesLoading
+                  ? t("createLecture.loadingCategories")
+                  : t("createLecture.selectCategory")}
+              </option>
+              {renderCategoryOptions()}
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label
-            htmlFor="date"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            תאריך (אופציונלי)
-          </label>
-          <input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-lg font-semibold mb-3 text-white rtl"
-          >
-            קטגוריה *
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-4 bg-gray-800 text-white border border-gray-600 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading ? "טוען קטגוריות..." : "בחר קטגוריה"}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
-
-        <details className="border border-gray-600 rounded-lg p-4 bg-gray-800">
-          <summary className="cursor-pointer text-lg font-semibold text-white rtl mb-3">
-            תמונת ההרצאה (אופציונלי)
+        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+          <summary className="cursor-pointer text-sm font-medium text-gray-700">
+            {t("createLecture.imageSummary")}
           </summary>
           <div className="mt-4 space-y-4">
             <UploadImage
               onImageSelect={setBannerImageFile}
               currentImage={formData.bannerImageUrl}
               label=""
-              placeholder="PNG, JPG, GIF עד 5MB"
+              placeholder={t("createLecture.imagePlaceholder")}
             />
             <div>
-              <label className="block text-base font-medium mb-2 text-gray-200 rtl">
-                או הכנס קישור לתמונה
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("createLecture.imageUrlLabel")}
               </label>
               <input
                 type="url"
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="w-full p-3 bg-gray-700 text-white border border-gray-500 rounded-md focus:ring-2 focus:ring-blue-400 focus:border-blue-400 placeholder-gray-400"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
           </div>
         </details>
 
-        <button
-          type="submit"
-          disabled={isLoading}
-          className="w-full bg-blue-600 text-white py-4 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-        >
-          {isLoading ? "יוצר הרצאה..." : "צור הרצאה"}
-        </button>
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+          >
+            {isLoading
+              ? t("createLecture.submitCreating")
+              : t("createLecture.submit")}
+          </button>
+        </div>
       </form>
     </div>
   );

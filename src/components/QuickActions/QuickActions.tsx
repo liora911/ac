@@ -32,7 +32,7 @@ const QuickActions: React.FC = () => {
       label: "Add Presentation",
       labelHe: "הוסף מצגת",
       icon: Presentation,
-      path: "/edit-presentation/new",
+      path: "/create-presentation",
       gradient: "from-orange-500 to-amber-600",
     },
     {
