@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
+import { sendEmail } from "@/lib/email/resend";
+import {
+  generateTicketConfirmationEmail,
+  getTicketConfirmationSubject,
+} from "@/lib/email/templates/ticket-confirmation";
 
 // POST - Create a new ticket reservation
 export async function POST(request: NextRequest) {
@@ -29,9 +34,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (numberOfSeats < 1 || numberOfSeats > 10) {
+    // Limit seats to maximum of 4
+    if (numberOfSeats < 1 || numberOfSeats > 4) {
       return NextResponse.json(
-        { error: "Number of seats must be between 1 and 10" },
+        { error: "Number of seats must be between 1 and 4" },
         { status: 400 }
       );
     }
@@ -62,7 +68,7 @@ export async function POST(request: NextRequest) {
         holderName: holderName.trim(),
         holderEmail: holderEmail.trim().toLowerCase(),
         holderPhone: holderPhone?.trim() || null,
-        numberOfSeats: numberOfSeats || 1,
+        numberOfSeats: Math.min(numberOfSeats || 1, 4), // Ensure max 4 seats
         notes: notes?.trim() || null,
         status: "PENDING", // Will be CONFIRMED after payment in future
       },
@@ -73,6 +79,42 @@ export async function POST(request: NextRequest) {
           },
         },
       },
+    });
+
+    // Get the base URL for ticket link
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+    const ticketUrl = `${baseUrl}/ticket-summary/${ticket.accessToken}`;
+
+    // Format date for email
+    const eventDate = new Date(event.eventDate).toLocaleDateString("he-IL", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // Send confirmation email (don't block response on email failure)
+    sendEmail({
+      to: ticket.holderEmail,
+      subject: getTicketConfirmationSubject(event.title, "he"),
+      html: generateTicketConfirmationEmail({
+        holderName: ticket.holderName,
+        eventTitle: event.title,
+        eventDate,
+        eventTime: event.eventTime || undefined,
+        eventLocation: event.location || undefined,
+        numberOfSeats: ticket.numberOfSeats,
+        ticketUrl,
+        locale: "he",
+      }),
+    }).then((result) => {
+      if (!result.success) {
+        console.error("Failed to send ticket confirmation email:", result.error);
+      } else {
+        console.log("Ticket confirmation email sent successfully");
+      }
     });
 
     return NextResponse.json({

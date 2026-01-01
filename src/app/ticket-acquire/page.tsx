@@ -100,7 +100,7 @@ function TicketAcquireContent() {
       errors.holderPhone = t("tickets.phoneInvalid");
     }
 
-    if (formData.numberOfSeats < 1 || formData.numberOfSeats > 10) {
+    if (formData.numberOfSeats < 1 || formData.numberOfSeats > 4) {
       errors.numberOfSeats = t("tickets.seatsInvalid");
     }
 
@@ -438,7 +438,7 @@ function TicketAcquireContent() {
                   value={formData.numberOfSeats}
                   onChange={handleChange}
                   min={1}
-                  max={10}
+                  max={4}
                   required
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                     formErrors.numberOfSeats ? "border-red-500" : "border-gray-300"
