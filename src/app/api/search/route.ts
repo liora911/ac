@@ -22,9 +22,6 @@ export async function GET(request: NextRequest) {
       // When no search query, return recent items from each category (5 each)
       const [articles, presentations, events, lectures] = await Promise.all([
         prisma.article.findMany({
-          where: {
-            published: true,
-          },
           select: {
             id: true,
             title: true,
@@ -59,9 +56,6 @@ export async function GET(request: NextRequest) {
           take: 5,
         }),
         prisma.event.findMany({
-          where: {
-            published: true,
-          },
           select: {
             id: true,
             title: true,
