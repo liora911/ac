@@ -8,28 +8,11 @@ import {
   View,
   StyleSheet,
   Image,
-  Font,
 } from "@react-pdf/renderer";
-
-// Register Hebrew font for RTL support
-Font.register({
-  family: "Heebo",
-  fonts: [
-    {
-      src: "https://fonts.gstatic.com/s/heebo/v26/NGSpv5_NC0k9P_v6ZUCbLRAHxK1EiSysd0mm_00.ttf",
-      fontWeight: 400,
-    },
-    {
-      src: "https://fonts.gstatic.com/s/heebo/v26/NGSpv5_NC0k9P_v6ZUCbLRAHxK1E1CysdUmm_00.ttf",
-      fontWeight: 700,
-    },
-  ],
-});
 
 const styles = StyleSheet.create({
   page: {
     padding: 40,
-    fontFamily: "Heebo",
     fontSize: 11,
     backgroundColor: "#ffffff",
   },
