@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Globe, Star, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, Globe, Star, ArrowRight, Ticket } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
@@ -32,6 +32,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
       onEventClick(event);
     }
   };
+
+  // Check if event is upcoming (can reserve tickets)
+  const isUpcoming = new Date(event.eventDate) >= new Date();
 
   return (
     <motion.div
@@ -127,8 +130,19 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
             }}
           />
 
-          {/* Action Button */}
+          {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
+            {/* Reserve a Spot Button - Primary CTA for upcoming events */}
+            {isUpcoming && (
+              <Link
+                href={`/ticket-acquire?eventId=${event.id}`}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-yellow-400 text-yellow-900 rounded-lg font-bold hover:bg-yellow-300 transition-colors cursor-pointer shadow-lg hover:shadow-xl"
+              >
+                <Ticket size={18} />
+                {t("tickets.reserveSpot")}
+              </Link>
+            )}
+
             <button
               onClick={handleClick}
               className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-700 rounded-lg font-semibold hover:bg-blue-50 transition-colors cursor-pointer shadow-lg hover:shadow-xl"

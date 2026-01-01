@@ -167,10 +167,37 @@ model Event {
   category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId        String
   author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  tickets         Ticket[]
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
   @@map("events")
+}
+
+model Ticket {
+  id              String       @id @default(cuid())
+  eventId         String
+  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  holderName      String
+  holderEmail     String
+  holderPhone     String?
+  numberOfSeats   Int          @default(1)
+  status          TicketStatus @default(PENDING)
+  paymentId       String?      // For future Stripe integration
+  paymentStatus   String?      // For future Stripe integration
+  accessToken     String       @unique @default(cuid()) // Unique token for accessing ticket summary
+  notes           String?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@map("tickets")
+}
+
+enum TicketStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  ATTENDED
 }
 
 model Message {
