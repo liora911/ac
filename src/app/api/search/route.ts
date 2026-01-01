@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
     const searchTerm = query.trim();
 
     if (searchTerm === "") {
+      // When no search query, return recent items from each category (5 each)
       const [articles, presentations, events, lectures] = await Promise.all([
         prisma.article.findMany({
           where: {
@@ -38,7 +39,7 @@ export async function GET(request: NextRequest) {
             },
           },
           orderBy: { updatedAt: "desc" },
-          take: 10,
+          take: 5,
         }),
         prisma.presentation.findMany({
           select: {
@@ -55,7 +56,7 @@ export async function GET(request: NextRequest) {
             },
           },
           orderBy: { updatedAt: "desc" },
-          take: 10,
+          take: 5,
         }),
         prisma.event.findMany({
           where: {
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
             updatedAt: true,
           },
           orderBy: { eventDate: "desc" },
-          take: 10,
+          take: 5,
         }),
         prisma.lecture.findMany({
           select: {
@@ -89,47 +90,21 @@ export async function GET(request: NextRequest) {
             },
           },
           orderBy: { createdAt: "desc" },
-          take: 10,
+          take: 5,
         }),
       ]);
 
-      const combined = [
-        ...articles.map((item) => ({ ...item, __type: "articles" as const })),
-        ...presentations.map((item) => ({
-          ...item,
-          __type: "presentations" as const,
-        })),
-        ...events.map((item) => ({ ...item, __type: "events" as const })),
-        ...lectures.map((item) => ({ ...item, __type: "lectures" as const })),
-      ];
-
-      const shuffled = combined.sort(() => Math.random() - 0.5);
-      const limited = shuffled.slice(0, 10);
-
-      const mixedArticles = limited
-        .filter((item) => item.__type === "articles")
-        .map(({ __type, ...rest }) => rest);
-      const mixedPresentations = limited
-        .filter((item) => item.__type === "presentations")
-        .map(({ __type, ...rest }) => rest);
-      const mixedEvents = limited
-        .filter((item) => item.__type === "events")
-        .map(({ __type, ...rest }) => rest);
-      const mixedLectures = limited
-        .filter((item) => item.__type === "lectures")
-        .map(({ __type, ...rest }) => rest);
-
       const total =
-        mixedArticles.length +
-        mixedPresentations.length +
-        mixedEvents.length +
-        mixedLectures.length;
+        articles.length +
+        presentations.length +
+        events.length +
+        lectures.length;
 
       return NextResponse.json({
-        articles: mixedArticles,
-        presentations: mixedPresentations,
-        events: mixedEvents,
-        lectures: mixedLectures,
+        articles,
+        presentations,
+        events,
+        lectures,
         total,
         query: searchTerm,
       });
