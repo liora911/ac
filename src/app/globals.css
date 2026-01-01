@@ -51,3 +51,60 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* Dark mode overrides for common Tailwind classes */
+.dark {
+  color-scheme: dark;
+}
+
+/* Override common background colors in dark mode */
+.dark .bg-white {
+  background-color: var(--card) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--background) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: var(--secondary) !important;
+}
+
+/* Override text colors in dark mode */
+.dark .text-gray-900 {
+  color: var(--foreground) !important;
+}
+
+.dark .text-gray-800 {
+  color: var(--foreground) !important;
+}
+
+.dark .text-gray-700 {
+  color: var(--muted-foreground) !important;
+}
+
+.dark .text-gray-600 {
+  color: var(--muted-foreground) !important;
+}
+
+/* Override border colors in dark mode */
+.dark .border-gray-200 {
+  border-color: var(--border) !important;
+}
+
+.dark .border-gray-100 {
+  border-color: var(--border) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: var(--border) !important;
+}
+
+/* Hover states in dark mode */
+.dark .hover\:bg-gray-100:hover {
+  background-color: var(--accent) !important;
+}
+
+.dark .hover\:bg-gray-50:hover {
+  background-color: var(--accent) !important;
+}

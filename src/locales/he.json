@@ -646,5 +646,13 @@
     "browseLectures": "עיין בהרצאות",
     "searchOurContent": "חפש בתוכן שלנו",
     "enterSearchTerm": "הכנס מונח חיפוש למעלה כדי למצוא מאמרים, מצגות, אירועים והרצאות."
+  },
+  "settings": {
+    "title": "הגדרות",
+    "language": "שפה",
+    "theme": "ערכת נושא",
+    "lightMode": "בהיר",
+    "darkMode": "כהה",
+    "openSettings": "פתח הגדרות"
   }
 }

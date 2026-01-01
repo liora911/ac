@@ -627,5 +627,13 @@
     "browseLectures": "Browse Lectures",
     "searchOurContent": "Search our content",
     "enterSearchTerm": "Enter a search term above to find articles, presentations, events, and lectures."
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "lightMode": "Light",
+    "darkMode": "Dark",
+    "openSettings": "Open settings"
   }
 }

@@ -24,6 +24,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
+    // Also add/remove 'dark' class for Tailwind's dark: prefix to work
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
     localStorage.setItem("theme", theme);
   }, [theme]);
 

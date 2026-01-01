@@ -4,7 +4,7 @@ import { navItems } from "@/constants/Nav/data";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import LocaleSelect from "../LocaleSelect/locale-select";
+import { SettingsButton } from "../Settings";
 import { useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import GlobalSearch from "../GlobalSearch";
@@ -34,7 +34,7 @@ const IconMap: { [key: string]: React.ElementType } = {
 
 export default function Header() {
   const { data: session } = useSession();
-  const { t, locale, setLocale } = useTranslation();
+  const { t } = useTranslation();
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const pathname = usePathname();
   const menuRef = useRef<HTMLElement>(null);
@@ -142,7 +142,7 @@ export default function Header() {
               <GlobalSearch />
             </div>
             <div className="relative shrink-0">
-              <LocaleSelect value={locale} onChange={setLocale} />
+              <SettingsButton />
             </div>
             <button
               ref={buttonRef}
