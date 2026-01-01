@@ -22,8 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import { downloadElementAsPDF } from "@/lib/pdf/download-element-as-pdf";
 
 interface TicketData {
   id: string;
@@ -164,92 +163,8 @@ export default function TicketSummaryPage() {
 
     setIsDownloading(true);
     try {
-      // Clone the element to manipulate it without affecting the original
-      const clonedElement = element.cloneNode(true) as HTMLElement;
-
-      // Replace Next.js Image components with regular img tags for html2canvas
-      const nextImages = clonedElement.querySelectorAll('img[data-nimg]');
-      nextImages.forEach((img) => {
-        const imgElement = img as HTMLImageElement;
-        const src = imgElement.src;
-        const newImg = document.createElement('img');
-        newImg.src = src;
-        newImg.style.cssText = imgElement.style.cssText;
-        newImg.style.width = '100%';
-        newImg.style.height = '100%';
-        newImg.style.objectFit = 'cover';
-        newImg.crossOrigin = 'anonymous';
-        imgElement.parentNode?.replaceChild(newImg, imgElement);
-      });
-
-      // Also handle images inside picture elements
-      const pictureElements = clonedElement.querySelectorAll('picture');
-      pictureElements.forEach((picture) => {
-        const img = picture.querySelector('img');
-        if (img) {
-          const newImg = document.createElement('img');
-          newImg.src = img.src;
-          newImg.style.width = '100%';
-          newImg.style.height = '100%';
-          newImg.style.objectFit = 'cover';
-          newImg.crossOrigin = 'anonymous';
-          picture.parentNode?.replaceChild(newImg, picture);
-        }
-      });
-
-      // Temporarily add to DOM for capture
-      clonedElement.style.position = 'absolute';
-      clonedElement.style.left = '-9999px';
-      clonedElement.style.top = '0';
-      clonedElement.style.width = element.offsetWidth + 'px';
-      document.body.appendChild(clonedElement);
-
-      // Wait for images to load
-      const images = clonedElement.querySelectorAll('img');
-      await Promise.all(
-        Array.from(images).map((img) => {
-          return new Promise<void>((resolve) => {
-            if ((img as HTMLImageElement).complete) {
-              resolve();
-            } else {
-              img.onload = () => resolve();
-              img.onerror = () => resolve();
-            }
-          });
-        })
-      );
-
-      const canvas = await html2canvas(clonedElement, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-      });
-
-      // Remove cloned element
-      document.body.removeChild(clonedElement);
-
-      const imgData = canvas.toDataURL("image/png");
-      const pdf = new jsPDF("p", "mm", "a4");
-
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
-
-      while (heightLeft > 0) {
-        pdf.addPage();
-        const position = heightLeft - imgHeight;
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
-      }
-
       const filename = `ticket-${ticket.event.title.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, "-")}-${ticket.id.slice(0, 8)}.pdf`;
-      pdf.save(filename);
+      await downloadElementAsPDF(element, { filename });
     } catch (error) {
       console.error("Error generating PDF:", error);
     } finally {
