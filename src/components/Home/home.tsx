@@ -12,11 +12,10 @@ import {
   FileText,
   Calendar,
   Presentation,
-  ArrowRight,
-  ArrowLeft,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
+import ContentCard, { ContentItem } from "./ContentCard";
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
@@ -46,8 +45,6 @@ const Home = () => {
   const bioHtml = homeContent?.bioHtml || "";
   const hasDynamicBio = bioHtml.trim().length > 0;
 
-  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
-
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -71,71 +68,6 @@ const Home = () => {
       year: "numeric",
     });
   };
-
-  // Generic item type for content cards
-  type ContentItem = {
-    id: string;
-    title: string;
-    date?: string | null;
-    createdAt?: string;
-    eventDate?: string;
-  };
-
-  // Content section card component
-  const ContentCard = ({
-    title,
-    icon: Icon,
-    items,
-    href,
-    renderItem,
-    iconColor,
-  }: {
-    title: string;
-    icon: React.ElementType;
-    items: ContentItem[];
-    href: string;
-    renderItem: (item: ContentItem) => React.ReactNode;
-    iconColor: string;
-  }) => (
-    <motion.div
-      variants={itemVariants}
-      className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow"
-    >
-      <div className="p-5 border-b border-[var(--border)]">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-2 rounded-lg ${iconColor}`}>
-              <Icon size={20} className="text-white" />
-            </div>
-            <h3 className="font-semibold text-lg text-[var(--foreground)]">
-              {title}
-            </h3>
-          </div>
-          <Link
-            href={href}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 group"
-          >
-            {t("home.sections.viewAll")}
-            <ArrowIcon
-              size={14}
-              className="group-hover:translate-x-0.5 transition-transform"
-            />
-          </Link>
-        </div>
-      </div>
-      <div className="p-4">
-        {items.length > 0 ? (
-          <ul className="space-y-3">
-            {items.slice(0, 3).map((item) => renderItem(item))}
-          </ul>
-        ) : (
-          <p className="text-sm text-[var(--muted-foreground)] text-center py-4">
-            {t("home.sections.noItems")}
-          </p>
-        )}
-      </div>
-    </motion.div>
-  );
 
   return (
     <main className="flex flex-col min-h-screen text-[var(--foreground)]">
@@ -330,6 +262,7 @@ const Home = () => {
                 iconColor="bg-red-500"
                 items={previewData?.lectures || []}
                 href="/lectures"
+                itemVariants={itemVariants}
                 renderItem={(item) => (
                   <li key={item.id}>
                     <Link
@@ -356,6 +289,7 @@ const Home = () => {
                 iconColor="bg-blue-500"
                 items={previewData?.articles || []}
                 href="/articles"
+                itemVariants={itemVariants}
                 renderItem={(item) => (
                   <li key={item.id}>
                     <Link
@@ -382,6 +316,7 @@ const Home = () => {
                 iconColor="bg-green-500"
                 items={previewData?.events || []}
                 href="/events"
+                itemVariants={itemVariants}
                 renderItem={(item) => (
                   <li key={item.id}>
                     <Link
@@ -408,6 +343,7 @@ const Home = () => {
                 iconColor="bg-purple-500"
                 items={previewData?.presentations || []}
                 href="/presentations"
+                itemVariants={itemVariants}
                 renderItem={(item) => (
                   <li key={item.id}>
                     <Link

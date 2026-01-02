@@ -424,7 +424,7 @@ function SearchPageContent() {
           presentation={selectedPresentation}
           onClose={closeModals}
         />
-        <EventModal event={selectedEvent} onClose={closeModals} />
+        <EventModal event={selectedEvent} isOpen={!!selectedEvent} onClose={closeModals} locale={locale} />
         <LectureModal lecture={selectedLecture} onClose={closeModals} />
       </div>
     </div>
