@@ -1,7 +1,7 @@
 "use client";
 
 import { Event } from "@/types/Events/events";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -14,6 +14,7 @@ import {
   List,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useSettings } from "@/contexts/SettingsContext";
 
 interface EventsProps {
   onBannerUpdate: (imageUrl: string | null, altText: string) => void;
@@ -151,11 +152,17 @@ const EventModal: React.FC<EventModalProps> = ({
 
 const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData, featuredEventId }) => {
   const { t, locale } = useTranslation();
+  const { defaultView } = useSettings();
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+  const [viewMode, setViewMode] = useState<"grid" | "list">(defaultView);
+
+  // Sync with settings when defaultView changes
+  useEffect(() => {
+    setViewMode(defaultView);
+  }, [defaultView]);
 
   const handleEventClick = (event: Event) => {
     setSelectedEvent(event);
