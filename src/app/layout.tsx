@@ -8,6 +8,7 @@ import AuthSessionProvider from "@/components/Auth/authSessionProvider";
 import QueryProvider from "@/lib/react-query/QueryProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
+import { SettingsProvider } from "@/contexts/SettingsContext";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 
 const poppins = Poppins({
@@ -43,18 +44,20 @@ export default function RootLayout({
             <TranslationProvider>
               <NotificationProvider>
                 <ThemeProvider>
-                  <div className="flex flex-col min-h-screen">
-                    <Header />
-                    <main
-                      id="main-content"
-                      className="flex-grow flex flex-col pt-20"
-                      role="main"
-                    >
-                      <Breadcrumbs />
-                      {children}
-                    </main>
-                    <Footer />
-                  </div>
+                  <SettingsProvider>
+                    <div className="flex flex-col min-h-screen">
+                      <Header />
+                      <main
+                        id="main-content"
+                        className="flex-grow flex flex-col pt-20"
+                        role="main"
+                      >
+                        <Breadcrumbs />
+                        {children}
+                      </main>
+                      <Footer />
+                    </div>
+                  </SettingsProvider>
                 </ThemeProvider>
               </NotificationProvider>
             </TranslationProvider>

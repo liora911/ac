@@ -8,6 +8,9 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
 import LanguageToggle from "./LanguageToggle";
 import ThemeToggleSection from "./ThemeToggleSection";
+import FontSizeToggle from "./FontSizeToggle";
+import ReduceMotionToggle from "./ReduceMotionToggle";
+import DefaultViewToggle from "./DefaultViewToggle";
 
 type SettingsPanelProps = {
   isOpen: boolean;
@@ -91,6 +94,15 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
               {/* Theme Toggle Section */}
               <ThemeToggleSection />
+
+              {/* Font Size Toggle Section */}
+              <FontSizeToggle />
+
+              {/* Reduce Motion Toggle Section */}
+              <ReduceMotionToggle />
+
+              {/* Default View Toggle Section */}
+              <DefaultViewToggle />
             </div>
 
             {/* Support Footer */}

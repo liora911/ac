@@ -646,6 +646,18 @@
     "darkMode": "Dark",
     "openSettings": "Open settings",
     "supportMessage": "Have an issue or want to report a problem?",
-    "contactUs": "Contact us"
+    "contactUs": "Contact us",
+    "fontSize": "Font Size",
+    "fontSmall": "Small",
+    "fontMedium": "Medium",
+    "fontLarge": "Large",
+    "motion": "Animations",
+    "motionOn": "On",
+    "motionOff": "Reduced",
+    "motionDescription": "Reduce animations for accessibility",
+    "defaultView": "Default View",
+    "viewGrid": "Grid",
+    "viewList": "List",
+    "defaultViewDescription": "Default layout for content listings"
   }
 }

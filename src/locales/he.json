@@ -665,6 +665,18 @@
     "darkMode": "כהה",
     "openSettings": "פתח הגדרות",
     "supportMessage": "נתקלת בבעיה או רוצה לדווח על תקלה?",
-    "contactUs": "צור קשר"
+    "contactUs": "צור קשר",
+    "fontSize": "גודל גופן",
+    "fontSmall": "קטן",
+    "fontMedium": "בינוני",
+    "fontLarge": "גדול",
+    "motion": "אנימציות",
+    "motionOn": "פעיל",
+    "motionOff": "מופחת",
+    "motionDescription": "הפחת אנימציות לנגישות טובה יותר",
+    "defaultView": "תצוגה ברירת מחדל",
+    "viewGrid": "רשת",
+    "viewList": "רשימה",
+    "defaultViewDescription": "פריסת ברירת מחדל לרשימות תוכן"
   }
 }
