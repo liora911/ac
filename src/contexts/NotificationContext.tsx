@@ -61,6 +61,9 @@ export function NotificationProvider({
       {children}
       <Toaster
         position="top-right"
+        containerStyle={{
+          top: 80, // Below the navbar
+        }}
         toastOptions={{
           style: {
             borderRadius: "8px",
