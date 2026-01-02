@@ -138,9 +138,9 @@ const LecturesPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden">
+        <div className="relative mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
           {isLoading ? (
-            <div className="animate-pulse bg-gray-600 h-full w-full flex items-center justify-center">
+            <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
               <p className="text-gray-400 text-xl">
                 {t("lecturesPage.bannerLoading")}
               </p>
@@ -149,19 +149,18 @@ const LecturesPage = () => {
             <Image
               src={currentBannerUrl}
               alt={currentBannerAlt}
-              width={1200}
-              height={320}
-              className="object-cover w-full h-full"
+              fill
+              className="object-cover"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
             />
           ) : (
-            <p className="text-gray-400 text-xl">
-              {t("lecturesPage.bannerPlaceholder")}
-            </p>
+            <div className="h-full w-full flex items-center justify-center">
+              <p className="text-gray-400 text-xl">
+                {t("lecturesPage.bannerPlaceholder")}
+              </p>
+            </div>
           )}
         </div>
         {isLoading && (
