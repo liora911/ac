@@ -33,11 +33,13 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
 
   // Prevent body scroll when modal is open
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
+    if (lecture) {
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = "";
+      };
+    }
+  }, [lecture]);
 
   if (!lecture) return null;
 
