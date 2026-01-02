@@ -15,6 +15,7 @@ export interface Event {
   eventTime: string | null;
   bannerImageUrl: string | null;
   published: boolean;
+  isFeatured: boolean;
   categoryId: string;
   authorId: string;
   maxSeats: number | null;

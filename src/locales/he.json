@@ -473,7 +473,9 @@
     "errorMessage": "שגיאה ביצירת האירוע. נסה שוב.",
     "maxSeatsLabel": "מספר מקומות מקסימלי",
     "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
-    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע"
+    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע",
+    "isFeaturedLabel": "הצג כאירוע מומלץ",
+    "isFeaturedHelp": "אירועים מומלצים מוצגים בצורה בולטת בראש דף האירועים"
   },
   "createLecture": {
     "loading": "טוען...",

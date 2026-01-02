@@ -7,8 +7,7 @@ export type TabKey =
   | "lectures"
   | "presentations"
   | "messages"
-  | "settings"
-  | "themes";
+  | "settings";
 
 export interface Tab {
   key: TabKey;
@@ -26,6 +25,5 @@ export const TABS: Tab[] = [
   { key: "lectures", label: "הרצאות", icon: "Video" },
   { key: "presentations", label: "מצגות", icon: "Presentation" },
   { key: "messages", label: "הודעות", icon: "MessageSquare" },
-  { key: "themes", label: "ערכות נושא", icon: "Palette" },
   { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
 ];

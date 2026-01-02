@@ -473,7 +473,9 @@
     "errorMessage": "Error creating event. Please try again.",
     "maxSeatsLabel": "Maximum Seats",
     "maxSeatsPlaceholder": "Leave empty for unlimited",
-    "maxSeatsHelp": "Limit the number of available seats for this event"
+    "maxSeatsHelp": "Limit the number of available seats for this event",
+    "isFeaturedLabel": "Feature this event",
+    "isFeaturedHelp": "Featured events are displayed prominently at the top of the events page"
   },
   "createLecture": {
     "loading": "Loading...",

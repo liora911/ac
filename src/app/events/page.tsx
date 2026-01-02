@@ -69,11 +69,15 @@ const EventsPage = () => {
     fetchEventData();
   }, []);
 
-  // Get the latest/featured event (most recent by event date or creation date)
+  // Get the featured event - prioritize manually marked, then auto-select by date
   const featuredEvent = useMemo(() => {
     if (!eventsData || eventsData.length === 0) return null;
 
-    // Sort by event date (upcoming first) then by creation date
+    // First, check if any event is manually marked as featured
+    const manuallyFeatured = eventsData.find((event) => event.isFeatured);
+    if (manuallyFeatured) return manuallyFeatured;
+
+    // Fallback: Sort by event date (upcoming first) then by creation date
     const sortedEvents = [...eventsData].sort((a, b) => {
       const dateA = new Date(a.eventDate);
       const dateB = new Date(b.eventDate);

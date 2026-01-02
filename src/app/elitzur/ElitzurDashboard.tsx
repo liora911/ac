@@ -8,7 +8,6 @@ import SignOutButton from "@/components/Auth/SignOutButton";
 import QuickStats from "@/components/QuickStats/QuickStats";
 import QuickActions from "@/components/QuickActions/QuickActions";
 import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
-import ThemeToggle from "@/components/ThemeToggle";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
@@ -359,32 +358,6 @@ export default function ElitzurDashboard() {
           </div>
         )}
 
-        {active === "themes" && (
-          <div>
-            <h1
-              className="text-2xl md:text-3xl font-bold text-gray-900"
-              id="themes-heading"
-            >
-              ניהול ערכות נושא
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              התאם את המראה של האתר להעדפותיך.
-            </p>
-            <div className="mt-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  מצב תצוגה
-                </h3>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-700">
-                    החלף בין מצב בהיר וכהה
-                  </span>
-                  <ThemeToggle />
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
     </div>
   );

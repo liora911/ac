@@ -35,6 +35,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
     bannerImageUrl: "",
     categoryId: "",
     maxSeats: "",
+    isFeatured: false,
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -115,6 +116,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
       const submissionData = {
         ...formData,
         maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
+        isFeatured: formData.isFeatured,
       };
 
       const response = await fetch("/api/events", {
@@ -144,6 +146,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         bannerImageUrl: "",
         categoryId: "",
         maxSeats: "",
+        isFeatured: false,
       });
 
       if (onSuccess) {
@@ -429,6 +432,27 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             placeholder="https://"
           />
+        </div>
+
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            name="isFeatured"
+            checked={formData.isFeatured}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
+            }
+            className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+          />
+          <label htmlFor="isFeatured" className="cursor-pointer">
+            <span className="text-sm font-medium text-gray-900">
+              {t("createEvent.isFeaturedLabel")}
+            </span>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {t("createEvent.isFeaturedHelp")}
+            </p>
+          </label>
         </div>
 
         <div className="pt-4">

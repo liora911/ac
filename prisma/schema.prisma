@@ -164,6 +164,7 @@ model Event {
   bannerImageUrl  String?
   maxSeats        Int?     // Maximum seats available (null = unlimited)
   published       Boolean  @default(false)
+  isFeatured      Boolean  @default(false) // Manual featured event selection
   categoryId      String
   category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId        String
@@ -221,4 +222,18 @@ model HomeContent {
   updatedAt   DateTime @updatedAt
 
   @@map("home_content")
+}
+
+model SiteSettings {
+  id              String   @id @default("settings")
+  siteTitle       String   @default("Avshalom Elitzur")
+  siteDescription String   @default("")
+  contactEmail    String   @default("")
+  contactPhone    String   @default("")
+  facebookUrl     String   @default("")
+  youtubeUrl      String   @default("")
+  defaultLanguage String   @default("he") // "he" or "en"
+  updatedAt       DateTime @updatedAt
+
+  @@map("site_settings")
 }
