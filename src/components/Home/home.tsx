@@ -1,16 +1,28 @@
 "use client";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomeContent } from "@/hooks/useHomeContent";
+import { useHomePreview } from "@/hooks/useHomePreview";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState, Suspense } from "react";
 import dynamic from "next/dynamic";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Video,
+  FileText,
+  Calendar,
+  Presentation,
+  ArrowRight,
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
   {
     loading: () => (
-      <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+      <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
     ),
   }
 );
@@ -18,265 +30,406 @@ const FaYoutube = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaYoutube })),
   {
     loading: () => (
-      <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
+      <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
     ),
   }
 );
 
 const Home = () => {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const isRTL = locale === "he";
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
+  const { data: previewData, isLoading: previewLoading } = useHomePreview();
 
-  const imageSrc = homeContent?.imageUrl || "/acpfp2.png";
   const photoCreditText = homeContent?.photoCredit || t("home.photoCredit");
   const bioHtml = homeContent?.bioHtml || "";
   const hasDynamicBio = bioHtml.trim().length > 0;
 
+  const ArrowIcon = isRTL ? ArrowLeft : ArrowRight;
+
   const containerVariants = {
-    hidden: { opacity: 0, y: 50 },
+    hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      y: 0,
       transition: {
-        duration: 0.8,
-        staggerChildren: 0.2,
+        staggerChildren: 0.1,
       },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
+    hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 },
   };
 
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(isRTL ? "he-IL" : "en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
+
+  // Generic item type for content cards
+  type ContentItem = {
+    id: string;
+    title: string;
+    date?: string | null;
+    createdAt?: string;
+    eventDate?: string;
+  };
+
+  // Content section card component
+  const ContentCard = ({
+    title,
+    icon: Icon,
+    items,
+    href,
+    renderItem,
+    iconColor,
+  }: {
+    title: string;
+    icon: React.ElementType;
+    items: ContentItem[];
+    href: string;
+    renderItem: (item: ContentItem) => React.ReactNode;
+    iconColor: string;
+  }) => (
+    <motion.div
+      variants={itemVariants}
+      className="bg-[var(--card)] rounded-xl border border-[var(--border)] shadow-sm hover:shadow-md transition-shadow"
+    >
+      <div className="p-5 border-b border-[var(--border)]">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-lg ${iconColor}`}>
+              <Icon size={20} className="text-white" />
+            </div>
+            <h3 className="font-semibold text-lg text-[var(--foreground)]">
+              {title}
+            </h3>
+          </div>
+          <Link
+            href={href}
+            className="text-sm text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1 group"
+          >
+            {t("home.sections.viewAll")}
+            <ArrowIcon
+              size={14}
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
+          </Link>
+        </div>
+      </div>
+      <div className="p-4">
+        {items.length > 0 ? (
+          <ul className="space-y-3">
+            {items.slice(0, 3).map((item) => renderItem(item))}
+          </ul>
+        ) : (
+          <p className="text-sm text-[var(--muted-foreground)] text-center py-4">
+            {t("home.sections.noItems")}
+          </p>
+        )}
+      </div>
+    </motion.div>
+  );
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-6 sm:p-12 md:p-24 text-[var(--foreground)]">
-      <motion.div
-        className="text-center max-w-3xl w-full bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--card)]/80 shadow-2xl rounded-xl p-6 sm:p-8 md:p-10 border border-[var(--border)]"
-        variants={containerVariants}
+    <main className="flex flex-col min-h-screen text-[var(--foreground)]">
+      {/* Hero Section */}
+      <motion.section
+        className="relative py-12 md:py-16 px-6"
         initial="hidden"
         animate="visible"
+        variants={containerVariants}
       >
-        <motion.h1
-          className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-          variants={itemVariants}
-        >
-          {t("home.name")}
-        </motion.h1>
-        <motion.p
-          className="text-lg sm:text-xl mt-2 text-[var(--muted-foreground)]"
-          variants={itemVariants}
-        >
-          {t("home.tagline")}
-        </motion.p>
-
-        <motion.div
-          className="my-6 sm:my-8"
-          variants={itemVariants}
-          whileHover={{ scale: 1.05 }}
-          transition={{ type: "spring", stiffness: 300 }}
-        >
+        <div className="max-w-4xl mx-auto">
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.6, type: "spring" }}
+            className="bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--card)]/80 rounded-2xl p-8 md:p-12 border border-[var(--border)] shadow-xl"
+            variants={itemVariants}
           >
-            <Image
-              src="/acpfp2.png"
-              alt="Avshalom C. Elitzur"
-              width={150}
-              height={150}
-              className="mx-auto rounded-full border-4 border-gradient-to-r from-blue-400 via-purple-400 to-pink-400 shadow-xl ring-4 ring-white/60 hover:ring-6 hover:ring-white/80 transition-all duration-300"
-              priority
-              sizes="(max-width: 768px) 150px, 150px"
-              quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
-            />
-          </motion.div>
-          <motion.p
-            className="text-xs sm:text-sm mt-2 text-[var(--muted-foreground)]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8, duration: 0.4 }}
-          >
-            {photoCreditText}
-          </motion.p>
-        </motion.div>
-
-        <motion.p
-          className="text-md sm:text-lg mt-4 text-[var(--foreground)]"
-          variants={itemVariants}
-        >
-          {t("home.greeting")}
-        </motion.p>
-
-        <motion.div
-          className="mt-4 text-left text-sm sm:text-base space-y-3 text-[var(--foreground)]"
-          variants={itemVariants}
-        >
-          <p>{t("home.intro")}</p>
-          <p>{t("home.comments")}</p>
-        </motion.div>
-
-        <motion.p
-          className="mt-3 text-right text-sm sm:text-base max-w-2xl mx-auto text-[var(--foreground)]"
-          dir="rtl"
-          variants={itemVariants}
-        >
-          {t("home.mainTopic")}
-        </motion.p>
-        <motion.div
-          className="mt-4 text-sm sm:text-base text-right max-w-3xl mx-auto text-[var(--foreground)]"
-          dir="rtl"
-          variants={itemVariants}
-        >
-          {!showBio ? (
-            <motion.button
-              onClick={() => setShowBio(true)}
-              className="text-blue-600 hover:underline font-medium cursor-pointer"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {t("home.bio.buttonRead")}
-            </motion.button>
-          ) : (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.5 }}
-            >
-              {hasDynamicBio ? (
-                <div
-                  className="text-[var(--foreground)] leading-relaxed prose prose-sm max-w-none"
-                  dir="rtl"
-                  dangerouslySetInnerHTML={{ __html: bioHtml }}
+            <div className="flex flex-col md:flex-row items-center gap-8">
+              {/* Profile Image */}
+              <motion.div
+                className="shrink-0"
+                whileHover={{ scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <Image
+                  src="/acpfp2.png"
+                  alt="Avshalom C. Elitzur"
+                  width={160}
+                  height={160}
+                  className="rounded-full border-4 border-blue-500/30 shadow-xl ring-4 ring-white/20 dark:ring-gray-800/40"
+                  priority
+                  sizes="160px"
+                  quality={85}
                 />
-              ) : (
-                <p className="whitespace-pre-line text-[var(--foreground)] leading-relaxed">
-                  אבשלום אליצור (לסיפור-חיים "צהוב" ראו בויקיפדיה) הוא
-                  פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ'פמאן
-                  בקליפורניה, בראשות פרופ' יקיר אהרונוב, לצד חתני פרס נובל פול
-                  אנגלרט ודייוויד גרוס. פרופסורים-נלווים אחרים הם סר מייקל ברי
-                  ופול דייויס. ​ תחומי התמחותו הם תורת הקוונטים, יחסות
-                  ותרמודינמיקה, וכן תרמודינמיקה של מערכות חיות. את הדוקטורט עשה
-                  בהדרכת פרופ' יקיר אהרונוב. בין תגליותיו נמנים ניסוי
-                  אליצור-ויידמן (1993), בשמו הידוע יותר "ניסוי
-                  הפצצה-שלא-התפוצצה," שנדחה מכתבי-עת רבים עד שהוכח באינספור
-                  מעבדות ברחבי העולם; "פרדוקס השקרן הקוונטי" (אליצור-דולב, 2005,
-                  אהרונוב- כהן-אליצור-סמולין, 2017); ניסוי ה-EPR מנבא העתיד
-                  (אהרונוב-כהן-אלישור, 2014); וניסוי החלקיק הנעלם
-                  (אהרונוב-כהן-לנדאו-אליצור, 2017). את עבודותיו הציג במפגשים
-                  המדעיים היוקרתיים בעולם, כולל הרצאות מליאה והרצאות keynote לצד
-                  חתני-פרס נובל, בין השאר באוניברסיטאות קיימברידג' ופרינסטון,
-                  במכון שרדינגר בווינה וב-ETH בציריך. ארגן וישב-ראש בכינוסים
-                  מובילים. הוזמן להרצות בכל האוניברסיטאות ומוסדות המחקר הגדולים
-                  בארץ בסמינרים, הרצאות קולוקוויום, ובמות דיקאן ורקטור. פעמים
-                  אחדות הוזמן להרצות בישיבות סגורות של הסגל המדעי בקריה למחקר
-                  גרעיני בדימונה ובמכון הביולוגי בנס-ציונה. ​ שימש כמרצה, יועץ
-                  וחוקר בדרגות מרצה/חוקר בכיר, פרופסור-אורח ופרופסור-חבר במוסדות
-                  רבים בארץ ובעולם: מכון וייצמן למדע, אוניברסיטת תל-אביב,
-                  האוניברסיטה העברית, אוניברסיטת בר-אילן, הטכניון, מכון בירלה
-                  למדע וטכנולוגיה במומבאי, אוניברסיטת ז'וזף פורייה ("קתדרת
-                  מצוינות") בגרנובל, צרפת, ומכון פרימטר לפיזיקה עיונית בווטרלו,
-                  קנדה (ראו CV באתר זה). ​ היה יו"ר החברה הישראלית לחקר ראשית
-                  החיים ואסטרוביולוגיה ILASOL שנוסדה ב-1976 ומארחת מדענים מישראל
-                  ומחו"ל. חבר במערכות כתבי-עת, אגודות מדעיות והוצאות ספרים
-                  מדעיות בעולם. ​​ לצד תחום התמחותו העיקרי פרסם גם מאמרים רבים
-                  במדעי החיים וההתנהגות. המאמר "מה תאמר לאדם שעל הגג" שכתב יחד
-                  עם פרופ' חיים עומר, שבמקורו נועד לאנשי מקצוע העוסקים במניעת
-                  התאבדויות, נפוץ כיום ברשת בכמה שפות, כולל ערבית. את עבודותיו
-                  הוזמן להציג בפגישות החברה הישראלית לפסיכיאטריה, בפגישות-סגל
-                  בבתי-החולים והמרכזים לבריאות-הנפש "שלוותה," "אברבנאל,"
-                  "איתנים," "קפלן," "איכילוב," באר-יעקב, נס-ציונה, שער מנשה
-                  ובאר-שבע, וצוותי רע"נ בריאות-הנפש ורמ"ח נפגעים בצה"ל. כן העביר
-                  הרצאות וסדנאות ישירות לנפגעי טראומה ב"סדנת גל" בתל-השומר,
-                  לנגמלים מסמים בתחנת השיקום של עיריית תל-אביב, ולאסירי אגף נ"ס
-                  (נקי מסמים) בכלא רמלה. לימד קורס ייחודי בתוכנית למטפלים מיניים
-                  במחלקה לעבודה סוציאלית באוניברסיטת בר-אילן בשנותיה הראשונות. ​
-                  מרצה-אורח בתוכניות ללימודי המשך בפקולטה לרפואה ע"ש סאקלר,
-                  אוניברסיטת תל-אביב. כל מאמריו ומצגותיו בעברית ובאנגלית זמינים
-                  באתרו תחת ההיתר הגורף "copyleft." נמנה עם מקימי המכון המתהווה
-                  אִייָר, מכון ישראלי למחקר מתקדם במדעי הטבע בראשות פרופ' יקיר
-                  אהרונוב. ​ פעילות ציבורית: שימש יו"ר אגודת "מכנף דרום לציון"
-                  למען שארית יהדות אתיופיה והשתתף במאבק להעלאתם, לצד ח"כ ד"ר
-                  אברהם נגוסה, פרופ' מיכאל קורינלדי והרב מנחם ולדמן. פעיל במאבק
-                  הציבורי לביעור השחיתות יחד עם מני נפתלי, בעבר אב-הבית בבית ראש
-                  הממשלה, וחושפי השחיתות רפי רותם ושוקי משעול. הרצה בהתנדבות
-                  באגף "נס" בכלא ניצן, בתחנה לנגמלים של עיריית תל-אביב, באגודה
-                  למלחמה בסרטן, בארגון נפגעי טרור ומסגרות התנדבותיות רבות. שותף
-                  בפעולות שלום והתנגדות לאפליה וגזענות. לימד בהתנדבות
-                  כפרופסור-אורח לפיזיקה במכון איימס AIMS למתמטיקה בקיגאלי,
-                  רואנדה.
+                <p className="text-xs text-center mt-2 text-[var(--muted-foreground)]">
+                  {photoCreditText}
                 </p>
-              )}
+              </motion.div>
 
-              <motion.button
-                onClick={() => setShowBio(false)}
-                className="text-blue-600 hover:underline font-medium mt-3 block cursor-pointer"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              {/* Name and Info */}
+              <div className="flex-1 text-center md:text-start">
+                <motion.h1
+                  className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+                  variants={itemVariants}
+                >
+                  {t("home.name")}
+                </motion.h1>
+                <motion.p
+                  className="text-lg md:text-xl mt-2 text-[var(--muted-foreground)] italic"
+                  variants={itemVariants}
+                >
+                  {t("home.tagline")}
+                </motion.p>
+
+                <motion.p
+                  className="mt-4 text-[var(--foreground)]"
+                  variants={itemVariants}
+                >
+                  {t("home.greeting")}
+                </motion.p>
+
+                {/* Social Links */}
+                <motion.div
+                  className="flex justify-center md:justify-start gap-4 mt-5"
+                  variants={itemVariants}
+                >
+                  <Suspense
+                    fallback={
+                      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                    }
+                  >
+                    <a
+                      href="https://"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                      aria-label={t("home.social.facebook")}
+                    >
+                      <FaFacebook size={20} />
+                    </a>
+                  </Suspense>
+                  <Suspense
+                    fallback={
+                      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                    }
+                  >
+                    <a
+                      href="https://"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                      aria-label={t("home.social.youtube")}
+                    >
+                      <FaYoutube size={20} />
+                    </a>
+                  </Suspense>
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Bio Section */}
+            <motion.div className="mt-8 pt-6 border-t border-[var(--border)]" variants={itemVariants}>
+              <button
+                onClick={() => setShowBio(!showBio)}
+                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer mx-auto md:mx-0"
               >
-                {t("home.bio.buttonHide")}
-              </motion.button>
+                {showBio ? (
+                  <>
+                    {t("home.bio.buttonHide")}
+                    <ChevronUp size={18} />
+                  </>
+                ) : (
+                  <>
+                    {t("home.bio.buttonRead")}
+                    <ChevronDown size={18} />
+                  </>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {showBio && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="overflow-hidden"
+                  >
+                    <div
+                      className="mt-4 text-[var(--foreground)] leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                      dir={isRTL ? "rtl" : "ltr"}
+                    >
+                      {hasDynamicBio ? (
+                        <div dangerouslySetInnerHTML={{ __html: bioHtml }} />
+                      ) : (
+                        <div className="space-y-4" dir="rtl">
+                          <p>
+                            אבשלום אליצור הוא פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ&apos;פמאן בקליפורניה, בראשות פרופ&apos; יקיר אהרונוב, לצד חתני פרס נובל פול אנגלרט ודייוויד גרוס.
+                          </p>
+                          <p>
+                            תחומי התמחותו הם תורת הקוונטים, יחסות ותרמודינמיקה, וכן תרמודינמיקה של מערכות חיות. בין תגליותיו נמנים ניסוי אליצור-ויידמן (1993), בשמו הידוע יותר &quot;ניסוי הפצצה-שלא-התפוצצה&quot;.
+                          </p>
+                          <p>
+                            את עבודותיו הציג במפגשים המדעיים היוקרתיים בעולם, כולל הרצאות מליאה והרצאות keynote לצד חתני-פרס נובל, בין השאר באוניברסיטאות קיימברידג&apos; ופרינסטון, במכון שרדינגר בווינה וב-ETH בציריך.
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </motion.div>
-          )}
-        </motion.div>
+          </motion.div>
+        </div>
+      </motion.section>
 
-        <motion.div
-          className="mt-6 sm:mt-8 border-t border-gradient-to-r from-transparent via-[var(--border)] to-transparent pt-6 sm:pt-8"
-          variants={itemVariants}
-        >
-          <div className="flex justify-center space-x-6">
-            <Suspense
-              fallback={
-                <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
-              }
-            >
-              <motion.a
-                href="https://"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[var(--primary)] hover:text-[var(--primary)]/80 text-2xl cursor-pointer"
-                aria-label={t("home.social.facebook")}
-                whileHover={{
-                  scale: 1.2,
-                  rotate: 5,
-                  color: "var(--primary)",
-                }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <FaFacebook />
-              </motion.a>
-            </Suspense>
-            <Suspense
-              fallback={
-                <div className="w-6 h-6 bg-gray-200 rounded animate-pulse" />
-              }
-            >
-              <motion.a
-                href="https://"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-red-600 hover:text-red-800 text-2xl cursor-pointer"
-                aria-label={t("home.social.youtube")}
-                whileHover={{
-                  scale: 1.2,
-                  rotate: -5,
-                  color: "#dc2626",
-                }}
-                whileTap={{ scale: 0.9 }}
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
-              >
-                <FaYoutube />
-              </motion.a>
-            </Suspense>
-          </div>
-        </motion.div>
-      </motion.div>
+      {/* Content Preview Section */}
+      <motion.section
+        className="py-8 md:py-12 px-6 bg-[var(--background)]"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+      >
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            className="text-2xl font-bold text-center mb-8 text-[var(--foreground)]"
+            variants={itemVariants}
+          >
+            {t("home.sections.exploreContent")}
+          </motion.h2>
+
+          {previewLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[...Array(4)].map((_, i) => (
+                <div
+                  key={i}
+                  className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6 animate-pulse"
+                >
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
+                  <div className="space-y-3">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Lectures */}
+              <ContentCard
+                title={t("home.sections.latestLectures")}
+                icon={Video}
+                iconColor="bg-red-500"
+                items={previewData?.lectures || []}
+                href="/lectures"
+                renderItem={(item) => (
+                  <li key={item.id}>
+                    <Link
+                      href={`/lectures/${item.id}`}
+                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                    >
+                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                        {item.title}
+                      </p>
+                      {item.date && (
+                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                          {formatDate(item.date as string)}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                )}
+              />
+
+              {/* Articles */}
+              <ContentCard
+                title={t("home.sections.recentArticles")}
+                icon={FileText}
+                iconColor="bg-blue-500"
+                items={previewData?.articles || []}
+                href="/articles"
+                renderItem={(item) => (
+                  <li key={item.id}>
+                    <Link
+                      href={`/articles/${item.id}`}
+                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                    >
+                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                        {item.title}
+                      </p>
+                      {item.createdAt && (
+                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                          {formatDate(item.createdAt as string)}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                )}
+              />
+
+              {/* Events */}
+              <ContentCard
+                title={t("home.sections.upcomingEvents")}
+                icon={Calendar}
+                iconColor="bg-green-500"
+                items={previewData?.events || []}
+                href="/events"
+                renderItem={(item) => (
+                  <li key={item.id}>
+                    <Link
+                      href={`/events/${item.id}`}
+                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                    >
+                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                        {item.title}
+                      </p>
+                      {item.eventDate && (
+                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                          {formatDate(item.eventDate as string)}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                )}
+              />
+
+              {/* Presentations */}
+              <ContentCard
+                title={t("home.sections.presentations")}
+                icon={Presentation}
+                iconColor="bg-purple-500"
+                items={previewData?.presentations || []}
+                href="/presentations"
+                renderItem={(item) => (
+                  <li key={item.id}>
+                    <Link
+                      href={`/presentations/${item.id}`}
+                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                    >
+                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                        {item.title}
+                      </p>
+                      {item.createdAt && (
+                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                          {formatDate(item.createdAt as string)}
+                        </p>
+                      )}
+                    </Link>
+                  </li>
+                )}
+              />
+            </div>
+          )}
+        </div>
+      </motion.section>
     </main>
   );
 };

@@ -27,6 +27,15 @@
     "social": {
       "facebook": "Facebook",
       "youtube": "YouTube"
+    },
+    "sections": {
+      "latestLectures": "Latest Lectures",
+      "recentArticles": "Recent Articles",
+      "upcomingEvents": "Upcoming Events",
+      "presentations": "Presentations",
+      "viewAll": "View All",
+      "noItems": "No items yet",
+      "exploreContent": "Explore Content"
     }
   },
   "presentations": {

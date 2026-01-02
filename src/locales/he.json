@@ -27,6 +27,15 @@
     "social": {
       "facebook": "פייסבוק",
       "youtube": "יוטיוב"
+    },
+    "sections": {
+      "latestLectures": "הרצאות אחרונות",
+      "recentArticles": "מאמרים אחרונים",
+      "upcomingEvents": "אירועים קרובים",
+      "presentations": "מצגות",
+      "viewAll": "צפה בהכל",
+      "noItems": "אין פריטים עדיין",
+      "exploreContent": "גלה תוכן"
     }
   },
   "presentations": {
