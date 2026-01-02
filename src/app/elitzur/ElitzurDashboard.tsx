@@ -343,18 +343,7 @@ export default function ElitzurDashboard() {
 
         {active === "settings" && (
           <div>
-            <h1
-              className="text-2xl md:text-3xl font-bold text-gray-900"
-              id="settings-heading"
-            >
-              הגדרות
-            </h1>
-            <p className="mt-2 text-sm text-gray-600">
-              נהל הגדרות כלליות של האתר.
-            </p>
-            <div className="mt-6">
-              <SettingsAdmin />
-            </div>
+            <SettingsAdmin />
           </div>
         )}
 

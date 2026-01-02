@@ -32,6 +32,7 @@ export default function EditEventForm({
     bannerImageUrl: "",
     categoryId: "",
     maxSeats: "",
+    isFeatured: false,
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -75,6 +76,7 @@ export default function EditEventForm({
             bannerImageUrl: event.bannerImageUrl || "",
             categoryId: event.categoryId || "",
             maxSeats: event.maxSeats ? String(event.maxSeats) : "",
+            isFeatured: event.isFeatured || false,
           });
         } else {
           setMessage({
@@ -462,6 +464,27 @@ export default function EditEventForm({
             className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
             placeholder="https://"
           />
+        </div>
+
+        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <input
+            type="checkbox"
+            id="isFeatured"
+            name="isFeatured"
+            checked={formData.isFeatured}
+            onChange={(e) =>
+              setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
+            }
+            className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+          />
+          <label htmlFor="isFeatured" className="cursor-pointer">
+            <span className="text-sm font-medium text-gray-900">
+              {t("editEventForm.isFeaturedLabel")}
+            </span>
+            <p className="text-xs text-gray-500 mt-0.5">
+              {t("editEventForm.isFeaturedHelp")}
+            </p>
+          </label>
         </div>
 
         <div className="pt-4">

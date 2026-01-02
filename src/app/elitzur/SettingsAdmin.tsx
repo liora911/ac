@@ -101,10 +101,10 @@ export default function SettingsAdmin() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-gray-100">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
             הגדרות מערכת
-          </h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          </h1>
+          <p className="mt-2 text-sm text-gray-600">
             הגדר את פרטי האתר וקישורים לרשתות חברתיות.
           </p>
         </div>
@@ -114,8 +114,8 @@ export default function SettingsAdmin() {
         <div
           className={`rounded-xl border p-4 ${
             message.type === "success"
-              ? "border-green-200 bg-green-50 text-green-800 dark:border-green-800 dark:bg-green-900/20 dark:text-green-400"
-              : "border-red-200 bg-red-50 text-red-800 dark:border-red-800 dark:bg-red-900/20 dark:text-red-400"
+              ? "border-green-200 bg-green-50 text-green-800"
+              : "border-red-200 bg-red-50 text-red-800"
           }`}
           role="alert"
         >
@@ -125,10 +125,10 @@ export default function SettingsAdmin() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* General Settings */}
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Globe className="w-5 h-5 text-blue-500" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">
               פרטי האתר
             </h3>
           </div>
@@ -136,7 +136,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="siteTitle"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 שם האתר
               </label>
@@ -145,7 +145,7 @@ export default function SettingsAdmin() {
                 type="text"
                 value={settings.siteTitle}
                 onChange={(e) => handleInputChange("siteTitle", e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="הזן שם אתר"
               />
             </div>
@@ -153,7 +153,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="siteDescription"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 תיאור האתר
               </label>
@@ -164,7 +164,7 @@ export default function SettingsAdmin() {
                   handleInputChange("siteDescription", e.target.value)
                 }
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="הזן תיאור קצר לאתר (SEO)"
               />
             </div>
@@ -172,7 +172,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="defaultLanguage"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 שפת ברירת מחדל
               </label>
@@ -182,7 +182,7 @@ export default function SettingsAdmin() {
                 onChange={(e) =>
                   handleInputChange("defaultLanguage", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
               >
                 <option value="he">עברית</option>
                 <option value="en">English</option>
@@ -192,10 +192,10 @@ export default function SettingsAdmin() {
         </div>
 
         {/* Contact Information */}
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Mail className="w-5 h-5 text-green-500" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">
               פרטי התקשרות
             </h3>
           </div>
@@ -203,7 +203,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="contactEmail"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 <span className="flex items-center gap-1.5">
                   <Mail className="w-4 h-4" />
@@ -217,7 +217,7 @@ export default function SettingsAdmin() {
                 onChange={(e) =>
                   handleInputChange("contactEmail", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="contact@example.com"
                 dir="ltr"
               />
@@ -226,7 +226,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="contactPhone"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 <span className="flex items-center gap-1.5">
                   <Phone className="w-4 h-4" />
@@ -240,7 +240,7 @@ export default function SettingsAdmin() {
                 onChange={(e) =>
                   handleInputChange("contactPhone", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="+972-50-123-4567"
                 dir="ltr"
               />
@@ -249,10 +249,10 @@ export default function SettingsAdmin() {
         </div>
 
         {/* Social Media Links */}
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <FaFacebook className="w-5 h-5 text-blue-600" />
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            <h3 className="text-lg font-semibold text-gray-900">
               רשתות חברתיות
             </h3>
           </div>
@@ -260,7 +260,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="facebookUrl"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 <span className="flex items-center gap-1.5">
                   <FaFacebook className="w-4 h-4 text-blue-600" />
@@ -274,7 +274,7 @@ export default function SettingsAdmin() {
                 onChange={(e) =>
                   handleInputChange("facebookUrl", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://facebook.com/..."
                 dir="ltr"
               />
@@ -283,7 +283,7 @@ export default function SettingsAdmin() {
             <div>
               <label
                 htmlFor="youtubeUrl"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                className="block text-sm font-medium text-gray-700 mb-1"
               >
                 <span className="flex items-center gap-1.5">
                   <FaYoutube className="w-4 h-4 text-red-600" />
@@ -297,7 +297,7 @@ export default function SettingsAdmin() {
                 onChange={(e) =>
                   handleInputChange("youtubeUrl", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://youtube.com/..."
                 dir="ltr"
               />
@@ -306,8 +306,8 @@ export default function SettingsAdmin() {
         </div>
 
         {/* Save Actions */}
-        <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
             שמירה
           </h3>
           <button
@@ -327,7 +327,7 @@ export default function SettingsAdmin() {
               </>
             )}
           </button>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+          <p className="text-xs text-gray-500 mt-2 text-center">
             ההגדרות נשמרות במסד הנתונים.
           </p>
         </div>

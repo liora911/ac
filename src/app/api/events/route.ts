@@ -118,6 +118,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
 
+    // If marking this event as featured, unmark all others first
+    if (isFeatured) {
+      await prisma.event.updateMany({
+        where: { isFeatured: true },
+        data: { isFeatured: false },
+      });
+    }
+
     const event = await prisma.event.create({
       data: {
         title,

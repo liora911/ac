@@ -312,7 +312,9 @@
     "submit": "Update event",
     "maxSeatsLabel": "Maximum Seats",
     "maxSeatsPlaceholder": "Leave empty for unlimited",
-    "maxSeatsHelp": "Limit the number of available seats for this event"
+    "maxSeatsHelp": "Limit the number of available seats for this event",
+    "isFeaturedLabel": "Featured Event",
+    "isFeaturedHelp": "This event will be displayed prominently on the events page. Only one event can be featured at a time."
   },
   "editLectureForm": {
     "loginRequiredTitle": "Sign in required",

@@ -99,6 +99,7 @@ export async function PUT(
       bannerImageUrl,
       categoryId,
       maxSeats,
+      isFeatured = false,
     } = body;
 
     if (!title || !description || !eventType || !eventDate || !categoryId) {
@@ -140,6 +141,14 @@ export async function PUT(
       );
     }
 
+    // If marking this event as featured, unmark all others first
+    if (isFeatured) {
+      await prisma.event.updateMany({
+        where: { isFeatured: true, id: { not: id } },
+        data: { isFeatured: false },
+      });
+    }
+
     const event = await prisma.event.update({
       where: { id },
       data: {
@@ -153,6 +162,7 @@ export async function PUT(
         bannerImageUrl,
         categoryId,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
+        isFeatured: Boolean(isFeatured),
       },
       include: {
         author: {

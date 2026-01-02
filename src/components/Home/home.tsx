@@ -2,6 +2,7 @@
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomeContent } from "@/hooks/useHomeContent";
 import { useHomePreview } from "@/hooks/useHomePreview";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState, Suspense } from "react";
@@ -40,6 +41,7 @@ const Home = () => {
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
+  const { data: siteSettings } = useSiteSettings();
 
   const photoCreditText = homeContent?.photoCredit || t("home.photoCredit");
   const bioHtml = homeContent?.bioHtml || "";
@@ -128,41 +130,47 @@ const Home = () => {
                 </motion.p>
 
                 {/* Social Links */}
-                <motion.div
-                  className="flex justify-center md:justify-start gap-4 mt-5"
-                  variants={itemVariants}
-                >
-                  <Suspense
-                    fallback={
-                      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-                    }
+                {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (
+                  <motion.div
+                    className="flex justify-center md:justify-start gap-4 mt-5"
+                    variants={itemVariants}
                   >
-                    <a
-                      href="https://"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                      aria-label={t("home.social.facebook")}
-                    >
-                      <FaFacebook size={20} />
-                    </a>
-                  </Suspense>
-                  <Suspense
-                    fallback={
-                      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-                    }
-                  >
-                    <a
-                      href="https://"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                      aria-label={t("home.social.youtube")}
-                    >
-                      <FaYoutube size={20} />
-                    </a>
-                  </Suspense>
-                </motion.div>
+                    {siteSettings?.facebookUrl && (
+                      <Suspense
+                        fallback={
+                          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                        }
+                      >
+                        <a
+                          href={siteSettings.facebookUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
+                          aria-label={t("home.social.facebook")}
+                        >
+                          <FaFacebook size={20} />
+                        </a>
+                      </Suspense>
+                    )}
+                    {siteSettings?.youtubeUrl && (
+                      <Suspense
+                        fallback={
+                          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+                        }
+                      >
+                        <a
+                          href={siteSettings.youtubeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
+                          aria-label={t("home.social.youtube")}
+                        >
+                          <FaYoutube size={20} />
+                        </a>
+                      </Suspense>
+                    )}
+                  </motion.div>
+                )}
               </div>
             </div>
 

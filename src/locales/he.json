@@ -312,7 +312,9 @@
     "submit": "עדכן אירוע",
     "maxSeatsLabel": "מספר מקומות מקסימלי",
     "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
-    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע"
+    "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע",
+    "isFeaturedLabel": "אירוע מומלץ",
+    "isFeaturedHelp": "אירוע זה יוצג בולט בראש עמוד האירועים. רק אירוע אחד יכול להיות מומלץ בכל פעם."
   },
   "editLectureForm": {
     "loginRequiredTitle": "נדרשת התחברות",
