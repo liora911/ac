@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Grid3X3, List } from "lucide-react";
+import { Grid3X3, List, Tag, X } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
 
 interface ArticlesListProps {
@@ -218,6 +218,93 @@ export default function ArticlesList({
               </div>
             </div>
           </div>
+
+          {/* Category Tags / Quick Filters */}
+          {categories && categories.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                  <Tag className="w-4 h-4" />
+                  {t("articlesPage.quickFilters") || "Quick filters:"}
+                </span>
+                <button
+                  onClick={() => handleCategoryChange("")}
+                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                    selectedCategory === ""
+                      ? "bg-blue-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  }`}
+                >
+                  {t("articleForm.allCategories")}
+                </button>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.id)}
+                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                      selectedCategory === category.id
+                        ? "bg-blue-600 text-white"
+                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    }`}
+                  >
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Active Filters Display */}
+          {(selectedCategory || searchQuery || statusFilter) && (
+            <div className="mt-3 flex items-center gap-2 flex-wrap">
+              <span className="text-sm text-gray-500">
+                {t("articlesPage.activeFilters") || "Active filters:"}
+              </span>
+              {searchQuery && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                  {t("articleForm.searchLabel")}: &quot;{searchQuery}&quot;
+                  <button
+                    onClick={() => handleSearch("")}
+                    className="hover:bg-blue-200 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {selectedCategory && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
+                  {categories?.find((c) => c.id === selectedCategory)?.name}
+                  <button
+                    onClick={() => handleCategoryChange("")}
+                    className="hover:bg-green-200 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              {statusFilter && (
+                <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
+                  {statusFilter}
+                  <button
+                    onClick={() => handleStatusChange("")}
+                    className="hover:bg-yellow-200 rounded-full p-0.5"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </span>
+              )}
+              <button
+                onClick={() => {
+                  handleSearch("");
+                  handleCategoryChange("");
+                  handleStatusChange("");
+                }}
+                className="text-xs text-gray-500 hover:text-gray-700 underline"
+              >
+                {t("articlesPage.clearAllFilters") || "Clear all"}
+              </button>
+            </div>
+          )}
         </div>
       )}
 

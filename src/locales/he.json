@@ -60,7 +60,14 @@
     "duration": "משך:",
     "noLecturesAvailable": "אין הרצאות זמינות כרגע.",
     "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג הרצאות, או שאין הרצאות זמינות בקטגוריה זו.",
-    "loadingLectures": "טוען נתוני הרצאות..."
+    "loadingLectures": "טוען נתוני הרצאות...",
+    "searchPlaceholder": "חפש הרצאות...",
+    "clearSearch": "נקה חיפוש",
+    "suggestions": "הצעות",
+    "searchWaiting": "ממתין שתסיים להקליד...",
+    "searchResults": "תוצאות חיפוש עבור",
+    "found": "נמצאו",
+    "noSearchResults": "לא נמצאו הרצאות התואמות לחיפוש"
   },
   "presentationsPage": {
     "title": "מצגות בנושאים שונים לפי קטגוריות",
@@ -179,7 +186,10 @@
     "previousButton": "הקודם",
     "nextButton": "הבא",
     "createArticleButton": "צור מאמר",
-    "createArticleDescription": "שתף את הידע והתובנות שלך עם הקהילה."
+    "createArticleDescription": "שתף את הידע והתובנות שלך עם הקהילה.",
+    "quickFilters": "סינון מהיר:",
+    "activeFilters": "מסננים פעילים:",
+    "clearAllFilters": "נקה הכל"
   },
   "articleForm": {
     "createArticleButton": "צור מאמר",

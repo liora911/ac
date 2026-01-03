@@ -60,7 +60,14 @@
     "duration": "Duration:",
     "noLecturesAvailable": "No lectures available at the moment.",
     "selectCategoryPrompt": "Please select a category to view lectures, or there are no lectures available in this category.",
-    "loadingLectures": "Loading lecture data..."
+    "loadingLectures": "Loading lecture data...",
+    "searchPlaceholder": "Search lectures...",
+    "clearSearch": "Clear search",
+    "suggestions": "Suggestions",
+    "searchWaiting": "Waiting for you to finish typing...",
+    "searchResults": "Search results for",
+    "found": "found",
+    "noSearchResults": "No lectures found matching your search"
   },
   "presentationsPage": {
     "title": "Presentations by category on various topics",
@@ -179,7 +186,10 @@
     "previousButton": "Previous",
     "nextButton": "Next",
     "createArticleButton": "Create Article",
-    "createArticleDescription": "Share your knowledge and insights with the community."
+    "createArticleDescription": "Share your knowledge and insights with the community.",
+    "quickFilters": "Quick filters:",
+    "activeFilters": "Active filters:",
+    "clearAllFilters": "Clear all"
   },
   "articleForm": {
     "createArticleButton": "Create Article",
