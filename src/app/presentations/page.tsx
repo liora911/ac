@@ -207,9 +207,15 @@ const PresentationsPage = () => {
         )}
 
         <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden">
-          {currentBannerUrl ? (
+          {isLoading ? (
+            <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
+              <p className="text-gray-400 text-xl">
+                {t("presentationsPage.bannerLoading")}
+              </p>
+            </div>
+          ) : (
             <Image
-              src={currentBannerUrl}
+              src={currentBannerUrl || "/presentation.jpg"}
               alt={currentBannerAlt}
               width={1200}
               height={320}
@@ -217,15 +223,7 @@ const PresentationsPage = () => {
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               quality={85}
-              placeholder="blur"
-              blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R+IRjWjBqO6O2mhP//Z"
             />
-          ) : (
-            <p className="text-gray-400 text-xl">
-              {isLoading
-                ? t("presentationsPage.bannerLoading")
-                : t("presentationsPage.bannerPlaceholder")}
-            </p>
           )}
         </div>
 
