@@ -38,7 +38,8 @@ export default function ArticlesList({
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
+  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
@@ -302,9 +303,13 @@ export default function ArticlesList({
                               </span>
                             )}
                           </div>
-                          <span>{article.readTime} min read</span>
+                          <span>{article.readTime} {t("articleCard.minRead")}</span>
                           <span>
-                            {new Date(article.createdAt).toLocaleDateString()}
+                            {new Date(article.createdAt).toLocaleDateString(dateLocale, {
+                              year: "numeric",
+                              month: "long",
+                              day: "numeric",
+                            })}
                           </span>
                         </div>
                       </div>
@@ -386,12 +391,13 @@ interface ArticleCardProps {
 }
 
 function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("en-US", {
+    return new Date(dateString).toLocaleDateString(dateLocale, {
       year: "numeric",
       month: "long",
       day: "numeric",

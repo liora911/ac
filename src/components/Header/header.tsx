@@ -93,7 +93,7 @@ export default function Header() {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 backdrop-blur-sm shadow-lg px-4 py-3 sm:py-4"
+        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg dark:shadow-gray-900/50 px-4 py-3 sm:py-4"
         role="banner"
       >
         <div className="flex flex-nowrap items-center justify-between gap-2 sm:gap-4 min-w-0">
@@ -124,8 +124,8 @@ export default function Header() {
                   href={href}
                   className={`flex items-center gap-1.5 px-3 py-2 rounded-lg transition-all duration-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 font-semibold"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-semibold"
+                      : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
                   } ${className || ""}`}
                   aria-current={isActive ? "page" : undefined}
                 >
@@ -146,7 +146,7 @@ export default function Header() {
             </div>
             <button
               ref={buttonRef}
-              className="md:hidden text-gray-700 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="md:hidden text-gray-700 dark:text-gray-200 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 cursor-pointer p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-label={
                 menuOpen
@@ -188,7 +188,7 @@ export default function Header() {
       {/* Mobile Navigation */}
       <nav
         ref={menuRef}
-        className={`fixed top-[60px] left-0 right-0 z-50 md:hidden bg-white shadow-xl border-t border-gray-100 transition-all duration-300 ease-out ${
+        className={`fixed top-[60px] left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-900/50 border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out ${
           menuOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-2 pointer-events-none"
@@ -198,7 +198,7 @@ export default function Header() {
         id="mobile-navigation"
       >
         {/* Mobile Search Bar */}
-        <div className="p-4 border-b border-gray-100 bg-gray-50">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
           <GlobalSearch />
         </div>
 
@@ -214,8 +214,8 @@ export default function Header() {
                     className || ""
                   } ${
                     isActive
-                      ? "bg-blue-50 text-blue-700 font-semibold"
-                      : "text-gray-700 hover:bg-gray-100 active:bg-gray-200"
+                      ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-semibold"
+                      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 active:bg-gray-200 dark:active:bg-gray-700"
                   }`}
                   onClick={() => setMenuOpen(false)}
                   role="menuitem"
@@ -224,13 +224,13 @@ export default function Header() {
                   {IconComponent && (
                     <IconComponent
                       size={22}
-                      className={isActive ? "text-blue-600" : "text-gray-500"}
+                      className={isActive ? "text-blue-600 dark:text-blue-400" : "text-gray-500 dark:text-gray-400"}
                       aria-hidden="true"
                     />
                   )}
                   <span className="font-medium">{t(label)}</span>
                   {isActive && (
-                    <span className="mr-auto w-1.5 h-1.5 rounded-full bg-blue-600" />
+                    <span className="mr-auto w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400" />
                   )}
                 </Link>
               </li>
