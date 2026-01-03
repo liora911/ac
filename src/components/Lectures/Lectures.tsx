@@ -232,7 +232,8 @@ const Lectures: React.FC<LecturesProps> = ({
 
   const handleLectureClick = (lecture: Lecture) => {
     setSelectedLecture(lecture);
-    onBannerUpdate(lecture.bannerImageUrl || currentCategoryBanner || null, selectedCategoryName || undefined);
+    // Pass lecture title when clicking on a lecture, category name when just selecting a category
+    onBannerUpdate(lecture.bannerImageUrl || currentCategoryBanner || null, lecture.title);
   };
 
   const openDeleteModal = (lecture: Lecture) => {
