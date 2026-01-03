@@ -32,15 +32,26 @@ export const TranslationProvider = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const [locale, setLocale] = useState<Locale>(getInitialLocale);
+  // Always start with "en" for SSR, then sync with localStorage in useEffect
+  const [locale, setLocale] = useState<Locale>("en");
+  const [isHydrated, setIsHydrated] = useState(false);
 
+  // Load locale from localStorage after hydration
   useEffect(() => {
-    localStorage.setItem("locale", locale);
-    if (typeof window !== "undefined") {
-      document.documentElement.dir = locale === "he" ? "rtl" : "ltr";
-      document.documentElement.lang = locale;
+    const saved = localStorage.getItem("locale");
+    if (saved === "he") {
+      setLocale("he");
     }
-  }, [locale]);
+    setIsHydrated(true);
+  }, []);
+
+  // Sync locale to localStorage and document
+  useEffect(() => {
+    if (!isHydrated) return;
+    localStorage.setItem("locale", locale);
+    document.documentElement.dir = locale === "he" ? "rtl" : "ltr";
+    document.documentElement.lang = locale;
+  }, [locale, isHydrated]);
 
   const t = (key: string): string => {
     const keys = key.split(".");
