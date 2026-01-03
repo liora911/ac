@@ -134,6 +134,23 @@ html.dark .hover\:bg-gray-50:not([class*="dark\:hover\:bg-"]):hover {
   background-color: var(--accent);
 }
 
+/* Gradient background overrides for dark mode */
+html.dark .from-gray-50:not([class*="dark\:from-"]) {
+  --tw-gradient-from: var(--background);
+}
+
+html.dark .to-gray-100:not([class*="dark\:to-"]) {
+  --tw-gradient-to: var(--secondary);
+}
+
+html.dark .from-gray-100:not([class*="dark\:from-"]) {
+  --tw-gradient-from: var(--secondary);
+}
+
+html.dark .to-gray-50:not([class*="dark\:to-"]) {
+  --tw-gradient-to: var(--background);
+}
+
 /* Additional amber overrides */
 html.dark .bg-amber-50 {
   background-color: rgba(217, 119, 6, 0.15) !important;
