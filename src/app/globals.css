@@ -57,70 +57,11 @@ body {
   color-scheme: dark;
 }
 
-/* Override common background colors in dark mode */
-.dark .bg-white {
-  background-color: var(--card) !important;
-}
-
-.dark .bg-gray-50 {
-  background-color: var(--background) !important;
-}
-
-.dark .bg-gray-100 {
-  background-color: var(--secondary) !important;
-}
-
-/* Override text colors in dark mode */
-.dark .text-gray-900 {
-  color: var(--foreground) !important;
-}
-
-.dark .text-gray-800 {
-  color: var(--foreground) !important;
-}
-
-.dark .text-gray-700 {
-  color: var(--muted-foreground) !important;
-}
-
-.dark .text-gray-600 {
-  color: var(--muted-foreground) !important;
-}
-
-/* Override border colors in dark mode */
-.dark .border-gray-200 {
-  border-color: var(--border) !important;
-}
-
-.dark .border-gray-100 {
-  border-color: var(--border) !important;
-}
-
-.dark .border-gray-300 {
-  border-color: var(--border) !important;
-}
-
-/* Hover states in dark mode */
-.dark .hover\:bg-gray-100:hover {
-  background-color: var(--accent) !important;
-}
-
-.dark .hover\:bg-gray-50:hover {
-  background-color: var(--accent) !important;
-}
-
-/* Gradient backgrounds in dark mode */
-.dark .from-gray-50 {
-  --tw-gradient-from: var(--background) !important;
-}
-
-.dark .to-gray-100 {
-  --tw-gradient-to: var(--secondary) !important;
-}
-
-.dark .bg-gradient-to-b {
-  background-image: linear-gradient(to bottom, var(--tw-gradient-from), var(--tw-gradient-to)) !important;
-}
+/*
+ * NOTE: Removed aggressive !important overrides that were breaking Tailwind's dark: variants.
+ * Components should use proper dark: variants (e.g., bg-white dark:bg-gray-950) instead.
+ * The CSS variable system via [data-theme="dark"] handles base theming.
+ */
 
 /* Additional dark mode background overrides */
 .dark .bg-amber-50 {
