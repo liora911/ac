@@ -8,6 +8,7 @@ import { useArticle } from "@/hooks/useArticles";
 import { useEvent } from "@/hooks/useEvents";
 import { useLecture } from "@/hooks/useLectures";
 import { usePresentation } from "@/hooks/usePresentations";
+import { Home, ChevronLeft, ChevronRight } from "lucide-react";
 
 type CrumbTemplate = {
   href?: string;
@@ -233,36 +234,65 @@ export default function Breadcrumbs() {
   });
 
   const dir = locale === "he" ? "rtl" : "ltr";
+  const isRTL = locale === "he";
+  const Chevron = isRTL ? ChevronLeft : ChevronRight;
 
   return (
     <nav
       aria-label={t("breadcrumbs.ariaLabel")}
-      className="border-b border-gray-100 bg-white/80 backdrop-blur-sm px-4 py-2 text-xs sm:text-sm text-gray-500"
+      className="bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-900 dark:to-gray-800/50 border-b border-gray-200/60 dark:border-gray-700/60 px-4 py-2.5"
       dir={dir}
     >
-      <ol className="flex flex-wrap items-center gap-1 sm:gap-2">
-        {crumbs.map((crumb, index) => (
-          <li key={index} className="flex items-center gap-1 sm:gap-2">
-            {crumb.href && !crumb.isCurrent ? (
-              <Link
-                href={crumb.href}
-                className="text-blue-600 hover:text-blue-700 hover:underline"
-              >
-                {crumb.label}
-              </Link>
-            ) : (
-              <span
-                aria-current={crumb.isCurrent ? "page" : undefined}
-                className={crumb.isCurrent ? "font-semibold text-gray-700" : ""}
-              >
-                {crumb.label}
-              </span>
-            )}
-            {index < crumbs.length - 1 && (
-              <span className="text-gray-300">/</span>
-            )}
-          </li>
-        ))}
+      <ol className="flex flex-wrap items-center gap-1">
+        {crumbs.map((crumb, index) => {
+          const isFirst = index === 0;
+          const isLast = index === crumbs.length - 1;
+
+          return (
+            <li key={index} className="flex items-center">
+              {/* Breadcrumb item */}
+              {crumb.href && !crumb.isCurrent ? (
+                <Link
+                  href={crumb.href}
+                  className={`
+                    flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm
+                    transition-all duration-200 ease-out
+                    ${isFirst
+                      ? "text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                      : "text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30"
+                    }
+                  `}
+                >
+                  {isFirst && <Home className="w-3.5 h-3.5" />}
+                  <span className={isFirst ? "sr-only sm:not-sr-only" : ""}>
+                    {crumb.label}
+                  </span>
+                </Link>
+              ) : (
+                <span
+                  aria-current={crumb.isCurrent ? "page" : undefined}
+                  className={`
+                    flex items-center gap-1.5 px-2.5 py-1 rounded-md text-sm
+                    ${crumb.isCurrent
+                      ? "font-medium text-gray-900 dark:text-white bg-white dark:bg-gray-700/50 shadow-sm border border-gray-200/80 dark:border-gray-600/50"
+                      : "text-gray-500 dark:text-gray-400"
+                    }
+                  `}
+                >
+                  {isFirst && <Home className="w-3.5 h-3.5" />}
+                  <span className={`${isFirst ? "sr-only sm:not-sr-only" : ""} max-w-[200px] truncate`}>
+                    {crumb.label}
+                  </span>
+                </span>
+              )}
+
+              {/* Separator */}
+              {!isLast && (
+                <Chevron className="w-4 h-4 mx-1 text-gray-300 dark:text-gray-600 flex-shrink-0" />
+              )}
+            </li>
+          );
+        })}
       </ol>
     </nav>
   );
