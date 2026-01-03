@@ -7,6 +7,8 @@ import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
+import AuthorInput from "@/components/Articles/AuthorInput";
+import { ArticleAuthorInput } from "@/types/Articles/articles";
 
 const TiptapEditor = dynamic(() => import("@/lib/editor/editor"), {
   ssr: false,
@@ -46,11 +48,12 @@ export default function EditArticleForm({
     categoryId: "",
     direction: (locale === "en" ? "ltr" : "rtl") as "ltr" | "rtl",
   });
+  const [authors, setAuthors] = useState<ArticleAuthorInput[]>([
+    { name: "", imageUrl: null, order: 0 },
+  ]);
+  const [authorsError, setAuthorsError] = useState<string>("");
 
   const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
-  const [publisherImageFile, setPublisherImageFile] = useState<File | null>(
-    null
-  );
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
 
@@ -81,13 +84,34 @@ export default function EditArticleForm({
           setFormData({
             title: article.title || "",
             content: article.content || "",
-            articleImage: article.articleImage || "",
+            articleImage: article.featuredImage || article.articleImage || "",
             publisherName: article.publisherName || "",
             publisherImage: article.publisherImage || "",
-            readDuration: article.readDuration || 5,
-            categoryId: article.category?.id || "",
+            readDuration: article.readTime || article.readDuration || 5,
+            categoryId: article.category?.id || article.categoryId || "",
             direction: article.direction || (locale === "en" ? "ltr" : "rtl"),
           });
+
+          // Load authors if available, otherwise create default from publisherName
+          if (article.authors && article.authors.length > 0) {
+            setAuthors(
+              article.authors.map((a: { id?: string; name: string; imageUrl?: string | null; order: number }) => ({
+                id: a.id,
+                name: a.name,
+                imageUrl: a.imageUrl || null,
+                order: a.order,
+              }))
+            );
+          } else if (article.publisherName) {
+            // Migrate from old single author system
+            setAuthors([
+              {
+                name: article.publisherName,
+                imageUrl: article.publisherImage || null,
+                order: 0,
+              },
+            ]);
+          }
         } else {
           setMessage({
             type: "error",
@@ -144,6 +168,7 @@ export default function EditArticleForm({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setAuthorsError("");
 
     if (!formData.title.trim()) {
       setMessage({
@@ -163,10 +188,23 @@ export default function EditArticleForm({
       });
       return;
     }
-    if (!formData.publisherName.trim()) {
+
+    // Validate authors
+    if (authors.length === 0) {
+      setAuthorsError("יש להוסיף לפחות מחבר אחד");
       setMessage({
         type: "error",
-        text: t("editArticleForm.authorRequired"),
+        text: "יש להוסיף לפחות מחבר אחד",
+      });
+      return;
+    }
+
+    const hasEmptyAuthorName = authors.some((a) => !a.name || a.name.trim() === "");
+    if (hasEmptyAuthorName) {
+      setAuthorsError("כל מחבר חייב לכלול שם");
+      setMessage({
+        type: "error",
+        text: "כל מחבר חייב לכלול שם",
       });
       return;
     }
@@ -176,21 +214,24 @@ export default function EditArticleForm({
 
     try {
       let articleImageData = formData.articleImage;
-      let publisherImageData = formData.publisherImage;
 
       if (articleImageFile) {
         articleImageData = await fileToDataURL(articleImageFile);
       }
 
-      if (publisherImageFile) {
-        publisherImageData = await fileToDataURL(publisherImageFile);
-      }
-
       const submissionData = {
-        ...formData,
-        articleImage: articleImageData,
-        publisherImage: publisherImageData,
+        title: formData.title,
+        content: formData.content,
+        featuredImage: articleImageData,
+        publisherName: authors[0]?.name || formData.publisherName, // Keep for backward compat
+        publisherImage: authors[0]?.imageUrl || null,
         direction: formData.direction,
+        categoryId: formData.categoryId || undefined,
+        authors: authors.map((a, index) => ({
+          name: a.name.trim(),
+          imageUrl: a.imageUrl || null,
+          order: index,
+        })),
       };
 
       const response = await fetch(`/api/articles/${articleId}`, {
@@ -330,125 +371,76 @@ export default function EditArticleForm({
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="publisherName"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editArticleForm.authorLabel")}
-            </label>
-            <input
-              type="text"
-              id="publisherName"
-              name="publisherName"
-              value={formData.publisherName}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-              placeholder={t("editArticleForm.authorPlaceholder")}
-            />
-          </div>
+        {/* Authors Section */}
+        <AuthorInput
+          authors={authors}
+          onChange={setAuthors}
+          error={authorsError}
+        />
 
-          <div>
-            <label
-              htmlFor="categoryId"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editArticleForm.categoryLabel")}
-            </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              disabled={categoriesLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
-            >
-              <option value="">
-                {categoriesLoading
-                  ? t("editArticleForm.loadingCategories")
-                  : t("editArticleForm.selectCategory")}
-              </option>
-              {renderCategoryOptions()}
-            </select>
-          </div>
+        {/* Category Selection */}
+        <div>
+          <label
+            htmlFor="categoryId"
+            className="block text-sm font-medium text-gray-700 mb-2 rtl"
+          >
+            {t("editArticleForm.categoryLabel")}
+          </label>
+          <select
+            id="categoryId"
+            name="categoryId"
+            value={formData.categoryId}
+            onChange={handleChange}
+            disabled={categoriesLoading}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+          >
+            <option value="">
+              {categoriesLoading
+                ? t("editArticleForm.loadingCategories")
+                : t("editArticleForm.selectCategory")}
+            </option>
+            {renderCategoryOptions()}
+          </select>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <UploadImage
-              onImageSelect={setArticleImageFile}
-              currentImage={formData.articleImage}
-              label={t("editArticleForm.articleImageLabel")}
-              placeholder={t("editArticleForm.imagePlaceholder")}
-            />
-            {formData.articleImage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData((prev) => ({ ...prev, articleImage: "" }));
-                  setArticleImageFile(null);
-                }}
-                className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
-              >
-                {t("editArticleForm.removeImageButton")}
-              </button>
-            )}
-          </div>
-
-          <div>
-            <UploadImage
-              onImageSelect={setPublisherImageFile}
-              currentImage={formData.publisherImage}
-              label={t("editArticleForm.authorImageLabel")}
-              placeholder={t("editArticleForm.imagePlaceholder")}
-            />
-            {formData.publisherImage && (
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData((prev) => ({ ...prev, publisherImage: "" }));
-                  setPublisherImageFile(null);
-                }}
-                className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
-              >
-                {t("editArticleForm.removeImageButton")}
-              </button>
-            )}
-          </div>
+        {/* Article Image */}
+        <div>
+          <UploadImage
+            onImageSelect={setArticleImageFile}
+            currentImage={formData.articleImage}
+            label={t("editArticleForm.articleImageLabel")}
+            placeholder={t("editArticleForm.imagePlaceholder")}
+          />
+          {formData.articleImage && (
+            <button
+              type="button"
+              onClick={() => {
+                setFormData((prev) => ({ ...prev, articleImage: "" }));
+                setArticleImageFile(null);
+              }}
+              className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+            >
+              {t("editArticleForm.removeImageButton")}
+            </button>
+          )}
         </div>
 
         <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
           <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
             {t("editArticleForm.imageLinksSummary")}
           </summary>
-          <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
-                {t("editArticleForm.articleImageUrlLabel")}
-              </label>
-              <input
-                type="url"
-                name="articleImage"
-                value={formData.articleImage}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
-                {t("editArticleForm.authorImageUrlLabel")}
-              </label>
-              <input
-                type="url"
-                name="publisherImage"
-                value={formData.publisherImage}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
+              {t("editArticleForm.articleImageUrlLabel")}
+            </label>
+            <input
+              type="url"
+              name="articleImage"
+              value={formData.articleImage}
+              onChange={handleChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              placeholder="https://"
+            />
           </div>
         </details>
 

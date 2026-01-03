@@ -4,7 +4,59 @@ import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
 import type { Prisma } from "@prisma/client";
-import type { Article, UpdateArticleRequest } from "@/types/Articles/articles";
+import type { Article, UpdateArticleRequest, ArticleAuthorInput } from "@/types/Articles/articles";
+
+// Type for article with included relations
+type ArticleWithRelations = Prisma.ArticleGetPayload<{
+  include: {
+    author: { select: { id: true; name: true; email: true; image: true } };
+    category: { select: { id: true; name: true; bannerImageUrl: true } };
+    authors: { select: { id: true; name: true; imageUrl: true; order: true } };
+  };
+}>;
+
+// Helper to transform DB article to API response
+function transformArticle(article: ArticleWithRelations): Article {
+  return {
+    id: article.id,
+    title: article.title,
+    content: article.content,
+    featuredImage: article.articleImage ?? undefined,
+    status: article.published ? "PUBLISHED" : "DRAFT",
+    publishedAt: article.published ? article.createdAt.toISOString() : undefined,
+    isFeatured: false,
+    viewCount: 0,
+    readTime: article.readDuration,
+    direction: article.direction === "rtl" ? "rtl" : "ltr",
+    createdAt: article.createdAt.toISOString(),
+    updatedAt: article.updatedAt.toISOString(),
+    authorId: article.authorId,
+    author: {
+      id: article.author.id,
+      name: article.author.name ?? undefined,
+      email: article.author.email ?? undefined,
+      image: article.author.image ?? undefined,
+    },
+    publisherName: article.publisherName,
+    publisherImage: article.publisherImage ?? undefined,
+    categoryId: article.categoryId ?? undefined,
+    category: article.category
+      ? {
+          id: article.category.id,
+          name: article.category.name,
+          bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+        }
+      : undefined,
+    tags: [],
+    keywords: [],
+    authors: article.authors.map((a) => ({
+      id: a.id,
+      name: a.name,
+      imageUrl: a.imageUrl,
+      order: a.order,
+    })),
+  };
+}
 
 export async function GET(
   request: Request,
@@ -40,6 +92,15 @@ export async function GET(
             bannerImageUrl: true,
           },
         },
+        authors: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+            order: true,
+          },
+        },
       },
     });
 
@@ -51,41 +112,7 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    const transformedArticle: Article = {
-      id: article.id,
-      title: article.title,
-      content: article.content,
-      featuredImage: article.articleImage ?? undefined,
-      status: article.published ? "PUBLISHED" : "DRAFT",
-      publishedAt: article.published
-        ? article.createdAt.toISOString()
-        : undefined,
-      isFeatured: false,
-      viewCount: 0,
-      readTime: article.readDuration,
-      direction: article.direction === "rtl" ? "rtl" : "ltr",
-      createdAt: article.createdAt.toISOString(),
-      updatedAt: article.updatedAt.toISOString(),
-      authorId: article.authorId,
-      author: {
-        id: article.author.id,
-        name: article.author.name ?? undefined,
-        email: article.author.email ?? undefined,
-        image: article.author.image ?? undefined,
-      },
-      publisherName: article.publisherName,
-      publisherImage: article.publisherImage ?? undefined,
-      categoryId: article.categoryId ?? undefined,
-      category: article.category
-        ? {
-            id: article.category.id,
-            name: article.category.name,
-            bannerImageUrl: article.category.bannerImageUrl ?? undefined,
-          }
-        : undefined,
-      tags: [],
-      keywords: [],
-    };
+    const transformedArticle = transformArticle(article as ArticleWithRelations);
 
     return NextResponse.json(transformedArticle);
   } catch (error) {
@@ -148,6 +175,7 @@ export async function PUT(
       direction,
       publisherName,
       publisherImage,
+      authors,
     } = body;
 
     if (categoryId) {
@@ -200,9 +228,45 @@ export async function PUT(
       updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
     }
 
+    // Validate authors if provided
+    if (authors !== undefined) {
+      if (authors.length === 0) {
+        return NextResponse.json(
+          { error: "At least one author is required" },
+          { status: 400 }
+        );
+      }
+      for (const author of authors) {
+        if (!author.name || author.name.trim() === "") {
+          return NextResponse.json(
+            { error: "Each author must have a name" },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
+    // If authors are being updated, delete old ones and create new ones
+    if (authors !== undefined) {
+      await prisma.articleAuthor.deleteMany({
+        where: { articleId: id },
+      });
+    }
+
     const updatedArticle = await prisma.article.update({
       where: { id },
-      data: updateData,
+      data: {
+        ...updateData,
+        ...(authors !== undefined && {
+          authors: {
+            create: authors.map((author: ArticleAuthorInput, index: number) => ({
+              name: author.name.trim(),
+              imageUrl: author.imageUrl || null,
+              order: author.order ?? index,
+            })),
+          },
+        }),
+      },
       include: {
         author: {
           select: {
@@ -219,42 +283,19 @@ export async function PUT(
             bannerImageUrl: true,
           },
         },
+        authors: {
+          orderBy: { order: "asc" },
+          select: {
+            id: true,
+            name: true,
+            imageUrl: true,
+            order: true,
+          },
+        },
       },
     });
 
-    const transformedArticle: Article = {
-      id: updatedArticle.id,
-      title: updatedArticle.title,
-      content: updatedArticle.content,
-      featuredImage: updatedArticle.articleImage ?? undefined,
-      status: updatedArticle.published ? "PUBLISHED" : "DRAFT",
-      publishedAt: updatedArticle.published
-        ? updatedArticle.createdAt.toISOString()
-        : undefined,
-      isFeatured: false,
-      viewCount: 0,
-      readTime: updatedArticle.readDuration,
-      direction: updatedArticle.direction === "rtl" ? "rtl" : "ltr",
-      createdAt: updatedArticle.createdAt.toISOString(),
-      updatedAt: updatedArticle.updatedAt.toISOString(),
-      authorId: updatedArticle.authorId,
-      author: {
-        id: updatedArticle.author.id,
-        name: updatedArticle.author.name ?? undefined,
-        email: updatedArticle.author.email ?? undefined,
-        image: updatedArticle.author.image ?? undefined,
-      },
-      categoryId: updatedArticle.categoryId ?? undefined,
-      category: updatedArticle.category
-        ? {
-            id: updatedArticle.category.id,
-            name: updatedArticle.category.name,
-            bannerImageUrl: updatedArticle.category.bannerImageUrl ?? undefined,
-          }
-        : undefined,
-      tags: [],
-      keywords: [],
-    };
+    const transformedArticle = transformArticle(updatedArticle as ArticleWithRelations);
 
     return NextResponse.json(transformedArticle);
   } catch (error) {

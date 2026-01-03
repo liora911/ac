@@ -15,6 +15,7 @@ import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import { Grid3X3, List } from "lucide-react";
+import AuthorAvatars from "./AuthorAvatars";
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -289,12 +290,18 @@ export default function ArticlesList({
                           {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
                         </p>
                         <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <span>
-                            By:{" "}
-                            {article.publisherName ||
-                              article.author.name ||
-                              "Anonymous"}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            {article.authors && article.authors.length > 0 ? (
+                              <AuthorAvatars authors={article.authors} size="sm" />
+                            ) : (
+                              <span>
+                                By:{" "}
+                                {article.publisherName ||
+                                  article.author?.name ||
+                                  "Anonymous"}
+                              </span>
+                            )}
+                          </div>
                           <span>{article.readTime} min read</span>
                           <span>
                             {new Date(article.createdAt).toLocaleDateString()}
@@ -460,23 +467,30 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           )}
         </div>
 
-        {}
+        {/* Author(s) and Meta Info */}
         <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center space-x-2">
-            {article.author.image && (
-              <Image
-                src={article.author.image}
-                alt={
-                  article.author.name ||
-                  article.publisherName ||
-                  (t("articleCard.authorAnonymous") as string)
-                }
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
+          <div className="flex items-center gap-2">
+            {article.authors && article.authors.length > 0 ? (
+              <AuthorAvatars authors={article.authors} size="sm" />
+            ) : (
+              // Fallback for articles without the new authors array
+              <div className="flex items-center space-x-2">
+                {article.author?.image && (
+                  <Image
+                    src={article.author.image}
+                    alt={
+                      article.author.name ||
+                      article.publisherName ||
+                      (t("articleCard.authorAnonymous") as string)
+                    }
+                    width={24}
+                    height={24}
+                    className="rounded-full"
+                  />
+                )}
+                <span>{article.publisherName || article.author?.name}</span>
+              </div>
             )}
-            <span>{article.publisherName || article.author.name}</span>
           </div>
           <div className="flex items-center space-x-4">
             <span>

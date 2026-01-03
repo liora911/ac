@@ -9,11 +9,13 @@ import {
   ArticleCategory,
   ArticleStatus,
   ArticleFormProps,
+  ArticleAuthorInput,
 } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
+import AuthorInput from "./AuthorInput";
 
 export default function ArticleForm({
   article,
@@ -49,7 +51,31 @@ export default function ArticleForm({
       article?.author?.image ||
       session?.user?.image ||
       "",
+    authors: article?.authors || [
+      {
+        name: article?.publisherName || session?.user?.name || "",
+        imageUrl: article?.publisherImage || session?.user?.image || null,
+        order: 0,
+      },
+    ],
   });
+
+  // Authors state
+  const [authors, setAuthors] = useState<ArticleAuthorInput[]>(
+    article?.authors?.map((a) => ({
+      id: a.id,
+      name: a.name,
+      imageUrl: a.imageUrl || null,
+      order: a.order,
+    })) || [
+      {
+        name: article?.publisherName || session?.user?.name || "",
+        imageUrl: article?.publisherImage || session?.user?.image || null,
+        order: 0,
+      },
+    ]
+  );
+  const [authorsError, setAuthorsError] = useState<string>("");
 
   const [tagInput, setTagInput] = useState("");
   const [keywordInput, setKeywordInput] = useState("");
@@ -90,20 +116,44 @@ export default function ArticleForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setAuthorsError("");
 
     if (!formData.title.trim() || !formData.content.trim()) {
       setValidationModalOpen(true);
       return;
     }
 
+    // Validate authors
+    if (authors.length === 0) {
+      setAuthorsError("יש להוסיף לפחות מחבר אחד");
+      return;
+    }
+
+    const hasEmptyAuthorName = authors.some((a) => !a.name || a.name.trim() === "");
+    if (hasEmptyAuthorName) {
+      setAuthorsError("כל מחבר חייב לכלול שם");
+      return;
+    }
+
     try {
+      const submissionData = {
+        ...formData,
+        publisherName: authors[0]?.name || formData.publisherName,
+        publisherImage: authors[0]?.imageUrl || formData.publisherImage,
+        authors: authors.map((a, index) => ({
+          name: a.name.trim(),
+          imageUrl: a.imageUrl || null,
+          order: index,
+        })),
+      };
+
       if (isEditing && article) {
         await updateMutation.mutateAsync({
           id: article.id,
-          ...formData,
+          ...submissionData,
         });
       } else {
-        await createMutation.mutateAsync(formData);
+        await createMutation.mutateAsync(submissionData);
       }
 
       if (onSuccess) {
@@ -255,39 +305,12 @@ export default function ArticleForm({
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("articleForm.publisherNameLabel")}
-              </label>
-              <input
-                type="text"
-                value={formData.publisherName}
-                onChange={(e) =>
-                  handleInputChange("publisherName", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={
-                  t("articleForm.publisherNamePlaceholder") as string
-                }
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("articleForm.publisherImageUrlLabel")}
-              </label>
-              <input
-                type="url"
-                value={formData.publisherImage || ""}
-                onChange={(e) =>
-                  handleInputChange("publisherImage", e.target.value)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="https://"
-              />
-            </div>
-          </div>
+          {/* Authors Section */}
+          <AuthorInput
+            authors={authors}
+            onChange={setAuthors}
+            error={authorsError}
+          />
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">

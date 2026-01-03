@@ -17,19 +17,37 @@ export interface Article {
   createdAt: string;
   updatedAt: string;
   authorId: string;
-  author: ArticleAuthor;
+  author: ArticleUserAuthor;
   categoryId?: string;
   category?: ArticleCategory;
   tags?: ArticleTag[];
   publisherName?: string;
   publisherImage?: string;
+  authors?: ArticleAuthor[]; // Multiple authors support
 }
 
-export interface ArticleAuthor {
+// User who created the article (system author)
+export interface ArticleUserAuthor {
   id: string;
   name?: string;
   email?: string;
   image?: string;
+}
+
+// Display authors for the article (multiple authors feature)
+export interface ArticleAuthor {
+  id: string;
+  name: string;
+  imageUrl?: string | null; // Custom image or null for default icon
+  order: number;
+}
+
+// For creating/updating authors in forms
+export interface ArticleAuthorInput {
+  id?: string; // Optional - only present when editing existing
+  name: string;
+  imageUrl?: string | null;
+  order: number;
 }
 
 export interface ArticleCategory {
@@ -65,6 +83,7 @@ export interface CreateArticleRequest {
   keywords?: string[];
   publisherName?: string;
   publisherImage?: string;
+  authors?: ArticleAuthorInput[]; // Multiple authors
 }
 
 export interface UpdateArticleRequest extends Partial<CreateArticleRequest> {
@@ -106,6 +125,7 @@ export interface ArticleFormData {
   keywords: string[];
   publisherName: string;
   publisherImage?: string;
+  authors: ArticleAuthorInput[]; // Multiple authors - required at least 1
 }
 
 export interface ArticleStats {
