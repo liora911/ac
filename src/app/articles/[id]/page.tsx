@@ -10,6 +10,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -180,24 +181,44 @@ export default function ArticleDetailPage() {
           <div className="flex items-center justify-between border-b border-gray-200 pb-6">
             <div className="flex items-center space-x-4">
               {}
-              <div className="flex items-center space-x-2">
-                {article.author.image && (
-                  <Image
-                    src={article.author.image}
-                    alt={article.author.name || "Author"}
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
+              <div className="flex items-center gap-3">
+                {article.authors && article.authors.length > 0 ? (
+                  <>
+                    <AuthorAvatars authors={article.authors} size="lg" />
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {article.authors.length === 1
+                          ? article.authors[0].name
+                          : article.authors.length === 2
+                          ? `${article.authors[0].name} ו${article.authors[1].name}`
+                          : `${article.authors[0].name} ועוד ${article.authors.length - 1}`}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(article.createdAt)}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {article.author?.image && (
+                      <Image
+                        src={article.author.image}
+                        alt={article.author.name || "Author"}
+                        width={40}
+                        height={40}
+                        className="rounded-full"
+                      />
+                    )}
+                    <div>
+                      <p className="font-medium text-gray-900">
+                        {article.publisherName || t("articleCard.authorAnonymous")}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        {formatDate(article.createdAt)}
+                      </p>
+                    </div>
+                  </>
                 )}
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {article.publisherName || t("articleCard.authorAnonymous")}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {formatDate(article.createdAt)}
-                  </p>
-                </div>
               </div>
             </div>
 
@@ -259,26 +280,42 @@ export default function ArticleDetailPage() {
 
           {}
           <div className="bg-gray-50 rounded-lg p-6">
-            <div className="flex items-start space-x-4">
-              {article.author.image && (
-                <Image
-                  src={article.author.image}
-                  alt={article.author.name || "Author"}
-                  width={60}
-                  height={60}
-                  className="rounded-full"
-                />
+            <div className="flex items-start gap-4">
+              {article.authors && article.authors.length > 0 ? (
+                <>
+                  <AuthorAvatars authors={article.authors} size="lg" />
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {article.authors.map(a => a.name).join(", ")}
+                    </h3>
+                    <p className="text-gray-600 mt-1">
+                      {t("articleDetail.copyleftNote")}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {article.author?.image && (
+                    <Image
+                      src={article.author.image}
+                      alt={article.author.name || "Author"}
+                      width={60}
+                      height={60}
+                      className="rounded-full"
+                    />
+                  )}
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {article.author?.name ||
+                        article.publisherName ||
+                        t("articleCard.authorAnonymous")}
+                    </h3>
+                    <p className="text-gray-600 mt-1">
+                      {t("articleDetail.copyleftNote")}
+                    </p>
+                  </div>
+                </>
               )}
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  {article.author.name ||
-                    article.publisherName ||
-                    t("articleCard.authorAnonymous")}
-                </h3>
-                <p className="text-gray-600 mt-1">
-                  {t("articleDetail.copyleftNote")}
-                </p>
-              </div>
             </div>
           </div>
 
