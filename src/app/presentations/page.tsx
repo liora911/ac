@@ -206,7 +206,7 @@ const PresentationsPage = () => {
           </div>
         )}
 
-        <div className="mb-10 h-48 sm:h-64 md:h-80 bg-white rounded-lg shadow-md flex items-center justify-center border border-gray-200 overflow-hidden">
+        <div className="relative mb-10 aspect-[21/9] max-h-80 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
           {isLoading ? (
             <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
               <p className="text-gray-400 text-xl">
@@ -214,15 +214,26 @@ const PresentationsPage = () => {
               </p>
             </div>
           ) : (
-            <Image
-              src={currentBannerUrl || "/presentation.jpg"}
-              alt={currentBannerAlt}
-              fill
-              className="object-contain"
-              priority
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-              quality={85}
-            />
+            <>
+              <Image
+                src={currentBannerUrl || "/presentation.jpg"}
+                alt={currentBannerAlt}
+                fill
+                className="object-cover"
+                priority
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                quality={85}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              <div className="absolute bottom-4 start-6 end-6">
+                <h2
+                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
+                  style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                >
+                  {currentBannerAlt !== "Banner Image" ? currentBannerAlt : t("presentationsPage.title")}
+                </h2>
+              </div>
+            </>
           )}
         </div>
 

@@ -29,7 +29,7 @@ function useDebounce<T>(value: T, delay: number): T {
 }
 
 interface LecturesProps {
-  onBannerUpdate: (_imageUrl: string | null) => void;
+  onBannerUpdate: (_imageUrl: string | null, _categoryName?: string) => void;
   lectureData: Category[];
   viewMode?: "grid" | "list";
 }
@@ -183,7 +183,7 @@ const Lectures: React.FC<LecturesProps> = ({
     setSelectedCategoryName(category.name);
     const bannerUrl = category.bannerImageUrl || null;
     setCurrentCategoryBanner(bannerUrl);
-    onBannerUpdate(bannerUrl);
+    onBannerUpdate(bannerUrl, category.name);
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -200,7 +200,7 @@ const Lectures: React.FC<LecturesProps> = ({
 
     if (lectureData.length === 0) {
       setSelectedLectures([]);
-      onBannerUpdate(null);
+      onBannerUpdate(null, undefined);
       setCurrentCategoryBanner(null);
       setSelectedCategoryName("");
       return;
@@ -221,18 +221,18 @@ const Lectures: React.FC<LecturesProps> = ({
       setSelectedCategoryId(randomCategory.id);
       const initialBanner = randomCategory.bannerImageUrl || null;
       setCurrentCategoryBanner(initialBanner);
-      onBannerUpdate(initialBanner);
+      onBannerUpdate(initialBanner, randomCategory.name);
     } else {
       setSelectedLectures([]);
       setSelectedCategoryName("");
-      onBannerUpdate(null);
+      onBannerUpdate(null, undefined);
       setCurrentCategoryBanner(null);
     }
   }, [lectureData, onBannerUpdate]);
 
   const handleLectureClick = (lecture: Lecture) => {
     setSelectedLecture(lecture);
-    onBannerUpdate(lecture.bannerImageUrl || currentCategoryBanner || null);
+    onBannerUpdate(lecture.bannerImageUrl || currentCategoryBanner || null, selectedCategoryName || undefined);
   };
 
   const openDeleteModal = (lecture: Lecture) => {
