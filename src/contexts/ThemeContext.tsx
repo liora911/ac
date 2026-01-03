@@ -23,8 +23,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
-    document.documentElement.setAttribute("data-theme", theme);
-    // Also add/remove 'dark' class for Tailwind's dark: prefix to work
+    // Use only .dark class for both Tailwind dark: variants and CSS variables
     if (theme === "dark") {
       document.documentElement.classList.add("dark");
     } else {

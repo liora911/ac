@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Configure Tailwind v4 dark mode to use .dark class on html element */
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
   --background: #ffffff;
   --foreground: #000000;
@@ -23,7 +26,8 @@
   --radius: 0.5rem;
 }
 
-[data-theme="dark"] {
+/* Use .dark class on html element for CSS variable dark mode */
+html.dark {
   --background: #0f172a;
   --foreground: #f8fafc;
   --card: #1e293b;
@@ -44,17 +48,13 @@
   --input: #334155;
   --ring: #3b82f6;
   --radius: 0.5rem;
+  color-scheme: dark;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
-}
-
-/* Dark mode overrides for common Tailwind classes */
-.dark {
-  color-scheme: dark;
 }
 
 /*
@@ -64,15 +64,15 @@ body {
  */
 
 /* Additional dark mode background overrides */
-.dark .bg-amber-50 {
+html.dark .bg-amber-50 {
   background-color: rgba(217, 119, 6, 0.15) !important;
 }
 
-.dark .border-amber-200 {
+html.dark .border-amber-200 {
   border-color: rgba(217, 119, 6, 0.3) !important;
 }
 
-.dark .text-amber-800 {
+html.dark .text-amber-800 {
   color: #fbbf24 !important;
 }
 
