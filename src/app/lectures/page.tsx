@@ -145,9 +145,9 @@ const LecturesPage = () => {
                 {t("lecturesPage.bannerLoading")}
               </p>
             </div>
-          ) : currentBannerUrl ? (
+          ) : (
             <Image
-              src={currentBannerUrl}
+              src={currentBannerUrl || "/lecture.jpg"}
               alt={currentBannerAlt}
               fill
               className="object-cover"
@@ -155,12 +155,6 @@ const LecturesPage = () => {
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               quality={85}
             />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center">
-              <p className="text-gray-400 text-xl">
-                {t("lecturesPage.bannerPlaceholder")}
-              </p>
-            </div>
           )}
         </div>
         {isLoading && (
