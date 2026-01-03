@@ -93,7 +93,7 @@ export default function Header() {
   return (
     <>
       <header
-        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm shadow-lg dark:shadow-gray-900/50 px-4 py-3 sm:py-4"
+        className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-950 backdrop-blur-sm shadow-lg dark:shadow-black/30 px-4 py-3 sm:py-4"
         role="banner"
       >
         <div className="flex flex-nowrap items-center justify-between gap-2 sm:gap-4 min-w-0">
@@ -188,7 +188,7 @@ export default function Header() {
       {/* Mobile Navigation */}
       <nav
         ref={menuRef}
-        className={`fixed top-[60px] left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-900/50 border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out ${
+        className={`fixed top-[60px] left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-950 shadow-xl dark:shadow-black/30 border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out ${
           menuOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-2 pointer-events-none"
@@ -198,7 +198,7 @@ export default function Header() {
         id="mobile-navigation"
       >
         {/* Mobile Search Bar */}
-        <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/50">
+        <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
           <GlobalSearch />
         </div>
 
