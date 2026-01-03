@@ -110,7 +110,6 @@ const PresentationsPage = () => {
     };
 
     fetchPresentationData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isHydrated]);
 
   useEffect(() => {
