@@ -150,7 +150,7 @@ const LecturesPage = () => {
               src={currentBannerUrl || "/lecture.jpg"}
               alt={currentBannerAlt}
               fill
-              className="object-cover"
+              className="object-contain"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               quality={85}

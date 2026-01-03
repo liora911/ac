@@ -217,9 +217,8 @@ const PresentationsPage = () => {
             <Image
               src={currentBannerUrl || "/presentation.jpg"}
               alt={currentBannerAlt}
-              width={1200}
-              height={320}
-              className="object-cover w-full h-full"
+              fill
+              className="object-contain"
               priority
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
               quality={85}
