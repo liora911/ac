@@ -58,12 +58,83 @@ body {
 }
 
 /*
- * NOTE: Removed aggressive !important overrides that were breaking Tailwind's dark: variants.
- * Components should use proper dark: variants (e.g., bg-white dark:bg-gray-950) instead.
- * The CSS variable system via [data-theme="dark"] handles base theming.
+ * Dark mode overrides for elements without explicit dark: variants.
+ * These use :not() to avoid overriding elements that have dark: classes.
+ * For components with explicit dark: variants, those will take precedence.
  */
 
-/* Additional dark mode background overrides */
+/* Background overrides - only apply if no dark:bg-* class is present */
+html.dark .bg-white:not([class*="dark\:bg-"]) {
+  background-color: var(--card);
+}
+
+html.dark .bg-gray-50:not([class*="dark\:bg-"]) {
+  background-color: var(--background);
+}
+
+html.dark .bg-gray-100:not([class*="dark\:bg-"]) {
+  background-color: var(--secondary);
+}
+
+html.dark .bg-gray-200:not([class*="dark\:bg-"]) {
+  background-color: #374151;
+}
+
+/* Text color overrides */
+html.dark .text-gray-900:not([class*="dark\:text-"]) {
+  color: var(--foreground);
+}
+
+html.dark .text-gray-800:not([class*="dark\:text-"]) {
+  color: var(--foreground);
+}
+
+html.dark .text-gray-700:not([class*="dark\:text-"]) {
+  color: var(--muted-foreground);
+}
+
+html.dark .text-gray-600:not([class*="dark\:text-"]) {
+  color: var(--muted-foreground);
+}
+
+html.dark .text-gray-500:not([class*="dark\:text-"]) {
+  color: #9ca3af;
+}
+
+html.dark .text-gray-400:not([class*="dark\:text-"]) {
+  color: #9ca3af;
+}
+
+/* Border color overrides */
+html.dark .border-gray-200:not([class*="dark\:border-"]) {
+  border-color: var(--border);
+}
+
+html.dark .border-gray-100:not([class*="dark\:border-"]) {
+  border-color: var(--border);
+}
+
+html.dark .border-gray-300:not([class*="dark\:border-"]) {
+  border-color: var(--border);
+}
+
+/* Shadow overrides for dark mode */
+html.dark .shadow-sm:not([class*="dark\:shadow-"]),
+html.dark .shadow-md:not([class*="dark\:shadow-"]),
+html.dark .shadow-lg:not([class*="dark\:shadow-"]) {
+  --tw-shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Hover state overrides */
+html.dark .hover\:bg-gray-100:not([class*="dark\:hover\:bg-"]):hover {
+  background-color: var(--accent);
+}
+
+html.dark .hover\:bg-gray-50:not([class*="dark\:hover\:bg-"]):hover {
+  background-color: var(--accent);
+}
+
+/* Additional amber overrides */
 html.dark .bg-amber-50 {
   background-color: rgba(217, 119, 6, 0.15) !important;
 }
