@@ -29,42 +29,37 @@ const Modal = dynamic(() => import("@/components/Modal/Modal"), {
 const PresentationsPage = () => {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
-  const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(
-    () => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("selectedPresentationBannerUrl") || null;
-      }
-      return null;
-    }
-  );
-  const [currentBannerAlt, setCurrentBannerAlt] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      return (
-        localStorage.getItem("selectedPresentationBannerAlt") || "Banner Image"
-      );
-    }
-    return "Banner Image";
-  });
-  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
-    () => {
-      if (typeof window !== "undefined") {
-        return localStorage.getItem("selectedPresentationCategoryId") || null;
-      }
-      return null;
-    }
-  );
+  const [currentBannerUrl, setCurrentBannerUrl] = useState<string | null>(null);
+  const [currentBannerAlt, setCurrentBannerAlt] = useState<string>("Banner Image");
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [presentationCategoriesData, setPresentationCategoriesData] = useState<
     PresentationCategory[] | null
   >(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [isHydrated, setIsHydrated] = useState(false);
+
+  // Load from localStorage after hydration to avoid SSR mismatch
+  useEffect(() => {
+    const storedBannerUrl = localStorage.getItem("selectedPresentationBannerUrl");
+    const storedBannerAlt = localStorage.getItem("selectedPresentationBannerAlt");
+    const storedCategoryId = localStorage.getItem("selectedPresentationCategoryId");
+
+    if (storedBannerUrl) setCurrentBannerUrl(storedBannerUrl);
+    if (storedBannerAlt) setCurrentBannerAlt(storedBannerAlt);
+    if (storedCategoryId) setSelectedCategoryId(storedCategoryId);
+
+    setIsHydrated(true);
+  }, []);
 
   const isAuthorized: boolean =
     !!session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   useEffect(() => {
+    if (!isHydrated) return;
+
     const fetchPresentationData = async () => {
       setIsLoading(true);
       setError(null);
@@ -115,7 +110,8 @@ const PresentationsPage = () => {
     };
 
     fetchPresentationData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHydrated]);
 
   useEffect(() => {
     if (currentBannerUrl !== null) {

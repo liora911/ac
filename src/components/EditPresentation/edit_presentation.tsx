@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState, FormEvent, useEffect, useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { Upload, X, Link as LinkIcon, Loader2 } from "lucide-react";
+import Image from "next/image";
 
 type CategoryNode = {
   id: string;
@@ -41,6 +43,10 @@ export default function EditPresentationForm({
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
+  const [isDragging, setIsDragging] = useState(false);
+  const [uploadingImages, setUploadingImages] = useState<Set<number>>(new Set());
+  const [imageInputMode, setImageInputMode] = useState<"upload" | "url">("upload");
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
   const isAuthorized = !!(
@@ -231,6 +237,122 @@ export default function EditPresentationForm({
     }));
   };
 
+  const uploadFile = useCallback(async (file: File): Promise<string | null> => {
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || "Upload failed");
+      }
+
+      const data = await response.json();
+      return data.url;
+    } catch (error) {
+      console.error("Upload error:", error);
+      setMessage({
+        type: "error",
+        text: error instanceof Error ? error.message : t("editPresentationForm.uploadError") as string || "Failed to upload image",
+      });
+      return null;
+    }
+  }, [t]);
+
+  const handleFileUpload = useCallback(async (files: FileList | File[]) => {
+    const fileArray = Array.from(files);
+    const validFiles = fileArray.filter(file =>
+      file.type.startsWith("image/") && file.size <= 5 * 1024 * 1024
+    );
+
+    if (validFiles.length === 0) {
+      setMessage({
+        type: "error",
+        text: t("editPresentationForm.invalidFileType") as string || "Please select valid image files (max 5MB each)",
+      });
+      return;
+    }
+
+    // Add placeholder entries for uploading images
+    const startIndex = formData.imageUrls.length;
+    const placeholders = validFiles.map(() => "");
+    setFormData(prev => ({
+      ...prev,
+      imageUrls: [...prev.imageUrls, ...placeholders],
+    }));
+
+    // Track which images are uploading
+    const newUploading = new Set(uploadingImages);
+    validFiles.forEach((_, i) => newUploading.add(startIndex + i));
+    setUploadingImages(newUploading);
+
+    // Upload each file
+    for (let i = 0; i < validFiles.length; i++) {
+      const file = validFiles[i];
+      const url = await uploadFile(file);
+
+      if (url) {
+        setFormData(prev => {
+          const newUrls = [...prev.imageUrls];
+          newUrls[startIndex + i] = url;
+          return { ...prev, imageUrls: newUrls };
+        });
+      } else {
+        // Remove failed upload placeholder
+        setFormData(prev => {
+          const newUrls = prev.imageUrls.filter((_, idx) => idx !== startIndex + i);
+          return { ...prev, imageUrls: newUrls };
+        });
+      }
+
+      // Remove from uploading set
+      setUploadingImages(prev => {
+        const next = new Set(prev);
+        next.delete(startIndex + i);
+        return next;
+      });
+    }
+  }, [formData.imageUrls.length, uploadFile, uploadingImages, t]);
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFileUpload(files);
+    }
+  }, [handleFileUpload]);
+
+  const handleFileInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFileUpload(files);
+    }
+    // Reset input so same file can be selected again
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  }, [handleFileUpload]);
+
   const renderCategoryOptions = () => {
     const options: React.ReactElement[] = [];
 
@@ -388,33 +510,132 @@ export default function EditPresentationForm({
           <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
             {t("editPresentationForm.imageLinksLabel")}
           </label>
-          <div className="space-y-2">
-            {formData.imageUrls.map((url, index) => (
-              <div key={index} className="flex gap-2">
-                <input
-                  type="url"
-                  value={url}
-                  onChange={(e) => handleImageUrlChange(index, e.target.value)}
-                  className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="https://"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeImageUrl(index)}
-                  className="px-4 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg font-medium cursor-pointer transition-colors"
-                >
-                  {t("editPresentationForm.removeImageButton")}
-                </button>
-              </div>
-            ))}
+
+          {/* Mode Toggle */}
+          <div className="flex gap-2 mb-4">
+            <button
+              type="button"
+              onClick={() => setImageInputMode("upload")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors cursor-pointer ${
+                imageInputMode === "upload"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <Upload className="w-4 h-4" />
+              {t("editPresentationForm.uploadMode") || "Upload"}
+            </button>
+            <button
+              type="button"
+              onClick={() => setImageInputMode("url")}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors cursor-pointer ${
+                imageInputMode === "url"
+                  ? "bg-blue-600 text-white border-blue-600"
+                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <LinkIcon className="w-4 h-4" />
+              {t("editPresentationForm.urlMode") || "URL"}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={addImageUrl}
-            className="mt-3 w-full p-3 border border-gray-300 border-dashed rounded-lg text-gray-600 hover:bg-gray-50 cursor-pointer transition-colors"
-          >
-            {t("editPresentationForm.addImageButton")}
-          </button>
+
+          {/* Upload Mode - Drag & Drop Area */}
+          {imageInputMode === "upload" && (
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`relative border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors mb-4 ${
+                isDragging
+                  ? "border-blue-500 bg-blue-50"
+                  : "border-gray-300 hover:border-gray-400 hover:bg-gray-50"
+              }`}
+            >
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileInputChange}
+                className="hidden"
+              />
+              <Upload className={`w-10 h-10 mx-auto mb-3 ${isDragging ? "text-blue-500" : "text-gray-400"}`} />
+              <p className="text-gray-600 font-medium">
+                {t("editPresentationForm.dragDropText") || "Drag & drop images here"}
+              </p>
+              <p className="text-gray-400 text-sm mt-1">
+                {t("editPresentationForm.orClickToUpload") || "or click to select files"}
+              </p>
+              <p className="text-gray-400 text-xs mt-2">
+                {t("editPresentationForm.maxFileSize") || "Max 5MB per image (JPEG, PNG, GIF, WebP)"}
+              </p>
+            </div>
+          )}
+
+          {/* URL Mode - Manual URL Input */}
+          {imageInputMode === "url" && (
+            <div className="mb-4">
+              {formData.imageUrls.length === 0 && (
+                <p className="text-gray-500 text-sm mb-2">
+                  {t("editPresentationForm.noImagesYet") || "No images added yet. Click the button below to add URLs."}
+                </p>
+              )}
+              <button
+                type="button"
+                onClick={addImageUrl}
+                className="w-full p-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <LinkIcon className="w-4 h-4" />
+                {t("editPresentationForm.addImageButton")}
+              </button>
+            </div>
+          )}
+
+          {/* Image Preview Grid */}
+          {formData.imageUrls.length > 0 && (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 mt-4">
+              {formData.imageUrls.map((url, index) => (
+                <div key={index} className="relative group">
+                  {uploadingImages.has(index) || !url ? (
+                    <div className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center">
+                      <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
+                    </div>
+                  ) : (
+                    <>
+                      <div className="aspect-square relative rounded-lg overflow-hidden bg-gray-100">
+                        <Image
+                          src={url}
+                          alt={`Image ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 50vw, 25vw"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeImageUrl(index)}
+                        className="absolute -top-2 -right-2 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer hover:bg-red-700"
+                        title={t("editPresentationForm.removeImageButton") as string || "Remove"}
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                  {/* URL input for editing (only in URL mode) */}
+                  {imageInputMode === "url" && url && (
+                    <input
+                      type="url"
+                      value={url}
+                      onChange={(e) => handleImageUrlChange(index, e.target.value)}
+                      className="mt-1 w-full p-1 text-xs border border-gray-300 rounded focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="https://"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="pt-4">
