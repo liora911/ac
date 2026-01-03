@@ -9,7 +9,6 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 
 export default function ArticleDetailPage() {
@@ -26,37 +25,65 @@ export default function ArticleDetailPage() {
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
   const downloadPDF = async () => {
-    const element = document.querySelector(".article-content") as HTMLElement;
-    if (!element) return;
+    if (!article) return;
 
     try {
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        foreignObjectRendering: true,
-      });
+      // Strip HTML tags and decode entities
+      const stripHtml = (html: string) => {
+        const tmp = document.createElement("div");
+        tmp.innerHTML = html;
+        return tmp.textContent || tmp.innerText || "";
+      };
 
-      const imgData = canvas.toDataURL("image/png");
+      const title = article.title;
+      const content = stripHtml(article.content);
+      const authors = article.authors?.map(a => a.name).join(", ") || article.publisherName || "Unknown";
+      const date = new Date(article.createdAt).toLocaleDateString(dateLocale);
+
       const pdf = new jsPDF("p", "mm", "a4");
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 20;
+      const maxWidth = pageWidth - margin * 2;
+      let yPosition = margin;
 
-      const imgWidth = 210;
-      const pageHeight = 295;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
+      // Title
+      pdf.setFontSize(18);
+      pdf.setFont("helvetica", "bold");
+      const titleLines = pdf.splitTextToSize(title, maxWidth);
+      pdf.text(titleLines, pageWidth / 2, yPosition, { align: "center" });
+      yPosition += titleLines.length * 8 + 5;
 
-      pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Author and date
+      pdf.setFontSize(11);
+      pdf.setFont("helvetica", "normal");
+      pdf.setTextColor(100, 100, 100);
+      pdf.text(`${authors} | ${date}`, pageWidth / 2, yPosition, { align: "center" });
+      yPosition += 15;
 
-      while (heightLeft > 0) {
-        pdf.addPage();
-        const position = heightLeft - imgHeight;
-        pdf.addImage(imgData, "PNG", 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+      // Horizontal line
+      pdf.setDrawColor(200, 200, 200);
+      pdf.line(margin, yPosition, pageWidth - margin, yPosition);
+      yPosition += 10;
+
+      // Content
+      pdf.setFontSize(12);
+      pdf.setTextColor(0, 0, 0);
+      pdf.setFont("helvetica", "normal");
+
+      const contentLines = pdf.splitTextToSize(content, maxWidth);
+      const lineHeight = 6;
+
+      for (const line of contentLines) {
+        if (yPosition + lineHeight > pageHeight - margin) {
+          pdf.addPage();
+          yPosition = margin;
+        }
+        pdf.text(line, margin, yPosition);
+        yPosition += lineHeight;
       }
 
-      pdf.save(`${article?.title || "article"}.pdf`);
+      pdf.save(`${article.title}.pdf`);
     } catch (error) {
       console.error("Error generating PDF:", error);
     }
