@@ -54,7 +54,6 @@ export default function EditArticleForm({
   ]);
   const [authorsError, setAuthorsError] = useState<string>("");
 
-  const [articleImageFile, setArticleImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
 
@@ -163,15 +162,6 @@ export default function EditArticleForm({
     );
   }
 
-  const fileToDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setAuthorsError("");
@@ -226,16 +216,10 @@ export default function EditArticleForm({
     setMessage(null);
 
     try {
-      let articleImageData = formData.articleImage;
-
-      if (articleImageFile) {
-        articleImageData = await fileToDataURL(articleImageFile);
-      }
-
       const submissionData = {
         title: formData.title,
         content: formData.content,
-        featuredImage: articleImageData,
+        featuredImage: formData.articleImage,
         publisherName: authors[0]?.name || formData.publisherName, // Keep for backward compat
         publisherImage: authors[0]?.imageUrl || null,
         direction: formData.direction,
@@ -457,23 +441,14 @@ export default function EditArticleForm({
             {/* Article Image */}
             <div>
               <UploadImage
-                onImageSelect={setArticleImageFile}
-                currentImage={formData.articleImage}
+                onImageSelect={(url) =>
+                  setFormData((prev) => ({ ...prev, articleImage: url || "" }))
+                }
+                currentImage={formData.articleImage || null}
                 label={t("editArticleForm.articleImageLabel")}
                 placeholder={t("editArticleForm.imagePlaceholder")}
+                onError={(msg) => setMessage({ type: "error", text: msg })}
               />
-              {formData.articleImage && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, articleImage: "" }));
-                    setArticleImageFile(null);
-                  }}
-                  className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
-                >
-                  {t("editArticleForm.removeImageButton")}
-                </button>
-              )}
             </div>
           </>
         )}
