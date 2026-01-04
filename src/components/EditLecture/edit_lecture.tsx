@@ -32,7 +32,6 @@ export default function EditLectureForm({
     categoryId: "",
   });
 
-  const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
   const { t } = useTranslation();
@@ -139,15 +138,6 @@ export default function EditLectureForm({
     );
   }
 
-  const fileToDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -165,23 +155,12 @@ export default function EditLectureForm({
     }
 
     try {
-      let bannerImageData = formData.bannerImageUrl;
-
-      if (bannerImageFile) {
-        bannerImageData = await fileToDataURL(bannerImageFile);
-      }
-
-      const submissionData = {
-        ...formData,
-        bannerImageUrl: bannerImageData,
-      };
-
       const response = await fetch(`/api/lectures/${lectureId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -444,23 +423,13 @@ export default function EditLectureForm({
                 {t("editLectureForm.imageSummary")}
               </label>
               <UploadImage
-                onImageSelect={setBannerImageFile}
-                currentImage={formData.bannerImageUrl}
-                label=""
+                onImageSelect={(url) =>
+                  setFormData((prev) => ({ ...prev, bannerImageUrl: url || "" }))
+                }
+                currentImage={formData.bannerImageUrl || null}
                 placeholder={t("editLectureForm.imagePlaceholder")}
+                onError={(msg) => setMessage({ type: "error", text: msg })}
               />
-              {formData.bannerImageUrl && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData((prev) => ({ ...prev, bannerImageUrl: "" }));
-                    setBannerImageFile(null);
-                  }}
-                  className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
-                >
-                  {t("editLectureForm.removeImageButton")}
-                </button>
-              )}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2 rtl">

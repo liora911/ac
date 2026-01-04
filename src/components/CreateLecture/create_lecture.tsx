@@ -38,7 +38,6 @@ export default function CreateLectureForm({
     categoryId: "",
   });
 
-  const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
 
@@ -111,15 +110,6 @@ export default function CreateLectureForm({
     );
   }
 
-  const fileToDataURL = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -137,23 +127,12 @@ export default function CreateLectureForm({
     }
 
     try {
-      let bannerImageData = formData.bannerImageUrl;
-
-      if (bannerImageFile) {
-        bannerImageData = await fileToDataURL(bannerImageFile);
-      }
-
-      const submissionData = {
-        ...formData,
-        bannerImageUrl: bannerImageData,
-      };
-
       const response = await fetch("/api/lectures", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(submissionData),
+        body: JSON.stringify(formData),
       });
 
       const data = await response.json();
@@ -173,7 +152,6 @@ export default function CreateLectureForm({
         bannerImageUrl: "",
         categoryId: "",
       });
-      setBannerImageFile(null);
 
       if (onSuccess) {
         onSuccess();
@@ -420,10 +398,12 @@ export default function CreateLectureForm({
                 {t("createLecture.imageSummary")}
               </label>
               <UploadImage
-                onImageSelect={setBannerImageFile}
-                currentImage={formData.bannerImageUrl}
-                label=""
+                onImageSelect={(url) =>
+                  setFormData((prev) => ({ ...prev, bannerImageUrl: url || "" }))
+                }
+                currentImage={formData.bannerImageUrl || null}
                 placeholder={t("createLecture.imagePlaceholder")}
+                onError={(msg) => setMessage({ type: "error", text: msg })}
               />
             </div>
             <div>
