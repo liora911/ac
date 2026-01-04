@@ -6,8 +6,23 @@ import { writeFile, mkdir } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
 
+// Next.js App Router route segment config
+export const dynamic = "force-dynamic";
+export const maxDuration = 60; // 60 seconds timeout for large uploads
+
 export async function POST(request: NextRequest) {
   try {
+    // Check content length before processing
+    const contentLength = request.headers.get("content-length");
+    const maxAllowedSize = 50 * 1024 * 1024; // 50MB
+
+    if (contentLength && parseInt(contentLength) > maxAllowedSize) {
+      return NextResponse.json(
+        { error: "File too large. Maximum size is 50MB." },
+        { status: 413 }
+      );
+    }
+
     // Check authentication
     const session = await getServerSession(authOptions);
     if (!session?.user?.email) {
@@ -25,7 +40,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const formData = await request.formData();
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch (formError) {
+      console.error("FormData parsing error:", formError);
+      // This usually happens when the body size limit is exceeded
+      return NextResponse.json(
+        { error: "Failed to process upload. The file may be too large for the server limit." },
+        { status: 413 }
+      );
+    }
+
     const file = formData.get("file") as File | null;
 
     if (!file) {
@@ -81,6 +107,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ url, filename });
   } catch (error) {
     console.error("Upload error:", error);
+
+    // Provide more specific error messages
+    if (error instanceof Error) {
+      if (
+        error.message.includes("body exceeded") ||
+        error.message.includes("too large") ||
+        error.message.includes("Body exceeded")
+      ) {
+        return NextResponse.json(
+          { error: "File too large. The server has a body size limit that was exceeded." },
+          { status: 413 }
+        );
+      }
+      return NextResponse.json(
+        { error: `Upload failed: ${error.message}` },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to upload file" },
       { status: 500 }

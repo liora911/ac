@@ -25,6 +25,9 @@ const nextConfig: NextConfig = {
       "@dnd-kit/sortable",
       "@dnd-kit/utilities",
     ],
+    serverActions: {
+      bodySizeLimit: "50mb",
+    },
   },
   webpack: (config, { isServer }) => {
     if (!isServer) {

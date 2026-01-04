@@ -3,6 +3,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Upload, X, Link as LinkIcon, Loader2 } from "lucide-react";
+import { uploadFile as uploadFileAction } from "@/actions/upload";
 
 interface MultiImageUploadProps {
   imageUrls: string[];
@@ -53,18 +54,14 @@ export default function MultiImageUpload({
     formDataUpload.append("file", file);
 
     try {
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formDataUpload,
-      });
+      // Use Server Action for larger file support
+      const result = await uploadFileAction(formDataUpload);
 
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.error || "Upload failed");
+      if (!result.success) {
+        throw new Error(result.error || "Upload failed");
       }
 
-      const data = await response.json();
-      return data.url;
+      return result.url;
     } catch (error) {
       console.error("Upload error:", error);
       onError?.(error instanceof Error ? error.message : uploadError);
