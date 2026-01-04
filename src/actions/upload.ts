@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import { put, del, handleUpload, type HandleUploadBody } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 
 export type UploadResult = {
   success: true;

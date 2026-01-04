@@ -3,7 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
-import { uploadFile as uploadFileAction } from "@/actions/upload";
+import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
 
 interface DragDropImageUploadProps {
   onImageSelect: (url: string | null) => void;
@@ -23,30 +23,12 @@ export default function DragDropImageUpload({
   const [isDragOver, setIsDragOver] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentImage || null);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Update preview when currentImage changes (e.g., when editing)
   useEffect(() => {
     setPreview(currentImage || null);
   }, [currentImage]);
-
-  const uploadFile = useCallback(async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      const result = await uploadFileAction(formData);
-
-      if (!result.success) {
-        throw new Error(result.error || "Upload failed");
-      }
-
-      return result.url;
-    } catch (error) {
-      console.error("Upload error:", error);
-      onError?.(error instanceof Error ? error.message : "Failed to upload image");
-      return null;
-    }
-  }, [onError]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -83,33 +65,42 @@ export default function DragDropImageUpload({
   );
 
   const handleImageFile = async (file: File) => {
-    // Validate file size (max 5MB)
+    // Validate it's an image
+    if (!isImageFile(file)) {
+      onError?.("Please select an image file (JPEG, PNG, GIF, or WebP).");
+      return;
+    }
+
+    // Validate file size (max 5MB for images)
     if (file.size > 5 * 1024 * 1024) {
-      onError?.("File too large. Maximum size is 5MB.");
+      onError?.("Image too large. Maximum size is 5MB.");
       return;
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
 
     // Show preview immediately using local URL
     const localPreview = URL.createObjectURL(file);
     setPreview(localPreview);
 
-    // Upload to Vercel Blob
-    const url = await uploadFile(file);
+    // Upload directly to Vercel Blob (client-side)
+    const result = await clientUpload(file, setUploadProgress);
 
     // Clean up local preview URL
     URL.revokeObjectURL(localPreview);
 
-    if (url) {
-      setPreview(url);
-      onImageSelect(url);
+    if (result.success) {
+      setPreview(result.url);
+      onImageSelect(result.url);
     } else {
       // Upload failed, revert preview
       setPreview(currentImage || null);
+      onError?.(result.error);
     }
 
     setIsUploading(false);
+    setUploadProgress(0);
   };
 
   const removeImage = () => {
@@ -130,8 +121,11 @@ export default function DragDropImageUpload({
           <div className="relative w-full h-48 border-2 border-gray-600 rounded-lg overflow-hidden">
             <Image src={preview} alt="Preview" fill className="object-cover" />
             {isUploading && (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 text-white animate-spin" />
+                {uploadProgress > 0 && (
+                  <p className="mt-2 text-white text-sm">{uploadProgress}%</p>
+                )}
               </div>
             )}
           </div>
@@ -173,7 +167,9 @@ export default function DragDropImageUpload({
           {isUploading ? (
             <div className="text-center">
               <Loader2 className="mx-auto h-12 w-12 text-blue-400 animate-spin" />
-              <p className="mt-2 text-base text-gray-300">מעלה...</p>
+              <p className="mt-2 text-base text-gray-300">
+                מעלה... {uploadProgress > 0 && `${uploadProgress}%`}
+              </p>
             </div>
           ) : (
             <div className="text-center">

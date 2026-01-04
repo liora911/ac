@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback } from "react";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
-import { uploadFile as uploadFileAction } from "@/actions/upload";
+import { clientUpload, isDocumentFile, formatFileSize } from "@/lib/upload/client-upload";
 
 interface PdfUploadProps {
   pdfUrl: string | null;
@@ -28,41 +28,21 @@ export default function PdfUpload({
 }: PdfUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     title = "PDF Presentation",
     dragDropText = "Drag & drop PDF here",
     orClickToUpload = "or click to select file",
-    maxFileSize = "Max 50MB (PDF only)",
-    uploadError = "Failed to upload PDF",
-    invalidFileType = "Please select a valid PDF file",
+    maxFileSize = "Max 50MB (PDF, PPTX, DOCX, XLSX)",
+    invalidFileType = "Please select a valid document file (PDF, PPTX, DOCX, XLSX)",
     removeButton = "Remove",
-    viewPdf = "View PDF",
+    viewPdf = "View File",
   } = labels;
 
-  const uploadFile = useCallback(async (file: File): Promise<string | null> => {
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-      // Use Server Action for larger file support (up to 50MB)
-      const result = await uploadFileAction(formData);
-
-      if (!result.success) {
-        throw new Error(result.error || "Upload failed");
-      }
-
-      return result.url;
-    } catch (error) {
-      console.error("Upload error:", error);
-      onError?.(error instanceof Error ? error.message : uploadError);
-      return null;
-    }
-  }, [uploadError, onError]);
-
   const handleFileUpload = useCallback(async (file: File) => {
-    if (file.type !== "application/pdf") {
+    if (!isDocumentFile(file)) {
       onError?.(invalidFileType);
       return;
     }
@@ -73,13 +53,20 @@ export default function PdfUpload({
     }
 
     setIsUploading(true);
-    const url = await uploadFile(file);
-    setIsUploading(false);
+    setUploadProgress(0);
 
-    if (url) {
-      onChange(url);
+    // Upload directly to Vercel Blob (client-side, bypasses serverless limits)
+    const result = await clientUpload(file, setUploadProgress);
+
+    setIsUploading(false);
+    setUploadProgress(0);
+
+    if (result.success) {
+      onChange(result.url);
+    } else {
+      onError?.(result.error);
     }
-  }, [uploadFile, invalidFileType, onChange, onError]);
+  }, [invalidFileType, onChange, onError]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -176,7 +163,7 @@ export default function PdfUpload({
           <input
             ref={fileInputRef}
             type="file"
-            accept=".pdf,application/pdf"
+            accept=".pdf,.pptx,.ppt,.docx,.doc,.xlsx,.xls,application/pdf,application/vnd.openxmlformats-officedocument.presentationml.presentation,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/msword,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel"
             onChange={handleFileInputChange}
             className="hidden"
             disabled={isUploading}
@@ -185,7 +172,17 @@ export default function PdfUpload({
           {isUploading ? (
             <>
               <Loader2 className="w-10 h-10 mx-auto mb-3 text-blue-500 animate-spin" />
-              <p className="text-gray-600 font-medium">Uploading...</p>
+              <p className="text-gray-600 font-medium">
+                Uploading... {uploadProgress > 0 && `${uploadProgress}%`}
+              </p>
+              {uploadProgress > 0 && (
+                <div className="mt-3 w-full max-w-xs mx-auto bg-gray-200 rounded-full h-2">
+                  <div
+                    className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              )}
             </>
           ) : (
             <>

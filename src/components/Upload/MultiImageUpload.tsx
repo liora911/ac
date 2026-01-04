@@ -3,7 +3,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Upload, X, Link as LinkIcon, Loader2 } from "lucide-react";
-import { uploadFile as uploadFileAction } from "@/actions/upload";
+import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
 
 interface MultiImageUploadProps {
   imageUrls: string[];
@@ -50,24 +50,16 @@ export default function MultiImageUpload({
   } = labels;
 
   const uploadFile = useCallback(async (file: File): Promise<string | null> => {
-    const formDataUpload = new FormData();
-    formDataUpload.append("file", file);
+    // Upload directly to Vercel Blob (client-side, bypasses serverless limits)
+    const result = await clientUpload(file);
 
-    try {
-      // Use Server Action for larger file support
-      const result = await uploadFileAction(formDataUpload);
-
-      if (!result.success) {
-        throw new Error(result.error || "Upload failed");
-      }
-
+    if (result.success) {
       return result.url;
-    } catch (error) {
-      console.error("Upload error:", error);
-      onError?.(error instanceof Error ? error.message : uploadError);
+    } else {
+      onError?.(result.error);
       return null;
     }
-  }, [uploadError, onError]);
+  }, [onError]);
 
   const handleFileUpload = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files);
