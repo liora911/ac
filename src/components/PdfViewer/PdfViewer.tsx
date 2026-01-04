@@ -80,14 +80,18 @@ export default function PdfViewer({ url, title }: PdfViewerProps) {
   if (error) {
     return (
       <div className="bg-gray-100 rounded-lg p-8 text-center">
-        <p className="text-red-600 mb-4">{error}</p>
+        <p className="text-red-600 mb-2">{error}</p>
+        <p className="text-gray-500 text-sm mb-4">
+          This PDF may have an unsupported format. You can still download and view it locally.
+        </p>
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 hover:text-blue-800 underline"
+          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
-          Download PDF instead
+          <Download className="w-4 h-4" />
+          Download PDF
         </a>
       </div>
     );

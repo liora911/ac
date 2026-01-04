@@ -10,8 +10,8 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
 
-// Dynamic import for PdfViewer to avoid SSR issues with react-pdf
-const PdfViewer = dynamic(() => import("@/components/PdfViewer/PdfViewer"), {
+// Dynamic import for DocumentViewer to avoid SSR issues with react-pdf
+const DocumentViewer = dynamic(() => import("@/components/DocumentViewer/DocumentViewer"), {
   ssr: false,
   loading: () => (
     <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
@@ -190,7 +190,7 @@ export default function PresentationDetailPage() {
 
         {hasPdfUrl && presentation.pdfUrl && (
           <div className="mb-8 w-full max-w-4xl mx-auto">
-            <PdfViewer
+            <DocumentViewer
               url={presentation.pdfUrl}
               title={presentation.title}
             />
