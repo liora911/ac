@@ -5,6 +5,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 import type { Article, UpdateArticleRequest, ArticleAuthorInput } from "@/types/Articles/articles";
+import { deleteBlobs } from "@/actions/upload";
 
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{
@@ -337,10 +338,32 @@ export async function DELETE(
 
     const existingArticle = await prisma.article.findUnique({
       where: { id },
+      include: {
+        authors: {
+          select: { imageUrl: true },
+        },
+      },
     });
 
     if (!existingArticle) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
+    }
+
+    // Delete associated blob files (article image, publisher image, author images)
+    const blobsToDelete: string[] = [];
+    if (existingArticle.articleImage) {
+      blobsToDelete.push(existingArticle.articleImage);
+    }
+    if (existingArticle.publisherImage) {
+      blobsToDelete.push(existingArticle.publisherImage);
+    }
+    existingArticle.authors.forEach((author) => {
+      if (author.imageUrl) {
+        blobsToDelete.push(author.imageUrl);
+      }
+    });
+    if (blobsToDelete.length > 0) {
+      await deleteBlobs(blobsToDelete);
     }
 
     await prisma.article.delete({

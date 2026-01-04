@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 
 export type UploadResult = {
   success: true;
@@ -76,5 +76,36 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
     }
 
     return { success: false, error: "Failed to upload file" };
+  }
+}
+
+/**
+ * Delete a file from Vercel Blob storage
+ * @param url The full Vercel Blob URL to delete
+ */
+export async function deleteBlob(url: string): Promise<void> {
+  try {
+    // Only delete if it's a Vercel Blob URL
+    if (url && url.includes("blob.vercel-storage.com")) {
+      await del(url);
+    }
+  } catch (error) {
+    // Log but don't throw - we don't want to block record deletion if blob cleanup fails
+    console.error("Failed to delete blob:", url, error);
+  }
+}
+
+/**
+ * Delete multiple files from Vercel Blob storage
+ * @param urls Array of Vercel Blob URLs to delete
+ */
+export async function deleteBlobs(urls: string[]): Promise<void> {
+  const validUrls = urls.filter(url => url && url.includes("blob.vercel-storage.com"));
+  if (validUrls.length === 0) return;
+
+  try {
+    await del(validUrls);
+  } catch (error) {
+    console.error("Failed to delete blobs:", validUrls, error);
   }
 }

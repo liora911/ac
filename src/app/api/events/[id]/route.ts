@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { deleteBlob } from "@/actions/upload";
 
 export async function GET(
   request: Request,
@@ -212,6 +213,11 @@ export async function DELETE(
 
     if (!event) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    // Delete associated blob file (banner image)
+    if (event.bannerImageUrl) {
+      await deleteBlob(event.bannerImageUrl);
     }
 
     await prisma.event.delete({

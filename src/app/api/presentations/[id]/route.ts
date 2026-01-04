@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { deleteBlob, deleteBlobs } from "@/actions/upload";
 
 export async function GET(
   request: Request,
@@ -185,6 +186,18 @@ export async function DELETE(
         { error: "Presentation not found" },
         { status: 404 }
       );
+    }
+
+    // Delete associated blob files (PDF and images)
+    const blobsToDelete: string[] = [];
+    if (existingPresentation.pdfUrl) {
+      blobsToDelete.push(existingPresentation.pdfUrl);
+    }
+    if (existingPresentation.imageUrls && existingPresentation.imageUrls.length > 0) {
+      blobsToDelete.push(...existingPresentation.imageUrls);
+    }
+    if (blobsToDelete.length > 0) {
+      await deleteBlobs(blobsToDelete);
     }
 
     await prisma.presentation.delete({

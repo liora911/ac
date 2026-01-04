@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { deleteBlob } from "@/actions/upload";
 
 export async function GET(
   request: Request,
@@ -175,6 +176,11 @@ export async function DELETE(
 
     if (!existingLecture) {
       return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
+    }
+
+    // Delete associated blob file (banner image)
+    if (existingLecture.bannerImageUrl) {
+      await deleteBlob(existingLecture.bannerImageUrl);
     }
 
     await prisma.lecture.delete({
