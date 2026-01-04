@@ -24,6 +24,7 @@ export default function CreatePresentationForm({
   const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -45,6 +46,9 @@ export default function CreatePresentationForm({
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+
+  // Validation for Tab 1 (required fields)
+  const isTab1Complete = formData.title.trim() !== "" && formData.categoryId !== "";
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -116,6 +120,17 @@ export default function CreatePresentationForm({
     setIsLoading(true);
     setMessage(null);
 
+    // Validate required fields before submission
+    if (!isTab1Complete) {
+      setMessage({
+        type: "error",
+        text: t("createPresentation.requiredFieldsError") || "Please fill in all required fields (Title and Category)",
+      });
+      setActiveTab(1);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const submissionData = {
         ...formData,
@@ -150,6 +165,8 @@ export default function CreatePresentationForm({
         imageUrls: [],
         categoryId: "",
       });
+
+      setActiveTab(1);
 
       if (onSuccess) {
         onSuccess();
@@ -211,7 +228,7 @@ export default function CreatePresentationForm({
     topLevelCategories.forEach((category) => {
       options.push(
         <option key={category.id} value={category.id}>
-          ▶ {category.name}
+          {category.name}
         </option>
       );
 
@@ -222,13 +239,19 @@ export default function CreatePresentationForm({
       subcategories.forEach((sub) => {
         options.push(
           <option key={sub.id} value={sub.id}>
-            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
+            &nbsp;&nbsp;&nbsp;&nbsp;{sub.name}
           </option>
         );
       });
     });
 
     return options;
+  };
+
+  const tabLabels = {
+    1: t("createPresentation.tabs.basicInfo") || "Basic Info",
+    2: t("createPresentation.tabs.content") || "Content",
+    3: t("createPresentation.tabs.media") || "Media",
   };
 
   return (
@@ -254,149 +277,199 @@ export default function CreatePresentationForm({
         </div>
       )}
 
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-1" aria-label="Tabs">
+          {([1, 2, 3] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              {tabLabels[tab]}
+              {tab === 1 && !isTab1Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createPresentation.titleLabel")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder={t("createPresentation.titlePlaceholder")}
-          />
-        </div>
+        {/* Tab 1: Basic Info */}
+        {activeTab === 1 && (
+          <>
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createPresentation.titleLabel")}
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("createPresentation.titlePlaceholder")}
+              />
+            </div>
 
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createPresentation.descriptionLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.description}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, description: value }))
-            }
-            placeholder={t("createPresentation.descriptionPlaceholder")}
-          />
-        </div>
+            <div>
+              <label
+                htmlFor="categoryId"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createPresentation.categoryLabel")}
+              </label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                disabled={categoriesLoading}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 ${
+                  formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                }`}
+              >
+                <option value="">
+                  {categoriesLoading
+                    ? t("createPresentation.loadingCategories")
+                    : t("createPresentation.selectCategory")}
+                </option>
+                {renderCategoryOptions()}
+              </select>
+            </div>
 
-        <div>
-          <label
-            htmlFor="content"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createPresentation.contentLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.content}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, content: value }))
-            }
-            placeholder={t("createPresentation.contentPlaceholder")}
-          />
-        </div>
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createPresentation.descriptionLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.description}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, description: value }))
+                }
+                placeholder={t("createPresentation.descriptionPlaceholder")}
+              />
+            </div>
+          </>
+        )}
 
-        <div>
-          <label
-            htmlFor="googleSlidesUrl"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createPresentation.googleSlidesUrlLabel")}
-          </label>
-          <input
-            type="url"
-            id="googleSlidesUrl"
-            name="googleSlidesUrl"
-            value={formData.googleSlidesUrl}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder="https://docs.google.com/presentation/..."
-          />
-          <p className="mt-2 text-sm text-gray-500">
-            {t("createPresentation.googleSlidesHelpText")}
-          </p>
-        </div>
+        {/* Tab 2: Content */}
+        {activeTab === 2 && (
+          <>
+            <div>
+              <label
+                htmlFor="content"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createPresentation.contentLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.content}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, content: value }))
+                }
+                placeholder={t("createPresentation.contentPlaceholder")}
+              />
+            </div>
 
-        <PdfUpload
-          pdfUrl={formData.pdfUrl}
-          onChange={handlePdfChange}
-          onError={handleUploadError}
-          labels={{
-            title: t("createPresentation.pdfLabel") || "PDF Presentation",
-            dragDropText: t("createPresentation.pdfDragDropText") || "Drag & drop PDF here",
-            orClickToUpload: t("createPresentation.pdfOrClickToUpload") || "or click to select file",
-            maxFileSize: t("createPresentation.pdfMaxFileSize") || "Max 50MB (PDF only)",
-            uploadError: t("createPresentation.pdfUploadError") || "Failed to upload PDF",
-            invalidFileType: t("createPresentation.pdfInvalidFileType") || "Please select a valid PDF file",
-            removeButton: t("createPresentation.pdfRemoveButton") || "Remove",
-            viewPdf: t("createPresentation.pdfViewButton") || "View PDF",
-          }}
-        />
+            <div>
+              <label
+                htmlFor="googleSlidesUrl"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createPresentation.googleSlidesUrlLabel")}
+              </label>
+              <input
+                type="url"
+                id="googleSlidesUrl"
+                name="googleSlidesUrl"
+                value={formData.googleSlidesUrl}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://docs.google.com/presentation/..."
+              />
+              <p className="mt-2 text-sm text-gray-500">
+                {t("createPresentation.googleSlidesHelpText")}
+              </p>
+            </div>
+          </>
+        )}
 
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createPresentation.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            required
-            disabled={categoriesLoading}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("createPresentation.loadingCategories")
-                : t("createPresentation.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
+        {/* Tab 3: Media */}
+        {activeTab === 3 && (
+          <>
+            <PdfUpload
+              pdfUrl={formData.pdfUrl}
+              onChange={handlePdfChange}
+              onError={handleUploadError}
+              labels={{
+                title: t("createPresentation.pdfLabel") || "PDF Presentation",
+                dragDropText: t("createPresentation.pdfDragDropText") || "Drag & drop PDF here",
+                orClickToUpload: t("createPresentation.pdfOrClickToUpload") || "or click to select file",
+                maxFileSize: t("createPresentation.pdfMaxFileSize") || "Max 50MB (PDF only)",
+                uploadError: t("createPresentation.pdfUploadError") || "Failed to upload PDF",
+                invalidFileType: t("createPresentation.pdfInvalidFileType") || "Please select a valid PDF file",
+                removeButton: t("createPresentation.pdfRemoveButton") || "Remove",
+                viewPdf: t("createPresentation.pdfViewButton") || "View PDF",
+              }}
+            />
 
-        <MultiImageUpload
-          imageUrls={formData.imageUrls}
-          onChange={handleImageUrlsChange}
-          onError={handleUploadError}
-          labels={{
-            title: t("createPresentation.imageLinksLabel"),
-            uploadMode: t("createPresentation.uploadMode") || "Upload",
-            urlMode: t("createPresentation.urlMode") || "URL",
-            dragDropText: t("createPresentation.dragDropText") || "Drag & drop images here",
-            orClickToUpload: t("createPresentation.orClickToUpload") || "or click to select files",
-            maxFileSize: t("createPresentation.maxFileSize") || "Max 5MB per image (JPEG, PNG, GIF, WebP)",
-            noImagesYet: t("createPresentation.noImagesYet") || "No images added yet. Click the button below to add URLs.",
-            addImageButton: t("createPresentation.addImageButton"),
-            removeImageButton: t("createPresentation.removeImageButton") || "Remove",
-            uploadError: t("createPresentation.uploadError") || "Failed to upload image",
-            invalidFileType: t("createPresentation.invalidFileType") || "Please select valid image files (max 5MB each)",
-          }}
-        />
+            <MultiImageUpload
+              imageUrls={formData.imageUrls}
+              onChange={handleImageUrlsChange}
+              onError={handleUploadError}
+              labels={{
+                title: t("createPresentation.imageLinksLabel"),
+                uploadMode: t("createPresentation.uploadMode") || "Upload",
+                urlMode: t("createPresentation.urlMode") || "URL",
+                dragDropText: t("createPresentation.dragDropText") || "Drag & drop images here",
+                orClickToUpload: t("createPresentation.orClickToUpload") || "or click to select files",
+                maxFileSize: t("createPresentation.maxFileSize") || "Max 5MB per image (JPEG, PNG, GIF, WebP)",
+                noImagesYet: t("createPresentation.noImagesYet") || "No images added yet. Click the button below to add URLs.",
+                addImageButton: t("createPresentation.addImageButton"),
+                removeImageButton: t("createPresentation.removeImageButton") || "Remove",
+                uploadError: t("createPresentation.uploadError") || "Failed to upload image",
+                invalidFileType: t("createPresentation.invalidFileType") || "Please select valid image files (max 5MB each)",
+              }}
+            />
+          </>
+        )}
 
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-          >
-            {isLoading
-              ? t("createPresentation.submitCreating")
-              : t("createPresentation.submit")}
-          </button>
+        {/* Submit Button - visible on all tabs */}
+        <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {!isTab1Complete && (
+                <span className="text-red-600">
+                  {t("createPresentation.requiredFieldsHint") || "* Required fields are missing in Basic Info tab"}
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+            >
+              {isLoading
+                ? t("createPresentation.submitCreating")
+                : t("createPresentation.submit")}
+            </button>
+          </div>
         </div>
       </form>
     </div>

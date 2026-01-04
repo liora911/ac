@@ -28,6 +28,7 @@ export default function EditPresentationForm({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -50,6 +51,9 @@ export default function EditPresentationForm({
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+
+  // Validation for Tab 1 (required fields)
+  const isTab1Complete = formData.title.trim() !== "" && formData.categoryId !== "";
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -155,6 +159,17 @@ export default function EditPresentationForm({
     setIsLoading(true);
     setMessage(null);
 
+    // Validate required fields before submission
+    if (!isTab1Complete) {
+      setMessage({
+        type: "error",
+        text: t("editPresentationForm.requiredFieldsError") as string || "Please fill in all required fields (Title and Category)",
+      });
+      setActiveTab(1);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const submissionData = {
         ...formData,
@@ -242,7 +257,7 @@ export default function EditPresentationForm({
     topLevelCategories.forEach((category) => {
       options.push(
         <option key={category.id} value={category.id}>
-          ▶ {category.name}
+          {category.name}
         </option>
       );
 
@@ -253,13 +268,19 @@ export default function EditPresentationForm({
       subcategories.forEach((sub) => {
         options.push(
           <option key={sub.id} value={sub.id}>
-            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
+            &nbsp;&nbsp;&nbsp;&nbsp;{sub.name}
           </option>
         );
       });
     });
 
     return options;
+  };
+
+  const tabLabels = {
+    1: t("editPresentationForm.tabs.basicInfo") as string || "Basic Info",
+    2: t("editPresentationForm.tabs.content") as string || "Content",
+    3: t("editPresentationForm.tabs.media") as string || "Media",
   };
 
   return (
@@ -285,81 +306,142 @@ export default function EditPresentationForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editPresentationForm.titleLabel")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            placeholder={t("editPresentationForm.titlePlaceholder")}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editPresentationForm.descriptionLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.description}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, description: value }))
-            }
-            placeholder={t("editPresentationForm.descriptionPlaceholder")}
-          />
-        </div>
-
-        <div>
-          <label
-            htmlFor="content"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editPresentationForm.contentLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.content}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, content: value }))
-            }
-            placeholder={t("editPresentationForm.contentPlaceholder")}
-          />
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="googleSlidesUrl"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-1" aria-label="Tabs">
+          {([1, 2, 3] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
             >
-              {t("editPresentationForm.googleSlidesUrlLabel")}
-            </label>
-            <input
-              type="url"
-              id="googleSlidesUrl"
-              name="googleSlidesUrl"
-              value={formData.googleSlidesUrl}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-              placeholder="https://docs.google.com/presentation/..."
-            />
-            <p className="mt-1 text-xs text-gray-500 rtl">
-              {t("editPresentationForm.googleSlidesHelpText")}
-            </p>
-          </div>
+              {tabLabels[tab]}
+              {tab === 1 && !isTab1Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
 
-          <div>
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Tab 1: Basic Info */}
+        {activeTab === 1 && (
+          <>
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editPresentationForm.titleLabel")}
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("editPresentationForm.titlePlaceholder")}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="categoryId"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editPresentationForm.categoryLabel")}
+              </label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                disabled={categoriesLoading}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl ${
+                  formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                }`}
+              >
+                <option value="">
+                  {categoriesLoading
+                    ? t("editPresentationForm.loadingCategories")
+                    : t("editPresentationForm.selectCategory")}
+                </option>
+                {renderCategoryOptions()}
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editPresentationForm.descriptionLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.description}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, description: value }))
+                }
+                placeholder={t("editPresentationForm.descriptionPlaceholder")}
+              />
+            </div>
+          </>
+        )}
+
+        {/* Tab 2: Content */}
+        {activeTab === 2 && (
+          <>
+            <div>
+              <label
+                htmlFor="content"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editPresentationForm.contentLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.content}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, content: value }))
+                }
+                placeholder={t("editPresentationForm.contentPlaceholder")}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="googleSlidesUrl"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editPresentationForm.googleSlidesUrlLabel")}
+              </label>
+              <input
+                type="url"
+                id="googleSlidesUrl"
+                name="googleSlidesUrl"
+                value={formData.googleSlidesUrl}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                placeholder="https://docs.google.com/presentation/..."
+              />
+              <p className="mt-2 text-sm text-gray-500 rtl">
+                {t("editPresentationForm.googleSlidesHelpText")}
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* Tab 3: Media */}
+        {activeTab === 3 && (
+          <>
             <PdfUpload
               pdfUrl={formData.pdfUrl}
               onChange={handlePdfChange}
@@ -375,63 +457,48 @@ export default function EditPresentationForm({
                 viewPdf: t("editPresentationForm.pdfViewButton") as string || "View PDF",
               }}
             />
-          </div>
 
-          <div>
-            <label
-              htmlFor="categoryId"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+            <MultiImageUpload
+              imageUrls={formData.imageUrls}
+              onChange={handleImageUrlsChange}
+              onError={handleUploadError}
+              labels={{
+                title: t("editPresentationForm.imageLinksLabel") as string,
+                uploadMode: t("editPresentationForm.uploadMode") as string || "Upload",
+                urlMode: t("editPresentationForm.urlMode") as string || "URL",
+                dragDropText: t("editPresentationForm.dragDropText") as string || "Drag & drop images here",
+                orClickToUpload: t("editPresentationForm.orClickToUpload") as string || "or click to select files",
+                maxFileSize: t("editPresentationForm.maxFileSize") as string || "Max 5MB per image (JPEG, PNG, GIF, WebP)",
+                noImagesYet: t("editPresentationForm.noImagesYet") as string || "No images added yet. Click the button below to add URLs.",
+                addImageButton: t("editPresentationForm.addImageButton") as string,
+                removeImageButton: t("editPresentationForm.removeImageButton") as string || "Remove",
+                uploadError: t("editPresentationForm.uploadError") as string || "Failed to upload image",
+                invalidFileType: t("editPresentationForm.invalidFileType") as string || "Please select valid image files (max 5MB each)",
+              }}
+            />
+          </>
+        )}
+
+        {/* Submit Button - visible on all tabs */}
+        <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {!isTab1Complete && (
+                <span className="text-red-600">
+                  {t("editPresentationForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
             >
-              {t("editPresentationForm.categoryLabel")}
-            </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              disabled={categoriesLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
-            >
-              <option value="">
-                {categoriesLoading
-                  ? t("editPresentationForm.loadingCategories")
-                  : t("editPresentationForm.selectCategory")}
-              </option>
-              {renderCategoryOptions()}
-            </select>
+              {isLoading
+                ? t("editPresentationForm.submitUpdating")
+                : t("editPresentationForm.submit")}
+            </button>
           </div>
-        </div>
-
-        <MultiImageUpload
-          imageUrls={formData.imageUrls}
-          onChange={handleImageUrlsChange}
-          onError={handleUploadError}
-          labels={{
-            title: t("editPresentationForm.imageLinksLabel") as string,
-            uploadMode: t("editPresentationForm.uploadMode") as string || "Upload",
-            urlMode: t("editPresentationForm.urlMode") as string || "URL",
-            dragDropText: t("editPresentationForm.dragDropText") as string || "Drag & drop images here",
-            orClickToUpload: t("editPresentationForm.orClickToUpload") as string || "or click to select files",
-            maxFileSize: t("editPresentationForm.maxFileSize") as string || "Max 5MB per image (JPEG, PNG, GIF, WebP)",
-            noImagesYet: t("editPresentationForm.noImagesYet") as string || "No images added yet. Click the button below to add URLs.",
-            addImageButton: t("editPresentationForm.addImageButton") as string,
-            removeImageButton: t("editPresentationForm.removeImageButton") as string || "Remove",
-            uploadError: t("editPresentationForm.uploadError") as string || "Failed to upload image",
-            invalidFileType: t("editPresentationForm.invalidFileType") as string || "Please select valid image files (max 5MB each)",
-          }}
-        />
-
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-          >
-            {isLoading
-              ? t("editPresentationForm.submitUpdating")
-              : t("editPresentationForm.submit")}
-          </button>
         </div>
       </form>
     </div>
