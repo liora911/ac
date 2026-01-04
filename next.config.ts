@@ -30,6 +30,9 @@ const nextConfig: NextConfig = {
     },
   },
   webpack: (config, { isServer }) => {
+    // Handle canvas for react-pdf (required for PDF rendering)
+    config.resolve.alias.canvas = false;
+
     if (!isServer) {
       config.optimization = config.optimization || {};
       if (

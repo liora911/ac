@@ -7,6 +7,17 @@ import Image from "next/image";
 import { Presentation } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import dynamic from "next/dynamic";
+
+// Dynamic import for PdfViewer to avoid SSR issues with react-pdf
+const PdfViewer = dynamic(() => import("@/components/PdfViewer/PdfViewer"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
+      <div className="animate-spin rounded-full h-8 w-8 border-2 border-indigo-600 border-t-transparent"></div>
+    </div>
+  ),
+});
 
 function getGoogleSlidesEmbedAndPdfUrls(rawUrl?: string | null): {
   embedUrl?: string;
@@ -176,24 +187,12 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {hasPdfUrl && (
-          <div className="mb-8 flex flex-col items-center gap-4">
-            <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md">
-              <iframe
-                src={presentation.pdfUrl}
-                title={`${presentation.title} - PDF`}
-                className="w-full border-0"
-                style={{ height: "80vh", minHeight: "600px" }}
-              />
-            </div>
-            <a
-              href={presentation.pdfUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-red-600 text-white px-6 py-2 rounded-xl shadow-sm hover:bg-red-700 hover:shadow-md transition-all flex items-center gap-2"
-            >
-              {t("presentationDetail.downloadPdf") || "Download PDF"}
-            </a>
+        {hasPdfUrl && presentation.pdfUrl && (
+          <div className="mb-8 w-full max-w-4xl mx-auto">
+            <PdfViewer
+              url={presentation.pdfUrl}
+              title={presentation.title}
+            />
           </div>
         )}
 
