@@ -3,9 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
-import { existsSync } from "fs";
+import { put } from "@vercel/blob";
 
 export type UploadResult = {
   success: true;
@@ -57,28 +55,19 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
       };
     }
 
-    // Create uploads directory if it doesn't exist
-    const uploadsDir = path.join(process.cwd(), "public", "uploads");
-    if (!existsSync(uploadsDir)) {
-      await mkdir(uploadsDir, { recursive: true });
-    }
-
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 8);
     const extension = file.name.split(".").pop() || "jpg";
     const filename = `${timestamp}-${randomString}.${extension}`;
 
-    // Save the file
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    const filePath = path.join(uploadsDir, filename);
-    await writeFile(filePath, buffer);
+    // Upload to Vercel Blob
+    const blob = await put(filename, file, {
+      access: "public",
+      addRandomSuffix: false,
+    });
 
-    // Return the public URL
-    const url = `/uploads/${filename}`;
-
-    return { success: true, url, filename };
+    return { success: true, url: blob.url, filename };
   } catch (error) {
     console.error("Upload error:", error);
 
