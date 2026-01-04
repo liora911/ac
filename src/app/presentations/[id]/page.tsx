@@ -58,6 +58,7 @@ export default function PresentationDetailPage() {
 
   const total = presentation?.imageUrls.length ?? 0;
   const hasGoogleSlidesUrl = Boolean(presentation?.googleSlidesUrl);
+  const hasPdfUrl = Boolean(presentation?.pdfUrl);
   const { embedUrl } = getGoogleSlidesEmbedAndPdfUrls(
     hasGoogleSlidesUrl ? (presentation!.googleSlidesUrl as string) : undefined
   );
@@ -175,7 +176,27 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {}
+        {hasPdfUrl && (
+          <div className="mb-8 flex flex-col items-center gap-4">
+            <div className="relative w-full max-w-4xl rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md">
+              <iframe
+                src={presentation.pdfUrl}
+                title={`${presentation.title} - PDF`}
+                className="w-full border-0"
+                style={{ height: "80vh", minHeight: "600px" }}
+              />
+            </div>
+            <a
+              href={presentation.pdfUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-red-600 text-white px-6 py-2 rounded-xl shadow-sm hover:bg-red-700 hover:shadow-md transition-all flex items-center gap-2"
+            >
+              {t("presentationDetail.downloadPdf") || "Download PDF"}
+            </a>
+          </div>
+        )}
+
         {presentation.imageUrls.length > 0 && (
           <div
             className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden bg-white/90 border border-slate-200 cursor-zoom-in shadow-md hover:shadow-lg transition-shadow"

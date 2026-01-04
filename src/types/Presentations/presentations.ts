@@ -7,6 +7,10 @@ export interface Presentation {
    * Optional link to external slides (e.g. Google Slides / Google Drive URL)
    */
   googleSlidesUrl?: string;
+  /**
+   * Optional URL to uploaded PDF presentation file
+   */
+  pdfUrl?: string;
   imageUrls: string[];
   published: boolean;
   categoryId: string;
