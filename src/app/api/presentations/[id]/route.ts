@@ -93,6 +93,7 @@ export async function PUT(
       imageUrls,
       categoryId,
       googleSlidesUrl,
+      pdfUrl,
     } = body;
 
     if (!title || !description || !content || !categoryId) {
@@ -122,6 +123,7 @@ export async function PUT(
         description,
         content,
         googleSlidesUrl: googleSlidesUrl || null,
+        pdfUrl: pdfUrl || null,
         imageUrls: imageUrls || [],
         categoryId,
       },

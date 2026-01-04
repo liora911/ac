@@ -7,6 +7,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import MultiImageUpload from "@/components/Upload/MultiImageUpload";
+import PdfUpload from "@/components/Upload/PdfUpload";
 
 type CategoryNode = {
   id: string;
@@ -36,6 +37,7 @@ export default function EditPresentationForm({
     description: "",
     content: "",
     googleSlidesUrl: "",
+    pdfUrl: null as string | null,
     imageUrls: [] as string[],
     categoryId: "",
   });
@@ -74,6 +76,7 @@ export default function EditPresentationForm({
             description: presentation.description || "",
             content: presentation.content || "",
             googleSlidesUrl: presentation.googleSlidesUrl || "",
+            pdfUrl: presentation.pdfUrl || null,
             imageUrls: presentation.imageUrls || [],
             categoryId: presentation.category?.id || "",
           });
@@ -222,6 +225,13 @@ export default function EditPresentationForm({
     });
   };
 
+  const handlePdfChange = (url: string | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      pdfUrl: url,
+    }));
+  };
+
   const renderCategoryOptions = () => {
     const options: React.ReactElement[] = [];
 
@@ -347,6 +357,24 @@ export default function EditPresentationForm({
             <p className="mt-1 text-xs text-gray-500 rtl">
               {t("editPresentationForm.googleSlidesHelpText")}
             </p>
+          </div>
+
+          <div>
+            <PdfUpload
+              pdfUrl={formData.pdfUrl}
+              onChange={handlePdfChange}
+              onError={handleUploadError}
+              labels={{
+                title: t("editPresentationForm.pdfLabel") as string || "PDF Presentation",
+                dragDropText: t("editPresentationForm.pdfDragDropText") as string || "Drag & drop PDF here",
+                orClickToUpload: t("editPresentationForm.pdfOrClickToUpload") as string || "or click to select file",
+                maxFileSize: t("editPresentationForm.pdfMaxFileSize") as string || "Max 50MB (PDF only)",
+                uploadError: t("editPresentationForm.pdfUploadError") as string || "Failed to upload PDF",
+                invalidFileType: t("editPresentationForm.pdfInvalidFileType") as string || "Please select a valid PDF file",
+                removeButton: t("editPresentationForm.pdfRemoveButton") as string || "Remove",
+                viewPdf: t("editPresentationForm.pdfViewButton") as string || "View PDF",
+              }}
+            />
           </div>
 
           <div>

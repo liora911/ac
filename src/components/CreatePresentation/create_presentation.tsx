@@ -6,6 +6,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import MultiImageUpload from "@/components/Upload/MultiImageUpload";
+import PdfUpload from "@/components/Upload/PdfUpload";
 
 type CategoryNode = {
   id: string;
@@ -32,6 +33,7 @@ export default function CreatePresentationForm({
     description: "",
     content: "",
     googleSlidesUrl: "",
+    pdfUrl: null as string | null,
     imageUrls: [] as string[],
     categoryId: "",
   });
@@ -144,6 +146,7 @@ export default function CreatePresentationForm({
         description: "",
         content: "",
         googleSlidesUrl: "",
+        pdfUrl: null,
         imageUrls: [],
         categoryId: "",
       });
@@ -189,6 +192,13 @@ export default function CreatePresentationForm({
       type: "error",
       text: errorMessage,
     });
+  };
+
+  const handlePdfChange = (url: string | null) => {
+    setFormData((prev) => ({
+      ...prev,
+      pdfUrl: url,
+    }));
   };
 
   const renderCategoryOptions = () => {
@@ -316,6 +326,22 @@ export default function CreatePresentationForm({
             {t("createPresentation.googleSlidesHelpText")}
           </p>
         </div>
+
+        <PdfUpload
+          pdfUrl={formData.pdfUrl}
+          onChange={handlePdfChange}
+          onError={handleUploadError}
+          labels={{
+            title: t("createPresentation.pdfLabel") || "PDF Presentation",
+            dragDropText: t("createPresentation.pdfDragDropText") || "Drag & drop PDF here",
+            orClickToUpload: t("createPresentation.pdfOrClickToUpload") || "or click to select file",
+            maxFileSize: t("createPresentation.pdfMaxFileSize") || "Max 50MB (PDF only)",
+            uploadError: t("createPresentation.pdfUploadError") || "Failed to upload PDF",
+            invalidFileType: t("createPresentation.pdfInvalidFileType") || "Please select a valid PDF file",
+            removeButton: t("createPresentation.pdfRemoveButton") || "Remove",
+            viewPdf: t("createPresentation.pdfViewButton") || "View PDF",
+          }}
+        />
 
         <div>
           <label

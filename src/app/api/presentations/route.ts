@@ -101,6 +101,7 @@ export async function POST(request: NextRequest) {
       imageUrls,
       categoryId,
       googleSlidesUrl,
+      pdfUrl,
     } = body;
 
     if (!title || !description || !content || !categoryId) {
@@ -135,6 +136,7 @@ export async function POST(request: NextRequest) {
         description,
         content,
         googleSlidesUrl: googleSlidesUrl || null,
+        pdfUrl: pdfUrl || null,
         imageUrls: imageUrls || [],
         categoryId,
         authorId: user.id,
