@@ -5,6 +5,7 @@ import { X, Clock, Calendar, Share2, Maximize2, Minimize2, ChevronDown, ChevronU
 import { motion, AnimatePresence } from "framer-motion";
 import { Lecture } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import RichContent from "@/components/RichContent";
 
 interface LectureModalProps {
   lecture: Lecture | null;
@@ -164,10 +165,7 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
                     className="overflow-hidden"
                   >
                     <div className="px-4 sm:px-6 pb-6 max-h-48 overflow-y-auto">
-                      <div
-                        className="prose prose-sm prose-invert max-w-none text-gray-300 leading-relaxed"
-                        dangerouslySetInnerHTML={{ __html: lecture.description }}
-                      />
+                      <RichContent content={lecture.description} className="text-gray-300 prose-invert" />
                     </div>
                   </motion.div>
                 )}

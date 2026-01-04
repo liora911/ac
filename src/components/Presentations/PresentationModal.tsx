@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Presentation } from "@/types/Presentations/presentations";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
+import RichContent from "@/components/RichContent";
 
 interface PresentationModalProps {
   presentation: Presentation | null;
@@ -219,20 +220,14 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Description
             </h2>
-            <div
-              className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: presentation.description }}
-            />
+            <RichContent content={presentation.description} className="text-gray-700" />
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
               Content
             </h2>
-            <div
-              className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: presentation.content }}
-            />
+            <RichContent content={presentation.content} className="text-gray-700" />
           </div>
 
           <div className="text-center text-gray-500 border-t border-gray-200 pt-6">

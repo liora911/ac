@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
+import RichContent from "@/components/RichContent";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -318,12 +319,10 @@ export default function ArticleDetailPage() {
           </div>
         )}
 
-        {}
-        <div
-          className="prose prose-lg max-w-none text-gray-800 leading-relaxed [&_p]:my-4 [&_p]:leading-7 article-content"
-          dir={article.direction || (locale === "en" ? "ltr" : "rtl")}
-          dangerouslySetInnerHTML={{ __html: article.content }}
-        />
+        {/* Article Content */}
+        <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
+          <RichContent content={article.content} className="text-gray-800" />
+        </div>
 
         {}
         <footer className="mt-12 pt-8 border-t border-gray-200">

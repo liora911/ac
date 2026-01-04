@@ -17,6 +17,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import ContentCard, { ContentItem } from "./ContentCard";
+import RichContent from "@/components/RichContent";
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
@@ -203,11 +204,11 @@ const Home = () => {
                     className="overflow-hidden"
                   >
                     <div
-                      className="mt-4 text-[var(--foreground)] leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                      className="mt-4 text-[var(--foreground)] leading-relaxed max-w-none"
                       dir={isRTL ? "rtl" : "ltr"}
                     >
                       {hasDynamicBio ? (
-                        <div dangerouslySetInnerHTML={{ __html: bioHtml }} />
+                        <RichContent content={bioHtml} />
                       ) : (
                         <div className="space-y-4" dir="rtl">
                           <p>

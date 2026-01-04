@@ -4,6 +4,7 @@ import React from "react";
 import Image from "next/image";
 import { Article } from "@/types/Articles/articles";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import RichContent from "@/components/RichContent";
 
 interface ArticleModalProps {
   article: Article | null;
@@ -108,11 +109,9 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
             </div>
           )}
 
-          <div
-            className="prose prose-lg max-w-none text-gray-800 leading-relaxed mb-6"
-            dir={article.direction || (locale === "en" ? "ltr" : "rtl")}
-            dangerouslySetInnerHTML={{ __html: article.content }}
-          />
+          <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
+            <RichContent content={article.content} className="text-gray-800 mb-6" />
+          </div>
 
           <footer className="border-t border-gray-200 pt-6">
             {article.tags && article.tags.length > 0 && (

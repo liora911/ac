@@ -8,6 +8,7 @@ import { Presentation } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
+import RichContent from "@/components/RichContent";
 
 // Dynamic import for PdfViewer to avoid SSR issues with react-pdf
 const PdfViewer = dynamic(() => import("@/components/PdfViewer/PdfViewer"), {
@@ -268,26 +269,20 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {}
+        {/* Description */}
         <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
             {t("presentationDetail.descriptionTitle")}
           </h2>
-          <div
-            className="prose prose-sm max-w-none leading-relaxed text-slate-700"
-            dangerouslySetInnerHTML={{ __html: presentation.description }}
-          />
+          <RichContent content={presentation.description} className="text-slate-700" />
         </div>
 
-        {}
+        {/* Content */}
         <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-semibold text-slate-900 mb-4">
             {t("presentationDetail.contentTitle")}
           </h2>
-          <div
-            className="prose prose-sm max-w-none leading-relaxed text-slate-700"
-            dangerouslySetInnerHTML={{ __html: presentation.content }}
-          />
+          <RichContent content={presentation.content} className="text-slate-700" />
         </div>
 
         {}

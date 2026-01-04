@@ -6,6 +6,7 @@ import Image from "next/image";
 import { Calendar, Clock, MapPin, Globe, ArrowLeft } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import RichContent from "@/components/RichContent";
 
 export default function EventDetailPage() {
   const params = useParams();
@@ -198,10 +199,7 @@ export default function EventDetailPage() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             {t("eventDetail.descriptionTitle")}
           </h2>
-          <div
-            className="text-gray-700 prose prose-sm max-w-none leading-relaxed"
-            dangerouslySetInnerHTML={{ __html: event.description }}
-          />
+          <RichContent content={event.description} className="text-gray-700" />
         </div>
 
         <div className="text-center text-gray-500 border-t border-gray-200 pt-6">

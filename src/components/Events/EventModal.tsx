@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, MapPin, Clock, Globe, X } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Event } from "@/types/Events/events";
+import RichContent from "@/components/RichContent";
 
 export interface EventModalProps {
   event: Event | null;
@@ -122,10 +123,7 @@ const EventModal: React.FC<EventModalProps> = ({
                 </div>
               </div>
 
-              <div
-                className="prose prose-gray max-w-none text-gray-600 leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: event.description }}
-              />
+              <RichContent content={event.description} className="text-gray-600" />
             </div>
           </motion.div>
         </motion.div>
