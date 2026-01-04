@@ -303,7 +303,8 @@ export async function POST(request: NextRequest) {
         articleImage: featuredImage,
         publisherName: publisherName || user.name || "Anonymous",
         publisherImage: publisherImage || user.image,
-        readDuration: Math.max(1, Math.ceil(content.length / 1000)),
+        // Calculate read time: strip HTML, count words, divide by 200 WPM (average reading speed)
+        readDuration: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length / 200)),
         published: status === "PUBLISHED",
         authorId: user.id,
         direction,

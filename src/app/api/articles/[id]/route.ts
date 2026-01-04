@@ -225,7 +225,8 @@ export async function PUT(
     }
 
     if (content !== undefined) {
-      updateData.readDuration = Math.max(1, Math.ceil(content.length / 1000));
+      // Calculate read time: strip HTML, count words, divide by 200 WPM (average reading speed)
+      updateData.readDuration = Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, '').split(/\s+/).filter((w: string) => w.length > 0).length / 200));
     }
 
     // Validate authors if provided
