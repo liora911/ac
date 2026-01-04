@@ -123,9 +123,9 @@ export async function POST(request: Request) {
       categoryId,
     } = body;
 
-    if (!title || !description || !categoryId || !duration) {
+    if (!title || !categoryId || !duration) {
       return NextResponse.json(
-        { error: "Title, description, categoryId, and duration are required" },
+        { error: "Title, categoryId, and duration are required" },
         { status: 400 }
       );
     }
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
     const lecture = await prisma.lecture.create({
       data: {
         title,
-        description,
+        description: description || "",
         videoUrl: videoUrl || null,
         duration,
         date: date || null,

@@ -23,6 +23,7 @@ export default function CreateLectureForm({
   const { t } = useTranslation();
   const { data: session, status } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -40,6 +41,9 @@ export default function CreateLectureForm({
   const [bannerImageFile, setBannerImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
+
+  // Validation for Tab 1 (required fields)
+  const isTab1Complete = formData.title.trim() !== "" && formData.categoryId !== "" && formData.duration.trim() !== "";
 
   const isAuthorized = !!(
     session?.user?.email &&
@@ -120,6 +124,17 @@ export default function CreateLectureForm({
     e.preventDefault();
     setIsLoading(true);
     setMessage(null);
+
+    // Validate required fields before submission
+    if (!isTab1Complete) {
+      setMessage({
+        type: "error",
+        text: t("createLecture.requiredFieldsError") || "Please fill in all required fields (Title, Category, and Duration)",
+      });
+      setActiveTab(1);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       let bannerImageData = formData.bannerImageUrl;
@@ -217,6 +232,12 @@ export default function CreateLectureForm({
     return options;
   };
 
+  const tabLabels = {
+    1: t("createLecture.tabs.basicInfo") || "Basic Info",
+    2: t("createLecture.tabs.content") || "Content",
+    3: t("createLecture.tabs.media") || "Media",
+  };
+
   return (
     <div className="p-6 bg-white rounded-xl border border-gray-200">
       <div className="mb-6">
@@ -240,136 +261,171 @@ export default function CreateLectureForm({
         </div>
       )}
 
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-1" aria-label="Tabs">
+          {([1, 2, 3] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              {tabLabels[tab]}
+              {tab === 1 && !isTab1Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createLecture.titleLabel")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            placeholder={t("createLecture.titlePlaceholder")}
-          />
-        </div>
+        {/* Tab 1: Basic Info */}
+        {activeTab === 1 && (
+          <>
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.titleLabel")}
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("createLecture.titlePlaceholder")}
+              />
+            </div>
 
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2"
-          >
-            {t("createLecture.descriptionLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.description}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, description: value }))
-            }
-            placeholder={t("createLecture.descriptionPlaceholder")}
-          />
-        </div>
+            <div>
+              <label
+                htmlFor="categoryId"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.categoryLabel")}
+              </label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                disabled={categoriesLoading}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 ${
+                  formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                }`}
+              >
+                <option value="">
+                  {categoriesLoading
+                    ? t("createLecture.loadingCategories")
+                    : t("createLecture.selectCategory")}
+                </option>
+                {renderCategoryOptions()}
+              </select>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="videoUrl"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              {t("createLecture.videoUrlLabel")}
-            </label>
-            <input
-              type="url"
-              id="videoUrl"
-              name="videoUrl"
-              value={formData.videoUrl}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="https://"
-            />
-          </div>
+            <div>
+              <label
+                htmlFor="duration"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.durationLabel")}
+              </label>
+              <input
+                type="text"
+                id="duration"
+                name="duration"
+                value={formData.duration}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  formData.duration.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("createLecture.durationPlaceholder")}
+              />
+            </div>
+          </>
+        )}
 
-          <div>
-            <label
-              htmlFor="duration"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              {t("createLecture.durationLabel")}
-            </label>
-            <input
-              type="text"
-              id="duration"
-              name="duration"
-              value={formData.duration}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder={t("createLecture.durationPlaceholder")}
-            />
-          </div>
-        </div>
+        {/* Tab 2: Content */}
+        {activeTab === 2 && (
+          <>
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.descriptionLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.description}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, description: value }))
+                }
+                placeholder={t("createLecture.descriptionPlaceholder")}
+              />
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="date"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              {t("createLecture.dateLabel")}
-            </label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+            <div>
+              <label
+                htmlFor="videoUrl"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.videoUrlLabel")}
+              </label>
+              <input
+                type="url"
+                id="videoUrl"
+                name="videoUrl"
+                value={formData.videoUrl}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="https://"
+              />
+            </div>
 
-          <div>
-            <label
-              htmlFor="categoryId"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              {t("createLecture.categoryLabel")}
-            </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              disabled={categoriesLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50"
-            >
-              <option value="">
-                {categoriesLoading
-                  ? t("createLecture.loadingCategories")
-                  : t("createLecture.selectCategory")}
-              </option>
-              {renderCategoryOptions()}
-            </select>
-          </div>
-        </div>
+            <div>
+              <label
+                htmlFor="date"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createLecture.dateLabel")}
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </>
+        )}
 
-        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <summary className="cursor-pointer text-sm font-medium text-gray-700">
-            {t("createLecture.imageSummary")}
-          </summary>
-          <div className="mt-4 space-y-4">
-            <UploadImage
-              onImageSelect={setBannerImageFile}
-              currentImage={formData.bannerImageUrl}
-              label=""
-              placeholder={t("createLecture.imagePlaceholder")}
-            />
+        {/* Tab 3: Media */}
+        {activeTab === 3 && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t("createLecture.imageSummary")}
+              </label>
+              <UploadImage
+                onImageSelect={setBannerImageFile}
+                currentImage={formData.bannerImageUrl}
+                label=""
+                placeholder={t("createLecture.imagePlaceholder")}
+              />
+            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 {t("createLecture.imageUrlLabel")}
@@ -383,19 +439,29 @@ export default function CreateLectureForm({
                 placeholder="https://"
               />
             </div>
-          </div>
-        </details>
+          </>
+        )}
 
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-          >
-            {isLoading
-              ? t("createLecture.submitCreating")
-              : t("createLecture.submit")}
-          </button>
+        {/* Submit Button - visible on all tabs */}
+        <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {!isTab1Complete && (
+                <span className="text-red-600">
+                  {t("createLecture.requiredFieldsHint") || "* Required fields are missing in Basic Info tab"}
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+            >
+              {isLoading
+                ? t("createLecture.submitCreating")
+                : t("createLecture.submit")}
+            </button>
+          </div>
         </div>
       </form>
     </div>

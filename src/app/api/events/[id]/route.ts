@@ -102,9 +102,9 @@ export async function PUT(
       isFeatured = false,
     } = body;
 
-    if (!title || !description || !eventType || !eventDate || !categoryId) {
+    if (!title || !eventType || !eventDate || !categoryId) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields (title, event type, date, and category)" },
         { status: 400 }
       );
     }
@@ -153,7 +153,7 @@ export async function PUT(
       where: { id },
       data: {
         title,
-        description,
+        description: description || "",
         eventType,
         location: eventType === "in-person" ? location : null,
         onlineUrl: eventType === "online" ? onlineUrl : null,

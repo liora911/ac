@@ -211,6 +211,13 @@
     "createNewArticleTitle": "צור מאמר חדש",
     "cancelButton": "ביטול",
     "errorMessage": "שגיאה: משהו השתבש",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "content": "תוכן",
+      "settings": "הגדרות"
+    },
+    "requiredFieldsHint": "* חסרים שדות חובה",
+    "titleAndContentRequired": "כותרת ותוכן הם שדות חובה",
     "titleLabel": "כותרת *",
     "titlePlaceholder": "הכנס כותרת למאמר",
     "contentLabel": "תוכן *",
@@ -269,6 +276,12 @@
     "updateError": "שגיאה בעדכון המאמר. נסה שוב.",
     "title": "עריכת מאמר",
     "loggedInAs": "מחובר כ:",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "content": "תוכן",
+      "settings": "הגדרות"
+    },
+    "requiredFieldsHint": "* חסרים שדות חובה",
     "titleLabel": "כותרת המאמר *",
     "titlePlaceholder": "הכנס כותרת למאמר",
     "contentLabel": "תוכן המאמר *",
@@ -302,6 +315,13 @@
     "updateError": "שגיאה בעדכון האירוע. נסה שוב.",
     "title": "עריכת אירוע",
     "loggedInAs": "מחובר כ:",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "details": "פרטים",
+      "settings": "הגדרות"
+    },
+    "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, סוג אירוע, קטגוריה ותאריך)",
+    "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "titleLabel": "כותרת האירוע *",
     "titlePlaceholder": "הכנס כותרת לאירוע",
     "descriptionLabel": "תיאור האירוע *",
@@ -337,6 +357,11 @@
     "updateError": "שגיאה בעדכון ההרצאה. נסה שוב.",
     "title": "עריכת הרצאה",
     "loggedInAs": "מחובר כ:",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "content": "תוכן",
+      "media": "מדיה"
+    },
     "titleLabel": "כותרת ההרצאה *",
     "titlePlaceholder": "הכנס כותרת להרצאה",
     "descriptionLabel": "תיאור ההרצאה *",
@@ -352,6 +377,8 @@
     "imagePlaceholder": "PNG, JPG, GIF עד 5MB",
     "removeImageButton": "הסר תמונה",
     "imageUrlLabel": "או הכנס קישור לתמונה",
+    "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, קטגוריה ומשך זמן)",
+    "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "submitUpdating": "מעדכן הרצאה...",
     "submit": "עדכן הרצאה"
   },
@@ -487,6 +514,13 @@
     "notAuthorizedMessage": "אין לך הרשאה ליצור אירועים באתר זה",
     "title": "יצירת אירוע חדש",
     "loggedInAs": "מחובר כ:",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "details": "פרטים",
+      "settings": "הגדרות"
+    },
+    "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, סוג אירוע, קטגוריה ותאריך)",
+    "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "titleLabel": "כותרת האירוע *",
     "titlePlaceholder": "הכנס כותרת לאירוע",
     "descriptionLabel": "תיאור האירוע *",
@@ -523,6 +557,11 @@
     "notAuthorizedMessage": "אין לך הרשאה ליצור הרצאות באתר זה",
     "title": "יצירת הרצאה חדשה",
     "loggedInAs": "מחובר כ:",
+    "tabs": {
+      "basicInfo": "מידע בסיסי",
+      "content": "תוכן",
+      "media": "מדיה"
+    },
     "titleLabel": "כותרת ההרצאה *",
     "titlePlaceholder": "הכנס כותרת להרצאה",
     "descriptionLabel": "תיאור ההרצאה *",
@@ -537,6 +576,8 @@
     "imagePlaceholder": "PNG, JPG, GIF עד 5MB",
     "removeImageButton": "הסר תמונה",
     "imageUrlLabel": "או הכנס קישור לתמונה",
+    "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, קטגוריה ומשך זמן)",
+    "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "submitCreating": "יוצר הרצאה...",
     "submit": "צור הרצאה",
     "successMessage": "ההרצאה נוצרה בהצלחה!",

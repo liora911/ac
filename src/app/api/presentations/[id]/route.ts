@@ -96,10 +96,10 @@ export async function PUT(
       pdfUrl,
     } = body;
 
-    if (!title || !description || !content || !categoryId) {
+    if (!title || !categoryId) {
       return NextResponse.json(
         {
-          error: "Title, description, content, and categoryId are required",
+          error: "Title and categoryId are required",
         },
         { status: 400 }
       );
@@ -120,8 +120,8 @@ export async function PUT(
       where: { id },
       data: {
         title,
-        description,
-        content,
+        description: description || "",
+        content: content || "",
         googleSlidesUrl: googleSlidesUrl || null,
         pdfUrl: pdfUrl || null,
         imageUrls: imageUrls || [],

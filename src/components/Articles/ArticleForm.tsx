@@ -27,6 +27,7 @@ export default function ArticleForm({
   const isEditing = !!article;
   const { t, locale } = useTranslation();
   const [validationModalOpen, setValidationModalOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
 
   const [formData, setFormData] = useState<ArticleFormData>({
     title: article?.title || "",
@@ -87,6 +88,11 @@ export default function ArticleForm({
   const isLoading = createMutation.isPending || updateMutation.isPending;
   const error = createMutation.error || updateMutation.error;
 
+  // Validation for Tab 1 (required fields: Title and at least one author with name)
+  const isTab1Complete = formData.title.trim() !== "" && authors.length > 0 && authors.every(a => a.name && a.name.trim() !== "");
+  // Validation for Tab 2 (required field: Content)
+  const isTab2Complete = formData.content.trim() !== "";
+
   useEffect(() => {
     if (!isEditing && !formData.excerpt && formData.content) {
       const excerpt = formData.content
@@ -118,20 +124,31 @@ export default function ArticleForm({
     e.preventDefault();
     setAuthorsError("");
 
-    if (!formData.title.trim() || !formData.content.trim()) {
+    // Validate Tab 1 fields (Title and Authors)
+    if (!formData.title.trim()) {
+      setActiveTab(1);
       setValidationModalOpen(true);
       return;
     }
 
     // Validate authors
     if (authors.length === 0) {
+      setActiveTab(1);
       setAuthorsError("יש להוסיף לפחות מחבר אחד");
       return;
     }
 
     const hasEmptyAuthorName = authors.some((a) => !a.name || a.name.trim() === "");
     if (hasEmptyAuthorName) {
+      setActiveTab(1);
       setAuthorsError("כל מחבר חייב לכלול שם");
+      return;
+    }
+
+    // Validate Tab 2 fields (Content)
+    if (!formData.content.trim()) {
+      setActiveTab(2);
+      setValidationModalOpen(true);
       return;
     }
 
@@ -241,282 +258,322 @@ export default function ArticleForm({
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.titleLabel")}
-            </label>
-            <input
-              type="text"
-              value={formData.title}
-              onChange={(e) => handleInputChange("title", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={t("articleForm.titlePlaceholder") as string}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.contentLabel")}
-            </label>
-            <TiptapEditor
-              value={formData.content}
-              onChange={(value) => handleInputChange("content", value)}
-              placeholder={t("articleForm.contentPlaceholder") as string}
-              direction={formData.direction}
-              onDirectionChange={(direction) =>
-                handleInputChange("direction", direction)
-              }
-            />
-            <input
-              type="hidden"
-              name="content"
-              value={formData.content}
-              required
-            />
-          </div>
-
-          {/* <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.excerptLabel")}
-            </label>
-            <textarea
-              value={formData.excerpt}
-              onChange={(e) => handleInputChange("excerpt", e.target.value)}
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder={t("articleForm.excerptPlaceholder") as string}
-            />
-          </div> */}
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.featuredImageUrlLabel")}
-            </label>
-            <input
-              type="url"
-              value={formData.featuredImage}
-              onChange={(e) =>
-                handleInputChange("featuredImage", e.target.value)
-              }
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="https://"
-            />
-          </div>
-
-          {/* Authors Section */}
-          <AuthorInput
-            authors={authors}
-            onChange={setAuthors}
-            error={authorsError}
-          />
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.categoryLabel")}
-            </label>
-            <select
-              value={formData.categoryId}
-              onChange={(e) => handleInputChange("categoryId", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="">{t("articleForm.selectCategory")}</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>
-                  {category.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {t("articleForm.tagsLabel")}
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyPress={(e) =>
-                  e.key === "Enter" && (e.preventDefault(), addTag())
-                }
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder={t("articleForm.addTagPlaceholder") as string}
-              />
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200 mb-6">
+          <nav className="flex gap-1" aria-label="Tabs">
+            {([1, 2, 3] as const).map((tab) => (
               <button
+                key={tab}
                 type="button"
-                onClick={addTag}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
+                onClick={() => setActiveTab(tab)}
+                className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                  activeTab === tab
+                    ? "border-blue-600 text-blue-600"
+                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                }`}
               >
-                {t("articleForm.addButton")}
+                {tab === 1 && (t("articleForm.tabs.basicInfo") as string || "Basic Info")}
+                {tab === 2 && (t("articleForm.tabs.content") as string || "Content")}
+                {tab === 3 && (t("articleForm.tabs.settings") as string || "Settings")}
+                {tab === 1 && !isTab1Complete && (
+                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+                {tab === 2 && !isTab2Complete && (
+                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+                )}
               </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            ))}
+          </nav>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Tab 1: Basic Info */}
+          {activeTab === 1 && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("articleForm.titleLabel")}
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => handleInputChange("title", e.target.value)}
+                  className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                  }`}
+                  placeholder={t("articleForm.titlePlaceholder") as string}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("articleForm.categoryLabel")}
+                </label>
+                <select
+                  value={formData.categoryId}
+                  onChange={(e) => handleInputChange("categoryId", e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
-                  {tag}
+                  <option value="">{t("articleForm.selectCategory")}</option>
+                  {categories.map((category) => (
+                    <option key={category.id} value={category.id}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Authors Section */}
+              <AuthorInput
+                authors={authors}
+                onChange={setAuthors}
+                error={authorsError}
+              />
+            </>
+          )}
+
+          {/* Tab 2: Content */}
+          {activeTab === 2 && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("articleForm.contentLabel")}
+                </label>
+                <TiptapEditor
+                  value={formData.content}
+                  onChange={(value) => handleInputChange("content", value)}
+                  placeholder={t("articleForm.contentPlaceholder") as string}
+                  direction={formData.direction}
+                  onDirectionChange={(direction) =>
+                    handleInputChange("direction", direction)
+                  }
+                />
+                <input
+                  type="hidden"
+                  name="content"
+                  value={formData.content}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("articleForm.featuredImageUrlLabel")}
+                </label>
+                <input
+                  type="url"
+                  value={formData.featuredImage}
+                  onChange={(e) =>
+                    handleInputChange("featuredImage", e.target.value)
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://"
+                />
+              </div>
+            </>
+          )}
+
+          {/* Tab 3: Settings */}
+          {activeTab === 3 && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("articleForm.tagsLabel")}
+                </label>
+                <div className="flex gap-2 mb-2">
+                  <input
+                    type="text"
+                    value={tagInput}
+                    onChange={(e) => setTagInput(e.target.value)}
+                    onKeyPress={(e) =>
+                      e.key === "Enter" && (e.preventDefault(), addTag())
+                    }
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    placeholder={t("articleForm.addTagPlaceholder") as string}
+                  />
                   <button
                     type="button"
-                    onClick={() => removeTag(tag)}
-                    className="ml-1 text-blue-600 hover:text-blue-800 cursor-pointer"
+                    onClick={addTag}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                   >
-                    ×
+                    {t("articleForm.addButton")}
                   </button>
-                </span>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("articleForm.statusLabel")}
-              </label>
-              <select
-                value={formData.status}
-                onChange={(e) =>
-                  handleInputChange("status", e.target.value as ArticleStatus)
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="DRAFT">{t("articleForm.statusDraft")}</option>
-                <option value="PUBLISHED">
-                  {t("articleForm.statusPublished")}
-                </option>
-                <option value="ARCHIVED">
-                  {t("articleForm.statusArchived")}
-                </option>
-              </select>
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isFeatured"
-                checked={formData.isFeatured}
-                onChange={(e) =>
-                  handleInputChange("isFeatured", e.target.checked)
-                }
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label
-                htmlFor="isFeatured"
-                className="ml-2 text-sm text-gray-700"
-              >
-                {t("articleForm.featuredArticleLabel")}
-              </label>
-            </div>
-          </div>
-
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">
-              {t("articleForm.seoSettingsTitle")}
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("articleForm.metaTitleLabel")}
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) =>
-                    handleInputChange("metaTitle", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t("articleForm.metaTitlePlaceholder") as string}
-                />
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {formData.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="ml-1 text-blue-600 hover:text-blue-800 cursor-pointer"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("articleForm.metaDescriptionLabel")}
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaDescription}
-                  onChange={(e) =>
-                    handleInputChange("metaDescription", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={
-                    t("articleForm.metaDescriptionPlaceholder") as string
-                  }
-                />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                {t("articleForm.keywordsLabel")}
-              </label>
-              <div className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={keywordInput}
-                  onChange={(e) => setKeywordInput(e.target.value)}
-                  onKeyPress={(e) =>
-                    e.key === "Enter" && (e.preventDefault(), addKeyword())
-                  }
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={t("articleForm.addKeywordPlaceholder") as string}
-                />
-                <button
-                  type="button"
-                  onClick={addKeyword}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
-                >
-                  {t("articleForm.addButton")}
-                </button>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {formData.keywords.map((keyword) => (
-                  <span
-                    key={keyword}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("articleForm.statusLabel")}
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) =>
+                      handleInputChange("status", e.target.value as ArticleStatus)
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   >
-                    {keyword}
+                    <option value="DRAFT">{t("articleForm.statusDraft")}</option>
+                    <option value="PUBLISHED">
+                      {t("articleForm.statusPublished")}
+                    </option>
+                    <option value="ARCHIVED">
+                      {t("articleForm.statusArchived")}
+                    </option>
+                  </select>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isFeatured"
+                    checked={formData.isFeatured}
+                    onChange={(e) =>
+                      handleInputChange("isFeatured", e.target.checked)
+                    }
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="isFeatured"
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    {t("articleForm.featuredArticleLabel")}
+                  </label>
+                </div>
+              </div>
+
+              <div className="border-t pt-6">
+                <h3 className="text-lg font-medium text-gray-900 mb-4">
+                  {t("articleForm.seoSettingsTitle")}
+                </h3>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t("articleForm.metaTitleLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.metaTitle}
+                      onChange={(e) =>
+                        handleInputChange("metaTitle", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder={t("articleForm.metaTitlePlaceholder") as string}
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      {t("articleForm.metaDescriptionLabel")}
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.metaDescription}
+                      onChange={(e) =>
+                        handleInputChange("metaDescription", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder={
+                        t("articleForm.metaDescriptionPlaceholder") as string
+                      }
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {t("articleForm.keywordsLabel")}
+                  </label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={keywordInput}
+                      onChange={(e) => setKeywordInput(e.target.value)}
+                      onKeyPress={(e) =>
+                        e.key === "Enter" && (e.preventDefault(), addKeyword())
+                      }
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder={t("articleForm.addKeywordPlaceholder") as string}
+                    />
                     <button
                       type="button"
-                      onClick={() => removeKeyword(keyword)}
-                      className="ml-1 text-green-600 hover:text-green-800 cursor-pointer"
+                      onClick={addKeyword}
+                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                     >
-                      ×
+                      {t("articleForm.addButton")}
                     </button>
-                  </span>
-                ))}
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {formData.keywords.map((keyword) => (
+                      <span
+                        key={keyword}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
+                      >
+                        {keyword}
+                        <button
+                          type="button"
+                          onClick={() => removeKeyword(keyword)}
+                          className="ml-1 text-green-600 hover:text-green-800 cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          )}
 
-          <div className="flex justify-end space-x-4 pt-6 border-t">
-            {onCancel && (
+          {/* Submit Button - visible on all tabs */}
+          <div className="flex items-center justify-between pt-6 border-t">
+            <div className="text-sm text-gray-500">
+              {(!isTab1Complete || !isTab2Complete) && (
+                <span className="text-red-600">
+                  {t("articleForm.requiredFieldsHint") as string || "* Required fields are missing"}
+                </span>
+              )}
+            </div>
+            <div className="flex space-x-4">
+              {onCancel && (
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                  disabled={isLoading}
+                >
+                  {t("articleForm.cancelButton")}
+                </button>
+              )}
               <button
-                type="button"
-                onClick={onCancel}
-                className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                type="submit"
                 disabled={isLoading}
+                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
-                {t("articleForm.cancelButton")}
+                {isLoading
+                  ? t("articleForm.savingButton")
+                  : isEditing
+                  ? t("articleForm.updateArticleButton")
+                  : t("articleForm.createArticleButton")}
               </button>
-            )}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            >
-              {isLoading
-                ? t("articleForm.savingButton")
-                : isEditing
-                ? t("articleForm.updateArticleButton")
-                : t("articleForm.createArticleButton")}
-            </button>
+            </div>
           </div>
         </form>
 

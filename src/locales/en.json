@@ -210,6 +210,13 @@
     "createNewArticleTitle": "Create New Article",
     "cancelButton": "Cancel",
     "errorMessage": "Error: Something went wrong",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "content": "Content",
+      "settings": "Settings"
+    },
+    "requiredFieldsHint": "* Required fields are missing",
+    "titleAndContentRequired": "Title and content are required",
     "titleLabel": "Title *",
     "titlePlaceholder": "Enter article title",
     "contentLabel": "Content *",
@@ -268,6 +275,12 @@
     "updateError": "Error updating the article. Please try again.",
     "title": "Edit Article",
     "loggedInAs": "Logged in as:",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "content": "Content",
+      "settings": "Settings"
+    },
+    "requiredFieldsHint": "* Required fields are missing",
     "titleLabel": "Article title *",
     "titlePlaceholder": "Enter article title",
     "contentLabel": "Article content *",
@@ -301,6 +314,13 @@
     "updateError": "Error updating the event. Please try again.",
     "title": "Edit Event",
     "loggedInAs": "Logged in as:",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "details": "Details",
+      "settings": "Settings"
+    },
+    "requiredFieldsError": "Please fill in all required fields (Title, Event Type, Category, and Date)",
+    "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
     "titleLabel": "Event title *",
     "titlePlaceholder": "Enter event title",
     "descriptionLabel": "Event description *",
@@ -336,6 +356,13 @@
     "updateError": "Error updating the lecture. Please try again.",
     "title": "Edit Lecture",
     "loggedInAs": "Logged in as:",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "content": "Content",
+      "media": "Media"
+    },
+    "requiredFieldsError": "Please fill in all required fields (Title, Category, and Duration)",
+    "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
     "titleLabel": "Lecture title *",
     "titlePlaceholder": "Enter lecture title",
     "descriptionLabel": "Lecture description *",
@@ -486,6 +513,13 @@
     "notAuthorizedMessage": "You are not authorized to create events on this site",
     "title": "Create New Event",
     "loggedInAs": "Logged in as:",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "details": "Details",
+      "settings": "Settings"
+    },
+    "requiredFieldsError": "Please fill in all required fields (Title, Event Type, Category, and Date)",
+    "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
     "titleLabel": "Event Title *",
     "titlePlaceholder": "Enter event title",
     "descriptionLabel": "Event Description *",
@@ -522,6 +556,13 @@
     "notAuthorizedMessage": "You are not authorized to create lectures on this site",
     "title": "Create New Lecture",
     "loggedInAs": "Logged in as:",
+    "tabs": {
+      "basicInfo": "Basic Info",
+      "content": "Content",
+      "media": "Media"
+    },
+    "requiredFieldsError": "Please fill in all required fields (Title, Category, and Duration)",
+    "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
     "titleLabel": "Lecture Title *",
     "titlePlaceholder": "Enter lecture title",
     "descriptionLabel": "Lecture Description *",

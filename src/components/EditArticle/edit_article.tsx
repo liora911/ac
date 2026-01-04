@@ -34,6 +34,7 @@ export default function EditArticleForm({
   const { t, locale } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -60,6 +61,11 @@ export default function EditArticleForm({
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+
+  // Validation for Tab 1 (required fields: Title and at least one author with name)
+  const isTab1Complete = formData.title.trim() !== "" && authors.length > 0 && authors.every(a => a.name && a.name.trim() !== "");
+  // Validation for Tab 2 (required field: Content)
+  const isTab2Complete = formData.content.trim() !== "" && formData.content.replace(/<[^>]*>/g, "").trim() !== "";
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -170,27 +176,19 @@ export default function EditArticleForm({
     e.preventDefault();
     setAuthorsError("");
 
+    // Validate Tab 1 fields (Title and Authors)
     if (!formData.title.trim()) {
+      setActiveTab(1);
       setMessage({
         type: "error",
         text: t("editArticleForm.titleRequired"),
       });
       return;
     }
-    if (
-      !formData.content ||
-      formData.content.trim() === "" ||
-      formData.content.replace(/<[^>]*>/g, "").trim() === ""
-    ) {
-      setMessage({
-        type: "error",
-        text: t("editArticleForm.contentRequired"),
-      });
-      return;
-    }
 
     // Validate authors
     if (authors.length === 0) {
+      setActiveTab(1);
       setAuthorsError("יש להוסיף לפחות מחבר אחד");
       setMessage({
         type: "error",
@@ -201,10 +199,25 @@ export default function EditArticleForm({
 
     const hasEmptyAuthorName = authors.some((a) => !a.name || a.name.trim() === "");
     if (hasEmptyAuthorName) {
+      setActiveTab(1);
       setAuthorsError("כל מחבר חייב לכלול שם");
       setMessage({
         type: "error",
         text: "כל מחבר חייב לכלול שם",
+      });
+      return;
+    }
+
+    // Validate Tab 2 fields (Content)
+    if (
+      !formData.content ||
+      formData.content.trim() === "" ||
+      formData.content.replace(/<[^>]*>/g, "").trim() === ""
+    ) {
+      setActiveTab(2);
+      setMessage({
+        type: "error",
+        text: t("editArticleForm.contentRequired"),
       });
       return;
     }
@@ -340,139 +353,194 @@ export default function EditArticleForm({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2 rtl">
-            {t("editArticleForm.titleLabel")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            placeholder={t("editArticleForm.titlePlaceholder")}
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
-            {t("editArticleForm.contentLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.content}
-            onChange={handleContentChange}
-            placeholder={t("editArticleForm.contentPlaceholder")}
-            direction={formData.direction}
-            onDirectionChange={(direction) =>
-              setFormData((prev) => ({ ...prev, direction }))
-            }
-          />
-        </div>
-
-        {/* Authors Section */}
-        <AuthorInput
-          authors={authors}
-          onChange={setAuthors}
-          error={authorsError}
-        />
-
-        {/* Category Selection */}
-        <div>
-          <label
-            htmlFor="categoryId"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editArticleForm.categoryLabel")}
-          </label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            value={formData.categoryId}
-            onChange={handleChange}
-            disabled={categoriesLoading}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
-          >
-            <option value="">
-              {categoriesLoading
-                ? t("editArticleForm.loadingCategories")
-                : t("editArticleForm.selectCategory")}
-            </option>
-            {renderCategoryOptions()}
-          </select>
-        </div>
-
-        {/* Article Image */}
-        <div>
-          <UploadImage
-            onImageSelect={setArticleImageFile}
-            currentImage={formData.articleImage}
-            label={t("editArticleForm.articleImageLabel")}
-            placeholder={t("editArticleForm.imagePlaceholder")}
-          />
-          {formData.articleImage && (
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-1" aria-label="Tabs">
+          {([1, 2, 3] as const).map((tab) => (
             <button
+              key={tab}
               type="button"
-              onClick={() => {
-                setFormData((prev) => ({ ...prev, articleImage: "" }));
-                setArticleImageFile(null);
-              }}
-              className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
             >
-              {t("editArticleForm.removeImageButton")}
+              {tab === 1 && (t("editArticleForm.tabs.basicInfo") as string || "Basic Info")}
+              {tab === 2 && (t("editArticleForm.tabs.content") as string || "Content")}
+              {tab === 3 && (t("editArticleForm.tabs.settings") as string || "Settings")}
+              {tab === 1 && !isTab1Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+              {tab === 2 && !isTab2Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
             </button>
-          )}
-        </div>
+          ))}
+        </nav>
+      </div>
 
-        <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
-          <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
-            {t("editArticleForm.imageLinksSummary")}
-          </summary>
-          <div className="mt-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
-              {t("editArticleForm.articleImageUrlLabel")}
-            </label>
-            <input
-              type="url"
-              name="articleImage"
-              value={formData.articleImage}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="https://"
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        {/* Tab 1: Basic Info */}
+        {activeTab === 1 && (
+          <>
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2 rtl">
+                {t("editArticleForm.titleLabel")}
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("editArticleForm.titlePlaceholder")}
+              />
+            </div>
+
+            {/* Category Selection */}
+            <div>
+              <label
+                htmlFor="categoryId"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editArticleForm.categoryLabel")}
+              </label>
+              <select
+                id="categoryId"
+                name="categoryId"
+                value={formData.categoryId}
+                onChange={handleChange}
+                disabled={categoriesLoading}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
+              >
+                <option value="">
+                  {categoriesLoading
+                    ? t("editArticleForm.loadingCategories")
+                    : t("editArticleForm.selectCategory")}
+                </option>
+                {renderCategoryOptions()}
+              </select>
+            </div>
+
+            {/* Authors Section */}
+            <AuthorInput
+              authors={authors}
+              onChange={setAuthors}
+              error={authorsError}
             />
+          </>
+        )}
+
+        {/* Tab 2: Content */}
+        {activeTab === 2 && (
+          <>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
+                {t("editArticleForm.contentLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.content}
+                onChange={handleContentChange}
+                placeholder={t("editArticleForm.contentPlaceholder")}
+                direction={formData.direction}
+                onDirectionChange={(direction) =>
+                  setFormData((prev) => ({ ...prev, direction }))
+                }
+              />
+            </div>
+
+            {/* Article Image */}
+            <div>
+              <UploadImage
+                onImageSelect={setArticleImageFile}
+                currentImage={formData.articleImage}
+                label={t("editArticleForm.articleImageLabel")}
+                placeholder={t("editArticleForm.imagePlaceholder")}
+              />
+              {formData.articleImage && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData((prev) => ({ ...prev, articleImage: "" }));
+                    setArticleImageFile(null);
+                  }}
+                  className="mt-2 text-red-600 hover:text-red-700 text-sm font-medium cursor-pointer"
+                >
+                  {t("editArticleForm.removeImageButton")}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* Tab 3: Settings */}
+        {activeTab === 3 && (
+          <>
+            <div className="max-w-xs">
+              <label
+                htmlFor="readDuration"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editArticleForm.readDurationLabel")}
+              </label>
+              <input
+                type="number"
+                id="readDuration"
+                name="readDuration"
+                value={formData.readDuration}
+                onChange={handleChange}
+                min="1"
+                max="60"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+
+            <details className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+              <summary className="cursor-pointer text-sm font-medium text-gray-700 rtl">
+                {t("editArticleForm.imageLinksSummary")}
+              </summary>
+              <div className="mt-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
+                  {t("editArticleForm.articleImageUrlLabel")}
+                </label>
+                <input
+                  type="url"
+                  name="articleImage"
+                  value={formData.articleImage}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="https://"
+                />
+              </div>
+            </details>
+          </>
+        )}
+
+        {/* Submit Button - visible on all tabs */}
+        <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {(!isTab1Complete || !isTab2Complete) && (
+                <span className="text-red-600">
+                  {t("editArticleForm.requiredFieldsHint") as string || "* Required fields are missing"}
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+            >
+              {isLoading
+                ? t("editArticleForm.submitUpdating")
+                : t("editArticleForm.submit")}
+            </button>
           </div>
-        </details>
-
-        <div className="max-w-xs">
-          <label
-            htmlFor="readDuration"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editArticleForm.readDurationLabel")}
-          </label>
-          <input
-            type="number"
-            id="readDuration"
-            name="readDuration"
-            value={formData.readDuration}
-            onChange={handleChange}
-            min="1"
-            max="60"
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          />
-        </div>
-
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-          >
-            {isLoading
-              ? t("editArticleForm.submitUpdating")
-              : t("editArticleForm.submit")}
-          </button>
         </div>
       </form>
     </div>

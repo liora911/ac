@@ -104,9 +104,9 @@ export async function POST(request: NextRequest) {
       pdfUrl,
     } = body;
 
-    if (!title || !description || !content || !categoryId) {
+    if (!title || !categoryId) {
       return NextResponse.json(
-        { error: "Missing required fields" },
+        { error: "Missing required fields (title and category)" },
         { status: 400 }
       );
     }
@@ -133,8 +133,8 @@ export async function POST(request: NextRequest) {
     const presentation = await prisma.presentation.create({
       data: {
         title,
-        description,
-        content,
+        description: description || "",
+        content: content || "",
         googleSlidesUrl: googleSlidesUrl || null,
         pdfUrl: pdfUrl || null,
         imageUrls: imageUrls || [],

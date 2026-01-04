@@ -17,6 +17,7 @@ export default function EditEventForm({
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
+  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -42,6 +43,9 @@ export default function EditEventForm({
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
+
+  // Validation for Tab 1 (required fields)
+  const isTab1Complete = formData.title.trim() !== "" && formData.eventType !== "" && formData.categoryId !== "" && formData.eventDate !== "";
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -153,6 +157,17 @@ export default function EditEventForm({
     setIsLoading(true);
     setMessage(null);
 
+    // Validate required fields before submission
+    if (!isTab1Complete) {
+      setMessage({
+        type: "error",
+        text: t("editEventForm.requiredFieldsError") as string || "Please fill in all required fields (Title, Event Type, Category, and Date)",
+      });
+      setActiveTab(1);
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const submissionData = {
         ...formData,
@@ -261,242 +276,294 @@ export default function EditEventForm({
         </div>
       )}
 
+      {/* Tab Navigation */}
+      <div className="border-b border-gray-200 mb-6">
+        <nav className="flex gap-1" aria-label="Tabs">
+          {([1, 2, 3] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setActiveTab(tab)}
+              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
+                activeTab === tab
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              {tab === 1 && (t("editEventForm.tabs.basicInfo") as string || "Basic Info")}
+              {tab === 2 && (t("editEventForm.tabs.details") as string || "Details")}
+              {tab === 3 && (t("editEventForm.tabs.settings") as string || "Settings")}
+              {tab === 1 && !isTab1Complete && (
+                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-5">
-        <div>
-          <label
-            htmlFor="title"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editEventForm.titleLabel")}
-          </label>
-          <input
-            type="text"
-            id="title"
-            name="title"
-            value={formData.title}
-            onChange={handleChange}
-            required
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            placeholder={t("editEventForm.titlePlaceholder")}
-          />
-        </div>
+        {/* Tab 1: Basic Info */}
+        {activeTab === 1 && (
+          <>
+            <div>
+              <label
+                htmlFor="title"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editEventForm.titleLabel")}
+              </label>
+              <input
+                type="text"
+                id="title"
+                name="title"
+                value={formData.title}
+                onChange={handleChange}
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                }`}
+                placeholder={t("editEventForm.titlePlaceholder")}
+              />
+            </div>
 
-        <div>
-          <label
-            htmlFor="description"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editEventForm.descriptionLabel")}
-          </label>
-          <TiptapEditor
-            value={formData.description}
-            onChange={(value) =>
-              setFormData((prev) => ({ ...prev, description: value }))
-            }
-            placeholder={t("editEventForm.descriptionPlaceholder")}
-          />
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="eventType"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.eventTypeLabel")}
+                </label>
+                <select
+                  id="eventType"
+                  name="eventType"
+                  value={formData.eventType}
+                  onChange={handleChange}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                    formData.eventType === "" ? "border-gray-300" : "border-green-300"
+                  }`}
+                >
+                  <option value="">{t("editEventForm.eventTypePlaceholder")}</option>
+                  <option value="in-person">
+                    {t("editEventForm.eventTypeInPerson")}
+                  </option>
+                  <option value="online">{t("editEventForm.eventTypeOnline")}</option>
+                </select>
+              </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label
-              htmlFor="eventType"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.eventTypeLabel")}
-            </label>
-            <select
-              id="eventType"
-              name="eventType"
-              value={formData.eventType}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            >
-              <option value="">{t("editEventForm.eventTypePlaceholder")}</option>
-              <option value="in-person">
-                {t("editEventForm.eventTypeInPerson")}
-              </option>
-              <option value="online">{t("editEventForm.eventTypeOnline")}</option>
-            </select>
-          </div>
+              <div>
+                <label
+                  htmlFor="categoryId"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.categoryLabel")}
+                </label>
+                <select
+                  id="categoryId"
+                  name="categoryId"
+                  value={formData.categoryId}
+                  onChange={handleChange}
+                  disabled={categoriesLoading}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl ${
+                    formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                  }`}
+                >
+                  <option value="">
+                    {categoriesLoading
+                      ? t("editEventForm.loadingCategories")
+                      : t("editEventForm.selectCategory")}
+                  </option>
+                  {renderCategoryOptions()}
+                </select>
+              </div>
+            </div>
 
-          <div>
-            <label
-              htmlFor="categoryId"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.categoryLabel")}
-            </label>
-            <select
-              id="categoryId"
-              name="categoryId"
-              value={formData.categoryId}
-              onChange={handleChange}
-              required
-              disabled={categoriesLoading}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
-            >
-              <option value="">
-                {categoriesLoading
-                  ? t("editEventForm.loadingCategories")
-                  : t("editEventForm.selectCategory")}
-              </option>
-              {renderCategoryOptions()}
-            </select>
-          </div>
-        </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="eventDate"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.eventDateLabel")}
+                </label>
+                <input
+                  type="date"
+                  id="eventDate"
+                  name="eventDate"
+                  value={formData.eventDate}
+                  onChange={handleChange}
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                    formData.eventDate === "" ? "border-gray-300" : "border-green-300"
+                  }`}
+                />
+              </div>
 
-        {formData.eventType === "in-person" && (
-          <div>
-            <label
-              htmlFor="location"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.locationLabel")}
-            </label>
-            <input
-              type="text"
-              id="location"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-              placeholder={t("editEventForm.locationPlaceholder")}
-            />
-          </div>
+              <div>
+                <label
+                  htmlFor="eventTime"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.eventTimeLabel")}
+                </label>
+                <input
+                  type="time"
+                  id="eventTime"
+                  name="eventTime"
+                  value={formData.eventTime}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                />
+              </div>
+            </div>
+          </>
         )}
 
-        {formData.eventType === "online" && (
-          <div>
-            <label
-              htmlFor="onlineUrl"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.onlineUrlLabel")}
-            </label>
-            <input
-              type="url"
-              id="onlineUrl"
-              name="onlineUrl"
-              value={formData.onlineUrl}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-              placeholder="https://"
-            />
-          </div>
+        {/* Tab 2: Details */}
+        {activeTab === 2 && (
+          <>
+            <div>
+              <label
+                htmlFor="description"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editEventForm.descriptionLabel")}
+              </label>
+              <TiptapEditor
+                value={formData.description}
+                onChange={(value) =>
+                  setFormData((prev) => ({ ...prev, description: value }))
+                }
+                placeholder={t("editEventForm.descriptionPlaceholder")}
+              />
+            </div>
+
+            {formData.eventType === "in-person" && (
+              <div>
+                <label
+                  htmlFor="location"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.locationLabel")}
+                </label>
+                <input
+                  type="text"
+                  id="location"
+                  name="location"
+                  value={formData.location}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                  placeholder={t("editEventForm.locationPlaceholder")}
+                />
+              </div>
+            )}
+
+            {formData.eventType === "online" && (
+              <div>
+                <label
+                  htmlFor="onlineUrl"
+                  className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                >
+                  {t("editEventForm.onlineUrlLabel")}
+                </label>
+                <input
+                  type="url"
+                  id="onlineUrl"
+                  name="onlineUrl"
+                  value={formData.onlineUrl}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                  placeholder="https://"
+                />
+              </div>
+            )}
+
+            <div>
+              <label
+                htmlFor="maxSeats"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editEventForm.maxSeatsLabel")}
+              </label>
+              <input
+                type="number"
+                id="maxSeats"
+                name="maxSeats"
+                value={formData.maxSeats}
+                onChange={handleChange}
+                min={1}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                placeholder={t("editEventForm.maxSeatsPlaceholder")}
+              />
+              <p className="text-xs text-gray-500 mt-1 rtl">
+                {t("editEventForm.maxSeatsHelp")}
+              </p>
+            </div>
+          </>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label
-              htmlFor="eventDate"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
+        {/* Tab 3: Settings */}
+        {activeTab === 3 && (
+          <>
+            <div>
+              <label
+                htmlFor="bannerImageUrl"
+                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+              >
+                {t("editEventForm.bannerImageUrlLabel")}
+              </label>
+              <input
+                type="url"
+                id="bannerImageUrl"
+                name="bannerImageUrl"
+                value={formData.bannerImageUrl}
+                onChange={handleChange}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
+                placeholder="https://"
+              />
+            </div>
+
+            <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <input
+                type="checkbox"
+                id="isFeatured"
+                name="isFeatured"
+                checked={formData.isFeatured}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
+                }
+                className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+              />
+              <label htmlFor="isFeatured" className="cursor-pointer">
+                <span className="text-sm font-medium text-gray-900">
+                  {t("editEventForm.isFeaturedLabel")}
+                </span>
+                <p className="text-xs text-gray-500 mt-0.5">
+                  {t("editEventForm.isFeaturedHelp")}
+                </p>
+              </label>
+            </div>
+          </>
+        )}
+
+        {/* Submit Button - visible on all tabs */}
+        <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-500">
+              {!isTab1Complete && (
+                <span className="text-red-600">
+                  {t("editEventForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
+                </span>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
             >
-              {t("editEventForm.eventDateLabel")}
-            </label>
-            <input
-              type="date"
-              id="eventDate"
-              name="eventDate"
-              value={formData.eventDate}
-              onChange={handleChange}
-              required
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            />
+              {isLoading
+                ? t("editEventForm.submitUpdating")
+                : t("editEventForm.submit")}
+            </button>
           </div>
-
-          <div>
-            <label
-              htmlFor="eventTime"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.eventTimeLabel")}
-            </label>
-            <input
-              type="time"
-              id="eventTime"
-              name="eventTime"
-              value={formData.eventTime}
-              onChange={handleChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="maxSeats"
-              className="block text-sm font-medium text-gray-700 mb-2 rtl"
-            >
-              {t("editEventForm.maxSeatsLabel")}
-            </label>
-            <input
-              type="number"
-              id="maxSeats"
-              name="maxSeats"
-              value={formData.maxSeats}
-              onChange={handleChange}
-              min={1}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-              placeholder={t("editEventForm.maxSeatsPlaceholder")}
-            />
-            <p className="text-xs text-gray-500 mt-1 rtl">
-              {t("editEventForm.maxSeatsHelp")}
-            </p>
-          </div>
-        </div>
-
-        <div>
-          <label
-            htmlFor="bannerImageUrl"
-            className="block text-sm font-medium text-gray-700 mb-2 rtl"
-          >
-            {t("editEventForm.bannerImageUrlLabel")}
-          </label>
-          <input
-            type="url"
-            id="bannerImageUrl"
-            name="bannerImageUrl"
-            value={formData.bannerImageUrl}
-            onChange={handleChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl"
-            placeholder="https://"
-          />
-        </div>
-
-        <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <input
-            type="checkbox"
-            id="isFeatured"
-            name="isFeatured"
-            checked={formData.isFeatured}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
-            }
-            className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
-          />
-          <label htmlFor="isFeatured" className="cursor-pointer">
-            <span className="text-sm font-medium text-gray-900">
-              {t("editEventForm.isFeaturedLabel")}
-            </span>
-            <p className="text-xs text-gray-500 mt-0.5">
-              {t("editEventForm.isFeaturedHelp")}
-            </p>
-          </label>
-        </div>
-
-        <div className="pt-4">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-          >
-            {isLoading
-              ? t("editEventForm.submitUpdating")
-              : t("editEventForm.submit")}
-          </button>
         </div>
       </form>
     </div>
