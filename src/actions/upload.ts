@@ -3,7 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import { put, del } from "@vercel/blob";
+import { put, del, handleUpload, type HandleUploadBody } from "@vercel/blob";
 
 export type UploadResult = {
   success: true;
@@ -35,23 +35,31 @@ export async function uploadFile(formData: FormData): Promise<UploadResult> {
 
     // Validate file type
     const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-    const documentTypes = ["application/pdf"];
+    const documentTypes = [
+      "application/pdf",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation", // .pptx
+      "application/vnd.ms-powerpoint", // .ppt
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // .docx
+      "application/msword", // .doc
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
+      "application/vnd.ms-excel", // .xls
+    ];
     const allowedTypes = [...imageTypes, ...documentTypes];
 
     if (!allowedTypes.includes(file.type)) {
       return {
         success: false,
-        error: "Invalid file type. Only JPEG, PNG, GIF, WebP, and PDF are allowed."
+        error: "Invalid file type. Allowed: images (JPEG, PNG, GIF, WebP) and documents (PDF, PPTX, DOCX, XLSX)."
       };
     }
 
-    // Validate file size (max 5MB for images, max 50MB for PDFs)
-    const isPdf = documentTypes.includes(file.type);
-    const maxSize = isPdf ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    // Validate file size (max 5MB for images, max 50MB for documents)
+    const isDocument = documentTypes.includes(file.type);
+    const maxSize = isDocument ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return {
         success: false,
-        error: isPdf ? "File too large. Maximum size is 50MB." : "File too large. Maximum size is 5MB."
+        error: isDocument ? "File too large. Maximum size is 50MB." : "File too large. Maximum size is 5MB."
       };
     }
 
