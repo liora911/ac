@@ -128,9 +128,16 @@ export async function GET(request: NextRequest) {
     const take = query.limit!;
 
     const where: Prisma.ArticleWhereInput = {};
+    const andConditions: Prisma.ArticleWhereInput[] = [];
 
     if (query.categoryId) {
-      where.categoryId = query.categoryId;
+      // Search in both the legacy single categoryId AND the new many-to-many categories relation
+      andConditions.push({
+        OR: [
+          { categoryId: query.categoryId },
+          { categories: { some: { categoryId: query.categoryId } } },
+        ],
+      });
     }
 
     if (query.status) {
@@ -151,10 +158,17 @@ export async function GET(request: NextRequest) {
     }
 
     if (query.search) {
-      where.OR = [
-        { title: { contains: query.search, mode: "insensitive" } },
-        { content: { contains: query.search, mode: "insensitive" } },
-      ];
+      andConditions.push({
+        OR: [
+          { title: { contains: query.search, mode: "insensitive" } },
+          { content: { contains: query.search, mode: "insensitive" } },
+        ],
+      });
+    }
+
+    // Combine all AND conditions
+    if (andConditions.length > 0) {
+      where.AND = andConditions;
     }
 
     let orderBy: Prisma.ArticleOrderByWithRelationInput;
