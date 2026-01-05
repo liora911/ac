@@ -75,14 +75,29 @@ model Article {
   authorId        String
   author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
-  // Add these two lines:
+  // Single category (kept for backward compatibility)
   categoryId      String?
   category        Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+
+  // Multiple categories support
+  categories      ArticleCategory[]
 
   // Multiple authors support
   authors         ArticleAuthor[]
 
   @@map("articles")
+}
+
+model ArticleCategory {
+  id          String   @id @default(cuid())
+  articleId   String
+  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  categoryId  String
+  category    Category @relation("ArticleCategories", fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([articleId, categoryId])
+  @@map("article_categories")
 }
 
 model ArticleAuthor {
@@ -125,7 +140,8 @@ model Category {
   lectures        Lecture[]
   presentations   Presentation[]
   events          Event[]
-  articles        Article[]     // <-- ADD THIS LINE
+  articles        Article[]     // Single category relation (backward compat)
+  articleCategories ArticleCategory[] @relation("ArticleCategories") // Multiple categories
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 

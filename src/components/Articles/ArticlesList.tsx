@@ -594,13 +594,24 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
         </div>
 
         {}
-        {article.category && (
+        {article.categories && article.categories.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-1">
+            {article.categories.map((cat) => (
+              <span
+                key={cat.id}
+                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+              >
+                {cat.name}
+              </span>
+            ))}
+          </div>
+        ) : article.category ? (
           <div className="mt-3">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
               {article.category.name}
             </span>
           </div>
-        )}
+        ) : null}
       </div>
       {errorModalOpen && (
         <Modal

@@ -16,12 +16,31 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
   include: {
     author: { select: { id: true; name: true; email: true; image: true } };
     category: { select: { id: true; name: true; bannerImageUrl: true } };
+    categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
     authors: { select: { id: true; name: true; imageUrl: true; order: true } };
   };
 }>;
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {
+  // Build categories array from the many-to-many relation
+  const categoriesFromRelation = article.categories?.map((ac) => ({
+    id: ac.category.id,
+    name: ac.category.name,
+    bannerImageUrl: ac.category.bannerImageUrl ?? undefined,
+  })) || [];
+
+  // Fallback to single category for backward compatibility
+  const categories = categoriesFromRelation.length > 0
+    ? categoriesFromRelation
+    : article.category
+    ? [{
+        id: article.category.id,
+        name: article.category.name,
+        bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+      }]
+    : [];
+
   return {
     id: article.id,
     title: article.title,
@@ -52,6 +71,7 @@ function transformArticle(article: ArticleWithRelations): Article {
           bannerImageUrl: article.category.bannerImageUrl ?? undefined,
         }
       : undefined,
+    categories, // Multiple categories
     tags: [],
     keywords: [],
     authors: article.authors.map((a) => ({
@@ -170,6 +190,17 @@ export async function GET(request: NextRequest) {
             bannerImageUrl: true,
           },
         },
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                bannerImageUrl: true,
+              },
+            },
+          },
+        },
         authors: {
           orderBy: { order: "asc" },
           select: {
@@ -240,6 +271,7 @@ export async function POST(request: NextRequest) {
       content,
       featuredImage,
       categoryId,
+      categoryIds, // Multiple categories support
       status = "DRAFT",
       direction = "ltr",
       publisherName,
@@ -272,14 +304,17 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    if (categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: categoryId },
+    // Validate categories (support both single categoryId and multiple categoryIds)
+    const allCategoryIds = categoryIds?.length ? categoryIds : (categoryId ? [categoryId] : []);
+
+    if (allCategoryIds.length > 0) {
+      const foundCategories = await prisma.category.findMany({
+        where: { id: { in: allCategoryIds } },
       });
 
-      if (!category) {
+      if (foundCategories.length !== allCategoryIds.length) {
         return NextResponse.json(
-          { error: "Category not found" },
+          { error: "One or more categories not found" },
           { status: 400 }
         );
       }
@@ -308,7 +343,15 @@ export async function POST(request: NextRequest) {
         published: status === "PUBLISHED",
         authorId: user.id,
         direction,
-        categoryId: categoryId || null,
+        categoryId: allCategoryIds[0] || null, // Keep first category for backward compat
+        // Create multiple category relations
+        categories: allCategoryIds.length > 0
+          ? {
+              create: allCategoryIds.map((catId) => ({
+                categoryId: catId,
+              })),
+            }
+          : undefined,
         authors: {
           create: authors.map((author, index) => ({
             name: author.name.trim(),
@@ -331,6 +374,17 @@ export async function POST(request: NextRequest) {
             id: true,
             name: true,
             bannerImageUrl: true,
+          },
+        },
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                bannerImageUrl: true,
+              },
+            },
           },
         },
         authors: {

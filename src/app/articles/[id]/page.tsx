@@ -295,11 +295,22 @@ export default function ArticleDetailPage() {
               <p className="text-sm text-gray-500">
                 {article.readTime} {t("articleCard.minRead")}
               </p>
-              {article.category && (
+              {article.categories && article.categories.length > 0 ? (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {article.categories.map((cat) => (
+                    <span
+                      key={cat.id}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                    >
+                      {cat.name}
+                    </span>
+                  ))}
+                </div>
+              ) : article.category ? (
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
                   {article.category.name}
                 </span>
-              )}
+              ) : null}
             </div>
           </div>
         </header>

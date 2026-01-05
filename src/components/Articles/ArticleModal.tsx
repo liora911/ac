@@ -77,11 +77,22 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
                 <span className="text-sm text-gray-500">
                   {article.readTime} min read
                 </span>
-                {article.category && (
+                {article.categories && article.categories.length > 0 ? (
+                  <div className="flex flex-wrap gap-1">
+                    {article.categories.map((cat) => (
+                      <span
+                        key={cat.id}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      >
+                        {cat.name}
+                      </span>
+                    ))}
+                  </div>
+                ) : article.category ? (
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                     {article.category.name}
                   </span>
-                )}
+                ) : null}
               </div>
             </div>
 

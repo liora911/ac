@@ -47,6 +47,7 @@ export default function EditArticleForm({
     publisherImage: "",
     readDuration: 5,
     categoryId: "",
+    categoryIds: [] as string[],
     direction: (locale === "en" ? "ltr" : "rtl") as "ltr" | "rtl",
   });
   const [authors, setAuthors] = useState<ArticleAuthorInput[]>([
@@ -86,6 +87,11 @@ export default function EditArticleForm({
         if (response.ok) {
           const article = await response.json();
 
+          // Build categoryIds from multiple categories, fallback to single categoryId
+          const categoryIds = article.categories?.map((c: { id: string }) => c.id) ||
+            (article.category?.id ? [article.category.id] :
+            (article.categoryId ? [article.categoryId] : []));
+
           setFormData({
             title: article.title || "",
             content: article.content || "",
@@ -94,6 +100,7 @@ export default function EditArticleForm({
             publisherImage: article.publisherImage || "",
             readDuration: article.readTime || article.readDuration || 5,
             categoryId: article.category?.id || article.categoryId || "",
+            categoryIds,
             direction: article.direction || (locale === "en" ? "ltr" : "rtl"),
           });
 
@@ -223,7 +230,8 @@ export default function EditArticleForm({
         publisherName: authors[0]?.name || formData.publisherName, // Keep for backward compat
         publisherImage: authors[0]?.imageUrl || null,
         direction: formData.direction,
-        categoryId: formData.categoryId || undefined,
+        categoryId: formData.categoryIds[0] || formData.categoryId || undefined, // Primary category for backward compat
+        categoryIds: formData.categoryIds.length > 0 ? formData.categoryIds : undefined, // Multiple categories
         authors: authors.map((a, index) => ({
           name: a.name.trim(),
           imageUrl: a.imageUrl || null,
@@ -393,22 +401,71 @@ export default function EditArticleForm({
                 className="block text-sm font-medium text-gray-700 mb-2 rtl"
               >
                 {t("editArticleForm.categoryLabel")}
+                <span className="text-gray-400 text-xs mr-2">(ניתן לבחור מספר קטגוריות)</span>
               </label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                disabled={categoriesLoading}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl"
-              >
-                <option value="">
-                  {categoriesLoading
-                    ? t("editArticleForm.loadingCategories")
-                    : t("editArticleForm.selectCategory")}
-                </option>
-                {renderCategoryOptions()}
-              </select>
+              <div className="border border-gray-300 rounded-lg p-3 max-h-48 overflow-y-auto">
+                {categoriesLoading ? (
+                  <p className="text-gray-400 text-sm">{t("editArticleForm.loadingCategories")}</p>
+                ) : categories.length === 0 ? (
+                  <p className="text-gray-400 text-sm">אין קטגוריות זמינות</p>
+                ) : (
+                  <div className="space-y-2">
+                    {categories.map((category) => (
+                      <label
+                        key={category.id}
+                        className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={formData.categoryIds.includes(category.id)}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setFormData((prev) => ({
+                                ...prev,
+                                categoryIds: [...prev.categoryIds, category.id],
+                              }));
+                            } else {
+                              setFormData((prev) => ({
+                                ...prev,
+                                categoryIds: prev.categoryIds.filter((id) => id !== category.id),
+                              }));
+                            }
+                          }}
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">{category.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+              {formData.categoryIds.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1">
+                  {formData.categoryIds.map((catId) => {
+                    const cat = categories.find((c) => c.id === catId);
+                    return cat ? (
+                      <span
+                        key={catId}
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      >
+                        {cat.name}
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              categoryIds: prev.categoryIds.filter((id) => id !== catId),
+                            }))
+                          }
+                          className="ml-1 text-blue-600 hover:text-blue-800 cursor-pointer"
+                        >
+                          ×
+                        </button>
+                      </span>
+                    ) : null;
+                  })}
+                </div>
+              )}
             </div>
 
             {/* Authors Section */}

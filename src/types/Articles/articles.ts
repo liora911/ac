@@ -20,6 +20,7 @@ export interface Article {
   author: ArticleUserAuthor;
   categoryId?: string;
   category?: ArticleCategory;
+  categories?: ArticleCategory[]; // Multiple categories support
   tags?: ArticleTag[];
   publisherName?: string;
   publisherImage?: string;
@@ -74,6 +75,7 @@ export interface CreateArticleRequest {
   excerpt?: string;
   featuredImage?: string;
   categoryId?: string;
+  categoryIds?: string[]; // Multiple categories support
   tags?: string[];
   status?: ArticleStatus;
   isFeatured?: boolean;
@@ -116,6 +118,7 @@ export interface ArticleFormData {
   excerpt: string;
   featuredImage: string;
   categoryId: string;
+  categoryIds: string[]; // Multiple categories support
   tags: string[];
   status: ArticleStatus;
   isFeatured: boolean;

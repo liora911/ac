@@ -12,12 +12,31 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
   include: {
     author: { select: { id: true; name: true; email: true; image: true } };
     category: { select: { id: true; name: true; bannerImageUrl: true } };
+    categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
     authors: { select: { id: true; name: true; imageUrl: true; order: true } };
   };
 }>;
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {
+  // Build categories array from the many-to-many relation
+  const categoriesFromRelation = article.categories?.map((ac) => ({
+    id: ac.category.id,
+    name: ac.category.name,
+    bannerImageUrl: ac.category.bannerImageUrl ?? undefined,
+  })) || [];
+
+  // Fallback to single category for backward compatibility
+  const categories = categoriesFromRelation.length > 0
+    ? categoriesFromRelation
+    : article.category
+    ? [{
+        id: article.category.id,
+        name: article.category.name,
+        bannerImageUrl: article.category.bannerImageUrl ?? undefined,
+      }]
+    : [];
+
   return {
     id: article.id,
     title: article.title,
@@ -48,6 +67,7 @@ function transformArticle(article: ArticleWithRelations): Article {
           bannerImageUrl: article.category.bannerImageUrl ?? undefined,
         }
       : undefined,
+    categories, // Multiple categories
     tags: [],
     keywords: [],
     authors: article.authors.map((a) => ({
@@ -91,6 +111,17 @@ export async function GET(
             id: true,
             name: true,
             bannerImageUrl: true,
+          },
+        },
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                bannerImageUrl: true,
+              },
+            },
           },
         },
         authors: {
@@ -168,6 +199,7 @@ export async function PUT(
       excerpt,
       featuredImage,
       categoryId,
+      categoryIds, // Multiple categories support
       status,
       isFeatured,
       metaTitle,
@@ -179,14 +211,17 @@ export async function PUT(
       authors,
     } = body;
 
-    if (categoryId) {
-      const category = await prisma.category.findUnique({
-        where: { id: categoryId },
+    // Validate categories (support both single categoryId and multiple categoryIds)
+    const allCategoryIds = categoryIds?.length ? categoryIds : (categoryId ? [categoryId] : undefined);
+
+    if (allCategoryIds && allCategoryIds.length > 0) {
+      const foundCategories = await prisma.category.findMany({
+        where: { id: { in: allCategoryIds } },
       });
 
-      if (!category) {
+      if (foundCategories.length !== allCategoryIds.length) {
         return NextResponse.json(
-          { error: "Category not found" },
+          { error: "One or more categories not found" },
           { status: 400 }
         );
       }
@@ -219,9 +254,10 @@ export async function PUT(
     if (publisherImage !== undefined) {
       updateData.publisherImage = publisherImage;
     }
-    if (categoryId !== undefined) {
-      updateData.category = categoryId
-        ? { connect: { id: categoryId } }
+    // Handle single category for backward compatibility
+    if (allCategoryIds !== undefined) {
+      updateData.category = allCategoryIds.length > 0
+        ? { connect: { id: allCategoryIds[0] } }
         : { disconnect: true };
     }
 
@@ -255,6 +291,13 @@ export async function PUT(
       });
     }
 
+    // If categories are being updated, delete old ones and create new ones
+    if (allCategoryIds !== undefined) {
+      await prisma.articleCategory.deleteMany({
+        where: { articleId: id },
+      });
+    }
+
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
@@ -265,6 +308,13 @@ export async function PUT(
               name: author.name.trim(),
               imageUrl: author.imageUrl || null,
               order: author.order ?? index,
+            })),
+          },
+        }),
+        ...(allCategoryIds !== undefined && allCategoryIds.length > 0 && {
+          categories: {
+            create: allCategoryIds.map((catId) => ({
+              categoryId: catId,
             })),
           },
         }),
@@ -283,6 +333,17 @@ export async function PUT(
             id: true,
             name: true,
             bannerImageUrl: true,
+          },
+        },
+        categories: {
+          include: {
+            category: {
+              select: {
+                id: true,
+                name: true,
+                bannerImageUrl: true,
+              },
+            },
           },
         },
         authors: {

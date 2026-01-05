@@ -35,6 +35,7 @@ export default function ArticleForm({
     excerpt: article?.excerpt || "",
     featuredImage: article?.featuredImage || "",
     categoryId: article?.categoryId || "",
+    categoryIds: article?.categories?.map((c) => c.id) || (article?.categoryId ? [article.categoryId] : []),
     tags: article?.tags?.map((tag) => tag.name) || [],
     status: article?.status || "DRAFT",
     isFeatured: article?.isFeatured || false,
@@ -155,6 +156,7 @@ export default function ArticleForm({
     try {
       const submissionData = {
         ...formData,
+        categoryIds: formData.categoryIds, // Send multiple categories
         publisherName: authors[0]?.name || formData.publisherName,
         publisherImage: authors[0]?.imageUrl || formData.publisherImage,
         authors: authors.map((a, index) => ({
@@ -308,19 +310,58 @@ export default function ArticleForm({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   {t("articleForm.categoryLabel")}
+                  <span className="text-gray-400 text-xs mr-2">(ניתן לבחור מספר קטגוריות)</span>
                 </label>
-                <select
-                  value={formData.categoryId}
-                  onChange={(e) => handleInputChange("categoryId", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">{t("articleForm.selectCategory")}</option>
-                  {categories.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
+                <div className="border border-gray-300 rounded-md p-3 max-h-48 overflow-y-auto">
+                  {categories.length === 0 ? (
+                    <p className="text-gray-400 text-sm">{t("articleForm.noCategories") as string || "No categories available"}</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {categories.map((category) => (
+                        <label
+                          key={category.id}
+                          className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-1 rounded"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.categoryIds.includes(category.id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                handleInputChange("categoryIds", [...formData.categoryIds, category.id]);
+                              } else {
+                                handleInputChange("categoryIds", formData.categoryIds.filter((id) => id !== category.id));
+                              }
+                            }}
+                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className="text-sm text-gray-700">{category.name}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {formData.categoryIds.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {formData.categoryIds.map((catId) => {
+                      const cat = categories.find((c) => c.id === catId);
+                      return cat ? (
+                        <span
+                          key={catId}
+                          className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                        >
+                          {cat.name}
+                          <button
+                            type="button"
+                            onClick={() => handleInputChange("categoryIds", formData.categoryIds.filter((id) => id !== catId))}
+                            className="ml-1 text-blue-600 hover:text-blue-800 cursor-pointer"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ) : null;
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Authors Section */}
