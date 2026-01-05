@@ -363,6 +363,58 @@ export default function TiptapEditor({
             </Dropdown>
           </div>
 
+          {/* Font Size Dropdown */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "fontSize"}
+              onToggle={() => setOpenDropdown(openDropdown === "fontSize" ? null : "fontSize")}
+              trigger={
+                <div className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm font-medium text-gray-700">
+                  <span>Size</span>
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              }
+            >
+              {["12px", "14px", "16px", "18px", "20px", "24px", "28px", "32px", "36px", "48px"].map((size) => (
+                <DropdownItem
+                  key={size}
+                  onClick={() => editor.chain().focus().setFontSize(size).run()}
+                  label={size}
+                />
+              ))}
+              <DropdownItem
+                onClick={() => editor.chain().focus().unsetFontSize().run()}
+                label="Default"
+              />
+            </Dropdown>
+          </div>
+
+          {/* Line Height Dropdown */}
+          <div className="px-1 border-r border-gray-200">
+            <Dropdown
+              isOpen={openDropdown === "lineHeight"}
+              onToggle={() => setOpenDropdown(openDropdown === "lineHeight" ? null : "lineHeight")}
+              trigger={
+                <div className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm font-medium text-gray-700">
+                  <span>Line</span>
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              }
+            >
+              {["1", "1.25", "1.5", "1.75", "2", "2.5"].map((height) => (
+                <DropdownItem
+                  key={height}
+                  onClick={() => editor.chain().focus().setLineHeight(height).run()}
+                  label={height === "1" ? "Single" : height === "1.5" ? "1.5 Lines" : height === "2" ? "Double" : height}
+                />
+              ))}
+              <DropdownItem
+                onClick={() => editor.chain().focus().unsetLineHeight().run()}
+                label="Default"
+              />
+            </Dropdown>
+          </div>
+
           {/* Text Formatting */}
           <div className="flex items-center gap-0.5 px-2 border-l border-r border-gray-200">
             <ToolbarButton

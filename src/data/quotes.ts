@@ -28,14 +28,14 @@ export const physicsQuotes: Quote[] = [
   },
   {
     en: "Study hard what interests you the most in the most undisciplined, irreverent and original manner possible.",
-    he: "למד בחריצות את מה שמעניין אותך הכי הרבה, בצורה הכי לא ממושמעת, לא מכבדת ומקורית שאפשר.",
+    he: "למד בחריצות את מה שמעניין אותך הכי הרבה, בצורה הכי לא ממושמעת, לא קונבנציונלית ומקורית שאפשר.",
     author: "Richard Feynman",
   },
 
   // Albert Einstein
   {
     en: "Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.",
-    he: "דמיון חשוב יותר מידע. הידע מוגבל. הדמיון מקיף את העולם.",
+    he: "דמיון חשוב יותר מידע. ידע מוגבל. הדמיון מקיף את העולם.",
     author: "Albert Einstein",
   },
   {
@@ -116,14 +116,14 @@ export const physicsQuotes: Quote[] = [
   },
   {
     en: "Everything we call real is made of things that cannot be regarded as real.",
-    he: "כל מה שאנו קוראים לו אמיתי עשוי מדברים שלא ניתן לראות בהם כאמיתיים.",
+    he: "כל מה שאנו קוראים לו אמיתי עשוי מדברים שלא ניתן להתייחס אליהם כאמיתיים.",
     author: "Niels Bohr",
   },
 
   // Werner Heisenberg
   {
     en: "What we observe is not nature itself, but nature exposed to our method of questioning.",
-    he: "מה שאנו צופים בו אינו הטבע עצמו, אלא הטבע כפי שהוא נחשף לשיטת השאילה שלנו.",
+    he: "מה שאנו צופים בו אינו הטבע עצמו, אלא הטבע כפי שהוא נחשף לשיטת החקירה שלנו.",
     author: "Werner Heisenberg",
   },
   {
