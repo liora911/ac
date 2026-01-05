@@ -141,30 +141,27 @@ const LecturesPage = () => {
           </div>
         )}
 
-        <div className="relative mb-10 aspect-[21/9] max-h-80 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
-          {isLoading ? (
-            <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
-              <p className="text-gray-400 text-xl">
-                {t("lecturesPage.bannerLoading")}
-              </p>
-            </div>
-          ) : (
-            <>
-              <Image
-                src={currentBannerUrl || "/lecture.jpg"}
-                alt={currentBannerAlt}
-                fill
-                className="object-cover"
-                priority
-                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
-                quality={85}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-between p-6">
-                <div className="flex justify-end">
-                  <QuoteOfTheDay className="hidden md:block" />
-                </div>
-                <div>
+        <div className="flex flex-col lg:flex-row gap-6 mb-10">
+          <div className="relative flex-1 aspect-[21/9] max-h-80 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+            {isLoading ? (
+              <div className="animate-pulse bg-gray-200 h-full w-full flex items-center justify-center">
+                <p className="text-gray-400 text-xl">
+                  {t("lecturesPage.bannerLoading")}
+                </p>
+              </div>
+            ) : (
+              <>
+                <Image
+                  src={currentBannerUrl || "/lecture.jpg"}
+                  alt={currentBannerAlt}
+                  fill
+                  className="object-cover"
+                  priority
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
+                  quality={85}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                <div className="absolute bottom-4 start-6 end-6">
                   <h2
                     className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
                     style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
@@ -172,9 +169,12 @@ const LecturesPage = () => {
                     {bannerTitle || t("lecturesPage.title")}
                   </h2>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
+          <div className="hidden lg:flex lg:w-80 items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-md p-6">
+            <QuoteOfTheDay />
+          </div>
         </div>
         {isLoading && (
           <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-200px)]">
