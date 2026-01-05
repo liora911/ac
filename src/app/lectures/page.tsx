@@ -7,6 +7,7 @@ import Image from "next/image";
 import { CategoryDef } from "@/types/Lectures/lectures";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 
 const Lectures = dynamic(() => import("@/components/Lectures/Lectures"), {
   loading: () => (
@@ -159,13 +160,18 @@ const LecturesPage = () => {
                 quality={85}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute bottom-4 start-6 end-6">
-                <h2
-                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
-                  style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
-                >
-                  {bannerTitle || t("lecturesPage.title")}
-                </h2>
+              <div className="absolute inset-0 flex flex-col justify-between p-6">
+                <div className="flex justify-end">
+                  <QuoteOfTheDay className="hidden md:block" />
+                </div>
+                <div>
+                  <h2
+                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
+                    style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                  >
+                    {bannerTitle || t("lecturesPage.title")}
+                  </h2>
+                </div>
               </div>
             </>
           )}

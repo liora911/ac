@@ -23,16 +23,16 @@ export default function ArticlesPage() {
   return (
     <div className="min-h-screen bg-gray-50 bg-cover bg-center">
       {}
-      <div className="shadow-sm">
-        <div
-          className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[300px]"
-          style={{
-            backgroundImage: "url('/bookwrite.webp')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-          }}
-        >
+      <div
+        className="shadow-sm min-h-[300px]"
+        style={{
+          backgroundImage: "url('/bookwrite.webp')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[300px] flex items-center justify-center">
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900 mb-4">
               {t("articlesPage.title")}

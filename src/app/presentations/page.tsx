@@ -10,6 +10,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
 import { Grid3X3, List, AlertTriangle, Trash2 } from "lucide-react";
+import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 import { useNotification } from "@/contexts/NotificationContext";
 
 const CreatePresentationForm = dynamic(
@@ -220,13 +221,18 @@ const PresentationsPage = () => {
                 quality={85}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              <div className="absolute bottom-4 start-6 end-6">
-                <h2
-                  className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
-                  style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
-                >
-                  {currentBannerAlt !== "Banner Image" ? currentBannerAlt : t("presentationsPage.title")}
-                </h2>
+              <div className="absolute inset-0 flex flex-col justify-between p-6">
+                <div className="flex justify-end">
+                  <QuoteOfTheDay className="hidden md:block" />
+                </div>
+                <div>
+                  <h2
+                    className="text-2xl sm:text-3xl md:text-4xl font-bold text-white drop-shadow-lg"
+                    style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.5)" }}
+                  >
+                    {currentBannerAlt !== "Banner Image" ? currentBannerAlt : t("presentationsPage.title")}
+                  </h2>
+                </div>
               </div>
             </>
           )}
