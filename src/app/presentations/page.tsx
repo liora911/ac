@@ -2,14 +2,13 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
-import type { Session } from "next-auth";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import { PresentationCategory } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
-import { Grid3X3, List, AlertTriangle, Trash2 } from "lucide-react";
+import { Grid3X3, List, AlertTriangle, Trash2, Presentation } from "lucide-react";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 import { useNotification } from "@/contexts/NotificationContext";
 
@@ -266,8 +265,6 @@ const PresentationsPage = () => {
                 altText: currentBannerAlt,
               }}
               onCategorySelect={handleCategorySelect}
-              session={session}
-              isAuthorized={isAuthorized}
               onPresentationDeleted={handlePresentationCreated}
               viewMode="grid"
             />
@@ -293,8 +290,6 @@ interface PresentationsGridProps {
   initialSelectedCategoryId: string | null;
   initialBannerInfo: { imageUrl: string | null; altText: string } | null;
   onCategorySelect: (categoryId: string | null) => void;
-  session: Session | null;
-  isAuthorized: boolean;
   onPresentationDeleted: () => void;
   viewMode?: "grid" | "list";
 }
@@ -323,7 +318,6 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   initialSelectedCategoryId,
   initialBannerInfo,
   onCategorySelect,
-  session,
   onPresentationDeleted,
   viewMode: initialViewMode = "grid",
 }) => {
@@ -476,44 +470,48 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           viewMode === "grid" ? (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {selectedCategory.presentations.map((presentation) => {
-                const isAuthor =
-                  presentation.author?.email === session?.user?.email;
+                const descriptionText = presentation.description?.replace(/<[^>]*>?/gm, "").trim() || "";
                 return (
                   <div
                     key={presentation.id}
-                    className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer"
+                    className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
+                    onClick={() =>
+                      (window.location.href = `/presentations/${presentation.id}`)
+                    }
                   >
-                    <div
-                      onClick={() =>
-                        (window.location.href = `/presentations/${presentation.id}`)
-                      }
-                    >
-                      <h3 className="text-xl font-semibold mb-3 text-gray-900">
+                    {/* Image or Default Icon */}
+                    <div className="relative w-full h-40 bg-gradient-to-br from-indigo-100 to-purple-100">
+                      {presentation.imageUrls.length > 0 ? (
+                        <Image
+                          src={presentation.imageUrls[0]}
+                          alt={presentation.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                      ) : (
+                        <div className="flex items-center justify-center h-full">
+                          <Presentation className="w-16 h-16 text-indigo-300" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2 text-gray-900 line-clamp-1">
                         {presentation.title}
                       </h3>
-                      <p className="text-gray-700 mb-4 line-clamp-3 prose prose-sm max-w-none">
-                        {presentation.description.replace(/<[^>]*>?/gm, "")}
-                      </p>
-                      <div className="flex justify-between items-center text-sm text-gray-500">
+                      {descriptionText && (
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                          {descriptionText}
+                        </p>
+                      )}
+                      <div className="flex justify-between items-center text-xs text-gray-500">
                         <span>
-                          {t("presentationsPage.imagesLabel")}:{" "}
-                          {presentation.imageUrls.length}
+                          {presentation.imageUrls.length > 0
+                            ? `${presentation.imageUrls.length} ${t("presentationsPage.imagesLabel")}`
+                            : ""}
                         </span>
                       </div>
                     </div>
-                    {/* {isAuthorized && isAuthor && (
-                      <div className="flex justify-end mt-4">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeletePresentation(presentation.id);
-                          }}
-                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
-                        >
-                          🗑️ {t("presentationsPage.deleteButton")}
-                        </button>
-                      </div>
-                    )} */}
                   </div>
                 );
               })}
@@ -521,8 +519,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
           ) : (
             <div className="space-y-4">
               {selectedCategory.presentations.map((presentation) => {
-                const isAuthor =
-                  presentation.author?.email === session?.user?.email;
+                const descriptionText = presentation.description?.replace(/<[^>]*>?/gm, "").trim() || "";
                 return (
                   <div
                     key={presentation.id}
@@ -531,41 +528,32 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                       (window.location.href = `/presentations/${presentation.id}`)
                     }
                   >
-                    <div className="flex items-center space-x-4">
-                      {presentation.imageUrls.length > 0 && (
-                        <Image
-                          src={presentation.imageUrls[0]}
-                          alt={presentation.title}
-                          width={80}
-                          height={60}
-                          className="object-cover rounded"
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <div className="flex items-center gap-4">
+                      {/* Image or Default Icon */}
+                      <div className="relative w-20 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-purple-100 rounded overflow-hidden">
+                        {presentation.imageUrls.length > 0 ? (
+                          <Image
+                            src={presentation.imageUrls[0]}
+                            alt={presentation.title}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="flex items-center justify-center h-full">
+                            <Presentation className="w-8 h-8 text-indigo-300" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
                           {presentation.title}
                         </h3>
-                        <p className="text-gray-600 text-sm line-clamp-2">
-                          {presentation.description.replace(/<[^>]*>?/gm, "")}
-                        </p>
-                        <div className="flex items-center space-x-4 mt-2 text-xs text-gray-500">
-                          <span>
-                            {t("presentationsPage.imagesLabel")}:{" "}
-                            {presentation.imageUrls.length}
-                          </span>
-                        </div>
+                        {descriptionText && (
+                          <p className="text-gray-600 text-sm line-clamp-2">
+                            {descriptionText}
+                          </p>
+                        )}
                       </div>
-                      {/* {isAuthorized && isAuthor && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeletePresentation(presentation.id);
-                          }}
-                          className="bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm cursor-pointer"
-                        >
-                          🗑️ {t("presentationsPage.deleteButton")}
-                        </button>
-                      )} */}
                     </div>
                   </div>
                 );
