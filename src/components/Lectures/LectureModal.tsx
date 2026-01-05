@@ -155,14 +155,13 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
                   <ChevronDown className="w-5 h-5" />
                 )}
               </button>
-              <AnimatePresence>
+              <AnimatePresence initial={false}>
                 {showDescription && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: "auto", opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="overflow-hidden"
                   >
                     <div className="px-4 sm:px-6 pb-6 max-h-48 overflow-y-auto">
                       <RichContent content={lecture.description} className="text-gray-300 prose-invert" />

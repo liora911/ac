@@ -544,27 +544,29 @@ export default function EditEventForm({
           </>
         )}
 
-        {/* Submit Button - visible on all tabs */}
-        <div className="pt-4 border-t border-gray-200 mt-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-              {!isTab1Complete && (
-                <span className="text-red-600">
-                  {t("editEventForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
-                </span>
-              )}
+        {/* Submit Button - only visible on last tab */}
+        {activeTab === 3 && (
+          <div className="pt-4 border-t border-gray-200 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-500">
+                {!isTab1Complete && (
+                  <span className="text-red-600">
+                    {t("editEventForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
+                  </span>
+                )}
+              </div>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
+              >
+                {isLoading
+                  ? t("editEventForm.submitUpdating")
+                  : t("editEventForm.submit")}
+              </button>
             </div>
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-            >
-              {isLoading
-                ? t("editEventForm.submitUpdating")
-                : t("editEventForm.submit")}
-            </button>
           </div>
-        </div>
+        )}
       </form>
     </div>
   );

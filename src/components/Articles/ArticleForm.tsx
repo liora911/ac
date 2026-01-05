@@ -583,39 +583,41 @@ export default function ArticleForm({
             </>
           )}
 
-          {/* Submit Button - visible on all tabs */}
-          <div className="flex items-center justify-between pt-6 border-t">
-            <div className="text-sm text-gray-500">
-              {(!isTab1Complete || !isTab2Complete) && (
-                <span className="text-red-600">
-                  {t("articleForm.requiredFieldsHint") as string || "* Required fields are missing"}
-                </span>
-              )}
-            </div>
-            <div className="flex space-x-4">
-              {onCancel && (
+          {/* Submit Button - only visible on last tab */}
+          {activeTab === 3 && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pt-6 border-t">
+              <div className="text-sm text-gray-500">
+                {(!isTab1Complete || !isTab2Complete) && (
+                  <span className="text-red-600">
+                    {t("articleForm.requiredFieldsHint") as string || "* Required fields are missing"}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                {onCancel && (
+                  <button
+                    type="button"
+                    onClick={onCancel}
+                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer w-full sm:w-auto"
+                    disabled={isLoading}
+                  >
+                    {t("articleForm.cancelButton")}
+                  </button>
+                )}
                 <button
-                  type="button"
-                  onClick={onCancel}
-                  className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
+                  type="submit"
                   disabled={isLoading}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer w-full sm:w-auto"
                 >
-                  {t("articleForm.cancelButton")}
+                  {isLoading
+                    ? t("articleForm.savingButton")
+                    : isEditing
+                    ? t("articleForm.updateArticleButton")
+                    : t("articleForm.createArticleButton")}
                 </button>
-              )}
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              >
-                {isLoading
-                  ? t("articleForm.savingButton")
-                  : isEditing
-                  ? t("articleForm.updateArticleButton")
-                  : t("articleForm.createArticleButton")}
-              </button>
+              </div>
             </div>
-          </div>
+          )}
         </form>
 
         <Modal
