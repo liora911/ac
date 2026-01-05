@@ -269,21 +269,25 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {/* Description */}
-        <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            {t("presentationDetail.descriptionTitle")}
-          </h2>
-          <RichContent content={presentation.description} className="text-slate-700" />
-        </div>
+        {/* Description - only show if filled */}
+        {presentation.description && presentation.description.replace(/<[^>]*>/g, "").trim() !== "" && (
+          <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 mb-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              {t("presentationDetail.descriptionTitle")}
+            </h2>
+            <RichContent content={presentation.description} className="text-slate-700" />
+          </div>
+        )}
 
-        {/* Content */}
-        <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 shadow-sm">
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">
-            {t("presentationDetail.contentTitle")}
-          </h2>
-          <RichContent content={presentation.content} className="text-slate-700" />
-        </div>
+        {/* Content - only show if filled */}
+        {presentation.content && presentation.content.replace(/<[^>]*>/g, "").trim() !== "" && (
+          <div className="bg-white/90 border border-slate-200 rounded-2xl p-6 shadow-sm">
+            <h2 className="text-xl font-semibold text-slate-900 mb-4">
+              {t("presentationDetail.contentTitle")}
+            </h2>
+            <RichContent content={presentation.content} className="text-slate-700" />
+          </div>
+        )}
 
         {}
         <div className="mt-8 text-center text-slate-500">
