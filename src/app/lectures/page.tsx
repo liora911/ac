@@ -172,7 +172,7 @@ const LecturesPage = () => {
               </>
             )}
           </div>
-          <div className="hidden lg:flex lg:w-80 items-center justify-center bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg shadow-md p-6">
+          <div className="hidden lg:flex lg:w-80 items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg shadow-md border border-gray-200 p-6">
             <QuoteOfTheDay />
           </div>
         </div>
