@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Send, Bot, User, Loader2, Sparkles, X } from "lucide-react";
+import Link from "next/link";
 
 type Message = {
   id: string;
@@ -154,6 +155,30 @@ export default function AIAssistantButton() {
     sendMessage(question);
   };
 
+  // Parse message content and make links clickable
+  const renderMessageContent = (content: string) => {
+    // Match paths like /lectures, /articles, /contact, etc.
+    const pathRegex = /(\/[a-z-]+(?:\/[a-z-]+)*)/gi;
+    const parts = content.split(pathRegex);
+
+    return parts.map((part, index) => {
+      // Check if this part is a path
+      if (part.match(/^\/[a-z-]+/i)) {
+        return (
+          <Link
+            key={index}
+            href={part}
+            onClick={() => setIsOpen(false)}
+            className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline font-medium"
+          >
+            {part}
+          </Link>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div className="relative">
       {/* AI Button */}
@@ -244,7 +269,11 @@ export default function AIAssistantButton() {
                         : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700"
                     }`}
                   >
-                    <p className="whitespace-pre-wrap">{message.content}</p>
+                    <p className="whitespace-pre-wrap">
+                      {message.role === "assistant"
+                        ? renderMessageContent(message.content)
+                        : message.content}
+                    </p>
                   </div>
                   {message.role === "user" && (
                     <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center flex-shrink-0">
