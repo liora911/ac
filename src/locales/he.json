@@ -788,6 +788,12 @@
     "defaultView": "תצוגה ברירת מחדל",
     "viewGrid": "רשת",
     "viewList": "רשימה",
-    "defaultViewDescription": "פריסת ברירת מחדל לרשימות תוכן"
+    "defaultViewDescription": "פריסת ברירת מחדל לרשימות תוכן",
+    "aiAssistant": {
+      "title": "עוזר AI",
+      "description": "שאל אותי איך לעשות משהו באפליקציה",
+      "startChat": "התחל צ'אט",
+      "emptyState": "נסה אחת מהשאלות הבאות:"
+    }
   }
 }

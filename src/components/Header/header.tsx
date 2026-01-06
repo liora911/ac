@@ -5,6 +5,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { SettingsButton } from "../Settings";
+import { AIAssistantButton } from "../AIAssistant";
 import { useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import GlobalSearch from "../GlobalSearch";
@@ -139,6 +140,9 @@ export default function Header() {
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="hidden md:block">
               <GlobalSearch />
+            </div>
+            <div className="relative shrink-0">
+              <AIAssistantButton />
             </div>
             <div className="relative shrink-0">
               <SettingsButton />

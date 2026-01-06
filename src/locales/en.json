@@ -768,6 +768,12 @@
     "defaultView": "Default View",
     "viewGrid": "Grid",
     "viewList": "List",
-    "defaultViewDescription": "Default layout for content listings"
+    "defaultViewDescription": "Default layout for content listings",
+    "aiAssistant": {
+      "title": "AI Assistant",
+      "description": "Ask me how to do anything in the app",
+      "startChat": "Start Chat",
+      "emptyState": "Try one of these questions:"
+    }
   }
 }
