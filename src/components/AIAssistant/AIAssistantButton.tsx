@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Send, Bot, User, Loader2, Sparkles, X } from "lucide-react";
 
@@ -11,6 +12,7 @@ type Message = {
 };
 
 export default function AIAssistantButton() {
+  const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -18,6 +20,8 @@ export default function AIAssistantButton() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  const isAdmin = !!session;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -80,6 +84,7 @@ export default function AIAssistantButton() {
             role: m.role,
             content: m.content,
           })),
+          isAdmin,
         }),
       });
 
@@ -121,10 +126,11 @@ export default function AIAssistantButton() {
 
   const placeholderText =
     locale === "he"
-      ? "שאל אותי איך לעשות משהו..."
-      : "Ask me how to do something...";
+      ? "שאל אותי שאלה..."
+      : "Ask me a question...";
 
-  const suggestedQuestions =
+  // Different questions for admin vs visitor
+  const adminQuestions =
     locale === "he"
       ? ["איך יוצרים הרצאה חדשה?", "איך מנהלים קטגוריות?", "איך רואים הודעות?"]
       : [
@@ -132,6 +138,17 @@ export default function AIAssistantButton() {
           "How do I manage categories?",
           "How do I view messages?",
         ];
+
+  const visitorQuestions =
+    locale === "he"
+      ? ["איפה אני יכול למצוא הרצאות?", "איך יוצרים קשר?", "מה הנושאים באתר?"]
+      : [
+          "Where can I find lectures?",
+          "How do I contact?",
+          "What topics are on this site?",
+        ];
+
+  const suggestedQuestions = isAdmin ? adminQuestions : visitorQuestions;
 
   const handleSuggestedQuestion = (question: string) => {
     sendMessage(question);
