@@ -89,7 +89,6 @@ export default function Header() {
       : []),
   ];
 
-  const mobileNavItems = [...visibleNavItems];
   return (
     <>
       <header
@@ -203,7 +202,7 @@ export default function Header() {
         </div>
 
         <ul className="flex flex-col p-3 space-y-1 max-h-[calc(100vh-180px)] overflow-y-auto" role="menubar">
-          {mobileNavItems.map(({ label, href, className, icon }) => {
+          {visibleNavItems.map(({ label, href, className, icon }) => {
             const IconComponent = icon ? IconMap[icon] : null;
             const isActive = pathname === href;
             return (
