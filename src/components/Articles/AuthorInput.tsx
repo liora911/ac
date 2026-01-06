@@ -11,9 +11,11 @@ interface AuthorInputProps {
   error?: string;
 }
 
-const DEFAULT_AUTHOR_IMAGE = "/default-avatar.svg";
-
-const AuthorInput: React.FC<AuthorInputProps> = ({ authors, onChange, error }) => {
+const AuthorInput: React.FC<AuthorInputProps> = ({
+  authors,
+  onChange,
+  error,
+}) => {
   const [imageInputs, setImageInputs] = useState<{ [key: number]: string }>({});
 
   const addAuthor = () => {
@@ -36,7 +38,11 @@ const AuthorInput: React.FC<AuthorInputProps> = ({ authors, onChange, error }) =
     onChange(reorderedAuthors);
   };
 
-  const updateAuthor = (index: number, field: keyof ArticleAuthorInput, value: string | null) => {
+  const updateAuthor = (
+    index: number,
+    field: keyof ArticleAuthorInput,
+    value: string | null
+  ) => {
     const newAuthors = [...authors];
     newAuthors[index] = {
       ...newAuthors[index],
@@ -77,9 +83,7 @@ const AuthorInput: React.FC<AuthorInputProps> = ({ authors, onChange, error }) =
         </button>
       </div>
 
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
+      {error && <p className="text-sm text-red-500">{error}</p>}
 
       <div className="space-y-3">
         {authors.map((author, index) => (
