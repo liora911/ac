@@ -167,7 +167,16 @@
     "notFoundMessage": "ההרצאה שאתה מחפש אינה קיימת.",
     "editButton": "ערוך הרצאה",
     "duration": "משך בדקות",
-    "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים."
+    "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים.",
+    "premium": "פרימיום"
+  },
+  "premiumGate": {
+    "title": "תוכן פרימיום",
+    "description": "תוכן זה זמין בלעדית למנויי תוכנית חוקר.",
+    "loginButton": "התחבר",
+    "subscribeButton": "הרשם עכשיו",
+    "upgradeButton": "שדרג לתוכנית חוקר",
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום."
   },
   "articlesPage": {
     "title": "מאמרים",
@@ -381,7 +390,9 @@
     "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, קטגוריה ומשך זמן)",
     "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "submitUpdating": "מעדכן הרצאה...",
-    "submit": "עדכן הרצאה"
+    "submit": "עדכן הרצאה",
+    "isPremiumLabel": "תוכן פרימיום",
+    "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
   },
   "editPresentationForm": {
     "loadError": "שגיאה בטעינת המצגת",
@@ -434,7 +445,9 @@
     "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת וקטגוריה)",
     "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
     "submitUpdating": "מעדכן מצגת...",
-    "submit": "עדכן מצגת"
+    "submit": "עדכן מצגת",
+    "isPremiumLabel": "תוכן פרימיום",
+    "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
   },
   "globalSearch": {
     "placeholder": "אני מחפש...",
@@ -586,7 +599,9 @@
     "submit": "צור הרצאה",
     "successMessage": "ההרצאה נוצרה בהצלחה!",
     "errorMessage": "שגיאה ביצירת ההרצאה. נסה שוב.",
-    "confirmAndContinue": "אישור והמשך"
+    "confirmAndContinue": "אישור והמשך",
+    "isPremiumLabel": "תוכן פרימיום",
+    "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
   },
   "createPresentation": {
     "loading": "טוען...",
@@ -638,7 +653,9 @@
     "submit": "צור מצגת",
     "successMessage": "המצגת נוצרה בהצלחה!",
     "errorMessage": "שגיאה ביצירת המצגת. נסה שוב.",
-    "confirmAndContinue": "אישור והמשך"
+    "confirmAndContinue": "אישור והמשך",
+    "isPremiumLabel": "תוכן פרימיום",
+    "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
   },
   "eventModal": {
     "onlineEventLink": "קישור לאירוע מקוון",

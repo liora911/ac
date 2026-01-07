@@ -380,7 +380,9 @@
     "removeImageButton": "Remove image",
     "imageUrlLabel": "Or enter image URL",
     "submitUpdating": "Updating lecture...",
-    "submit": "Update lecture"
+    "submit": "Update lecture",
+    "isPremiumLabel": "Premium Content",
+    "isPremiumHint": "Only accessible to Researcher plan subscribers"
   },
   "editPresentationForm": {
     "loadError": "Error loading presentation",
@@ -433,7 +435,9 @@
     "requiredFieldsError": "Please fill in all required fields (Title and Category)",
     "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
     "submitUpdating": "Updating presentation...",
-    "submit": "Update presentation"
+    "submit": "Update presentation",
+    "isPremiumLabel": "Premium Content",
+    "isPremiumHint": "Only accessible to Researcher plan subscribers"
   },
   "globalSearch": {
     "placeholder": "I'm looking for...",
@@ -585,7 +589,9 @@
     "submit": "Create Lecture",
     "successMessage": "Lecture created successfully!",
     "errorMessage": "Error creating lecture. Please try again.",
-    "confirmAndContinue": "Confirm & Continue"
+    "confirmAndContinue": "Confirm & Continue",
+    "isPremiumLabel": "Premium Content",
+    "isPremiumHint": "Only accessible to Researcher plan subscribers"
   },
   "createPresentation": {
     "loading": "Loading...",
@@ -637,7 +643,9 @@
     "submit": "Create Presentation",
     "successMessage": "Presentation created successfully!",
     "errorMessage": "Error creating presentation. Please try again.",
-    "confirmAndContinue": "Confirm & Continue"
+    "confirmAndContinue": "Confirm & Continue",
+    "isPremiumLabel": "Premium Content",
+    "isPremiumHint": "Only accessible to Researcher plan subscribers"
   },
   "eventModal": {
     "onlineEventLink": "Link to online event",

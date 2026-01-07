@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Lecture } from "@/types/Lectures/lectures";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Clock, Calendar, Share2, Play, Link2, Check, Mail } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { Clock, Calendar, Share2, Play, Link2, Check, Mail, Star } from "lucide-react";
 
 interface LectureCardProps {
   lecture: Lecture;
@@ -18,11 +20,20 @@ const LectureCard: React.FC<LectureCardProps> = ({
   onLectureClick,
   onDeleteLecture,
 }) => {
+  const router = useRouter();
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [lectureUrl, setLectureUrl] = useState("");
   const [copied, setCopied] = useState(false);
+  const [isStarHovered, setIsStarHovered] = useState(false);
   const { showSuccess, showError } = useNotification();
   const { t } = useTranslation();
+  const { data: session } = useSession();
+
+  // Check if user has access to premium content
+  const hasAccess =
+    !lecture.isPremium ||
+    session?.user?.role === "ADMIN" ||
+    session?.user?.hasActiveSubscription;
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -73,37 +84,52 @@ const LectureCard: React.FC<LectureCardProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all duration-300 cursor-pointer flex flex-col overflow-hidden group">
+    <div className={`bg-white rounded-2xl shadow-sm border transition-all duration-300 flex flex-col overflow-hidden group relative ${
+      hasAccess
+        ? "border-gray-100 hover:shadow-lg hover:border-gray-200 cursor-pointer"
+        : "border-gray-200 cursor-default"
+    }`}>
+      {/* Overlay for non-accessible premium content */}
+      {!hasAccess && (
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-2xl pointer-events-none" />
+      )}
+
       {lecture.bannerImageUrl && (
         <div className="relative h-44 w-full overflow-hidden">
           <img
             src={lecture.bannerImageUrl}
             alt={lecture.title}
-            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+            className={`object-cover w-full h-full transition-transform duration-300 ${
+              hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
+            }`}
           />
         </div>
       )}
       <div className="p-5 flex-grow">
-        <h4 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+        <h4 className={`text-lg font-semibold mb-2 line-clamp-2 transition-colors ${
+          hasAccess
+            ? "text-gray-900 group-hover:text-blue-600"
+            : "text-gray-500"
+        }`}>
           {lecture.title}
         </h4>
-        <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+        <p className={`text-sm mb-4 line-clamp-2 ${hasAccess ? "text-gray-600" : "text-gray-400"}`}>
           {lecture.description.replace(/<[^>]*>?/gm, "")}
         </p>
-        <div className="flex items-center gap-4 text-sm text-gray-500">
+        <div className={`flex items-center gap-4 text-sm ${hasAccess ? "text-gray-500" : "text-gray-400"}`}>
           <div className="flex items-center gap-1.5">
-            <Clock className="w-4 h-4 text-purple-500" />
+            <Clock className={`w-4 h-4 ${hasAccess ? "text-purple-500" : "text-gray-400"}`} />
             <span>{lecture.duration} {t("lecturesPage.minutes")}</span>
           </div>
           {lecture.date && (
             <div className="flex items-center gap-1.5">
-              <Calendar className="w-4 h-4 text-blue-500" />
+              <Calendar className={`w-4 h-4 ${hasAccess ? "text-blue-500" : "text-gray-400"}`} />
               <span>{lecture.date}</span>
             </div>
           )}
         </div>
       </div>
-      <div className="p-4 border-t border-gray-100 flex justify-end gap-2">
+      <div className="p-4 border-t border-gray-100 flex justify-end gap-2 relative z-10">
         <button
           onClick={(e) => {
             e.stopPropagation();
@@ -116,11 +142,44 @@ const LectureCard: React.FC<LectureCardProps> = ({
         </button>
         <button
           onClick={() => onLectureClick(lecture)}
-          className="w-10 h-10 rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors flex items-center justify-center shadow-md hover:shadow-lg cursor-pointer"
+          disabled={!hasAccess}
+          className={`w-10 h-10 rounded-full transition-colors flex items-center justify-center ${
+            hasAccess
+              ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg cursor-pointer"
+              : "bg-gray-300 text-gray-500 cursor-not-allowed"
+          }`}
           aria-label="צפה בהרצאה"
         >
           <Play className="w-4 h-4 fill-current" />
         </button>
+        {/* Premium star indicator - shown for premium content */}
+        {lecture.isPremium && (
+          hasAccess ? (
+            // Subscriber/Admin: filled yellow star, not clickable
+            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
+              <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
+            </div>
+          ) : (
+            // Non-subscriber: empty star, fills on hover, clicks to pricing
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push("/pricing");
+              }}
+              onMouseEnter={() => setIsStarHovered(true)}
+              onMouseLeave={() => setIsStarHovered(false)}
+              className="w-10 h-10 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer"
+              aria-label="תוכן פרימיום - הרשם למנוי"
+              title="תוכן פרימיום - לחץ להרשמה"
+            >
+              <Star className={`w-5 h-5 transition-all ${
+                isStarHovered
+                  ? "text-amber-500 fill-amber-500"
+                  : "text-amber-400"
+              }`} />
+            </button>
+          )
+        )}
       </div>
 
       <Modal
