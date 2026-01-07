@@ -891,6 +891,20 @@
       "deleting": "מוחק...",
       "deleteButton": "מחק הודעה"
     },
+    "nav": {
+      "title": "פאנל ניהול",
+      "logout": "יציאה",
+      "user": "משתמש פעיל",
+      "home": "דף הבית",
+      "categories": "קטגוריות",
+      "articles": "מאמרים",
+      "events": "אירועים",
+      "lectures": "הרצאות",
+      "presentations": "מצגות",
+      "messages": "הודעות",
+      "settings": "הגדרות מערכת",
+      "recentActivity": "פעילות אחרונה"
+    },
     "categories": {
       "addNew": "הוסף קטגוריה חדשה",
       "addDescription": "תן לקטגוריה שם ברור ותיאורי.",

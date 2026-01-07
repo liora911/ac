@@ -865,6 +865,20 @@
       "noMessageSelected": "No message selected",
       "selectMessage": "Select a message from the list to view details."
     },
+    "nav": {
+      "title": "Admin Panel",
+      "logout": "Logout",
+      "user": "Active User",
+      "home": "Homepage",
+      "categories": "Categories",
+      "articles": "Articles",
+      "events": "Events",
+      "lectures": "Lectures",
+      "presentations": "Presentations",
+      "messages": "Messages",
+      "settings": "System Settings",
+      "recentActivity": "Recent Activity"
+    },
     "categories": {
       "addNew": "Add new category",
       "addDescription": "Give it a clear, descriptive name.",

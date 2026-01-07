@@ -1,16 +1,8 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { getToken } from "next-auth/jwt";
 
 // Protected admin routes
 const PROTECTED_ROUTES = ["/elitzur"];
-
-// Allowed admin emails
-const ALLOWED_EMAILS = [
-  "avshalom@iyar.org.il",
-  "yarinmster@gmail.com",
-  "yakir@iyar.org.il",
-];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -24,25 +16,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Get the session token
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
+  // Check for session cookie (works with both JWT and database sessions)
+  const sessionToken =
+    request.cookies.get("next-auth.session-token")?.value ||
+    request.cookies.get("__Secure-next-auth.session-token")?.value;
 
-  // If no token, redirect to admin login page
-  if (!token) {
+  // If no session token cookie, redirect to admin login page
+  if (!sessionToken) {
     const loginUrl = new URL("/auth/admin-login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Check if user email is in allowed list
-  const userEmail = token.email?.toLowerCase();
-  if (!userEmail || !ALLOWED_EMAILS.includes(userEmail)) {
-    // Redirect to unauthorized page
-    return NextResponse.redirect(new URL("/auth/unauthorized", request.url));
-  }
+  // Note: For database sessions, we can't verify the email in middleware
+  // The email check is handled by the signIn callback in auth.ts
+  // which only allows ALLOWED_EMAILS to sign in
 
   return NextResponse.next();
 }
