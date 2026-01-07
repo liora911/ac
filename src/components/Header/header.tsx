@@ -76,9 +76,12 @@ export default function Header() {
     };
   }, [menuOpen]);
 
+  // Only show admin settings to users with ADMIN role
+  const isAdmin = session?.user?.role === "ADMIN";
+
   const visibleNavItems = [
     ...navItems,
-    ...(session
+    ...(isAdmin
       ? [
           {
             label: "header.adminSettings",

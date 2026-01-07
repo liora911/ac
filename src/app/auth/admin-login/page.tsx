@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
 import { Shield, Mail, ArrowRight } from "lucide-react";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 type Notice = { kind: "success" | "error" | "info"; text: string } | null;
 
@@ -43,6 +44,17 @@ function AdminLoginContent() {
 
     setIsLoading(true);
     setNotice(null);
+
+    // Check if email is in allowed list BEFORE sending magic link
+    if (!ALLOWED_EMAILS.includes(email.toLowerCase())) {
+      setNotice({
+        kind: "error",
+        text: "משתמש זה אינו מורשה גישה לפאנל הניהול",
+      });
+      showError("משתמש זה אינו מורשה גישה");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await signIn("email", {
