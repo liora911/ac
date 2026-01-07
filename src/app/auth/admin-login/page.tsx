@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -8,7 +9,7 @@ import { Shield, Mail, ArrowRight } from "lucide-react";
 
 type Notice = { kind: "success" | "error" | "info"; text: string } | null;
 
-export default function AdminLoginPage() {
+function AdminLoginContent() {
   const { data: session, status } = useSession();
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -83,21 +84,7 @@ export default function AdminLoginPage() {
   };
 
   if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
-        <div className="w-full max-w-md px-4">
-          <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
-            <div className="animate-pulse space-y-4">
-              <div className="h-12 w-12 mx-auto rounded-full bg-gray-200" />
-              <div className="h-6 w-40 mx-auto rounded bg-gray-200" />
-              <div className="h-4 w-60 mx-auto rounded bg-gray-100" />
-              <div className="h-10 w-full rounded bg-gray-100" />
-              <div className="h-10 w-full rounded bg-gray-100" />
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <LoginSkeleton />;
   }
 
   return (
@@ -210,5 +197,31 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function LoginSkeleton() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100">
+      <div className="w-full max-w-md px-4">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+          <div className="animate-pulse space-y-4">
+            <div className="h-12 w-12 mx-auto rounded-full bg-gray-200" />
+            <div className="h-6 w-40 mx-auto rounded bg-gray-200" />
+            <div className="h-4 w-60 mx-auto rounded bg-gray-100" />
+            <div className="h-10 w-full rounded bg-gray-100" />
+            <div className="h-10 w-full rounded bg-gray-100" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={<LoginSkeleton />}>
+      <AdminLoginContent />
+    </Suspense>
   );
 }

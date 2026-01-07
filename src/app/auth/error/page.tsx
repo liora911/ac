@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Home } from "lucide-react";
 
@@ -22,7 +23,7 @@ const errorMessages: Record<string, { title: string; description: string }> = {
   },
 };
 
-export default function AuthErrorPage() {
+function AuthErrorContent() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error") || "Default";
 
@@ -67,5 +68,31 @@ export default function AuthErrorPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function ErrorSkeleton() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4">
+      <div className="w-full max-w-md text-center">
+        <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+          <div className="animate-pulse space-y-4">
+            <div className="mx-auto w-16 h-16 rounded-full bg-gray-200" />
+            <div className="h-6 w-32 mx-auto rounded bg-gray-200" />
+            <div className="h-4 w-48 mx-auto rounded bg-gray-100" />
+            <div className="h-10 w-full rounded bg-gray-100" />
+            <div className="h-10 w-full rounded bg-gray-100" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function AuthErrorPage() {
+  return (
+    <Suspense fallback={<ErrorSkeleton />}>
+      <AuthErrorContent />
+    </Suspense>
   );
 }
