@@ -55,14 +55,9 @@ export default function CreateEventPage() {
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
-            {t("createEvent.title")}
-          </h1>
-          <p className="text-gray-600 mt-2">
-            {t("eventsPage.title")}
-          </p>
-        </div>
+        <p className="text-gray-600 mb-6">
+          {t("eventsPage.title")}
+        </p>
         <CreateEventForm onSuccess={handleSuccess} />
       </div>
     </div>
