@@ -261,6 +261,7 @@ export default function PresentationsAdmin() {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("admin.common.perPage")}
+            </label>
             <select
               id="presentation-limit-select"
               value={limit}

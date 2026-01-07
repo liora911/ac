@@ -228,6 +228,7 @@ export default function LecturesAdmin() {
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("admin.common.perPage")}
+            </label>
             <select
               id="lecture-limit-select"
               value={limit}
