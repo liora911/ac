@@ -7,6 +7,7 @@ import CategoryManager from "@/components/Category/CategoryManager";
 import QuickStats from "@/components/QuickStats/QuickStats";
 import QuickActions from "@/components/QuickActions/QuickActions";
 import ActivityFeed from "@/components/ActivityFeed/ActivityFeed";
+import Modal from "@/components/Modal/Modal";
 import ArticlesAdmin from "./ArticlesAdmin";
 import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
@@ -47,6 +48,7 @@ export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const { t } = useTranslation();
   const [active, setActive] = useState<TabKey>("user");
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const tabs = useMemo(() => TABS.filter((tab) => !tab.disabled), []);
 
   const tabsContainerRef = useRef<HTMLDivElement>(null);
@@ -78,21 +80,41 @@ export default function ElitzurDashboard() {
     });
   };
 
+  const handleLogout = () => {
+    signOut({ callbackUrl: "/" });
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Logout Confirmation Modal */}
+      <Modal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        title={t("admin.logout.confirmTitle")}
+        message={t("admin.logout.confirmMessage")}
+        showCancel
+        cancelText={t("admin.logout.cancel")}
+        confirmText={t("admin.logout.confirm")}
+        onConfirm={handleLogout}
+      />
+
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-14">
-            <h1 className="text-lg font-semibold text-gray-900">{t("admin.nav.title")}</h1>
+          <div className="flex items-center justify-end h-14">
             {session && (
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600 hidden sm:block">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-full">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm">
+                  {session.user?.email?.charAt(0).toUpperCase()}
+                </div>
+                <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[200px] truncate">
                   {session.user?.email}
                 </span>
+                <div className="w-px h-5 bg-blue-200 hidden sm:block" />
                 <button
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-md transition-colors"
+                  onClick={() => setShowLogoutModal(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                  title={t("admin.nav.logout")}
                 >
                   <LogOut className="w-4 h-4" />
                   <span className="hidden sm:inline">{t("admin.nav.logout")}</span>

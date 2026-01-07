@@ -792,6 +792,12 @@
     "auth": {
       "signInRequired": "You must sign in with an authorized account to manage this content."
     },
+    "logout": {
+      "confirmTitle": "Sign Out",
+      "confirmMessage": "Are you sure you want to sign out of the admin panel?",
+      "cancel": "Cancel",
+      "confirm": "Sign Out"
+    },
     "articles": {
       "newArticle": "+ New Article",
       "filters": "Article filters",

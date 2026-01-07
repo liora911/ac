@@ -812,6 +812,12 @@
     "auth": {
       "signInRequired": "יש להתחבר עם חשבון מורשה כדי לנהל תוכן זה."
     },
+    "logout": {
+      "confirmTitle": "יציאה מהמערכת",
+      "confirmMessage": "האם אתה בטוח שברצונך להתנתק מפאנל הניהול?",
+      "cancel": "ביטול",
+      "confirm": "התנתק"
+    },
     "articles": {
       "newArticle": "+ מאמר חדש",
       "filters": "סינון מאמרים",
