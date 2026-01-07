@@ -2,13 +2,14 @@
 
 import React, { useState, useEffect, Suspense } from "react";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import { PresentationCategory } from "@/types/Presentations/presentations";
+import { PresentationCategory, Presentation as PresentationType } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PresentationCategoryTree from "@/components/Presentations/PresentationCategoryTree";
-import { Grid3X3, List, AlertTriangle, Trash2, Presentation } from "lucide-react";
+import { Grid3X3, List, AlertTriangle, Trash2, Presentation, Star } from "lucide-react";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 import { useNotification } from "@/contexts/NotificationContext";
 
@@ -321,6 +322,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   onPresentationDeleted,
   viewMode: initialViewMode = "grid",
 }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(
     initialSelectedCategoryId
   );
@@ -335,6 +338,12 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [presentationToDelete, setPresentationToDelete] = useState<{ id: string; title: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [hoveredStarId, setHoveredStarId] = useState<string | null>(null);
+
+  // Check if user has premium access
+  const hasAccess = (isPremium: boolean) => {
+    return !isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
+  };
 
   const openDeleteModal = (presentation: { id: string; title: string }) => {
     setPresentationToDelete(presentation);
@@ -471,16 +480,28 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
               {selectedCategory.presentations.map((presentation) => {
                 const descriptionText = presentation.description?.replace(/<[^>]*>?/gm, "").trim() || "";
+                const isPremium = presentation.isPremium;
+                const canAccess = hasAccess(isPremium);
                 return (
                   <div
                     key={presentation.id}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all duration-200 cursor-pointer overflow-hidden"
-                    onClick={() =>
-                      (window.location.href = `/presentations/${presentation.id}`)
-                    }
+                    className={`bg-white rounded-lg shadow-sm border transition-all duration-200 overflow-hidden relative ${
+                      canAccess
+                        ? "border-gray-200 hover:shadow-md cursor-pointer"
+                        : "border-gray-200 cursor-default"
+                    }`}
+                    onClick={() => {
+                      if (canAccess) {
+                        window.location.href = `/presentations/${presentation.id}`;
+                      }
+                    }}
                   >
+                    {/* Overlay for non-accessible premium content */}
+                    {!canAccess && (
+                      <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
+                    )}
                     {/* Image or Default Icon */}
-                    <div className="relative w-full h-40 bg-gradient-to-br from-indigo-100 to-purple-100">
+                    <div className={`relative w-full h-40 bg-gradient-to-br from-indigo-100 to-purple-100 ${!canAccess ? "grayscale-[30%]" : ""}`}>
                       {presentation.imageUrls.length > 0 ? (
                         <Image
                           src={presentation.imageUrls[0]}
@@ -496,11 +517,11 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                       )}
                     </div>
                     <div className="p-4">
-                      <h3 className="text-lg font-semibold mb-2 text-gray-900 line-clamp-1">
+                      <h3 className={`text-lg font-semibold mb-2 line-clamp-1 ${canAccess ? "text-gray-900" : "text-gray-500"}`}>
                         {presentation.title}
                       </h3>
                       {descriptionText && (
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        <p className={`text-sm mb-3 line-clamp-2 ${canAccess ? "text-gray-600" : "text-gray-400"}`}>
                           {descriptionText}
                         </p>
                       )}
@@ -510,6 +531,32 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                             ? `${presentation.imageUrls.length} ${t("presentationsPage.imagesLabel")}`
                             : ""}
                         </span>
+                        {/* Premium star indicator */}
+                        {isPremium && (
+                          canAccess ? (
+                            <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                              <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                            </div>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                router.push("/pricing");
+                              }}
+                              onMouseEnter={() => setHoveredStarId(presentation.id)}
+                              onMouseLeave={() => setHoveredStarId(null)}
+                              className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10"
+                              aria-label="תוכן פרימיום - הרשם למנוי"
+                              title="תוכן פרימיום - לחץ להרשמה"
+                            >
+                              <Star className={`w-4 h-4 transition-all ${
+                                hoveredStarId === presentation.id
+                                  ? "text-amber-500 fill-amber-500"
+                                  : "text-amber-400"
+                              }`} />
+                            </button>
+                          )
+                        )}
                       </div>
                     </div>
                   </div>
@@ -520,17 +567,29 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
             <div className="space-y-4">
               {selectedCategory.presentations.map((presentation) => {
                 const descriptionText = presentation.description?.replace(/<[^>]*>?/gm, "").trim() || "";
+                const isPremium = presentation.isPremium;
+                const canAccess = hasAccess(isPremium);
                 return (
                   <div
                     key={presentation.id}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() =>
-                      (window.location.href = `/presentations/${presentation.id}`)
-                    }
+                    className={`bg-white rounded-lg shadow-sm border p-4 transition-shadow relative ${
+                      canAccess
+                        ? "border-gray-200 hover:shadow-md cursor-pointer"
+                        : "border-gray-200 cursor-default"
+                    }`}
+                    onClick={() => {
+                      if (canAccess) {
+                        window.location.href = `/presentations/${presentation.id}`;
+                      }
+                    }}
                   >
+                    {/* Overlay for non-accessible premium content */}
+                    {!canAccess && (
+                      <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
+                    )}
                     <div className="flex items-center gap-4">
                       {/* Image or Default Icon */}
-                      <div className="relative w-20 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-purple-100 rounded overflow-hidden">
+                      <div className={`relative w-20 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-purple-100 rounded overflow-hidden ${!canAccess ? "grayscale-[30%]" : ""}`}>
                         {presentation.imageUrls.length > 0 ? (
                           <Image
                             src={presentation.imageUrls[0]}
@@ -545,15 +604,41 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1 truncate">
+                        <h3 className={`text-lg font-semibold mb-1 truncate ${canAccess ? "text-gray-900" : "text-gray-500"}`}>
                           {presentation.title}
                         </h3>
                         {descriptionText && (
-                          <p className="text-gray-600 text-sm line-clamp-2">
+                          <p className={`text-sm line-clamp-2 ${canAccess ? "text-gray-600" : "text-gray-400"}`}>
                             {descriptionText}
                           </p>
                         )}
                       </div>
+                      {/* Premium star indicator */}
+                      {isPremium && (
+                        canAccess ? (
+                          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                            <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                          </div>
+                        ) : (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              router.push("/pricing");
+                            }}
+                            onMouseEnter={() => setHoveredStarId(presentation.id)}
+                            onMouseLeave={() => setHoveredStarId(null)}
+                            className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10 flex-shrink-0"
+                            aria-label="תוכן פרימיום - הרשם למנוי"
+                            title="תוכן פרימיום - לחץ להרשמה"
+                          >
+                            <Star className={`w-4 h-4 transition-all ${
+                              hoveredStarId === presentation.id
+                                ? "text-amber-500 fill-amber-500"
+                                : "text-amber-400"
+                            }`} />
+                          </button>
+                        )
+                      )}
                     </div>
                   </div>
                 );

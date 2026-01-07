@@ -17,6 +17,7 @@ function formatLecture(lec: LectureWithAuthor) {
     duration: lec.duration,
     date: lec.date || undefined,
     bannerImageUrl: lec.bannerImageUrl || undefined,
+    isPremium: lec.isPremium ?? false,
     author: lec.author,
     createdAt: lec.createdAt,
   };

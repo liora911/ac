@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Grid3X3, List, Tag, X } from "lucide-react";
+import { Grid3X3, List, Tag, X, Star } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
 
 interface ArticlesListProps {
@@ -478,10 +478,16 @@ interface ArticleCardProps {
 }
 
 function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isStarHovered, setIsStarHovered] = useState(false);
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
+
+  // Check if user has premium access
+  const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(dateLocale, {
@@ -505,10 +511,16 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   };
 
   return (
-    <article className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
+    <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative ${
+      hasAccess ? "hover:shadow-md" : ""
+    }`}>
+      {/* Overlay for non-accessible premium content */}
+      {!hasAccess && (
+        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
+      )}
       {}
       {article.featuredImage && (
-        <div className="relative h-48 overflow-hidden">
+        <div className={`relative h-48 overflow-hidden ${!hasAccess ? "grayscale-[30%]" : ""}`}>
           <Image
             src={article.featuredImage}
             alt={article.title}
@@ -594,24 +606,51 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
         </div>
 
         {}
-        {article.categories && article.categories.length > 0 ? (
-          <div className="mt-3 flex flex-wrap gap-1">
-            {article.categories.map((cat) => (
-              <span
-                key={cat.id}
-                className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
-              >
-                {cat.name}
+        <div className="mt-3 flex items-center justify-between">
+          <div className="flex flex-wrap gap-1">
+            {article.categories && article.categories.length > 0 ? (
+              article.categories.map((cat) => (
+                <span
+                  key={cat.id}
+                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                >
+                  {cat.name}
+                </span>
+              ))
+            ) : article.category ? (
+              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                {article.category.name}
               </span>
-            ))}
+            ) : null}
           </div>
-        ) : article.category ? (
-          <div className="mt-3">
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-              {article.category.name}
-            </span>
-          </div>
-        ) : null}
+          {/* Premium star indicator */}
+          {article.isPremium && (
+            hasAccess ? (
+              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              </div>
+            ) : (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  router.push("/pricing");
+                }}
+                onMouseEnter={() => setIsStarHovered(true)}
+                onMouseLeave={() => setIsStarHovered(false)}
+                className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10 flex-shrink-0"
+                aria-label="תוכן פרימיום - הרשם למנוי"
+                title="תוכן פרימיום - לחץ להרשמה"
+              >
+                <Star className={`w-4 h-4 transition-all ${
+                  isStarHovered
+                    ? "text-amber-500 fill-amber-500"
+                    : "text-amber-400"
+                }`} />
+              </button>
+            )
+          )}
+        </div>
       </div>
       {errorModalOpen && (
         <Modal
