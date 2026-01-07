@@ -38,6 +38,7 @@ export default function CreatePresentationForm({
     pdfUrl: null as string | null,
     imageUrls: [] as string[],
     categoryId: "",
+    isPremium: false,
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -165,6 +166,7 @@ export default function CreatePresentationForm({
         pdfUrl: null,
         imageUrls: [],
         categoryId: "",
+        isPremium: false,
       });
 
       setActiveTab(1);
@@ -514,6 +516,28 @@ export default function CreatePresentationForm({
                 invalidFileType: t("createPresentation.invalidFileType") || "Please select valid image files (max 5MB each)",
               }}
             />
+
+            {/* Premium Content Toggle */}
+            <div className="pt-4 border-t border-gray-200">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isPremium}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, isPremium: e.target.checked }))
+                  }
+                  className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                />
+                <div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("createPresentation.isPremiumLabel") || "Premium Content"}
+                  </span>
+                  <p className="text-xs text-gray-500">
+                    {t("createPresentation.isPremiumHint") || "Only accessible to subscribers with Researcher plan"}
+                  </p>
+                </div>
+              </label>
+            </div>
           </>
         )}
 

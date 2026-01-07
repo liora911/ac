@@ -37,6 +37,7 @@ export default function CreateLectureForm({
     date: "",
     bannerImageUrl: "",
     categoryId: "",
+    isPremium: false,
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -152,6 +153,7 @@ export default function CreateLectureForm({
         date: "",
         bannerImageUrl: "",
         categoryId: "",
+        isPremium: false,
       });
 
       if (onSuccess) {
@@ -485,6 +487,28 @@ export default function CreateLectureForm({
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
+            </div>
+
+            {/* Premium Content Toggle */}
+            <div className="pt-4 border-t border-gray-200">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isPremium}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, isPremium: e.target.checked }))
+                  }
+                  className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                />
+                <div>
+                  <span className="text-sm font-medium text-gray-700">
+                    {t("createLecture.isPremiumLabel") || "Premium Content"}
+                  </span>
+                  <p className="text-xs text-gray-500">
+                    {t("createLecture.isPremiumHint") || "Only accessible to subscribers with Researcher plan"}
+                  </p>
+                </div>
+              </label>
             </div>
           </>
         )}

@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
       categoryId,
       maxSeats,
       isFeatured = false,
+      price, // Price in agorot (null = free)
     } = body;
 
     if (!title || !eventType || !eventDate || !categoryId) {
@@ -140,6 +141,8 @@ export async function POST(request: NextRequest) {
         authorId: user.id,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
+        price: price && price > 0 ? price : null,
+        currency: "ILS",
       },
       include: {
         author: {

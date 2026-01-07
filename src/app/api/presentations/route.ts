@@ -102,6 +102,7 @@ export async function POST(request: NextRequest) {
       categoryId,
       googleSlidesUrl,
       pdfUrl,
+      isPremium = false,
     } = body;
 
     if (!title || !categoryId) {
@@ -140,6 +141,7 @@ export async function POST(request: NextRequest) {
         imageUrls: imageUrls || [],
         categoryId,
         authorId: user.id,
+        isPremium,
       },
       include: {
         author: {

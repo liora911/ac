@@ -121,6 +121,7 @@ export async function POST(request: Request) {
       date,
       bannerImageUrl,
       categoryId,
+      isPremium = false,
     } = body;
 
     if (!title || !categoryId || !duration) {
@@ -151,6 +152,7 @@ export async function POST(request: Request) {
         bannerImageUrl: bannerImageUrl || null,
         categoryId,
         authorId: user.id,
+        isPremium,
       },
       include: {
         author: {

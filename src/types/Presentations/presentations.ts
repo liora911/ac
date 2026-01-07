@@ -13,6 +13,7 @@ export interface Presentation {
   pdfUrl?: string;
   imageUrls: string[];
   published: boolean;
+  isPremium: boolean;
   categoryId: string;
   authorId: string;
   createdAt: Date;

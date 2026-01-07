@@ -40,6 +40,7 @@ export default function ArticleForm({
     tags: article?.tags?.map((tag) => tag.name) || [],
     status: article?.status || "DRAFT",
     isFeatured: article?.isFeatured || false,
+    isPremium: article?.isPremium || false,
     direction: article?.direction || (locale === "en" ? "ltr" : "rtl"),
     metaTitle: article?.metaTitle || "",
     metaDescription: article?.metaDescription || "",
@@ -568,6 +569,24 @@ export default function ArticleForm({
                     className="ml-2 text-sm text-gray-700"
                   >
                     {t("articleForm.featuredArticleLabel")}
+                  </label>
+                </div>
+
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    id="isPremium"
+                    checked={formData.isPremium}
+                    onChange={(e) =>
+                      handleInputChange("isPremium", e.target.checked)
+                    }
+                    className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded"
+                  />
+                  <label
+                    htmlFor="isPremium"
+                    className="ml-2 text-sm text-gray-700"
+                  >
+                    תוכן פרימיום (למנויים בלבד)
                   </label>
                 </div>
               </div>

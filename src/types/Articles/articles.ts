@@ -8,6 +8,7 @@ export interface Article {
   status: ArticleStatus;
   publishedAt?: string;
   isFeatured: boolean;
+  isPremium: boolean;
   viewCount: number;
   readTime: number;
   direction?: "ltr" | "rtl";
@@ -79,6 +80,7 @@ export interface CreateArticleRequest {
   tags?: string[];
   status?: ArticleStatus;
   isFeatured?: boolean;
+  isPremium?: boolean;
   direction?: "ltr" | "rtl";
   metaTitle?: string;
   metaDescription?: string;
@@ -122,6 +124,7 @@ export interface ArticleFormData {
   tags: string[];
   status: ArticleStatus;
   isFeatured: boolean;
+  isPremium: boolean;
   direction: "ltr" | "rtl";
   metaTitle: string;
   metaDescription: string;

@@ -9,6 +9,8 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
+import PremiumGate from "@/components/PremiumGate/PremiumGate";
+import { Sparkles } from "lucide-react";
 
 // Dynamic import for DocumentViewer to avoid SSR issues with react-pdf
 const DocumentViewer = dynamic(() => import("@/components/DocumentViewer/DocumentViewer"), {
@@ -168,11 +170,22 @@ export default function PresentationDetailPage() {
           )} */}
         </div>
 
+        {/* Premium Badge */}
+        {presentation.isPremium && (
+          <div className="flex justify-center mb-4">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
+              <Sparkles className="w-4 h-4" />
+              {t("presentationDetail.premium") || "Premium"}
+            </span>
+          </div>
+        )}
+
         {}
         <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
           {presentation.title}
         </h1>
 
+        <PremiumGate isPremium={presentation.isPremium}>
         {hasGoogleSlidesUrl && (
           <div className="mb-8 flex flex-col items-center gap-4">
             {embedUrl && (
@@ -288,6 +301,7 @@ export default function PresentationDetailPage() {
             <RichContent content={presentation.content} className="text-slate-700" />
           </div>
         )}
+        </PremiumGate>
 
         {}
         <div className="mt-8 text-center text-slate-500">

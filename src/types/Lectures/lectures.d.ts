@@ -6,6 +6,7 @@ export interface Lecture {
   duration: string;
   date?: string;
   bannerImageUrl?: string;
+  isPremium?: boolean;
   author?: {
     name: string | null;
     email: string | null;
@@ -39,6 +40,7 @@ export interface LectureDef {
   duration: string;
   date?: string;
   bannerImageUrl?: string;
+  isPremium?: boolean;
 }
 
 export interface CategoryDef {

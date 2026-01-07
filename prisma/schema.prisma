@@ -1,12 +1,11 @@
-
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL")
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
@@ -23,8 +22,7 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
 }
@@ -37,18 +35,27 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  articles      Article[]
-  lectures      Lecture[]
-  presentations Presentation[]
-  events        Event[]
+  id               String         @id @default(cuid())
+  name             String?
+  email            String?        @unique
+  emailVerified    DateTime?
+  image            String?
+  role             UserRole       @default(USER)
+  stripeCustomerId String?        @unique
+  accounts         Account[]
+  sessions         Session[]
+  articles         Article[]
+  events           Event[]
+  lectures         Lecture[]
+  presentations    Presentation[]
+  tickets          Ticket[]
+  subscription     Subscription?
 }
 
 model VerificationToken {
@@ -59,109 +66,122 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELED
+  PAST_DUE
+  EXPIRED
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  userId               String             @unique
+  user                 User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  stripeSubscriptionId String             @unique
+  stripePriceId        String
+  status               SubscriptionStatus @default(ACTIVE)
+  currentPeriodStart   DateTime
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@map("subscriptions")
+}
+
 model Article {
-  id              String   @id @default(cuid())
-  title           String
-  content         String
-  articleImage    String?
-  publisherName   String
-  publisherImage  String?
-  readDuration    Int      @default(5)
-  published       Boolean  @default(false)
-  order           Int      @default(0)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-  direction       String   @default("ltr")
-  authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-
-  // Single category (kept for backward compatibility)
-  categoryId      String?
-  category        Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
-
-  // Multiple categories support
-  categories      ArticleCategory[]
-
-  // Multiple authors support
-  authors         ArticleAuthor[]
+  id             String            @id @default(cuid())
+  title          String
+  content        String
+  articleImage   String?
+  publisherName  String
+  publisherImage String?
+  readDuration   Int               @default(5)
+  published      Boolean           @default(false)
+  isPremium      Boolean           @default(false)
+  order          Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  direction      String            @default("ltr")
+  authorId       String
+  categoryId     String?
+  authors        ArticleAuthor[]
+  categories     ArticleCategory[]
+  author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category       Category?         @relation(fields: [categoryId], references: [id])
 
   @@map("articles")
 }
 
 model ArticleCategory {
-  id          String   @id @default(cuid())
-  articleId   String
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  categoryId  String
-  category    Category @relation("ArticleCategories", fields: [categoryId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  articleId  String
+  categoryId String
+  createdAt  DateTime @default(now())
+  article    Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  category   Category @relation("ArticleCategories", fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([articleId, categoryId])
   @@map("article_categories")
 }
 
 model ArticleAuthor {
-  id          String   @id @default(cuid())
-  name        String
-  imageUrl    String?  // Custom image URL or null for default icon
-  order       Int      @default(0) // Order of display
-  articleId   String
-  article     Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  imageUrl  String?
+  order     Int      @default(0)
+  articleId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
 
   @@map("article_authors")
 }
 
 model Tag {
-  id        String    @id @default(cuid())
-  name      String    @unique
-  slug      String    @unique
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
   color     String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("tags")
 }
 
-enum ArticleStatus {
-  DRAFT
-  PUBLISHED
-  ARCHIVED
-}
-
 model Category {
-  id              String   @id @default(cuid())
-  name            String
-  bannerImageUrl  String?
-  parentId        String?
-  parent          Category? @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  subcategories   Category[] @relation("CategoryHierarchy")
-  lectures        Lecture[]
-  presentations   Presentation[]
-  events          Event[]
-  articles        Article[]     // Single category relation (backward compat)
-  articleCategories ArticleCategory[] @relation("ArticleCategories") // Multiple categories
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                String            @id @default(cuid())
+  name              String
+  bannerImageUrl    String?
+  parentId          String?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+  articleCategories ArticleCategory[] @relation("ArticleCategories")
+  articles          Article[]
+  parent            Category?         @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subcategories     Category[]        @relation("CategoryHierarchy")
+  events            Event[]
+  lectures          Lecture[]
+  presentations     Presentation[]
 
   @@map("categories")
 }
 
 model Lecture {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  videoUrl        String?
-  duration        String
-  date            String?
-  bannerImageUrl  String?
-  categoryId      String
-  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  videoUrl       String?
+  duration       String
+  date           String?
+  bannerImageUrl String?
+  isPremium      Boolean  @default(false)
+  categoryId     String
+  authorId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  author         User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category       Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("lectures")
 }
@@ -172,39 +192,42 @@ model Presentation {
   description     String
   content         String
   googleSlidesUrl String?
-  pdfUrl          String?
   imageUrls       String[]
   published       Boolean  @default(true)
+  isPremium       Boolean  @default(false)
   categoryId      String
-  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+  pdfUrl          String?
+  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@map("presentations")
 }
 
 model Event {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  eventType       String
-  location        String?
-  onlineUrl       String?
-  eventDate       DateTime
-  eventTime       String?
-  bannerImageUrl  String?
-  maxSeats        Int?     // Maximum seats available (null = unlimited)
-  published       Boolean  @default(false)
-  isFeatured      Boolean  @default(false) // Manual featured event selection
-  categoryId      String
-  category        Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  authorId        String
-  author          User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  tickets         Ticket[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  eventType      String
+  location       String?
+  onlineUrl      String?
+  eventDate      DateTime
+  eventTime      String?
+  bannerImageUrl String?
+  maxSeats       Int?
+  price          Int?     // Price in agorot (cents), null = free event
+  currency       String   @default("ILS")
+  published      Boolean  @default(false)
+  isFeatured     Boolean  @default(false)
+  categoryId     String
+  authorId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  author         User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category       Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  tickets        Ticket[]
 
   @@map("events")
 }
@@ -212,27 +235,23 @@ model Event {
 model Ticket {
   id              String       @id @default(cuid())
   eventId         String
-  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId          String?      // Link to registered user (optional for guest checkout)
   holderName      String
   holderEmail     String
   holderPhone     String?
   numberOfSeats   Int          @default(1)
   status          TicketStatus @default(PENDING)
-  paymentId       String?      // For future Stripe integration
-  paymentStatus   String?      // For future Stripe integration
-  accessToken     String       @unique @default(cuid()) // Unique token for accessing ticket summary
+  paymentId       String?      // Stripe Payment Intent ID
+  paymentStatus   String?      // succeeded, pending, failed
+  stripeSessionId String?      // Stripe Checkout Session ID
+  accessToken     String       @unique @default(cuid())
   notes           String?
   createdAt       DateTime     @default(now())
   updatedAt       DateTime     @updatedAt
+  event           Event        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user            User?        @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@map("tickets")
-}
-
-enum TicketStatus {
-  PENDING
-  CONFIRMED
-  CANCELLED
-  ATTENDED
 }
 
 model Message {
@@ -265,8 +284,21 @@ model SiteSettings {
   contactPhone    String   @default("")
   facebookUrl     String   @default("")
   youtubeUrl      String   @default("")
-  defaultLanguage String   @default("he") // "he" or "en"
+  defaultLanguage String   @default("he")
   updatedAt       DateTime @updatedAt
 
   @@map("site_settings")
+}
+
+enum ArticleStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TicketStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  ATTENDED
 }

@@ -10,6 +10,8 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
+import PremiumGate from "@/components/PremiumGate/PremiumGate";
+import { Sparkles } from "lucide-react";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -217,22 +219,30 @@ export default function ArticleDetailPage() {
         {}
         <header className="mb-8">
           {}
-          {isAuthorized && (
-            <div className="mb-4">
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                  article.status
-                )}`}
-              >
-                {article.status}
+          <div className="mb-4 flex flex-wrap gap-2">
+            {article.isPremium && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                <Sparkles className="w-3 h-3" />
+                {t("articleCard.premium") || "Premium"}
               </span>
-              {article.isFeatured && (
-                <span className="inline-flex items-center ml-2 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  {t("articleCard.featured")}
+            )}
+            {isAuthorized && (
+              <>
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                    article.status
+                  )}`}
+                >
+                  {article.status}
                 </span>
-              )}
-            </div>
-          )}
+                {article.isFeatured && (
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                    {t("articleCard.featured")}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
 
           {}
           <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
@@ -331,9 +341,21 @@ export default function ArticleDetailPage() {
         )}
 
         {/* Article Content */}
-        <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
-          <RichContent content={article.content} className="text-gray-800" />
-        </div>
+        <PremiumGate
+          isPremium={article.isPremium}
+          previewContent={
+            <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
+              <RichContent
+                content={article.content.slice(0, 500) + "..."}
+                className="text-gray-800"
+              />
+            </div>
+          }
+        >
+          <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
+            <RichContent content={article.content} className="text-gray-800" />
+          </div>
+        </PremiumGate>
 
         {}
         <footer className="mt-12 pt-8 border-t border-gray-200">

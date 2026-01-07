@@ -17,6 +17,7 @@ import {
   ArrowLeft,
   CheckCircle,
   AlertCircle,
+  CreditCard,
 } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -111,11 +112,38 @@ function TicketAcquireContent() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (!validateForm() || !eventId) return;
+    if (!validateForm() || !eventId || !event) return;
 
     setIsSubmitting(true);
 
     try {
+      // For paid events, redirect to Stripe checkout
+      if (event.price && event.price > 0) {
+        const response = await fetch("/api/stripe/create-checkout-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            eventId,
+            ...formData,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || t("tickets.paymentFailed") || "Payment failed");
+        }
+
+        // Redirect to Stripe checkout
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+      }
+
+      // For free events, create ticket directly
       const response = await fetch("/api/tickets", {
         method: "POST",
         headers: {
@@ -310,6 +338,21 @@ function TicketAcquireContent() {
                       </div>
                     </div>
                   )}
+
+                  {/* Price */}
+                  <div className="flex items-center gap-3 text-gray-700">
+                    <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
+                      <CreditCard size={18} className="text-amber-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">{t("tickets.price") || "Price"}</p>
+                      <p className="font-medium">
+                        {event.price && event.price > 0
+                          ? `₪${(event.price / 100).toFixed(2)}`
+                          : t("tickets.free") || "Free"}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <div className="pt-4 border-t border-gray-200 flex items-center justify-between flex-wrap gap-2">
@@ -522,16 +565,40 @@ function TicketAcquireContent() {
                 />
               </div>
 
+              {/* Total Price Display for Paid Events */}
+              {event?.price && event.price > 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-700 font-medium">{t("tickets.total") || "Total"}</span>
+                    <span className="text-2xl font-bold text-amber-700">
+                      ₪{((event.price * formData.numberOfSeats) / 100).toFixed(2)}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {formData.numberOfSeats} × ₪{(event.price / 100).toFixed(2)}
+                  </p>
+                </div>
+              )}
+
               {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white py-4 px-6 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold text-lg flex items-center justify-center gap-2 cursor-pointer"
+                className={`w-full py-4 px-6 rounded-lg focus:ring-4 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold text-lg flex items-center justify-center gap-2 cursor-pointer ${
+                  event?.price && event.price > 0
+                    ? "bg-amber-600 text-white hover:bg-amber-700 focus:ring-amber-200"
+                    : "bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-200"
+                }`}
               >
                 {isSubmitting ? (
                   <>
                     <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
                     {t("tickets.processing")}
+                  </>
+                ) : event?.price && event.price > 0 ? (
+                  <>
+                    <CreditCard size={20} />
+                    {t("tickets.payAndReserve") || "Pay & Reserve"} - ₪{((event.price * formData.numberOfSeats) / 100).toFixed(2)}
                   </>
                 ) : (
                   <>

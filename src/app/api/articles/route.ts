@@ -13,7 +13,22 @@ import type {
 
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{
-  include: {
+  select: {
+    id: true;
+    title: true;
+    content: true;
+    articleImage: true;
+    publisherName: true;
+    publisherImage: true;
+    readDuration: true;
+    published: true;
+    isPremium: true;
+    order: true;
+    createdAt: true;
+    updatedAt: true;
+    direction: true;
+    authorId: true;
+    categoryId: true;
     author: { select: { id: true; name: true; email: true; image: true } };
     category: { select: { id: true; name: true; bannerImageUrl: true } };
     categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
@@ -49,6 +64,7 @@ function transformArticle(article: ArticleWithRelations): Article {
     status: article.published ? "PUBLISHED" : "DRAFT",
     publishedAt: article.published ? article.createdAt.toISOString() : undefined,
     isFeatured: false,
+    isPremium: article.isPremium,
     viewCount: 0,
     readTime: article.readDuration,
     direction: article.direction === "rtl" ? "rtl" : "ltr",
@@ -287,6 +303,7 @@ export async function POST(request: NextRequest) {
       categoryId,
       categoryIds, // Multiple categories support
       status = "DRAFT",
+      isPremium = false,
       direction = "ltr",
       publisherName,
       publisherImage,
@@ -355,6 +372,7 @@ export async function POST(request: NextRequest) {
         // Calculate read time: strip HTML, count words, divide by 200 WPM (average reading speed)
         readDuration: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length / 200)),
         published: status === "PUBLISHED",
+        isPremium,
         authorId: user.id,
         direction,
         categoryId: allCategoryIds[0] || null, // Keep first category for backward compat

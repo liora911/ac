@@ -101,6 +101,7 @@ export async function PUT(
       categoryId,
       maxSeats,
       isFeatured = false,
+      price,
     } = body;
 
     if (!title || !eventType || !eventDate || !categoryId) {
@@ -164,6 +165,7 @@ export async function PUT(
         categoryId,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
+        price: price && price > 0 ? price : null,
       },
       include: {
         author: {

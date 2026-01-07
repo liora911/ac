@@ -1,44 +1,59 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-// Protected admin routes
-const PROTECTED_ROUTES = ["/elitzur"];
+// Admin routes - require ADMIN role (checked at page level)
+const ADMIN_ROUTES = ["/elitzur"];
+
+// User routes - require any authenticated user
+const USER_ROUTES = ["/account", "/my-tickets"];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Check if the route is protected
-  const isProtectedRoute = PROTECTED_ROUTES.some(
+  // Check route type
+  const isAdminRoute = ADMIN_ROUTES.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  );
+  const isUserRoute = USER_ROUTES.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`)
   );
 
-  if (!isProtectedRoute) {
+  if (!isAdminRoute && !isUserRoute) {
     return NextResponse.next();
   }
 
-  // Check for session cookie (works with both JWT and database sessions)
+  // Check for session cookie
   const sessionToken =
     request.cookies.get("next-auth.session-token")?.value ||
     request.cookies.get("__Secure-next-auth.session-token")?.value;
 
-  // If no session token cookie, redirect to admin login page
+  // No session - redirect to appropriate login page
   if (!sessionToken) {
-    const loginUrl = new URL("/auth/admin-login", request.url);
+    if (isAdminRoute) {
+      const loginUrl = new URL("/auth/admin-login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    // User routes redirect to public login
+    const loginUrl = new URL("/auth/login", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Note: For database sessions, we can't verify the email in middleware
-  // The email check is handled by the signIn callback in auth.ts
-  // which only allows ALLOWED_EMAILS to sign in
-
+  // Session exists - role check happens at page level
+  // (Edge Runtime can't query database for role)
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    // Match /elitzur exactly and all sub-paths
+    // Admin routes
     "/elitzur",
     "/elitzur/:path*",
+    // User routes
+    "/account",
+    "/account/:path*",
+    "/my-tickets",
+    "/my-tickets/:path*",
   ],
 };

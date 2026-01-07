@@ -10,5 +10,10 @@ export default async function Page() {
     redirect("/auth/admin-login?callbackUrl=/elitzur");
   }
 
+  // Check for ADMIN role
+  if (session.user.role !== "ADMIN") {
+    redirect("/");
+  }
+
   return <ElitzurDashboard />;
 }

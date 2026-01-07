@@ -19,6 +19,8 @@ export interface Event {
   categoryId: string;
   authorId: string;
   maxSeats: number | null;
+  price: number | null; // Price in agorot (null = free)
+  currency: string;
   createdAt: Date;
   updatedAt: Date;
   author: {

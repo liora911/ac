@@ -9,6 +9,8 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
+import PremiumGate from "@/components/PremiumGate/PremiumGate";
+import { Sparkles } from "lucide-react";
 
 export default function LectureDetailPage() {
   const params = useParams();
@@ -103,6 +105,14 @@ export default function LectureDetailPage() {
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 relative z-10">
         <header className="mb-8">
+          {lecture.isPremium && (
+            <div className="mb-4">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+                <Sparkles className="w-3 h-3" />
+                {t("lectureDetail.premium") || "Premium"}
+              </span>
+            </div>
+          )}
           <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {lecture.title}
           </h1>
@@ -140,22 +150,24 @@ export default function LectureDetailPage() {
           </div>
         </header>
 
-        {lecture.videoUrl && (
-          <div className="mb-8">
-            <iframe
-              src={lecture.videoUrl}
-              title={lecture.title}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-              className="rounded-lg w-full h-[600px] shadow-lg"
-            ></iframe>
-          </div>
-        )}
+        <PremiumGate isPremium={lecture.isPremium ?? false}>
+          {lecture.videoUrl && (
+            <div className="mb-8">
+              <iframe
+                src={lecture.videoUrl}
+                title={lecture.title}
+                frameBorder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+                className="rounded-lg w-full h-[600px] shadow-lg"
+              ></iframe>
+            </div>
+          )}
 
-        <div dir={locale === "en" ? "ltr" : "rtl"}>
-          <RichContent content={lecture.description} className="text-gray-800" />
-        </div>
+          <div dir={locale === "en" ? "ltr" : "rtl"}>
+            <RichContent content={lecture.description} className="text-gray-800" />
+          </div>
+        </PremiumGate>
 
         <footer className="mt-12 pt-8 border-t border-gray-200"></footer>
       </article>

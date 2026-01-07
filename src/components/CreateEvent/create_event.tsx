@@ -38,6 +38,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
     categoryId: "",
     maxSeats: "",
     isFeatured: false,
+    price: "", // Price in ILS (empty = free)
   });
 
   const [categories, setCategories] = useState<CategoryNode[]>([]);
@@ -133,6 +134,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         ...formData,
         maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
         isFeatured: formData.isFeatured,
+        price: formData.price ? Math.round(parseFloat(formData.price) * 100) : null, // Convert to agorot
       };
 
       const response = await fetch("/api/events", {
@@ -163,6 +165,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         categoryId: "",
         maxSeats: "",
         isFeatured: false,
+        price: "",
       });
 
       if (onSuccess) {
@@ -559,6 +562,33 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
+            </div>
+
+            {/* Ticket Price */}
+            <div>
+              <label
+                htmlFor="price"
+                className="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {t("createEvent.priceLabel") || "Ticket Price (ILS)"}
+              </label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₪</span>
+                <input
+                  type="number"
+                  id="price"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  min={0}
+                  step="0.01"
+                  className="w-full p-3 pl-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="0"
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-1">
+                {t("createEvent.priceHelp") || "Leave empty or 0 for free events"}
+              </p>
             </div>
 
             <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
