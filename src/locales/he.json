@@ -249,7 +249,8 @@
     "publisherNamePlaceholder": "הכנס שם המחבר",
     "publisherImageUrlLabel": "קישור תמונת המחבר",
     "savingButton": "שומר...",
-    "updateArticleButton": "עדכן מאמר"
+    "updateArticleButton": "עדכן מאמר",
+    "confirmAndContinue": "אישור והמשך"
   },
   "loading": "טוען...",
   "loadingArticleData": "טוען נתוני מאמר...",
@@ -545,7 +546,8 @@
     "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
     "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע",
     "isFeaturedLabel": "הצג כאירוע מומלץ",
-    "isFeaturedHelp": "אירועים מומלצים מוצגים בצורה בולטת בראש דף האירועים"
+    "isFeaturedHelp": "אירועים מומלצים מוצגים בצורה בולטת בראש דף האירועים",
+    "confirmAndContinue": "אישור והמשך"
   },
   "createLecture": {
     "loading": "טוען...",
@@ -581,7 +583,8 @@
     "submitCreating": "יוצר הרצאה...",
     "submit": "צור הרצאה",
     "successMessage": "ההרצאה נוצרה בהצלחה!",
-    "errorMessage": "שגיאה ביצירת ההרצאה. נסה שוב."
+    "errorMessage": "שגיאה ביצירת ההרצאה. נסה שוב.",
+    "confirmAndContinue": "אישור והמשך"
   },
   "createPresentation": {
     "loading": "טוען...",
@@ -632,7 +635,8 @@
     "submitCreating": "יוצר מצגת...",
     "submit": "צור מצגת",
     "successMessage": "המצגת נוצרה בהצלחה!",
-    "errorMessage": "שגיאה ביצירת המצגת. נסה שוב."
+    "errorMessage": "שגיאה ביצירת המצגת. נסה שוב.",
+    "confirmAndContinue": "אישור והמשך"
   },
   "eventModal": {
     "onlineEventLink": "קישור לאירוע מקוון",

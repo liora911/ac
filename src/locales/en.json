@@ -248,7 +248,8 @@
     "publisherNamePlaceholder": "Enter publisher name",
     "publisherImageUrlLabel": "Publisher image URL",
     "savingButton": "Saving...",
-    "updateArticleButton": "Update Article"
+    "updateArticleButton": "Update Article",
+    "confirmAndContinue": "Confirm & Continue"
   },
   "loading": "Loading...",
   "loadingArticleData": "Loading article data...",
@@ -544,7 +545,8 @@
     "maxSeatsPlaceholder": "Leave empty for unlimited",
     "maxSeatsHelp": "Limit the number of available seats for this event",
     "isFeaturedLabel": "Feature this event",
-    "isFeaturedHelp": "Featured events are displayed prominently at the top of the events page"
+    "isFeaturedHelp": "Featured events are displayed prominently at the top of the events page",
+    "confirmAndContinue": "Confirm & Continue"
   },
   "createLecture": {
     "loading": "Loading...",
@@ -580,7 +582,8 @@
     "submitCreating": "Creating lecture...",
     "submit": "Create Lecture",
     "successMessage": "Lecture created successfully!",
-    "errorMessage": "Error creating lecture. Please try again."
+    "errorMessage": "Error creating lecture. Please try again.",
+    "confirmAndContinue": "Confirm & Continue"
   },
   "createPresentation": {
     "loading": "Loading...",
@@ -631,7 +634,8 @@
     "submitCreating": "Creating presentation...",
     "submit": "Create Presentation",
     "successMessage": "Presentation created successfully!",
-    "errorMessage": "Error creating presentation. Please try again."
+    "errorMessage": "Error creating presentation. Please try again.",
+    "confirmAndContinue": "Confirm & Continue"
   },
   "eventModal": {
     "onlineEventLink": "Link to online event",
