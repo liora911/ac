@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Category {
   id: string;
@@ -9,6 +10,7 @@ interface Category {
 }
 
 export default function CategoryManager() {
+  const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [newCategoryParentId, setNewCategoryParentId] = useState<string | "">(
@@ -50,7 +52,7 @@ export default function CategoryManager() {
     e.preventDefault();
     setError(null);
     if (!newCategoryName.trim()) {
-      setError("Category name cannot be empty.");
+      setError(t("admin.categories.nameCannotBeEmpty"));
       return;
     }
 
@@ -94,7 +96,7 @@ export default function CategoryManager() {
     e.preventDefault();
     setError(null);
     if (!editingCategory || !editedCategoryName.trim()) {
-      setError("Category name cannot be empty.");
+      setError(t("admin.categories.nameCannotBeEmpty"));
       return;
     }
 
@@ -171,7 +173,7 @@ export default function CategoryManager() {
       <div className="rounded-2xl border border-gray-200 bg-white shadow-sm">
         <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between">
           <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700">
-            {loading ? "Loading…" : `${categories.length} total`}
+            {loading ? t("admin.common.loading") : `${categories.length} total`}
           </span>
         </div>
 
@@ -189,10 +191,10 @@ export default function CategoryManager() {
             <div className="md:col-span-1">
               <div className="h-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                 <h3 className="text-sm font-semibold text-gray-900">
-                  Add new category
+                  {t("admin.categories.addNew")}
                 </h3>
                 <p className="mt-1 text-xs text-gray-500">
-                  Give it a clear, descriptive name.
+                  {t("admin.categories.addDescription")}
                 </p>
 
                 <form onSubmit={handleAddCategory} className="mt-4 space-y-3">
@@ -201,28 +203,28 @@ export default function CategoryManager() {
                       htmlFor="newCategory"
                       className="block text-xs font-medium text-gray-700"
                     >
-                      Category name
+                      {t("admin.categories.categoryName")}
                     </label>
                     <input
                       id="newCategory"
                       type="text"
                       value={newCategoryName}
                       onChange={(e) => setNewCategoryName(e.target.value)}
-                      placeholder="e.g. Quantum Mechanics"
+                      placeholder={t("admin.categories.categoryNamePlaceholder")}
                       className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     />
                   </div>
 
                   <div>
                     <label className="block text-xs font-medium text-gray-700">
-                      Parent category (optional)
+                      {t("admin.categories.parentCategory")}
                     </label>
                     <select
                       value={newCategoryParentId}
                       onChange={(e) => setNewCategoryParentId(e.target.value)}
                       className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                     >
-                      <option value="">No parent (top-level)</option>
+                      <option value="">{t("admin.categories.noParent")}</option>
                       {categories.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                           {cat.name}
@@ -236,7 +238,7 @@ export default function CategoryManager() {
                     disabled={saving || !newCategoryName.trim()}
                     className="inline-flex w-full items-center justify-center rounded-md bg-blue-600 px-3 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    {saving ? "Saving…" : "Add Category"}
+                    {saving ? t("admin.categories.saving") : t("admin.categories.addCategory")}
                   </button>
                 </form>
               </div>
@@ -246,27 +248,27 @@ export default function CategoryManager() {
               <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center justify-between">
                   <h3 className="text-sm font-semibold text-gray-900">
-                    Existing categories
+                    {t("admin.categories.existingCategories")}
                   </h3>
                   <button
                     onClick={fetchCategories}
                     disabled={loading || saving}
                     className="inline-flex items-center rounded-md bg-gray-100 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-50"
-                    title="Refresh list"
+                    title={t("admin.common.refresh")}
                   >
-                    Refresh
+                    {t("admin.common.refresh")}
                   </button>
                 </div>
 
                 {loading ? (
                   <div className="rounded-lg border border-gray-200 bg-gray-50 p-6 text-sm text-gray-600">
-                    Loading categories…
+                    {t("admin.categories.loadingCategories")}
                   </div>
                 ) : categories.length === 0 ? (
                   <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center">
-                    <p className="text-sm text-gray-500">No categories yet.</p>
+                    <p className="text-sm text-gray-500">{t("admin.categories.noCategoriesYet")}</p>
                     <p className="mt-1 text-xs text-gray-400">
-                      Use the form on the left to add your first category.
+                      {t("admin.categories.addFirstCategory")}
                     </p>
                   </div>
                 ) : (
@@ -298,7 +300,7 @@ export default function CategoryManager() {
                                 }
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                               >
-                                <option value="">No parent (top-level)</option>
+                                <option value="">{t("admin.categories.noParent")}</option>
                                 {categories
                                   .filter((cat) => cat.id !== category.id)
                                   .map((cat) => (
@@ -313,7 +315,7 @@ export default function CategoryManager() {
                               disabled={saving || !editedCategoryName.trim()}
                               className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
                             >
-                              Save
+                              {t("admin.common.save")}
                             </button>
                             <button
                               type="button"
@@ -324,7 +326,7 @@ export default function CategoryManager() {
                               }}
                               className="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
                             >
-                              Cancel
+                              {t("admin.common.cancel")}
                             </button>
                           </form>
                         ) : (
@@ -335,12 +337,13 @@ export default function CategoryManager() {
                               </div>
                               <div className="mt-0.5 text-xs text-gray-500">
                                 {category.parentId
-                                  ? `Subcategory of ${
+                                  ? t("admin.categories.subcategoryOf").replace(
+                                      "{parent}",
                                       categories.find(
                                         (c) => c.id === category.parentId
-                                      )?.name || "Unknown parent"
-                                    }`
-                                  : "Top-level category"}
+                                      )?.name || t("admin.categories.unknownParent")
+                                    )
+                                  : t("admin.categories.topLevelCategory")}
                               </div>
                             </div>
                             <div className="flex items-center gap-2">
@@ -354,7 +357,7 @@ export default function CategoryManager() {
                                 }}
                                 className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
                               >
-                                Edit
+                                {t("admin.common.edit")}
                               </button>
                               <button
                                 onClick={() =>
@@ -362,7 +365,7 @@ export default function CategoryManager() {
                                 }
                                 className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
                               >
-                                Delete
+                                {t("admin.common.delete")}
                               </button>
                             </div>
                           </>

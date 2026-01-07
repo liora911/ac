@@ -15,6 +15,7 @@ import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
 import { AlertTriangle, Trash2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 function useDebouncedValue<T>(value: T, delay = 350) {
   const [debounced, setDebounced] = useState(value);
@@ -26,6 +27,7 @@ function useDebouncedValue<T>(value: T, delay = 350) {
 }
 
 export default function LecturesAdmin() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const isAuthorized = !!(
     session?.user?.email &&
@@ -104,7 +106,7 @@ export default function LecturesAdmin() {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
         <p className="mb-4">
-          You must sign in with an authorized account to manage lectures.
+          {t("admin.auth.signInRequired")}
         </p>
         <LoginForm />
       </div>
@@ -159,7 +161,7 @@ export default function LecturesAdmin() {
             href="/create-lecture"
             className="inline-flex items-center px-3 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
           >
-            + New Lecture
+            {t("admin.lectures.newLecture")}
           </Link>
         </div>
       </div>
@@ -170,7 +172,7 @@ export default function LecturesAdmin() {
         aria-labelledby="lecture-filters-heading"
       >
         <h3 id="lecture-filters-heading" className="sr-only">
-          Lecture filters
+          {t("admin.lectures.filters")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           <div className="md:col-span-2">
@@ -178,19 +180,19 @@ export default function LecturesAdmin() {
               htmlFor="lecture-search-input"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Search
+              {t("admin.common.search")}
             </label>
             <input
               id="lecture-search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search title or description…"
+              placeholder={t("admin.lectures.searchPlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-describedby="lecture-search-help"
             />
             <div id="lecture-search-help" className="sr-only">
-              Search lectures by title or description
+              {t("admin.lectures.searchHelp")}
             </div>
           </div>
 
@@ -199,7 +201,7 @@ export default function LecturesAdmin() {
               htmlFor="lecture-category-select"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Category
+              {t("admin.common.category")}
             </label>
             <select
               id="lecture-category-select"
@@ -207,9 +209,9 @@ export default function LecturesAdmin() {
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">All categories</option>
+              <option value="">{t("admin.common.allCategories")}</option>
               {loadingCategories ? (
-                <option disabled>Loading…</option>
+                <option disabled>{t("admin.common.loading")}</option>
               ) : (
                 categories?.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -225,8 +227,7 @@ export default function LecturesAdmin() {
               htmlFor="lecture-limit-select"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Per page
-            </label>
+              {t("admin.common.perPage")}
             <select
               id="lecture-limit-select"
               value={limit}
@@ -247,7 +248,7 @@ export default function LecturesAdmin() {
           aria-live="polite"
           aria-atomic="true"
         >
-          {isFetching ? "Refreshing…" : `Found ${total} lectures`}
+          {isFetching ? t("admin.common.refreshing") : t("admin.lectures.foundLectures").replace("{count}", String(total))}
         </div>
       </div>
 
@@ -265,35 +266,35 @@ export default function LecturesAdmin() {
                   role="columnheader"
                   scope="col"
                 >
-                  Title
+                  {t("admin.common.title")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Category
+                  {t("admin.common.category")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Duration
+                  {t("admin.lectures.duration")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Date
+                  {t("admin.lectures.date")}
                 </th>
                 <th
                   className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Actions
+                  {t("admin.common.actions")}
                 </th>
               </tr>
             </thead>
@@ -345,8 +346,7 @@ export default function LecturesAdmin() {
                     className="px-4 py-10 text-center text-sm text-gray-500"
                     role="cell"
                   >
-                    No lectures found. Try adjusting filters or create a new
-                    one.
+                    {t("admin.lectures.noLecturesFound")}
                   </td>
                 </tr>
               ) : (
@@ -377,7 +377,7 @@ export default function LecturesAdmin() {
                           {new Date(lecture.date).toLocaleDateString()}
                         </time>
                       ) : (
-                        "N/A"
+                        t("admin.common.notAvailable")
                       )}
                     </td>
 
@@ -390,24 +390,24 @@ export default function LecturesAdmin() {
                         <Link
                           href={`/lectures/${lecture.id}`}
                           className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
-                          aria-label={`View lecture "${lecture.title}"`}
+                          aria-label={`${t("admin.common.view")} "${lecture.title}"`}
                         >
-                          View
+                          {t("admin.common.view")}
                         </Link>
                         <Link
                           href={`/edit-lecture/${lecture.id}`}
                           className="text-sm text-blue-600 hover:text-blue-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
-                          aria-label={`Edit lecture "${lecture.title}"`}
+                          aria-label={`${t("admin.common.edit")} "${lecture.title}"`}
                         >
-                          Edit
+                          {t("admin.common.edit")}
                         </Link>
                         <button
                           onClick={() => openDeleteModal(lecture)}
                           disabled={deleteMutation.isPending}
                           className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
-                          aria-label={`Delete lecture "${lecture.title}"`}
+                          aria-label={`${t("admin.common.delete")} "${lecture.title}"`}
                         >
-                          Delete
+                          {t("admin.common.delete")}
                         </button>
                       </div>
                     </td>
@@ -426,9 +426,9 @@ export default function LecturesAdmin() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={page === 1 || isFetching}
               className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
-              aria-label="Go to previous page"
+              aria-label={t("admin.common.previous")}
             >
-              Previous
+              {t("admin.common.previous")}
             </button>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -457,9 +457,9 @@ export default function LecturesAdmin() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={page === totalPages || isFetching}
               className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
-              aria-label="Go to next page"
+              aria-label={t("admin.common.next")}
             >
-              Next
+              {t("admin.common.next")}
             </button>
           </div>
         </nav>
@@ -469,7 +469,7 @@ export default function LecturesAdmin() {
       <Modal
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
-        title="מחיקת הרצאה"
+        title={t("admin.lectures.deleteTitle")}
         hideFooter
       >
         <div className="text-center">
@@ -477,13 +477,13 @@ export default function LecturesAdmin() {
             <AlertTriangle className="w-7 h-7 text-red-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            האם אתה בטוח?
+            {t("admin.lectures.deleteConfirm")}
           </h3>
           <p className="text-gray-600 text-sm mb-6">
-            פעולה זו תמחק לצמיתות את ההרצאה
+            {t("admin.lectures.deleteWarning")}
             <span className="font-medium text-gray-900"> "{lectureToDelete?.title}"</span>.
             <br />
-            לא ניתן לבטל פעולה זו.
+            {t("admin.lectures.deleteIrreversible")}
           </p>
           <div className="flex gap-3 justify-center">
             <button
@@ -492,7 +492,7 @@ export default function LecturesAdmin() {
               disabled={deleteMutation.isPending}
               className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
             >
-              ביטול
+              {t("admin.common.cancel")}
             </button>
             <button
               type="button"
@@ -506,12 +506,12 @@ export default function LecturesAdmin() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  מוחק...
+                  {t("admin.lectures.deleting")}
                 </>
               ) : (
                 <>
                   <Trash2 className="w-4 h-4" />
-                  מחק הרצאה
+                  {t("admin.lectures.deleteButton")}
                 </>
               )}
             </button>

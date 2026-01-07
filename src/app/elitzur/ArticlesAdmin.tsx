@@ -19,6 +19,7 @@ import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
 import { AlertTriangle, Trash2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 type StatusFilter = "" | ArticleStatus;
 
@@ -32,6 +33,7 @@ function useDebouncedValue<T>(value: T, delay = 350) {
 }
 
 export default function ArticlesAdmin() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const isAuthorized = !!(
     session?.user?.email &&
@@ -78,7 +80,7 @@ export default function ArticlesAdmin() {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
         <p className="mb-4">
-          You must sign in with an authorized account to manage articles.
+          {t("admin.auth.signInRequired")}
         </p>
         <LoginForm />
       </div>
@@ -158,7 +160,7 @@ export default function ArticlesAdmin() {
             href="/articles/create"
             className="inline-flex items-center px-3 py-2 rounded-md bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
           >
-            + New Article
+            {t("admin.articles.newArticle")}
           </Link>
         </div>
       </div>
@@ -169,7 +171,7 @@ export default function ArticlesAdmin() {
         aria-labelledby="filters-heading"
       >
         <h3 id="filters-heading" className="sr-only">
-          Article filters
+          {t("admin.articles.filters")}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
           <div className="md:col-span-2">
@@ -177,19 +179,19 @@ export default function ArticlesAdmin() {
               htmlFor="search-input"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Search
+              {t("admin.common.search")}
             </label>
             <input
               id="search-input"
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search title or content…"
+              placeholder={t("admin.articles.searchPlaceholder")}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               aria-describedby="search-help"
             />
             <div id="search-help" className="sr-only">
-              Search articles by title or content
+              {t("admin.articles.searchHelp")}
             </div>
           </div>
 
@@ -198,7 +200,7 @@ export default function ArticlesAdmin() {
               htmlFor="status-select"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Status
+              {t("admin.common.status")}
             </label>
             <select
               id="status-select"
@@ -206,10 +208,10 @@ export default function ArticlesAdmin() {
               onChange={(e) => setStatus(e.target.value as StatusFilter)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">All</option>
-              <option value="PUBLISHED">Published</option>
-              <option value="DRAFT">Draft</option>
-              <option value="ARCHIVED">Archived</option>
+              <option value="">{t("admin.common.all")}</option>
+              <option value="PUBLISHED">{t("admin.common.published")}</option>
+              <option value="DRAFT">{t("admin.common.draft")}</option>
+              <option value="ARCHIVED">{t("admin.common.archived")}</option>
             </select>
           </div>
 
@@ -218,7 +220,7 @@ export default function ArticlesAdmin() {
               htmlFor="category-select"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Category
+              {t("admin.common.category")}
             </label>
             <select
               id="category-select"
@@ -226,9 +228,9 @@ export default function ArticlesAdmin() {
               onChange={(e) => setCategoryId(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">All categories</option>
+              <option value="">{t("admin.common.allCategories")}</option>
               {loadingCategories ? (
-                <option disabled>Loading…</option>
+                <option disabled>{t("admin.common.loading")}</option>
               ) : (
                 categories?.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -244,7 +246,7 @@ export default function ArticlesAdmin() {
               htmlFor="limit-select"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
-              Per page
+              {t("admin.common.perPage")}
             </label>
             <select
               id="limit-select"
@@ -266,7 +268,7 @@ export default function ArticlesAdmin() {
           aria-live="polite"
           aria-atomic="true"
         >
-          {isFetching ? "Refreshing…" : `Found ${total} articles`}
+          {isFetching ? t("admin.common.refreshing") : t("admin.articles.foundArticles").replace("{count}", String(total))}
         </div>
       </div>
 
@@ -284,35 +286,35 @@ export default function ArticlesAdmin() {
                   role="columnheader"
                   scope="col"
                 >
-                  Title
+                  {t("admin.common.title")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Status
+                  {t("admin.common.status")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Category
+                  {t("admin.common.category")}
                 </th>
                 <th
                   className="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Updated
+                  {t("admin.common.updated")}
                 </th>
                 <th
                   className="px-4 py-3 text-right text-xs font-semibold text-gray-700 uppercase tracking-wider"
                   role="columnheader"
                   scope="col"
                 >
-                  Actions
+                  {t("admin.common.actions")}
                 </th>
               </tr>
             </thead>
@@ -364,8 +366,7 @@ export default function ArticlesAdmin() {
                     className="px-4 py-10 text-center text-sm text-gray-500"
                     role="cell"
                   >
-                    No articles found. Try adjusting filters or create a new
-                    one.
+                    {t("admin.articles.noArticlesFound")}
                   </td>
                 </tr>
               ) : (
@@ -400,10 +401,10 @@ export default function ArticlesAdmin() {
                           disabled={updateMutation.isPending}
                           className="text-xs px-2 py-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`${
-                            a.status === "PUBLISHED" ? "Unpublish" : "Publish"
+                            a.status === "PUBLISHED" ? t("admin.common.unpublish") : t("admin.common.publish")
                           } article "${a.title}"`}
                         >
-                          {a.status === "PUBLISHED" ? "Unpublish" : "Publish"}
+                          {a.status === "PUBLISHED" ? t("admin.common.unpublish") : t("admin.common.publish")}
                         </button>
                       </div>
                     </td>
@@ -416,7 +417,7 @@ export default function ArticlesAdmin() {
                         className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                         aria-label={`Change category for article "${a.title}"`}
                       >
-                        <option value="">No category</option>
+                        <option value="">{t("admin.common.noCategory")}</option>
                         {categories?.map((c) => (
                           <option key={c.id} value={c.id}>
                             {c.name}
@@ -442,14 +443,14 @@ export default function ArticlesAdmin() {
                           className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`View article "${a.title}"`}
                         >
-                          View
+                          {t("admin.common.view")}
                         </Link>
                         <Link
                           href={`/articles/${a.id}/edit`}
                           className="text-sm text-blue-600 hover:text-blue-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`Edit article "${a.title}"`}
                         >
-                          Edit
+                          {t("admin.common.edit")}
                         </Link>
                         <button
                           onClick={() => openDeleteModal(a)}
@@ -457,7 +458,7 @@ export default function ArticlesAdmin() {
                           className="text-sm text-red-600 hover:text-red-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`Delete article "${a.title}"`}
                         >
-                          Delete
+                          {t("admin.common.delete")}
                         </button>
                       </div>
                     </td>
@@ -478,7 +479,7 @@ export default function ArticlesAdmin() {
               className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
               aria-label="Go to previous page"
             >
-              Previous
+              {t("admin.common.previous")}
             </button>
 
             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -509,7 +510,7 @@ export default function ArticlesAdmin() {
               className="px-3 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
               aria-label="Go to next page"
             >
-              Next
+              {t("admin.common.next")}
             </button>
           </div>
         </nav>
@@ -519,7 +520,7 @@ export default function ArticlesAdmin() {
       <Modal
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
-        title="מחיקת מאמר"
+        title={t("admin.articles.deleteTitle")}
         hideFooter
       >
         <div className="text-center">
@@ -527,13 +528,13 @@ export default function ArticlesAdmin() {
             <AlertTriangle className="w-7 h-7 text-red-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            האם אתה בטוח?
+            {t("admin.articles.deleteConfirm")}
           </h3>
           <p className="text-gray-600 text-sm mb-6">
-            פעולה זו תמחק לצמיתות את המאמר
+            {t("admin.articles.deleteWarning")}
             <span className="font-medium text-gray-900"> "{articleToDelete?.title}"</span>.
             <br />
-            לא ניתן לבטל פעולה זו.
+            {t("admin.articles.deleteIrreversible")}
           </p>
           <div className="flex gap-3 justify-center">
             <button
@@ -542,7 +543,7 @@ export default function ArticlesAdmin() {
               disabled={deleteMutation.isPending}
               className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
             >
-              ביטול
+              {t("admin.common.cancel")}
             </button>
             <button
               type="button"
@@ -556,12 +557,12 @@ export default function ArticlesAdmin() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  מוחק...
+                  {t("admin.articles.deleting")}
                 </>
               ) : (
                 <>
                   <Trash2 className="w-4 h-4" />
-                  מחק מאמר
+                  {t("admin.articles.deleteButton")}
                 </>
               )}
             </button>

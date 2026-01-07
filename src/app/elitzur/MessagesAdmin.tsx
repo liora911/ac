@@ -7,6 +7,7 @@ import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
 import { Mail, User, MessageSquare, Calendar, Trash2, AlertTriangle } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface Message {
   id: string;
@@ -19,6 +20,7 @@ interface Message {
 }
 
 export default function MessagesAdmin() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const isAuthorized = !!(
     session?.user?.email &&
@@ -284,14 +286,14 @@ export default function MessagesAdmin() {
                     className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-white bg-blue-600 hover:bg-blue-700 transition-colors"
                   >
                     <Mail className="w-4 h-4" />
-                    Reply via Email
+                    {t("admin.messages.replyViaEmail")}
                   </a>
                   <button
                     onClick={() => openDeleteModal(selectedMessage)}
                     className="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-xl text-red-600 bg-red-50 hover:bg-red-100 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
-                    Delete
+                    {t("admin.common.delete")}
                   </button>
                 </div>
               </div>
@@ -300,10 +302,10 @@ export default function MessagesAdmin() {
             <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
               <MessageSquare className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No message selected
+                {t("admin.messages.noMessageSelected")}
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                Select a message from the list to view details.
+                {t("admin.messages.selectMessage")}
               </p>
             </div>
           )}
