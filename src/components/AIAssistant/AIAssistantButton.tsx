@@ -3,34 +3,28 @@
 import { useState, useRef, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useAIChat } from "@/hooks/useAIChat";
 import { Send, Bot, User, Loader2, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-
-type Message = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-};
 
 export default function AIAssistantButton() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   const isAdmin = !!session;
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+  const {
+    messages,
+    isLoading,
+    inputValue,
+    setInputValue,
+    sendMessage,
+    handleSubmit,
+    clearMessages,
+    messagesEndRef,
+  } = useAIChat({ isAdmin, locale });
 
   // Close on click outside
   useEffect(() => {
@@ -60,80 +54,17 @@ export default function AIAssistantButton() {
     return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen]);
 
-  const handleClearChat = () => {
-    setMessages([]);
-  };
-
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: text,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-          isAdmin,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to fetch");
-      }
-
-      const responseText = await response.text();
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: responseText,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content:
-          locale === "he"
-            ? "מצטער, משהו השתבש. נסה שוב."
-            : "Sorry, something went wrong. Please try again.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(inputValue);
-    setInputValue("");
-  };
-
   const placeholderText =
-    locale === "he"
-      ? "שאל אותי שאלה..."
-      : "Ask me a question...";
+    locale === "he" ? "שאל אותי שאלה..." : "Ask me a question...";
 
   // Different questions for admin vs visitor
   const adminQuestions =
     locale === "he"
-      ? ["איך יוצרים הרצאה חדשה?", "איך מנהלים קטגוריות?", "איך רואים הודעות?"]
+      ? [
+          "איך יוצרים הרצאה חדשה?",
+          "איך מנהלים קטגוריות?",
+          "איך רואים הודעות?",
+        ]
       : [
           "How do I create a new lecture?",
           "How do I manage categories?",
@@ -142,7 +73,11 @@ export default function AIAssistantButton() {
 
   const visitorQuestions =
     locale === "he"
-      ? ["איפה אני יכול למצוא הרצאות?", "איך יוצרים קשר?", "מה הנושאים באתר?"]
+      ? [
+          "איפה אני יכול למצוא הרצאות?",
+          "איך יוצרים קשר?",
+          "מה הנושאים באתר?",
+        ]
       : [
           "Where can I find lectures?",
           "How do I contact?",
@@ -151,18 +86,12 @@ export default function AIAssistantButton() {
 
   const suggestedQuestions = isAdmin ? adminQuestions : visitorQuestions;
 
-  const handleSuggestedQuestion = (question: string) => {
-    sendMessage(question);
-  };
-
   // Parse message content and make links clickable
   const renderMessageContent = (content: string) => {
-    // Match paths like /lectures, /articles, /contact, etc.
     const pathRegex = /(\/[a-z-]+(?:\/[a-z-]+)*)/gi;
     const parts = content.split(pathRegex);
 
     return parts.map((part, index) => {
-      // Check if this part is a path
       if (part.match(/^\/[a-z-]+/i)) {
         return (
           <Link
@@ -210,7 +139,7 @@ export default function AIAssistantButton() {
               {messages.length > 0 && (
                 <button
                   type="button"
-                  onClick={handleClearChat}
+                  onClick={clearMessages}
                   className="px-2 py-1 rounded text-xs hover:bg-white/20 transition-colors"
                   title={locale === "he" ? "נקה צ'אט" : "Clear chat"}
                 >
@@ -241,7 +170,7 @@ export default function AIAssistantButton() {
                     <button
                       key={index}
                       type="button"
-                      onClick={() => handleSuggestedQuestion(question)}
+                      onClick={() => sendMessage(question)}
                       className="block w-full text-left px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
                     >
                       {question}

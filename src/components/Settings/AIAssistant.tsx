@@ -1,94 +1,24 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useAIChat } from "@/hooks/useAIChat";
 import { Send, Bot, User, Loader2, Sparkles, X } from "lucide-react";
-
-type Message = {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-};
 
 export default function AIAssistant() {
   const { t, locale } = useTranslation();
   const [isExpanded, setIsExpanded] = useState(false);
-  const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const handleClearChat = () => {
-    setMessages([]);
-  };
-
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: text,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setIsLoading(true);
-
-    try {
-      const response = await fetch("/api/assistant", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to fetch");
-      }
-
-      const text = await response.text();
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: text,
-      };
-
-      setMessages((prev) => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content:
-          locale === "he"
-            ? "מצטער, משהו השתבש. נסה שוב."
-            : "Sorry, something went wrong. Please try again.",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(inputValue);
-    setInputValue("");
-  };
+  const {
+    messages,
+    isLoading,
+    inputValue,
+    setInputValue,
+    sendMessage,
+    handleSubmit,
+    clearMessages,
+    messagesEndRef,
+  } = useAIChat({ isAdmin: false, locale });
 
   const placeholderText =
     locale === "he"
@@ -97,16 +27,16 @@ export default function AIAssistant() {
 
   const suggestedQuestions =
     locale === "he"
-      ? ["איך יוצרים הרצאה חדשה?", "איך מנהלים קטגוריות?", "איך רואים הודעות?"]
+      ? [
+          "איך יוצרים הרצאה חדשה?",
+          "איך מנהלים קטגוריות?",
+          "איך רואים הודעות?",
+        ]
       : [
           "How do I create a new lecture?",
           "How do I manage categories?",
           "How do I view messages?",
         ];
-
-  const handleSuggestedQuestion = (question: string) => {
-    sendMessage(question);
-  };
 
   return (
     <section aria-labelledby="ai-assistant-heading">
@@ -145,7 +75,7 @@ export default function AIAssistant() {
                 {messages.length > 0 && (
                   <button
                     type="button"
-                    onClick={handleClearChat}
+                    onClick={clearMessages}
                     className="p-1 rounded hover:bg-white/20 transition-colors text-xs"
                     title={locale === "he" ? "נקה צ'אט" : "Clear chat"}
                   >
@@ -175,7 +105,7 @@ export default function AIAssistant() {
                       <button
                         key={index}
                         type="button"
-                        onClick={() => handleSuggestedQuestion(question)}
+                        onClick={() => sendMessage(question)}
                         className="block w-full text-left px-3 py-2 text-xs rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:border-purple-300 dark:hover:border-purple-600 transition-colors"
                       >
                         {question}
