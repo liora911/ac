@@ -20,6 +20,7 @@ import {
   MdClose,
   MdPerson,
   MdSearch,
+  MdLogin,
 } from "react-icons/md";
 
 const IconMap: { [key: string]: React.ElementType } = {
@@ -31,6 +32,7 @@ const IconMap: { [key: string]: React.ElementType } = {
   OnlineEventIcon: MdOnlinePrediction,
   PersonIcon: MdPerson,
   MdSearch: MdSearch,
+  LoginIcon: MdLogin,
 };
 
 export default function Header() {
@@ -81,6 +83,25 @@ export default function Header() {
 
   const visibleNavItems = [
     ...navItems,
+    // Show "My Account" for logged-in users, "Login" for guests
+    ...(session
+      ? [
+          {
+            label: "header.myAccount",
+            href: "/account",
+            className: "",
+            icon: "PersonIcon",
+          },
+        ]
+      : [
+          {
+            label: "header.login",
+            href: "/auth/login",
+            className: "",
+            icon: "LoginIcon",
+          },
+        ]),
+    // Show admin settings only for admins
     ...(isAdmin
       ? [
           {

@@ -452,6 +452,8 @@
   },
   "header": {
     "adminSettings": "הגדרות מנהל",
+    "myAccount": "החשבון שלי",
+    "login": "התחברות",
     "brandAriaLabel": "אבשלום אליצור - דף הבית",
     "mainNavigation": "ניווט ראשי",
     "closeNavigationMenu": "סגירת תפריט הניווט",
