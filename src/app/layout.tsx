@@ -11,6 +11,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import MotionProvider from "@/components/Motion/MotionProvider";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
+import MainContent from "@/components/MainContent/MainContent";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -110,14 +111,10 @@ export default function RootLayout({
                     <MotionProvider>
                       <div className="flex flex-col min-h-screen">
                         <Header />
-                        <main
-                          id="main-content"
-                          className="flex-grow flex flex-col pt-20"
-                          role="main"
-                        >
+                        <MainContent>
                           <Breadcrumbs />
                           {children}
-                        </main>
+                        </MainContent>
                         <Footer />
                       </div>
                     </MotionProvider>

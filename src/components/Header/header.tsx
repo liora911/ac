@@ -90,6 +90,11 @@ export default function Header() {
       : []),
   ];
 
+  // Hide header on auth pages
+  if (pathname?.startsWith("/auth")) {
+    return null;
+  }
+
   return (
     <>
       <header

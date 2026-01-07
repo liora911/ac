@@ -49,7 +49,8 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Match /elitzur and all sub-paths
+    // Match /elitzur exactly and all sub-paths
+    "/elitzur",
     "/elitzur/:path*",
   ],
 };

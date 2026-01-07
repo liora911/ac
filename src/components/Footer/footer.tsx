@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { usePathname } from "next/navigation";
 
 function BlackHoleIcon({ className }: { className?: string }) {
   return (
@@ -44,7 +45,13 @@ function BlackHoleIcon({ className }: { className?: string }) {
 
 export default function Footer() {
   const { t, locale } = useTranslation();
+  const pathname = usePathname();
   const isHebrew = locale === "he";
+
+  // Hide footer on auth pages
+  if (pathname?.startsWith("/auth")) {
+    return null;
+  }
 
   return (
     <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-slate-50 px-4 py-5 sm:py-6">

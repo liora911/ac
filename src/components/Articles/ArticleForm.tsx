@@ -28,6 +28,7 @@ export default function ArticleForm({
   const { t, locale } = useTranslation();
   const [validationModalOpen, setValidationModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
+  const [confirmedTabs, setConfirmedTabs] = useState<Set<1 | 2 | 3>>(new Set());
 
   const [formData, setFormData] = useState<ArticleFormData>({
     title: article?.title || "",
@@ -93,6 +94,24 @@ export default function ArticleForm({
   const isTab1Complete = formData.title.trim() !== "" && authors.length > 0 && authors.every(a => a.name && a.name.trim() !== "");
   // Validation for Tab 2 (required field: Content)
   const isTab2Complete = formData.content.trim() !== "";
+
+  const confirmTab = (tab: 1 | 2 | 3) => {
+    setConfirmedTabs((prev) => new Set([...prev, tab]));
+    if (tab < 3) {
+      setActiveTab((tab + 1) as 1 | 2 | 3);
+    }
+  };
+
+  const canAccessTab = (tab: 1 | 2 | 3): boolean => {
+    if (tab === 1) return true;
+    return confirmedTabs.has((tab - 1) as 1 | 2 | 3) || confirmedTabs.has(tab);
+  };
+
+  const handleTabClick = (tab: 1 | 2 | 3) => {
+    if (canAccessTab(tab)) {
+      setActiveTab(tab);
+    }
+  };
 
   useEffect(() => {
     if (!isEditing && !formData.excerpt && formData.content) {
@@ -263,28 +282,42 @@ export default function ArticleForm({
         {/* Tab Navigation */}
         <div className="border-b border-gray-200 mb-6">
           <nav className="flex gap-1" aria-label="Tabs">
-            {([1, 2, 3] as const).map((tab) => (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => setActiveTab(tab)}
-                className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
-                  activeTab === tab
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                {tab === 1 && (t("articleForm.tabs.basicInfo") as string || "Basic Info")}
-                {tab === 2 && (t("articleForm.tabs.content") as string || "Content")}
-                {tab === 3 && (t("articleForm.tabs.settings") as string || "Settings")}
-                {tab === 1 && !isTab1Complete && (
-                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-                {tab === 2 && !isTab2Complete && (
-                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-              </button>
-            ))}
+            {([1, 2, 3] as const).map((tab) => {
+              const isAccessible = canAccessTab(tab);
+              const isConfirmed = confirmedTabs.has(tab);
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => handleTabClick(tab)}
+                  disabled={!isAccessible}
+                  className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                    !isAccessible
+                      ? "border-transparent text-gray-300 cursor-not-allowed"
+                      : activeTab === tab
+                        ? "border-blue-600 text-blue-600 cursor-pointer"
+                        : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    {isConfirmed && (
+                      <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    )}
+                    {tab === 1 && (t("articleForm.tabs.basicInfo") as string || "Basic Info")}
+                    {tab === 2 && (t("articleForm.tabs.content") as string || "Content")}
+                    {tab === 3 && (t("articleForm.tabs.settings") as string || "Settings")}
+                  </span>
+                  {tab === 1 && !isTab1Complete && !isConfirmed && (
+                    <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
+                  {tab === 2 && !isTab2Complete && !isConfirmed && (
+                    <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+                  )}
+                </button>
+              );
+            })}
           </nav>
         </div>
 
@@ -370,6 +403,26 @@ export default function ArticleForm({
                 onChange={setAuthors}
                 error={authorsError}
               />
+
+              {/* Confirm Tab 1 Button */}
+              <div className="pt-4 border-t border-gray-200 mt-6">
+                <button
+                  type="button"
+                  onClick={() => confirmTab(1)}
+                  disabled={!isTab1Complete}
+                  className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
+                >
+                  {t("articleForm.confirmAndContinue") || "אישור והמשך"}
+                  <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                {!isTab1Complete && (
+                  <p className="text-sm text-red-600 mt-2">
+                    {t("articleForm.tab1RequiredHint") || "* יש למלא כותרת ולהוסיף לפחות מחבר אחד"}
+                  </p>
+                )}
+              </div>
             </>
           )}
 
@@ -409,6 +462,26 @@ export default function ArticleForm({
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   placeholder="https://"
                 />
+              </div>
+
+              {/* Confirm Tab 2 Button */}
+              <div className="pt-4 border-t border-gray-200 mt-6">
+                <button
+                  type="button"
+                  onClick={() => confirmTab(2)}
+                  disabled={!isTab2Complete}
+                  className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
+                >
+                  {t("articleForm.confirmAndContinue") || "אישור והמשך"}
+                  <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+                {!isTab2Complete && (
+                  <p className="text-sm text-red-600 mt-2">
+                    {t("articleForm.tab2RequiredHint") || "* יש למלא את תוכן המאמר"}
+                  </p>
+                )}
               </div>
             </>
           )}
