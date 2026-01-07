@@ -33,9 +33,9 @@ export const authOptions: NextAuthOptions = {
     },
   },
   pages: {
-    signIn: "/elitzur",
+    signIn: "/auth/admin-login",
     verifyRequest: "/auth/verify-request",
-    error: "/auth/error",
+    error: "/auth/admin-login",
   },
 
   debug: process.env.NODE_ENV === "development",
