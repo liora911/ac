@@ -1,13 +1,39 @@
 import Stripe from "stripe";
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set in environment variables");
+// Lazy initialization to avoid build-time errors when env vars aren't set
+let stripeInstance: Stripe | null = null;
+
+export function getStripe(): Stripe {
+  if (!stripeInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not set in environment variables");
+    }
+    stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-12-15.clover",
+      typescript: true,
+    });
+  }
+  return stripeInstance;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2025-12-15.clover",
-  typescript: true,
-});
+// Export for backwards compatibility - use getStripe() in new code
+export const stripe = {
+  get customers() {
+    return getStripe().customers;
+  },
+  get checkout() {
+    return getStripe().checkout;
+  },
+  get subscriptions() {
+    return getStripe().subscriptions;
+  },
+  get billingPortal() {
+    return getStripe().billingPortal;
+  },
+  get webhooks() {
+    return getStripe().webhooks;
+  },
+};
 
 // Helper to format price from agorot to ILS string
 export function formatPrice(priceInAgorot: number, currency = "ILS"): string {
@@ -24,6 +50,7 @@ export async function getOrCreateStripeCustomer(
   name?: string | null
 ): Promise<string> {
   const { default: prisma } = await import("@/lib/prisma/prisma");
+  const stripeClient = getStripe();
 
   // Check if user already has a Stripe customer ID
   const user = await prisma.user.findUnique({
@@ -36,7 +63,7 @@ export async function getOrCreateStripeCustomer(
   }
 
   // Create new Stripe customer
-  const customer = await stripe.customers.create({
+  const customer = await stripeClient.customers.create({
     email,
     name: name || undefined,
     metadata: { userId },
