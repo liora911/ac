@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/lib/prisma/prisma";
@@ -6,7 +6,7 @@ import { AdapterUser } from "next-auth/adapters";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export const authOptions: NextAuthOptions = {
-  adapter: prisma ? PrismaAdapter(prisma) : undefined,
+  adapter: PrismaAdapter(prisma),
   providers: [
     EmailProvider({
       server: {
@@ -37,14 +37,8 @@ export const authOptions: NextAuthOptions = {
     verifyRequest: "/auth/verify-request",
     error: "/auth/admin-login",
   },
-
   debug: process.env.NODE_ENV === "development",
   session: {
-    strategy: prisma ? "database" : "jwt",
+    strategy: "database",
   },
 };
-
-const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST };
-
-export const auth = NextAuth(authOptions);
