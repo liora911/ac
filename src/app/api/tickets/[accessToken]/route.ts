@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // GET - Get ticket by access token (public access with token)
 export async function GET(
@@ -69,12 +72,21 @@ export async function GET(
   }
 }
 
-// PATCH - Update ticket status (admin only - will add auth later)
+// PATCH - Update ticket status (admin only)
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ accessToken: string }> }
 ) {
   try {
+    // Admin authentication
+    const session = await getServerSession(authOptions);
+    if (
+      !session?.user?.email ||
+      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { accessToken } = await params;
     const body = await request.json();
     const { status } = body;
@@ -116,12 +128,21 @@ export async function PATCH(
   }
 }
 
-// DELETE - Cancel ticket
+// DELETE - Cancel ticket (admin only)
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ accessToken: string }> }
 ) {
   try {
+    // Admin authentication
+    const session = await getServerSession(authOptions);
+    if (
+      !session?.user?.email ||
+      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { accessToken } = await params;
 
     if (!accessToken) {

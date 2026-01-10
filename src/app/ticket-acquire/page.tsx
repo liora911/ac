@@ -42,6 +42,7 @@ function TicketAcquireContent() {
     holderPhone: "",
     numberOfSeats: 1,
     notes: "",
+    termsAccepted: false,
   });
 
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
@@ -103,6 +104,10 @@ function TicketAcquireContent() {
 
     if (formData.numberOfSeats < 1 || formData.numberOfSeats > 4) {
       errors.numberOfSeats = t("tickets.seatsInvalid");
+    }
+
+    if (!formData.termsAccepted) {
+      errors.termsAccepted = t("tickets.termsRequired");
     }
 
     setFormErrors(errors);
@@ -173,10 +178,11 @@ function TicketAcquireContent() {
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     setFormData((prev) => ({
       ...prev,
-      [name]: name === "numberOfSeats" ? parseInt(value) || 1 : value,
+      [name]: type === "checkbox" ? checked : name === "numberOfSeats" ? parseInt(value) || 1 : value,
     }));
     // Clear error when user starts typing
     if (formErrors[name]) {
@@ -579,6 +585,35 @@ function TicketAcquireContent() {
                   </p>
                 </div>
               )}
+
+              {/* Terms and Conditions */}
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="flex items-start gap-3">
+                  <input
+                    type="checkbox"
+                    id="termsAccepted"
+                    name="termsAccepted"
+                    checked={formData.termsAccepted}
+                    onChange={handleChange}
+                    className={`mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer ${
+                      formErrors.termsAccepted ? "border-red-500" : ""
+                    }`}
+                  />
+                  <label htmlFor="termsAccepted" className="text-sm text-gray-600 cursor-pointer">
+                    {t("tickets.termsLabel")}
+                    <ul className="mt-2 space-y-1 text-xs text-gray-500">
+                      <li>• {t("tickets.termsItem1")}</li>
+                      <li>• {t("tickets.termsItem2")}</li>
+                      {event?.price && event.price > 0 && (
+                        <li>• {t("tickets.termsItem3")}</li>
+                      )}
+                    </ul>
+                  </label>
+                </div>
+                {formErrors.termsAccepted && (
+                  <p className="mt-2 text-sm text-red-500">{formErrors.termsAccepted}</p>
+                )}
+              </div>
 
               {/* Submit Button */}
               <button

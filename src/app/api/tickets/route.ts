@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { sendEmail } from "@/lib/email/resend";
 import {
   generateTicketConfirmationEmail,
   getTicketConfirmationSubject,
 } from "@/lib/email/templates/ticket-confirmation";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 // POST - Create a new ticket reservation
 export async function POST(request: NextRequest) {
@@ -171,9 +174,18 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET - List all tickets (admin only - will add auth later)
+// GET - List all tickets (admin only)
 export async function GET(request: NextRequest) {
   try {
+    // Admin authentication
+    const session = await getServerSession(authOptions);
+    if (
+      !session?.user?.email ||
+      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { searchParams } = new URL(request.url);
     const eventId = searchParams.get("eventId");
 

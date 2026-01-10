@@ -2,6 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { stripe } from "@/lib/stripe/stripe";
 import prisma from "@/lib/prisma/prisma";
 import Stripe from "stripe";
+import { sendEmail } from "@/lib/email/resend";
+import {
+  generatePaymentConfirmationEmail,
+  getPaymentConfirmationSubject,
+} from "@/lib/email/templates/payment-confirmation";
 
 // Disable body parsing - we need the raw body for webhook verification
 export const runtime = "nodejs";
@@ -85,7 +90,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
   if (session.mode === "payment" && metadata?.ticketId) {
     // One-time payment for event ticket
-    await prisma.ticket.update({
+    const ticket = await prisma.ticket.update({
       where: { id: metadata.ticketId },
       data: {
         status: "CONFIRMED",
@@ -93,8 +98,51 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
         paymentStatus: "succeeded",
         stripeSessionId: session.id,
       },
+      include: {
+        event: true,
+      },
     });
     console.log(`Ticket ${metadata.ticketId} confirmed`);
+
+    // Send payment confirmation email
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || process.env.VERCEL_URL
+      ? `https://${process.env.VERCEL_URL}`
+      : "http://localhost:3000";
+    const ticketUrl = `${baseUrl}/ticket-summary/${ticket.accessToken}`;
+
+    const eventDate = new Date(ticket.event.eventDate).toLocaleDateString("he-IL", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // Format amount paid (convert from cents to currency)
+    const amountPaid = session.amount_total
+      ? `₪${(session.amount_total / 100).toFixed(2)}`
+      : "";
+
+    sendEmail({
+      to: ticket.holderEmail,
+      subject: getPaymentConfirmationSubject(ticket.event.title, "he"),
+      html: generatePaymentConfirmationEmail({
+        holderName: ticket.holderName,
+        eventTitle: ticket.event.title,
+        eventDate,
+        eventTime: ticket.event.eventTime || undefined,
+        eventLocation: ticket.event.location || undefined,
+        numberOfSeats: ticket.numberOfSeats,
+        ticketUrl,
+        amountPaid,
+        locale: "he",
+      }),
+    }).then((result) => {
+      if (!result.success) {
+        console.error("Failed to send payment confirmation email:", result.error);
+      } else {
+        console.log("Payment confirmation email sent successfully");
+      }
+    });
   } else if (session.mode === "subscription" && metadata?.userId) {
     // Subscription checkout completed
     // The subscription.created webhook will handle the subscription record

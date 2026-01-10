@@ -2,7 +2,6 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import Image from "next/image";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -24,7 +23,6 @@ interface Article {
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
-  const router = useRouter();
   const articleId = searchParams.get("id");
 
   const [article, setArticle] = useState<Article | null>(null);
