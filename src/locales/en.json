@@ -928,6 +928,53 @@
     "upgradeButton": "Upgrade to Researcher",
     "benefits": "Get unlimited access to all premium articles, lectures, and presentations."
   },
+  "account": {
+    "welcomeMessage": "Welcome back",
+    "memberSince": "Member since",
+    "logout": "Sign Out",
+    "backToHome": "Back to Home",
+    "role": {
+      "admin": "Administrator",
+      "premium": "Researcher"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "researcher": "Researcher Plan",
+      "free": "Free Plan",
+      "status": "Status",
+      "renewDate": "Renews on",
+      "active": "Active",
+      "pastDue": "Past Due",
+      "canceled": "Canceled",
+      "cancelPending": "Cancels on",
+      "cancelWarning": "Your subscription will be canceled at the end of the billing period",
+      "manage": "Manage Subscription",
+      "opening": "Opening...",
+      "upgrade": "Upgrade",
+      "upgradeText": "Get access to premium content"
+    },
+    "tickets": {
+      "title": "My Tickets",
+      "subtitle": "View your event reservations",
+      "total": "Total tickets",
+      "view": "View My Tickets",
+      "browse": "Browse Events"
+    },
+    "quickLinks": {
+      "title": "Quick Links",
+      "subtitle": "Access content directly",
+      "articles": "Articles",
+      "lectures": "Lectures",
+      "events": "Events"
+    },
+    "admin": {
+      "title": "Admin Panel",
+      "subtitle": "Manage site content"
+    },
+    "errors": {
+      "subscriptionPortal": "Could not open subscription portal"
+    }
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

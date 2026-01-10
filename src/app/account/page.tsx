@@ -11,6 +11,18 @@ export default async function AccountPage() {
     redirect("/auth/login?callbackUrl=/account");
   }
 
+  // Get user details with createdAt (emailVerified as proxy for join date)
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      emailVerified: true,
+    },
+  });
+
   // Get subscription details
   const subscription = await prisma.subscription.findUnique({
     where: { userId: session.user.id },
@@ -25,9 +37,10 @@ export default async function AccountPage() {
     <AccountClient
       user={{
         id: session.user.id,
-        name: session.user.name,
-        email: session.user.email,
+        name: user?.name || session.user.name,
+        email: user?.email || session.user.email,
         role: session.user.role,
+        createdAt: user?.emailVerified?.toISOString(),
       }}
       subscription={
         subscription

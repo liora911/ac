@@ -954,6 +954,53 @@
       "nameCannotBeEmpty": "שם הקטגוריה לא יכול להיות ריק."
     }
   },
+  "account": {
+    "welcomeMessage": "ברוך הבא! המנוי שלך הופעל בהצלחה.",
+    "memberSince": "חבר מאז",
+    "logout": "התנתק",
+    "backToHome": "חזור לדף הבית",
+    "role": {
+      "admin": "מנהל",
+      "premium": "חוקר"
+    },
+    "subscription": {
+      "title": "מנוי",
+      "researcher": "תוכנית חוקר",
+      "free": "תוכנית חינמית",
+      "status": "סטטוס",
+      "renewDate": "תאריך חידוש",
+      "active": "פעיל",
+      "pastDue": "תשלום נדרש",
+      "canceled": "מבוטל",
+      "cancelPending": "יבוטל בסוף התקופה",
+      "cancelWarning": "המנוי שלך יבוטל ב-{date}. ניתן לחדש דרך ניהול המנוי.",
+      "manage": "נהל מנוי",
+      "opening": "פותח...",
+      "upgrade": "שדרג לתוכנית חוקר",
+      "upgradeText": "קבל גישה לתוכן פרימיום בלעדי"
+    },
+    "tickets": {
+      "title": "כרטיסים",
+      "subtitle": "כרטיסים לאירועים",
+      "total": "סה\"כ",
+      "view": "צפה בכרטיסים",
+      "browse": "עיין באירועים"
+    },
+    "quickLinks": {
+      "title": "גישה מהירה",
+      "subtitle": "נווט לתוכן",
+      "articles": "מאמרים",
+      "lectures": "הרצאות",
+      "events": "אירועים"
+    },
+    "admin": {
+      "title": "פאנל ניהול",
+      "subtitle": "ניהול תוכן האתר"
+    },
+    "errors": {
+      "subscriptionPortal": "שגיאה בפתיחת ניהול המנוי"
+    }
+  },
   "settings": {
     "title": "הגדרות",
     "language": "שפה",
