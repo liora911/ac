@@ -12,6 +12,7 @@ import { SettingsProvider } from "@/contexts/SettingsContext";
 import MotionProvider from "@/components/Motion/MotionProvider";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
+import { Analytics } from "@vercel/analytics/react";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -124,6 +125,7 @@ export default function RootLayout({
             </TranslationProvider>
           </AuthSessionProvider>
         </QueryProvider>
+        <Analytics />
       </body>
     </html>
   );

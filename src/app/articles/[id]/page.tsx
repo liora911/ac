@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,6 +12,7 @@ import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import { Sparkles } from "lucide-react";
+import { track } from "@vercel/analytics";
 
 export default function ArticleDetailPage() {
   const params = useParams();
@@ -26,8 +27,26 @@ export default function ArticleDetailPage() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
+  // Track article view
+  useEffect(() => {
+    if (article) {
+      track("article_viewed", {
+        articleId: article.id,
+        title: article.title,
+        isPremium: article.isPremium ?? false,
+        category: article.category?.name || "uncategorized",
+      });
+    }
+  }, [article]);
+
   const downloadPDF = () => {
     if (!article) return;
+
+    // Track PDF download
+    track("article_pdf_downloaded", {
+      articleId: article.id,
+      title: article.title,
+    });
 
     // Strip HTML tags safely using DOMParser (doesn't execute scripts)
     const stripHtml = (html: string) => {

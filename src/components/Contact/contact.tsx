@@ -9,6 +9,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { track } from "@vercel/analytics";
 
 const Contact = () => {
   const { t, locale } = useTranslation();
@@ -101,6 +102,10 @@ const Contact = () => {
       });
 
       if (response.ok) {
+        // Track successful contact form submission
+        track("contact_form_submitted", {
+          subject: formData.subject,
+        });
         setShowSuccessModal(true);
         setFormData({ name: "", email: "", subject: "", message: "" });
         setErrors({ name: "", email: "", subject: "", message: "" });
