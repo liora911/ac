@@ -102,7 +102,7 @@ export default function FavoritesPage() {
             </h1>
           </div>
           <p className="text-gray-600">
-            {t("favorites.subtitle", { count: totalCount })}
+            {t("favorites.subtitle").replace("{count}", String(totalCount))}
           </p>
         </div>
 
