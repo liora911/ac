@@ -29,11 +29,11 @@ export default function ArticleDetailPage() {
   const downloadPDF = () => {
     if (!article) return;
 
-    // Strip HTML tags and decode entities
+    // Strip HTML tags safely using DOMParser (doesn't execute scripts)
     const stripHtml = (html: string) => {
-      const tmp = document.createElement("div");
-      tmp.innerHTML = html;
-      return tmp.textContent || tmp.innerText || "";
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
+      return doc.body.textContent || "";
     };
 
     const authors = article.authors?.map(a => a.name).join(", ") || article.publisherName || "Unknown";

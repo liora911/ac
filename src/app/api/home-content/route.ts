@@ -21,16 +21,27 @@ export async function GET() {
     });
 
     if (!existing) {
-      return NextResponse.json({
-        id: "home",
-        imageUrl: null,
-        photoCredit: null,
-        bioHtml: "",
-        updatedAt: null,
-      });
+      return NextResponse.json(
+        {
+          id: "home",
+          imageUrl: null,
+          photoCredit: null,
+          bioHtml: "",
+          updatedAt: null,
+        },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+          },
+        }
+      );
     }
 
-    return NextResponse.json(existing);
+    return NextResponse.json(existing, {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch home content" },

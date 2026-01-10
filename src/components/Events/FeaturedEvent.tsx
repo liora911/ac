@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Globe, Star, ArrowRight, Ticket } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import DOMPurify from "dompurify";
 
 interface FeaturedEventProps {
   event: Event;
@@ -126,7 +127,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           <div
             className="text-white/80 text-sm lg:text-base mb-6 line-clamp-2 leading-relaxed prose-invert"
             dangerouslySetInnerHTML={{
-              __html: event.description.substring(0, 200) + (event.description.length > 200 ? '...' : '')
+              __html: DOMPurify.sanitize(event.description.substring(0, 200) + (event.description.length > 200 ? '...' : ''))
             }}
           />
 

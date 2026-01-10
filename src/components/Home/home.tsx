@@ -5,7 +5,7 @@ import { useHomePreview } from "@/hooks/useHomePreview";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -17,7 +17,8 @@ import {
   ChevronUp,
   Star,
 } from "lucide-react";
-import ContentCard, { ContentItem } from "./ContentCard";
+import ContentCard from "./ContentCard";
+import type { ContentItem } from "./ContentCard";
 import RichContent from "@/components/RichContent";
 
 const FaFacebook = dynamic(
@@ -64,14 +65,108 @@ const Home = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = useCallback((dateStr: string) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString(isRTL ? "he-IL" : "en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",
     });
-  };
+  }, [isRTL]);
+
+  // Memoized render functions to prevent unnecessary re-renders
+  const renderLectureItem = useCallback((item: ContentItem) => (
+    <li key={item.id}>
+      <Link
+        href={`/lectures/${item.id}`}
+        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+      >
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+            {item.title}
+          </p>
+          {item.date && (
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">
+              {formatDate(item.date as string)}
+            </p>
+          )}
+        </div>
+        {item.isPremium && (
+          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          </div>
+        )}
+      </Link>
+    </li>
+  ), [formatDate]);
+
+  const renderArticleItem = useCallback((item: ContentItem) => (
+    <li key={item.id}>
+      <Link
+        href={`/articles/${item.id}`}
+        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+      >
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+            {item.title}
+          </p>
+          {item.createdAt && (
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">
+              {formatDate(item.createdAt as string)}
+            </p>
+          )}
+        </div>
+        {item.isPremium && (
+          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          </div>
+        )}
+      </Link>
+    </li>
+  ), [formatDate]);
+
+  const renderEventItem = useCallback((item: ContentItem) => (
+    <li key={item.id}>
+      <Link
+        href={`/events/${item.id}`}
+        className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+      >
+        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+          {item.title}
+        </p>
+        {item.eventDate && (
+          <p className="text-xs text-[var(--muted-foreground)] mt-1">
+            {formatDate(item.eventDate as string)}
+          </p>
+        )}
+      </Link>
+    </li>
+  ), [formatDate]);
+
+  const renderPresentationItem = useCallback((item: ContentItem) => (
+    <li key={item.id}>
+      <Link
+        href={`/presentations/${item.id}`}
+        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+      >
+        <div className="flex-1 min-w-0">
+          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+            {item.title}
+          </p>
+          {item.createdAt && (
+            <p className="text-xs text-[var(--muted-foreground)] mt-1">
+              {formatDate(item.createdAt as string)}
+            </p>
+          )}
+        </div>
+        {item.isPremium && (
+          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          </div>
+        )}
+      </Link>
+    </li>
+  ), [formatDate]);
 
   return (
     <main className="flex flex-col min-h-screen text-[var(--foreground)]">
@@ -273,30 +368,7 @@ const Home = () => {
                 items={previewData?.lectures || []}
                 href="/lectures"
                 itemVariants={itemVariants}
-                renderItem={(item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={`/lectures/${item.id}`}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                          {item.title}
-                        </p>
-                        {item.date && (
-                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                            {formatDate(item.date as string)}
-                          </p>
-                        )}
-                      </div>
-                      {item.isPremium && (
-                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                        </div>
-                      )}
-                    </Link>
-                  </li>
-                )}
+                renderItem={renderLectureItem}
               />
 
               {/* Articles */}
@@ -307,30 +379,7 @@ const Home = () => {
                 items={previewData?.articles || []}
                 href="/articles"
                 itemVariants={itemVariants}
-                renderItem={(item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={`/articles/${item.id}`}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                          {item.title}
-                        </p>
-                        {item.createdAt && (
-                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                            {formatDate(item.createdAt as string)}
-                          </p>
-                        )}
-                      </div>
-                      {item.isPremium && (
-                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                        </div>
-                      )}
-                    </Link>
-                  </li>
-                )}
+                renderItem={renderArticleItem}
               />
 
               {/* Events */}
@@ -341,23 +390,7 @@ const Home = () => {
                 items={previewData?.events || []}
                 href="/events"
                 itemVariants={itemVariants}
-                renderItem={(item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={`/events/${item.id}`}
-                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-                    >
-                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                        {item.title}
-                      </p>
-                      {item.eventDate && (
-                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                          {formatDate(item.eventDate as string)}
-                        </p>
-                      )}
-                    </Link>
-                  </li>
-                )}
+                renderItem={renderEventItem}
               />
 
               {/* Presentations */}
@@ -368,30 +401,7 @@ const Home = () => {
                 items={previewData?.presentations || []}
                 href="/presentations"
                 itemVariants={itemVariants}
-                renderItem={(item) => (
-                  <li key={item.id}>
-                    <Link
-                      href={`/presentations/${item.id}`}
-                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                          {item.title}
-                        </p>
-                        {item.createdAt && (
-                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                            {formatDate(item.createdAt as string)}
-                          </p>
-                        )}
-                      </div>
-                      {item.isPremium && (
-                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                        </div>
-                      )}
-                    </Link>
-                  </li>
-                )}
+                renderItem={renderPresentationItem}
               />
             </div>
           )}

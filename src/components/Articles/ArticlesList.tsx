@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -16,6 +16,23 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import { Grid3X3, List, Tag, X, Star } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
+
+// Custom hook for debouncing values
+function useDebouncedValue<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -48,13 +65,16 @@ export default function ArticlesList({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
 
+  // Debounce search query to prevent API call on every keystroke
+  const debouncedSearchQuery = useDebouncedValue(searchQuery, 350);
+
   const {
     data: articlesData,
     isLoading,
     error,
     isFetching,
-  } = searchQuery
-    ? useSearchArticles(searchQuery, {
+  } = debouncedSearchQuery
+    ? useSearchArticles(debouncedSearchQuery, {
         page: currentPage,
         limit: initialLimit,
         categoryId: selectedCategory || undefined,

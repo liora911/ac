@@ -7,13 +7,20 @@ export async function GET(request: NextRequest) {
     const query = searchParams.get("q");
 
     if (query === null) {
-      return NextResponse.json({
-        articles: [],
-        presentations: [],
-        events: [],
-        lectures: [],
-        total: 0,
-      });
+      return NextResponse.json(
+        {
+          articles: [],
+          presentations: [],
+          events: [],
+          lectures: [],
+          total: 0,
+        },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          },
+        }
+      );
     }
 
     const searchTerm = query.trim();
@@ -106,14 +113,21 @@ export async function GET(request: NextRequest) {
         events.length +
         lectures.length;
 
-      return NextResponse.json({
-        articles,
-        presentations,
-        events,
-        lectures,
-        total,
-        query: searchTerm,
-      });
+      return NextResponse.json(
+        {
+          articles,
+          presentations,
+          events,
+          lectures,
+          total,
+          query: searchTerm,
+        },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          },
+        }
+      );
     }
 
     const articles = await prisma.article.findMany({
@@ -219,14 +233,21 @@ export async function GET(request: NextRequest) {
     const total =
       articles.length + presentations.length + events.length + lectures.length;
 
-    return NextResponse.json({
-      articles,
-      presentations,
-      events,
-      lectures,
-      total,
-      query: searchTerm,
-    });
+    return NextResponse.json(
+      {
+        articles,
+        presentations,
+        events,
+        lectures,
+        total,
+        query: searchTerm,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, s-maxage=30, stale-while-revalidate=120",
+        },
+      }
+    );
   } catch (error) {
     console.error("Search API error:", error);
     return NextResponse.json(

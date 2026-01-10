@@ -9,7 +9,7 @@ import { ContentItem, ContentCardProps } from "@/types/Home/home";
 
 export type { ContentItem, ContentCardProps };
 
-const ContentCard: React.FC<ContentCardProps> = ({
+const ContentCard: React.FC<ContentCardProps> = React.memo(({
   title,
   icon: Icon,
   items,
@@ -62,6 +62,8 @@ const ContentCard: React.FC<ContentCardProps> = ({
       </div>
     </motion.div>
   );
-};
+});
+
+ContentCard.displayName = "ContentCard";
 
 export default ContentCard;

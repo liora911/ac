@@ -6,6 +6,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import DOMPurify from "dompurify";
 
 interface Article {
   id: string;
@@ -179,7 +180,7 @@ export default function ArticlePage() {
 
         <div
           className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none article-content"
-          dangerouslySetInnerHTML={{ __html: article.content }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
         />
       </div>
     </div>

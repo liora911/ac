@@ -256,7 +256,11 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / query.limit!),
     };
 
-    return NextResponse.json(response);
+    return NextResponse.json(response, {
+      headers: {
+        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+      },
+    });
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch articles" },

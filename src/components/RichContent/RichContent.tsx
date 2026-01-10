@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import DOMPurify from "dompurify";
 
 interface RichContentProps {
   content: string;
@@ -29,7 +30,7 @@ export default function RichContent({ content, className = "" }: RichContentProp
 
   return (
     <div className={`rich-content ${className}`}>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
       <style jsx global>{`
         .rich-content {
           line-height: 1.7;
