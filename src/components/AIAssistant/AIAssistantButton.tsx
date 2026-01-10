@@ -125,7 +125,7 @@ export default function AIAssistantButton() {
       {isOpen && (
         <div
           ref={panelRef}
-          className="absolute top-full mt-2 ltr:right-0 rtl:left-0 w-80 sm:w-96 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl overflow-hidden z-50"
+          className="fixed sm:absolute top-[60px] sm:top-full sm:mt-2 inset-x-2 sm:inset-x-auto sm:ltr:right-0 sm:rtl:left-0 w-auto sm:w-96 max-w-[calc(100vw-1rem)] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-2xl overflow-hidden z-50"
         >
           {/* Chat Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
