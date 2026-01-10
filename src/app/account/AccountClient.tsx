@@ -20,6 +20,7 @@ import {
   Bell,
   FileText,
   Video,
+  Heart,
 } from "lucide-react";
 import { Suspense } from "react";
 import { UserRole } from "@prisma/client";
@@ -351,6 +352,16 @@ function AccountContent({
             </div>
 
             <div className="space-y-2">
+              <Link
+                href="/favorites"
+                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
+              >
+                <Heart className="w-5 h-5 text-gray-400 group-hover:text-red-500" />
+                <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
+                  {t("account.quickLinks.favorites")}
+                </span>
+                <ChevronRight className="w-4 h-4 text-gray-400 ms-auto rtl:rotate-180" />
+              </Link>
               <Link
                 href="/articles"
                 className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"

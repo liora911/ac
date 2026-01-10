@@ -56,6 +56,7 @@ model User {
   presentations    Presentation[]
   tickets          Ticket[]
   subscription     Subscription?
+  favorites        Favorite[]
 }
 
 model VerificationToken {
@@ -301,4 +302,23 @@ enum TicketStatus {
   CONFIRMED
   CANCELLED
   ATTENDED
+}
+
+enum FavoriteType {
+  ARTICLE
+  LECTURE
+  PRESENTATION
+}
+
+model Favorite {
+  id        String       @id @default(cuid())
+  userId    String
+  itemId    String       // ID of the article, lecture, or presentation
+  itemType  FavoriteType
+  createdAt DateTime     @default(now())
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, itemId, itemType]) // Prevent duplicate favorites
+  @@index([userId, itemType])          // Fast lookup by user and type
+  @@map("favorites")
 }

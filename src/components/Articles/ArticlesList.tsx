@@ -16,6 +16,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import { Grid3X3, List, Tag, X, Star } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
+import FavoriteButton from "@/components/FavoriteButton";
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -553,22 +554,34 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
               {t("articleCard.featured")}
             </div>
           )}
+          {/* Favorite Button */}
+          <div className="absolute top-2 right-2 z-10">
+            <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
+          </div>
         </div>
       )}
 
       {}
       <div className="p-6">
-        {isAuthorized && (
-          <div className="mb-2">
-            <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                article.status
-              )}`}
-            >
-              {article.status}
-            </span>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1">
+            {isAuthorized && (
+              <div className="mb-2">
+                <span
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                    article.status
+                  )}`}
+                >
+                  {article.status}
+                </span>
+              </div>
+            )}
           </div>
-        )}
+          {/* Favorite button for cards without image */}
+          {!article.featuredImage && (
+            <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
+          )}
+        </div>
 
         {}
         <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">

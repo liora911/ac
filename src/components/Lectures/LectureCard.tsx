@@ -8,6 +8,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import { Clock, Calendar, Share2, Play, Link2, Check, Mail, Star } from "lucide-react";
+import FavoriteButton from "@/components/FavoriteButton";
 
 interface LectureCardProps {
   lecture: Lecture;
@@ -103,9 +104,19 @@ const LectureCard: React.FC<LectureCardProps> = ({
               hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
             }`}
           />
+          {/* Favorite Button */}
+          <div className="absolute top-2 right-2 z-10">
+            <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
+          </div>
         </div>
       )}
       <div className="p-5 flex-grow">
+        {/* Favorite button for cards without banner image */}
+        {!lecture.bannerImageUrl && (
+          <div className="flex justify-end mb-2">
+            <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
+          </div>
+        )}
         <h4 className={`text-lg font-semibold mb-2 line-clamp-2 transition-colors ${
           hasAccess
             ? "text-gray-900 group-hover:text-blue-600"

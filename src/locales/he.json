@@ -999,6 +999,7 @@
     "quickLinks": {
       "title": "גישה מהירה",
       "subtitle": "נווט לתוכן",
+      "favorites": "המועדפים שלי",
       "articles": "מאמרים",
       "lectures": "הרצאות",
       "events": "אירועים"
@@ -1038,6 +1039,41 @@
       "startChat": "התחל צ'אט",
       "emptyState": "נסה אחת מהשאלות הבאות:"
     }
+  },
+  "favorites": {
+    "title": "המועדפים שלי",
+    "subtitle": "יש לך {count} פריטים שמורים",
+    "errorLoading": "שגיאה בטעינת מועדפים",
+    "addToFavorites": "הוסף למועדפים",
+    "removeFromFavorites": "הסר ממועדפים",
+    "tabs": {
+      "articles": "מאמרים",
+      "lectures": "הרצאות",
+      "presentations": "מצגות"
+    },
+    "empty": {
+      "articles": {
+        "title": "אין מאמרים מועדפים עדיין",
+        "description": "עיין במאמרים ולחץ על סמל הלב כדי לשמור אותם כאן",
+        "cta": "עיין במאמרים"
+      },
+      "lectures": {
+        "title": "אין הרצאות מועדפות עדיין",
+        "description": "עיין בהרצאות ולחץ על סמל הלב כדי לשמור אותן כאן",
+        "cta": "עיין בהרצאות"
+      },
+      "presentations": {
+        "title": "אין מצגות מועדפות עדיין",
+        "description": "עיין במצגות ולחץ על סמל הלב כדי לשמור אותן כאן",
+        "cta": "עיין במצגות"
+      }
+    },
+    "limitReached": "הגעת למקסימום מועדפים מסוג זה (10)"
+  },
+  "common": {
+    "premium": "פרימיום",
+    "minRead": "דק'",
+    "slides": "שקפים"
   },
   "pricing": {
     "title": "מנוי חוקר",

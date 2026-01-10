@@ -973,6 +973,7 @@
     "quickLinks": {
       "title": "Quick Links",
       "subtitle": "Access content directly",
+      "favorites": "My Favorites",
       "articles": "Articles",
       "lectures": "Lectures",
       "events": "Events"
@@ -1012,6 +1013,41 @@
       "startChat": "Start Chat",
       "emptyState": "Try one of these questions:"
     }
+  },
+  "favorites": {
+    "title": "My Favorites",
+    "subtitle": "You have {count} saved items",
+    "errorLoading": "Error loading favorites",
+    "addToFavorites": "Add to favorites",
+    "removeFromFavorites": "Remove from favorites",
+    "tabs": {
+      "articles": "Articles",
+      "lectures": "Lectures",
+      "presentations": "Presentations"
+    },
+    "empty": {
+      "articles": {
+        "title": "No favorite articles yet",
+        "description": "Browse articles and click the heart icon to save them here",
+        "cta": "Browse Articles"
+      },
+      "lectures": {
+        "title": "No favorite lectures yet",
+        "description": "Browse lectures and click the heart icon to save them here",
+        "cta": "Browse Lectures"
+      },
+      "presentations": {
+        "title": "No favorite presentations yet",
+        "description": "Browse presentations and click the heart icon to save them here",
+        "cta": "Browse Presentations"
+      }
+    },
+    "limitReached": "Maximum favorites reached for this type (10)"
+  },
+  "common": {
+    "premium": "Premium",
+    "minRead": "min",
+    "slides": "slides"
   },
   "pricing": {
     "title": "Researcher Subscription",

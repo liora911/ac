@@ -12,6 +12,7 @@ import PresentationCategoryTree from "@/components/Presentations/PresentationCat
 import { Grid3X3, List, AlertTriangle, Trash2, Presentation, Star } from "lucide-react";
 import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 import { useNotification } from "@/contexts/NotificationContext";
+import FavoriteButton from "@/components/FavoriteButton";
 
 const CreatePresentationForm = dynamic(
   () => import("@/components/CreatePresentation/create_presentation"),
@@ -515,6 +516,10 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           <Presentation className="w-16 h-16 text-indigo-300" />
                         </div>
                       )}
+                      {/* Favorite Button */}
+                      <div className="absolute top-2 right-2 z-10">
+                        <FavoriteButton itemId={presentation.id} itemType="PRESENTATION" size="sm" />
+                      </div>
                     </div>
                     <div className="p-4">
                       <h3 className={`text-lg font-semibold mb-2 line-clamp-1 ${canAccess ? "text-gray-900" : "text-gray-500"}`}>
@@ -613,6 +618,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           </p>
                         )}
                       </div>
+                      {/* Favorite Button */}
+                      <FavoriteButton itemId={presentation.id} itemType="PRESENTATION" size="sm" />
                       {/* Premium star indicator */}
                       {isPremium && (
                         canAccess ? (
