@@ -167,20 +167,14 @@ export default function ArticlePage() {
             >
               📄 הורד PDF
             </button>
-            {/* {
-              <button
-                onClick={() => router.push(`/edit-article/${articleId}`)}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
-              >
-                ✏️ ערוך מאמר
-              </button>
-            } */}
           </div>
         </div>
 
         <div
           className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none article-content"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(article.content) }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(article.content),
+          }}
         />
       </div>
     </div>

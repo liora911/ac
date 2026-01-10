@@ -8,24 +8,10 @@ interface RichContentProps {
   className?: string;
 }
 
-/**
- * RichContent component renders HTML content from TipTap editor
- * with proper styling for all supported elements:
- * - Headings (h1, h2, h3)
- * - Paragraphs
- * - Bold, Italic, Underline, Strikethrough
- * - Links
- * - Lists (bullet, numbered, task)
- * - Blockquotes
- * - Code (inline and blocks)
- * - Tables
- * - Images
- * - YouTube embeds
- * - Horizontal rules
- * - Text alignment
- * - Text colors and highlights
- */
-export default function RichContent({ content, className = "" }: RichContentProps) {
+export default function RichContent({
+  content,
+  className = "",
+}: RichContentProps) {
   if (!content) return null;
 
   return (
@@ -144,7 +130,11 @@ export default function RichContent({ content, className = "" }: RichContentProp
           flex-shrink: 0;
         }
 
-        .rich-content ul[data-type="taskList"] li > label input[type="checkbox"] {
+        .rich-content
+          ul[data-type="taskList"]
+          li
+          > label
+          input[type="checkbox"] {
           margin-top: 0.25em;
           width: 1em;
           height: 1em;
@@ -192,7 +182,8 @@ export default function RichContent({ content, className = "" }: RichContentProp
           background: #f3f4f6;
           padding: 0.15em 0.4em;
           border-radius: 4px;
-          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+            monospace;
           font-size: 0.875em;
           color: #e11d48;
         }
@@ -205,7 +196,8 @@ export default function RichContent({ content, className = "" }: RichContentProp
           border-radius: 8px;
           overflow-x: auto;
           margin: 1em 0;
-          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+          font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+            monospace;
           font-size: 0.875em;
           line-height: 1.6;
         }

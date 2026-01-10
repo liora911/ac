@@ -1002,5 +1002,59 @@
       "startChat": "Start Chat",
       "emptyState": "Try one of these questions:"
     }
+  },
+  "pricing": {
+    "title": "Researcher Subscription",
+    "subtitle": "Get access to all premium content - exclusive articles, lectures and presentations",
+    "supportBadge": "Support Research",
+    "backToHome": "Back to Home",
+    "processing": "Processing...",
+    "cancelled": "Payment was cancelled. You can try again anytime.",
+    "supportResearch": {
+      "title": "Support Prof. Avshalom Elitzur's Research",
+      "description": "Your subscription directly contributes to Prof. Elitzur's scientific research in quantum mechanics, relativity, and thermodynamics. Your support enables groundbreaking research and helps share scientific knowledge with the broader public."
+    },
+    "alreadySubscribed": {
+      "title": "You have an active Researcher subscription!",
+      "description": "You already have access to all premium content on the site.",
+      "manageButton": "Manage your subscription"
+    },
+    "monthly": {
+      "title": "Monthly",
+      "period": "month",
+      "button": "Start Monthly Subscription"
+    },
+    "yearly": {
+      "title": "Yearly",
+      "period": "year",
+      "badge": "Save 17%",
+      "perMonth": "₪40.83 per month",
+      "button": "Start Yearly Subscription"
+    },
+    "features": {
+      "premiumArticles": "Access to all premium articles",
+      "exclusiveLectures": "Access to exclusive lectures",
+      "presentations": "Presentations and additional materials",
+      "cancelAnytime": "Cancel anytime",
+      "supportResearch": "Support Prof. Elitzur's research"
+    },
+    "whatsIncluded": {
+      "title": "What's Included?",
+      "articles": {
+        "title": "Premium Articles",
+        "description": "Access to exclusive research articles"
+      },
+      "lectures": {
+        "title": "Exclusive Lectures",
+        "description": "Watch lectures not available to the public"
+      },
+      "presentations": {
+        "title": "Presentations & Documents",
+        "description": "Download presentations and learning materials"
+      }
+    },
+    "errors": {
+      "generic": "Error creating subscription"
+    }
   }
 }
