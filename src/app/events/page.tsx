@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import EventModal from "@/components/Events/EventModal";
 
 const Events = dynamic(() => import("@/components/Events/Events"), {
   loading: () => (
@@ -42,6 +43,8 @@ const EventsPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [showCreateForm, setShowCreateForm] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -139,13 +142,15 @@ const EventsPage = () => {
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
 
-  // Handler for featured event click - opens in modal via Events component
+  // Handler for featured event click - opens modal
   const handleFeaturedEventClick = (event: Event) => {
-    // Scroll to events section and trigger the modal
-    const eventsSection = document.getElementById("events-list");
-    if (eventsSection) {
-      eventsSection.scrollIntoView({ behavior: "smooth" });
-    }
+    setSelectedEvent(event);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedEvent(null);
   };
 
   return (
@@ -255,6 +260,14 @@ const EventsPage = () => {
           </p>
         )}
       </div>
+
+      {/* Event Details Modal */}
+      <EventModal
+        event={selectedEvent}
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        locale={locale}
+      />
     </div>
   );
 };

@@ -768,7 +768,12 @@
     "unlimitedSeats": "מקומות ללא הגבלה",
     "seatsAvailable": "מקומות זמינים",
     "eventFull": "האירוע מלא",
-    "soldOut": "אזל"
+    "soldOut": "אזל",
+    "total": "סה\"כ",
+    "price": "מחיר",
+    "free": "חינם",
+    "payAndReserve": "שלם ושריין",
+    "paymentFailed": "התשלום נכשל. נסה שוב."
   },
   "searchPage": {
     "title": "תוצאות חיפוש",

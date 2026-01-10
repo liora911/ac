@@ -741,7 +741,12 @@
     "unlimitedSeats": "Unlimited seats",
     "seatsAvailable": "seats available",
     "eventFull": "Event is full",
-    "soldOut": "Sold Out"
+    "soldOut": "Sold Out",
+    "total": "Total",
+    "price": "Price",
+    "free": "Free",
+    "payAndReserve": "Pay & Reserve",
+    "paymentFailed": "Payment failed. Please try again."
   },
   "searchPage": {
     "title": "Search Results",

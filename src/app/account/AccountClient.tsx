@@ -189,9 +189,7 @@ function AccountContent({
         {/* Profile Header Card */}
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
           {/* Banner */}
-          <div className="h-24 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 relative">
-            <div className="absolute inset-0 bg-black/10" />
-          </div>
+          <div className="h-24 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600" />
 
           {/* Profile Info */}
           <div className="px-6 pb-6">
