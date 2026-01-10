@@ -13,7 +13,7 @@ export default function AIAssistantButton() {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
 
-  const isAdmin = !!session;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   const {
     messages,
