@@ -15,6 +15,7 @@ import {
   Presentation,
   ChevronDown,
   ChevronUp,
+  Star,
 } from "lucide-react";
 import ContentCard, { ContentItem } from "./ContentCard";
 import RichContent from "@/components/RichContent";
@@ -276,15 +277,22 @@ const Home = () => {
                   <li key={item.id}>
                     <Link
                       href={`/lectures/${item.id}`}
-                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
                     >
-                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                        {item.title}
-                      </p>
-                      {item.date && (
-                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                          {formatDate(item.date as string)}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                          {item.title}
                         </p>
+                        {item.date && (
+                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                            {formatDate(item.date as string)}
+                          </p>
+                        )}
+                      </div>
+                      {item.isPremium && (
+                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        </div>
                       )}
                     </Link>
                   </li>
@@ -303,15 +311,22 @@ const Home = () => {
                   <li key={item.id}>
                     <Link
                       href={`/articles/${item.id}`}
-                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
                     >
-                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                        {item.title}
-                      </p>
-                      {item.createdAt && (
-                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                          {formatDate(item.createdAt as string)}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                          {item.title}
                         </p>
+                        {item.createdAt && (
+                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                            {formatDate(item.createdAt as string)}
+                          </p>
+                        )}
+                      </div>
+                      {item.isPremium && (
+                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        </div>
                       )}
                     </Link>
                   </li>
@@ -357,15 +372,22 @@ const Home = () => {
                   <li key={item.id}>
                     <Link
                       href={`/presentations/${item.id}`}
-                      className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
+                      className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
                     >
-                      <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-                        {item.title}
-                      </p>
-                      {item.createdAt && (
-                        <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                          {formatDate(item.createdAt as string)}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+                          {item.title}
                         </p>
+                        {item.createdAt && (
+                          <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                            {formatDate(item.createdAt as string)}
+                          </p>
+                        )}
+                      </div>
+                      {item.isPremium && (
+                        <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
+                          <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+                        </div>
                       )}
                     </Link>
                   </li>

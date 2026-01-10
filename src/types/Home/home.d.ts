@@ -6,6 +6,7 @@ export type ContentItem = {
   date?: string | null;
   createdAt?: string;
   eventDate?: string;
+  isPremium?: boolean;
 };
 
 export interface ContentCardProps {

@@ -5,6 +5,7 @@ export type PreviewArticle = {
   title: string;
   content: string;
   createdAt: string;
+  isPremium?: boolean;
   category?: { id: string; name: string } | null;
 };
 
@@ -14,6 +15,7 @@ export type PreviewLecture = {
   description: string;
   date: string | null;
   createdAt: string;
+  isPremium?: boolean;
   category?: { id: string; name: string } | null;
 };
 
@@ -30,6 +32,7 @@ export type PreviewPresentation = {
   title: string;
   description: string;
   createdAt: string;
+  isPremium?: boolean;
   category?: { id: string; name: string } | null;
 };
 
