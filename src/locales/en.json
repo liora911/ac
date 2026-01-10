@@ -472,7 +472,8 @@
     "createNew": "Create New",
     "search": "Search",
     "reserveTicket": "Reserve Ticket",
-    "ticketSummary": "Ticket"
+    "ticketSummary": "Ticket",
+    "favorites": "My Favorites"
   },
   "editEventPage": {
     "title": "Edit Event"

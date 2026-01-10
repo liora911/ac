@@ -20,6 +20,12 @@ import { FavoriteButton } from "@/components/FavoriteButton";
 
 type TabType = "articles" | "lectures" | "presentations";
 
+// Helper function to strip HTML tags from text
+function stripHtml(html: string): string {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, "").trim();
+}
+
 const tabs: { id: TabType; icon: React.ElementType; labelKey: string }[] = [
   { id: "articles", icon: FileText, labelKey: "favorites.tabs.articles" },
   { id: "lectures", icon: Video, labelKey: "favorites.tabs.lectures" },
@@ -354,7 +360,7 @@ function LectureCard({
             {lecture.title}
           </h3>
           <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-            {lecture.description}
+            {stripHtml(lecture.description)}
           </p>
           <div className="flex items-center gap-3 text-sm text-gray-500">
             <span className="bg-gray-100 px-2 py-0.5 rounded text-xs">
@@ -428,7 +434,7 @@ function PresentationCard({
             {presentation.title}
           </h3>
           <p className="text-sm text-gray-600 line-clamp-2 mb-3">
-            {presentation.description}
+            {stripHtml(presentation.description)}
           </p>
           <div className="flex items-center gap-3 text-sm text-gray-500">
             <span className="bg-gray-100 px-2 py-0.5 rounded text-xs">

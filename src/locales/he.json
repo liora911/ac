@@ -480,7 +480,8 @@
     "createNew": "יצירה חדשה",
     "search": "חיפוש",
     "reserveTicket": "שריון מקום",
-    "ticketSummary": "כרטיס"
+    "ticketSummary": "כרטיס",
+    "favorites": "המועדפים שלי"
   },
   "editEventPage": {
     "title": "עריכת אירוע"
