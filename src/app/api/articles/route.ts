@@ -105,6 +105,12 @@ export async function GET(request: NextRequest) {
       throw new Error("Database connection not available");
     }
 
+    // Check auth status early for cache control decisions
+    const session = await getServerSession(authOptions);
+    const isAuthorized =
+      session?.user?.email &&
+      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
+
     const { searchParams } = new URL(request.url);
     const page = Number.parseInt(searchParams.get("page") || "1");
     const limit = Number.parseInt(searchParams.get("limit") || "10");
@@ -159,11 +165,6 @@ export async function GET(request: NextRequest) {
     if (query.status) {
       where.published = query.status === "PUBLISHED";
     } else {
-      const session = await getServerSession(authOptions);
-      const isAuthorized =
-        session?.user?.email &&
-        ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-
       if (!isAuthorized) {
         where.published = true;
       }
@@ -256,9 +257,14 @@ export async function GET(request: NextRequest) {
       totalPages: Math.ceil(total / query.limit!),
     };
 
+    // Don't cache for admin users so they see real-time updates
+    const cacheControl = isAuthorized
+      ? "private, no-cache, no-store, must-revalidate"
+      : "public, s-maxage=60, stale-while-revalidate=300";
+
     return NextResponse.json(response, {
       headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+        "Cache-Control": cacheControl,
       },
     });
   } catch (error) {
