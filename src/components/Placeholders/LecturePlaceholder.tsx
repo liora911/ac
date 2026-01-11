@@ -13,184 +13,106 @@ function hashString(str: string): number {
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
     hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
+    hash = hash & hash;
   }
   return Math.abs(hash);
 }
 
-// Generate a color from hash
-function hashToColor(hash: number, saturation = 70, lightness = 55): string {
-  const hue = hash % 360;
-  return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
-}
-
 /**
- * LecturePlaceholder - A generative visual placeholder for lectures without banner images.
- * Creates a unique "audio waveform" inspired design based on the lecture ID.
- * The design evokes sound waves, representing spoken content.
+ * LecturePlaceholder - Clean, minimal generative placeholder for lectures.
+ * Creates smooth gradient waves inspired by sound/audio visualization.
  */
 export default function LecturePlaceholder({ id, className = "" }: LecturePlaceholderProps) {
   const design = useMemo(() => {
     const hash1 = hashString(id);
-    const hash2 = hashString(id + "secondary");
-    const hash3 = hashString(id + "tertiary");
+    const hash2 = hashString(id + "s");
 
-    // Primary and secondary colors
-    const primaryColor = hashToColor(hash1, 75, 50);
-    const secondaryColor = hashToColor(hash2, 65, 60);
-    const accentColor = hashToColor(hash3, 80, 45);
+    // Generate two hues that work well together (analogous colors)
+    const baseHue = hash1 % 360;
+    const secondHue = (baseHue + 30 + (hash2 % 40)) % 360;
 
-    // Generate waveform bars (16-24 bars)
-    const barCount = 16 + (hash1 % 9);
-    const bars: { height: number; delay: number }[] = [];
-
-    for (let i = 0; i < barCount; i++) {
-      const barHash = hashString(id + i.toString());
-      // Heights vary between 20% and 90%
-      const height = 20 + (barHash % 70);
-      // Staggered animation delay
-      const delay = (i * 0.05) % 1;
-      bars.push({ height, delay });
-    }
-
-    // Background gradient angle
-    const gradientAngle = hash1 % 180;
-
-    // Floating orbs (subtle background elements)
-    const orbCount = 3 + (hash2 % 3);
-    const orbs: { x: number; y: number; size: number; opacity: number }[] = [];
-
-    for (let i = 0; i < orbCount; i++) {
-      const orbHash = hashString(id + "orb" + i);
-      orbs.push({
-        x: 10 + (orbHash % 80),
-        y: 10 + ((orbHash >> 8) % 80),
-        size: 30 + (orbHash % 60),
-        opacity: 0.1 + ((orbHash % 20) / 100),
-      });
-    }
+    // Wave parameters - subtle variations
+    const waveOffset = hash1 % 100;
+    const waveFrequency = 0.8 + ((hash2 % 40) / 100);
 
     return {
-      primaryColor,
-      secondaryColor,
-      accentColor,
-      gradientAngle,
-      bars,
-      orbs,
+      baseHue,
+      secondHue,
+      waveOffset,
+      waveFrequency,
     };
   }, [id]);
 
+  const { baseHue, secondHue, waveOffset, waveFrequency } = design;
+
   return (
-    <div
-      className={`relative w-full h-full overflow-hidden ${className}`}
-      style={{
-        background: `linear-gradient(${design.gradientAngle}deg, ${design.primaryColor}20, ${design.secondaryColor}30)`,
-      }}
-    >
-      {/* Subtle gradient overlay */}
+    <div className={`relative w-full h-full overflow-hidden ${className}`}>
+      {/* Base gradient */}
       <div
         className="absolute inset-0"
         style={{
-          background: `radial-gradient(ellipse at 30% 20%, ${design.accentColor}15 0%, transparent 50%)`,
+          background: `linear-gradient(135deg,
+            hsl(${baseHue}, 65%, 45%) 0%,
+            hsl(${secondHue}, 55%, 55%) 50%,
+            hsl(${baseHue}, 60%, 40%) 100%)`,
         }}
       />
 
-      {/* Floating orbs - subtle background depth */}
-      {design.orbs.map((orb, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full blur-xl"
-          style={{
-            left: `${orb.x}%`,
-            top: `${orb.y}%`,
-            width: `${orb.size}px`,
-            height: `${orb.size}px`,
-            background: i % 2 === 0 ? design.primaryColor : design.secondaryColor,
-            opacity: orb.opacity,
-          }}
+      {/* SVG wave layers */}
+      <svg
+        className="absolute inset-0 w-full h-full"
+        viewBox="0 0 400 200"
+        preserveAspectRatio="none"
+      >
+        {/* Bottom wave - darker */}
+        <path
+          d={`M0,180
+              Q${100 + waveOffset * 0.5},${140 + Math.sin(waveFrequency) * 20}
+              ${200},${160}
+              T400,${150 + (waveOffset % 30)}
+              L400,200 L0,200 Z`}
+          fill={`hsla(${baseHue}, 50%, 25%, 0.4)`}
         />
-      ))}
 
-      {/* Audio waveform visualization - centered */}
-      <div className="absolute inset-0 flex items-center justify-center px-4">
-        <div className="flex items-center gap-[2px] h-[60%]">
-          {design.bars.map((bar, i) => (
-            <div
-              key={i}
-              className="waveform-bar rounded-full"
-              style={{
-                width: "3px",
-                height: `${bar.height}%`,
-                background: `linear-gradient(to top, ${design.primaryColor}, ${design.accentColor})`,
-                opacity: 0.7 + (bar.height / 300),
-                animationDelay: `${bar.delay}s`,
-              }}
-            />
-          ))}
-        </div>
-      </div>
+        {/* Middle wave */}
+        <path
+          d={`M0,${160 - waveOffset * 0.2}
+              Q${80 + waveOffset * 0.3},${120 + Math.cos(waveFrequency) * 15}
+              ${200},${140}
+              T400,${130 + (waveOffset % 20)}
+              L400,200 L0,200 Z`}
+          fill={`hsla(${secondHue}, 45%, 35%, 0.3)`}
+        />
 
-      {/* Center play icon suggestion - subtle */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+        {/* Top wave - lightest */}
+        <path
+          d={`M0,${140 - waveOffset * 0.15}
+              Q${120 + waveOffset * 0.4},${100 + Math.sin(waveFrequency * 1.5) * 10}
+              ${200},${120}
+              T400,${110 + (waveOffset % 15)}
+              L400,200 L0,200 Z`}
+          fill={`hsla(${baseHue}, 40%, 45%, 0.25)`}
+        />
+      </svg>
+
+      {/* Subtle play icon */}
+      <div className="absolute inset-0 flex items-center justify-center">
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center"
           style={{
-            background: `${design.primaryColor}30`,
+            background: "rgba(255,255,255,0.15)",
             backdropFilter: "blur(4px)",
           }}
         >
           <svg
             className="w-5 h-5 ml-0.5"
-            fill={design.accentColor}
+            fill="rgba(255,255,255,0.8)"
             viewBox="0 0 24 24"
-            style={{ opacity: 0.6 }}
           >
             <path d="M8 5v14l11-7z" />
           </svg>
         </div>
       </div>
-
-      {/* Animated pulse rings - very subtle */}
-      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-        <div
-          className="pulse-ring absolute w-20 h-20 rounded-full"
-          style={{
-            border: `1px solid ${design.accentColor}`,
-            opacity: 0.2,
-          }}
-        />
-      </div>
-
-      {/* CSS for animations */}
-      <style jsx>{`
-        .waveform-bar {
-          animation: waveform 1.5s ease-in-out infinite alternate;
-        }
-
-        @keyframes waveform {
-          0% {
-            transform: scaleY(0.6);
-          }
-          100% {
-            transform: scaleY(1);
-          }
-        }
-
-        .pulse-ring {
-          animation: pulse 3s ease-out infinite;
-        }
-
-        @keyframes pulse {
-          0% {
-            transform: scale(1);
-            opacity: 0.3;
-          }
-          100% {
-            transform: scale(2);
-            opacity: 0;
-          }
-        }
-      `}</style>
     </div>
   );
 }

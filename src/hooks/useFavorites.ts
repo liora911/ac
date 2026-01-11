@@ -26,6 +26,7 @@ interface FavoritesFull {
     title: string;
     description: string;
     bannerImageUrl?: string | null;
+    videoUrl?: string | null;
     duration: string;
     isPremium: boolean;
     createdAt: string;

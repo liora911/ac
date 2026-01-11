@@ -27,6 +27,25 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").trim();
 }
 
+// Extract YouTube video ID from various URL formats
+function getYouTubeVideoId(url?: string | null): string | null {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+// Get YouTube thumbnail URL
+function getYouTubeThumbnail(videoId: string): string {
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
+
 const tabs: { id: TabType; icon: React.ElementType; labelKey: string }[] = [
   { id: "articles", icon: FileText, labelKey: "favorites.tabs.articles" },
   { id: "lectures", icon: Video, labelKey: "favorites.tabs.lectures" },
@@ -320,6 +339,7 @@ function LectureCard({
     title: string;
     description: string;
     bannerImageUrl?: string | null;
+    videoUrl?: string | null;
     duration: string;
     isPremium: boolean;
     createdAt: string;
@@ -328,6 +348,10 @@ function LectureCard({
   locale: string;
   t: (key: string) => string;
 }) {
+  // Priority: 1. Banner image, 2. YouTube thumbnail, 3. Placeholder
+  const youtubeId = getYouTubeVideoId(lecture.videoUrl);
+  const thumbnailUrl = lecture.bannerImageUrl || (youtubeId ? getYouTubeThumbnail(youtubeId) : null);
+
   return (
     <Link href={`/lectures/${lecture.id}`}>
       <motion.div
@@ -335,9 +359,9 @@ function LectureCard({
         whileHover={{ y: -4 }}
       >
         <div className="relative h-40 overflow-hidden">
-          {lecture.bannerImageUrl ? (
+          {thumbnailUrl ? (
             <img
-              src={lecture.bannerImageUrl}
+              src={thumbnailUrl}
               alt={lecture.title}
               className="w-full h-full object-cover"
             />

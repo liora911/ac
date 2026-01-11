@@ -11,6 +11,28 @@ import { Clock, Calendar, Share2, Play, Link2, Check, Mail, Star } from "lucide-
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
 
+// Extract YouTube video ID from various URL formats
+function getYouTubeVideoId(url?: string): string | null {
+  if (!url) return null;
+
+  // Match patterns: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
+    /^([a-zA-Z0-9_-]{11})$/, // Just the ID itself
+  ];
+
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return null;
+}
+
+// Get YouTube thumbnail URL (maxresdefault for best quality, with fallback)
+function getYouTubeThumbnail(videoId: string): string {
+  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+}
+
 interface LectureCardProps {
   lecture: Lecture;
   onLectureClick: (lecture: Lecture) => void;
@@ -97,22 +119,32 @@ const LectureCard: React.FC<LectureCardProps> = ({
       )}
 
       <div className="relative h-44 w-full overflow-hidden">
-        {lecture.bannerImageUrl ? (
-          <img
-            src={lecture.bannerImageUrl}
-            alt={lecture.title}
-            className={`object-cover w-full h-full transition-transform duration-300 ${
-              hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
-            }`}
-          />
-        ) : (
-          <LecturePlaceholder
-            id={lecture.id}
-            className={`transition-transform duration-300 ${
-              hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
-            }`}
-          />
-        )}
+        {(() => {
+          // Priority: 1. Banner image, 2. YouTube thumbnail, 3. Placeholder
+          const youtubeId = getYouTubeVideoId(lecture.videoUrl);
+          const thumbnailUrl = lecture.bannerImageUrl || (youtubeId ? getYouTubeThumbnail(youtubeId) : null);
+
+          if (thumbnailUrl) {
+            return (
+              <img
+                src={thumbnailUrl}
+                alt={lecture.title}
+                className={`object-cover w-full h-full transition-transform duration-300 ${
+                  hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
+                }`}
+              />
+            );
+          }
+
+          return (
+            <LecturePlaceholder
+              id={lecture.id}
+              className={`transition-transform duration-300 ${
+                hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
+              }`}
+            />
+          );
+        })()}
         {/* Favorite Button */}
         <div className="absolute top-2 right-2 z-10">
           <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />

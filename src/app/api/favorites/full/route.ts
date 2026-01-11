@@ -42,7 +42,15 @@ export async function GET(request: NextRequest) {
       lectureIds.length > 0
         ? prisma.lecture.findMany({
             where: { id: { in: lectureIds } },
-            include: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              bannerImageUrl: true,
+              videoUrl: true,
+              duration: true,
+              isPremium: true,
+              createdAt: true,
               category: { select: { id: true, name: true } },
             },
           })
