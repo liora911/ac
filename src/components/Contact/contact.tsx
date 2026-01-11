@@ -157,7 +157,7 @@ const Contact = () => {
           >
             <label
               htmlFor="name"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("contact.nameLabel")}
             </label>
@@ -190,7 +190,7 @@ const Contact = () => {
           >
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("contact.emailLabel")}
             </label>
@@ -223,7 +223,7 @@ const Contact = () => {
           >
             <label
               htmlFor="subject"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("contact.subjectLabel")}
             </label>
@@ -256,7 +256,7 @@ const Contact = () => {
           >
             <label
               htmlFor="message"
-              className="block text-sm font-medium text-gray-300 mb-1"
+              className="block text-sm font-medium text-gray-700 mb-1"
             >
               {t("contact.messageLabel")}
             </label>

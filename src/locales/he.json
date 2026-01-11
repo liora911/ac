@@ -470,7 +470,8 @@
     "brandAriaLabel": "אבשלום אליצור - דף הבית",
     "mainNavigation": "ניווט ראשי",
     "closeNavigationMenu": "סגירת תפריט הניווט",
-    "openNavigationMenu": "פתיחת תפריט הניווט"
+    "openNavigationMenu": "פתיחת תפריט הניווט",
+    "skipToContent": "דלג לתוכן הראשי"
   },
   "breadcrumbs": {
     "home": "דף הבית",

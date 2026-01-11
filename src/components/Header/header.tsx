@@ -121,6 +121,13 @@ export default function Header() {
 
   return (
     <>
+      {/* Skip to main content link for keyboard navigation */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[60] focus:px-4 focus:py-2 focus:bg-blue-600 focus:text-white focus:rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+      >
+        {t("header.skipToContent")}
+      </a>
       <header
         className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-950 backdrop-blur-sm shadow-lg dark:shadow-black/30 px-4 py-3 sm:py-4"
         role="banner"

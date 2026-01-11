@@ -462,7 +462,8 @@
     "brandAriaLabel": "Avshalom Elitzur - Home",
     "mainNavigation": "Main navigation",
     "closeNavigationMenu": "Close navigation menu",
-    "openNavigationMenu": "Open navigation menu"
+    "openNavigationMenu": "Open navigation menu",
+    "skipToContent": "Skip to main content"
   },
   "breadcrumbs": {
     "home": "Home",
