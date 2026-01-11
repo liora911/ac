@@ -57,8 +57,8 @@ export default function ArticleForm({
       "",
     authors: article?.authors || [
       {
-        name: article?.publisherName || session?.user?.name || "",
-        imageUrl: article?.publisherImage || session?.user?.image || null,
+        name: article?.publisherName || "אבשלום אליצור",
+        imageUrl: article?.publisherImage || null,
         order: 0,
       },
     ],
@@ -73,8 +73,8 @@ export default function ArticleForm({
       order: a.order,
     })) || [
       {
-        name: article?.publisherName || session?.user?.name || "",
-        imageUrl: article?.publisherImage || session?.user?.image || null,
+        name: article?.publisherName || "אבשלום אליצור",
+        imageUrl: article?.publisherImage || null,
         order: 0,
       },
     ]

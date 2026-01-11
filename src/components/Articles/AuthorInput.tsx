@@ -11,13 +11,7 @@ interface AuthorInputProps {
   error?: string;
 }
 
-// Generate stable unique IDs for authors
-let authorIdCounter = 0;
-const getAuthorKey = (author: ArticleAuthorInput, index: number): string => {
-  // Use existing id if available, otherwise generate based on name + order
-  if ('id' in author && author.id) return author.id as string;
-  return `author-${author.name || 'new'}-${author.order ?? index}-${index}`;
-};
+// Use index as key - stable across re-renders when typing
 
 const AuthorInput: React.FC<AuthorInputProps> = ({
   authors,
@@ -96,7 +90,7 @@ const AuthorInput: React.FC<AuthorInputProps> = ({
       <div className="space-y-3">
         {authors.map((author, index) => (
           <div
-            key={getAuthorKey(author, index)}
+            key={index}
             className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200"
           >
             {/* Profile Picture */}
