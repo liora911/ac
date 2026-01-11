@@ -13,6 +13,7 @@ import { Grid3X3, List, AlertTriangle, Trash2, Presentation, Star } from "lucide
 import QuoteOfTheDay from "@/components/QuoteOfTheDay/QuoteOfTheDay";
 import { useNotification } from "@/contexts/NotificationContext";
 import FavoriteButton from "@/components/FavoriteButton";
+import { PresentationPlaceholder } from "@/components/Placeholders";
 
 const CreatePresentationForm = dynamic(
   () => import("@/components/CreatePresentation/create_presentation"),
@@ -501,8 +502,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                     {!canAccess && (
                       <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
                     )}
-                    {/* Image or Default Icon */}
-                    <div className={`relative w-full h-40 bg-gradient-to-br from-indigo-100 to-purple-100 ${!canAccess ? "grayscale-[30%]" : ""}`}>
+                    {/* Image or Generative Placeholder */}
+                    <div className={`relative w-full h-40 overflow-hidden ${!canAccess ? "grayscale-[30%]" : ""}`}>
                       {presentation.imageUrls.length > 0 ? (
                         <Image
                           src={presentation.imageUrls[0]}
@@ -512,9 +513,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         />
                       ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <Presentation className="w-16 h-16 text-indigo-300" />
-                        </div>
+                        <PresentationPlaceholder id={presentation.id} />
                       )}
                       {/* Favorite Button */}
                       <div className="absolute top-2 right-2 z-10">
@@ -593,8 +592,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                       <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
                     )}
                     <div className="flex items-center gap-4">
-                      {/* Image or Default Icon */}
-                      <div className={`relative w-20 h-16 flex-shrink-0 bg-gradient-to-br from-indigo-100 to-purple-100 rounded overflow-hidden ${!canAccess ? "grayscale-[30%]" : ""}`}>
+                      {/* Image or Generative Placeholder */}
+                      <div className={`relative w-20 h-16 flex-shrink-0 rounded overflow-hidden ${!canAccess ? "grayscale-[30%]" : ""}`}>
                         {presentation.imageUrls.length > 0 ? (
                           <Image
                             src={presentation.imageUrls[0]}
@@ -603,9 +602,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                             className="object-cover"
                           />
                         ) : (
-                          <div className="flex items-center justify-center h-full">
-                            <Presentation className="w-8 h-8 text-indigo-300" />
-                          </div>
+                          <PresentationPlaceholder id={presentation.id} />
                         )}
                       </div>
                       <div className="flex-1 min-w-0">

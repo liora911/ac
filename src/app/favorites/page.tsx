@@ -17,6 +17,7 @@ import {
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useFavoritesFull, useRemoveFavorite } from "@/hooks/useFavorites";
 import { FavoriteButton } from "@/components/FavoriteButton";
+import { LecturePlaceholder, PresentationPlaceholder } from "@/components/Placeholders";
 
 type TabType = "articles" | "lectures" | "presentations";
 
@@ -333,7 +334,7 @@ function LectureCard({
         className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full"
         whileHover={{ y: -4 }}
       >
-        <div className="relative h-40">
+        <div className="relative h-40 overflow-hidden">
           {lecture.bannerImageUrl ? (
             <img
               src={lecture.bannerImageUrl}
@@ -341,9 +342,7 @@ function LectureCard({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
-              <Video className="w-12 h-12 text-white/50" />
-            </div>
+            <LecturePlaceholder id={lecture.id} />
           )}
           <div className="absolute top-3 end-3">
             <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
@@ -403,7 +402,7 @@ function PresentationCard({
         className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full"
         whileHover={{ y: -4 }}
       >
-        <div className="relative h-40">
+        <div className="relative h-40 overflow-hidden">
           {thumbnailUrl ? (
             <img
               src={thumbnailUrl}
@@ -411,9 +410,7 @@ function PresentationCard({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center">
-              <Presentation className="w-12 h-12 text-white/50" />
-            </div>
+            <PresentationPlaceholder id={presentation.id} />
           )}
           <div className="absolute top-3 end-3">
             <FavoriteButton

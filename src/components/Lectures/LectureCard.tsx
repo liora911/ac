@@ -9,6 +9,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import { Clock, Calendar, Share2, Play, Link2, Check, Mail, Star } from "lucide-react";
 import FavoriteButton from "@/components/FavoriteButton";
+import { LecturePlaceholder } from "@/components/Placeholders";
 
 interface LectureCardProps {
   lecture: Lecture;
@@ -95,8 +96,8 @@ const LectureCard: React.FC<LectureCardProps> = ({
         <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-2xl pointer-events-none" />
       )}
 
-      {lecture.bannerImageUrl && (
-        <div className="relative h-44 w-full overflow-hidden">
+      <div className="relative h-44 w-full overflow-hidden">
+        {lecture.bannerImageUrl ? (
           <img
             src={lecture.bannerImageUrl}
             alt={lecture.title}
@@ -104,19 +105,20 @@ const LectureCard: React.FC<LectureCardProps> = ({
               hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
             }`}
           />
-          {/* Favorite Button */}
-          <div className="absolute top-2 right-2 z-10">
-            <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
-          </div>
-        </div>
-      )}
-      <div className="p-5 flex-grow">
-        {/* Favorite button for cards without banner image */}
-        {!lecture.bannerImageUrl && (
-          <div className="flex justify-end mb-2">
-            <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
-          </div>
+        ) : (
+          <LecturePlaceholder
+            id={lecture.id}
+            className={`transition-transform duration-300 ${
+              hasAccess ? "group-hover:scale-105" : "grayscale-[30%]"
+            }`}
+          />
         )}
+        {/* Favorite Button */}
+        <div className="absolute top-2 right-2 z-10">
+          <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
+        </div>
+      </div>
+      <div className="p-5 flex-grow">
         <h4 className={`text-lg font-semibold mb-2 line-clamp-2 transition-colors ${
           hasAccess
             ? "text-gray-900 group-hover:text-blue-600"
