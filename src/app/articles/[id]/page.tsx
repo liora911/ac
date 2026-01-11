@@ -154,10 +154,10 @@ export default function ArticleDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">{t("articleDetail.loading")}</p>
+          <p className="text-gray-600 dark:text-gray-400">{t("articleDetail.loading")}</p>
         </div>
       </div>
     );
@@ -165,12 +165,12 @@ export default function ArticleDetailPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-500 text-lg font-semibold mb-2">
+          <div className="text-red-500 dark:text-red-400 text-lg font-semibold mb-2">
             {t("articleDetail.errorTitle")}
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {error.message || t("articleDetail.errorGeneric")}
           </p>
           <button
@@ -186,12 +186,12 @@ export default function ArticleDetailPage() {
 
   if (!article) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-gray-500 text-lg font-semibold mb-2">
+          <div className="text-gray-500 dark:text-gray-400 text-lg font-semibold mb-2">
             {t("articleDetail.notFoundTitle")}
           </div>
-          <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
             {t("articleDetail.notFoundMessage")}
           </p>
           <button
@@ -230,9 +230,9 @@ export default function ArticleDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {}
-      <div className="bg-white shadow-sm"></div>
+      <div className="bg-white dark:bg-gray-800 shadow-sm"></div>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {}
@@ -240,7 +240,7 @@ export default function ArticleDetailPage() {
           {}
           <div className="mb-4 flex flex-wrap gap-2">
             {article.isPremium && (
-              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
                 <Sparkles className="w-3 h-3" />
                 {t("articleCard.premium") || "Premium"}
               </span>
@@ -255,7 +255,7 @@ export default function ArticleDetailPage() {
                   {article.status}
                 </span>
                 {article.isFeatured && (
-                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300">
                     {t("articleCard.featured")}
                   </span>
                 )}
@@ -264,19 +264,19 @@ export default function ArticleDetailPage() {
           </div>
 
           {}
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4 leading-tight">
             {article.title}
           </h1>
 
           {}
           {article.excerpt && (
-            <p className="text-xl text-gray-600 mb-6 leading-relaxed">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
               {article.excerpt}
             </p>
           )}
 
           {}
-          <div className="flex items-center justify-between border-b border-gray-200 pb-6">
+          <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-6">
             <div className="flex items-center space-x-4">
               {}
               <div className="flex items-center gap-3">
@@ -284,14 +284,14 @@ export default function ArticleDetailPage() {
                   <>
                     <AuthorAvatars authors={article.authors} size="lg" />
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 dark:text-white">
                         {article.authors.length === 1
                           ? article.authors[0].name
                           : article.authors.length === 2
                           ? `${article.authors[0].name} ו${article.authors[1].name}`
                           : `${article.authors[0].name} ועוד ${article.authors.length - 1}`}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(article.createdAt)}
                       </p>
                     </div>
@@ -308,10 +308,10 @@ export default function ArticleDetailPage() {
                       />
                     )}
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-gray-900 dark:text-white">
                         {article.publisherName || t("articleCard.authorAnonymous")}
                       </p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(article.createdAt)}
                       </p>
                     </div>
@@ -321,7 +321,7 @@ export default function ArticleDetailPage() {
             </div>
 
             <div className="text-right">
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {article.readTime} {t("articleCard.minRead")}
               </p>
               {article.categories && article.categories.length > 0 ? (
@@ -329,14 +329,14 @@ export default function ArticleDetailPage() {
                   {article.categories.map((cat) => (
                     <span
                       key={cat.id}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300"
                     >
                       {cat.name}
                     </span>
                   ))}
                 </div>
               ) : article.category ? (
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mt-1">
+                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300 mt-1">
                   {article.category.name}
                 </span>
               ) : null}
@@ -366,29 +366,29 @@ export default function ArticleDetailPage() {
             <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
               <RichContent
                 content={article.content.slice(0, 500) + "..."}
-                className="text-gray-800"
+                className="text-gray-800 dark:text-gray-200"
               />
             </div>
           }
         >
           <div dir={article.direction || (locale === "en" ? "ltr" : "rtl")}>
-            <RichContent content={article.content} className="text-gray-800" />
+            <RichContent content={article.content} className="text-gray-800 dark:text-gray-200" />
           </div>
         </PremiumGate>
 
         {}
-        <footer className="mt-12 pt-8 border-t border-gray-200">
+        <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
           {}
           {article.tags && article.tags.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">
+              <h3 className="text-sm font-medium text-gray-900 dark:text-white mb-2">
                 {t("articleDetail.tagsTitle")}
               </h3>
               <div className="flex flex-wrap gap-2">
                 {article.tags.map((tag) => (
                   <span
                     key={tag.id}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300"
                   >
                     {tag.name}
                   </span>
@@ -398,16 +398,16 @@ export default function ArticleDetailPage() {
           )}
 
           {}
-          <div className="bg-gray-50 rounded-lg p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
             <div className="flex items-start gap-4">
               {article.authors && article.authors.length > 0 ? (
                 <>
                   <AuthorAvatars authors={article.authors} size="lg" />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {article.authors.map(a => a.name).join(", ")}
                     </h3>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                       {t("articleDetail.copyleftNote")}
                     </p>
                   </div>
@@ -424,12 +424,12 @@ export default function ArticleDetailPage() {
                     />
                   )}
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {article.author?.name ||
                         article.publisherName ||
                         t("articleCard.authorAnonymous")}
                     </h3>
-                    <p className="text-gray-600 mt-1">
+                    <p className="text-gray-600 dark:text-gray-400 mt-1">
                       {t("articleDetail.copyleftNote")}
                     </p>
                   </div>
@@ -442,7 +442,7 @@ export default function ArticleDetailPage() {
           <div className="mt-8 flex justify-between">
             <button
               onClick={() => router.push("/articles")}
-              className="text-blue-600 hover:text-blue-800 transition-colors cursor-pointer"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors cursor-pointer"
             >
               ← {t("articleDetail.backToArticles")}
             </button>

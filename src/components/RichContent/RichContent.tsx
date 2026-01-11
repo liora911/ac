@@ -79,6 +79,14 @@ export default function RichContent({
           color: #1d4ed8;
         }
 
+        :global(.dark) .rich-content a {
+          color: #60a5fa;
+        }
+
+        :global(.dark) .rich-content a:hover {
+          color: #93c5fd;
+        }
+
         /* Bullet Lists */
         .rich-content ul {
           list-style-type: disc;
@@ -156,6 +164,11 @@ export default function RichContent({
           border-radius: 0 8px 8px 0;
         }
 
+        :global(.dark) .rich-content blockquote {
+          background: linear-gradient(to right, rgba(59, 130, 246, 0.1), transparent);
+          color: #9ca3af;
+        }
+
         .rich-content blockquote p {
           margin: 0.25em 0;
         }
@@ -177,6 +190,11 @@ export default function RichContent({
           background: linear-gradient(to left, #eff6ff, transparent);
         }
 
+        :global(.dark) .rich-content[dir="rtl"] blockquote,
+        :global(.dark) [dir="rtl"] .rich-content blockquote {
+          background: linear-gradient(to left, rgba(59, 130, 246, 0.1), transparent);
+        }
+
         /* Inline Code */
         .rich-content code {
           background: #f3f4f6;
@@ -186,6 +204,11 @@ export default function RichContent({
             monospace;
           font-size: 0.875em;
           color: #e11d48;
+        }
+
+        :global(.dark) .rich-content code {
+          background: #374151;
+          color: #f472b6;
         }
 
         /* Code Blocks */
@@ -200,6 +223,10 @@ export default function RichContent({
             monospace;
           font-size: 0.875em;
           line-height: 1.6;
+        }
+
+        :global(.dark) .rich-content pre {
+          background: #111827;
         }
 
         .rich-content pre code {
@@ -225,13 +252,26 @@ export default function RichContent({
           text-align: left;
         }
 
+        :global(.dark) .rich-content table th,
+        :global(.dark) .rich-content table td {
+          border-color: #4b5563;
+        }
+
         .rich-content table th {
           background: #f9fafb;
           font-weight: 600;
         }
 
+        :global(.dark) .rich-content table th {
+          background: #374151;
+        }
+
         .rich-content table tr:hover {
           background: #f9fafb;
+        }
+
+        :global(.dark) .rich-content table tr:hover {
+          background: #374151;
         }
 
         /* Images */
@@ -256,6 +296,10 @@ export default function RichContent({
           border: none;
           border-top: 2px solid #e5e7eb;
           margin: 2em 0;
+        }
+
+        :global(.dark) .rich-content hr {
+          border-top-color: #4b5563;
         }
 
         /* Text Alignment */
