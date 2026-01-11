@@ -53,106 +53,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    if (searchTerm === "") {
-      // When no search query, return recent items from each category (5 each)
-      const [articles, presentations, events, lectures] = await Promise.all([
-        prisma.article.findMany({
-          where: {
-            published: true,
-          },
-          select: {
-            id: true,
-            title: true,
-            content: true,
-            createdAt: true,
-            updatedAt: true,
-            isPremium: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-          orderBy: { updatedAt: "desc" },
-          take: 5,
-        }),
-        prisma.presentation.findMany({
-          where: {
-            published: true,
-          },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            createdAt: true,
-            updatedAt: true,
-            isPremium: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-          orderBy: { updatedAt: "desc" },
-          take: 5,
-        }),
-        prisma.event.findMany({
-          where: {
-            published: true,
-          },
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            eventDate: true,
-            location: true,
-            createdAt: true,
-            updatedAt: true,
-          },
-          orderBy: { eventDate: "desc" },
-          take: 5,
-        }),
-        prisma.lecture.findMany({
-          select: {
-            id: true,
-            title: true,
-            description: true,
-            date: true,
-            createdAt: true,
-            updatedAt: true,
-            isPremium: true,
-            category: {
-              select: {
-                id: true,
-                name: true,
-              },
-            },
-          },
-          orderBy: { createdAt: "desc" },
-          take: 5,
-        }),
-      ]);
-
-      const total =
-        articles.length +
-        presentations.length +
-        events.length +
-        lectures.length;
-
+    // Require minimum 2 characters for search - return empty results for short/empty queries
+    if (searchTerm.length < 2) {
       return NextResponse.json(
         {
-          articles,
-          presentations,
-          events,
-          lectures,
-          total,
+          articles: [],
+          presentations: [],
+          events: [],
+          lectures: [],
+          total: 0,
           query: searchTerm,
         },
         {
           headers: {
-            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+            "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600",
           },
         }
       );
