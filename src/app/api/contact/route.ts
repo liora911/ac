@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
+import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Rate limiting - 5 requests per 15 minutes per IP
+    const ip = getClientIP(request);
+    const rateLimitResult = rateLimiters.contact(ip);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Too many messages sent. Please wait before sending another.",
+          retryAfter: Math.ceil(rateLimitResult.resetIn / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil(rateLimitResult.resetIn / 1000)),
+          },
+        }
+      );
+    }
+
     const { name, email, subject, message } = await request.json();
 
     if (!name || !email || !subject || !message) {

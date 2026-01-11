@@ -1,6 +1,7 @@
 import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { APP_NAVIGATION_MAP } from "@/constants/AppNavigationMap";
+import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
 
 export const maxDuration = 30;
 
@@ -167,6 +168,26 @@ This site contains the professor's academic work:
 
 export async function POST(req: Request) {
   try {
+    // Rate limiting - 10 requests per minute per IP
+    const ip = getClientIP(req);
+    const rateLimitResult = rateLimiters.assistant(ip);
+
+    if (!rateLimitResult.success) {
+      return new Response(
+        JSON.stringify({
+          error: "Too many requests. Please wait a moment before trying again.",
+          retryAfter: Math.ceil(rateLimitResult.resetIn / 1000),
+        }),
+        {
+          status: 429,
+          headers: {
+            "Content-Type": "application/json",
+            "Retry-After": String(Math.ceil(rateLimitResult.resetIn / 1000)),
+          },
+        }
+      );
+    }
+
     const { messages, isAdmin } = await req.json();
 
     if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
