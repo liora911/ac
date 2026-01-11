@@ -60,9 +60,22 @@ function SearchPageContent() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [modalLoading, setModalLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Safely strip HTML using DOM parser (secure against XSS)
   const stripHtml = (html: string) => {
-    return html.replace(/<[^>]*>/g, "");
+    if (typeof window === "undefined") {
+      // Server-side fallback: remove tags and decode common entities
+      return html
+        .replace(/<[^>]*>/g, "")
+        .replace(/&nbsp;/g, " ")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"');
+    }
+    const doc = new DOMParser().parseFromString(html, "text/html");
+    return doc.body.textContent || "";
   };
 
   useEffect(() => {
@@ -75,6 +88,7 @@ function SearchPageContent() {
 
   const performSearch = async (searchQuery: string) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(
         `/api/search?q=${encodeURIComponent(searchQuery)}`
@@ -82,9 +96,15 @@ function SearchPageContent() {
       if (response.ok) {
         const data = await response.json();
         setResults(data);
+      } else if (response.status === 429) {
+        const data = await response.json();
+        setError(t("searchPage.rateLimited") || "Too many requests. Please wait a moment.");
+      } else {
+        setError(t("searchPage.searchError") || "Search failed. Please try again.");
       }
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(t("searchPage.searchError") || "Search failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -253,9 +273,15 @@ function SearchPageContent() {
           </form>
         </div>
 
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
         {isLoading && (
-          <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <div className="text-center py-12" role="status" aria-live="polite">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" aria-hidden="true"></div>
             <p className="text-gray-600">{t("searchPage.searching")}</p>
           </div>
         )}

@@ -16,6 +16,7 @@ export default function GlobalSearch() {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<CategoryType>("all");
+  const [error, setError] = useState<string | null>(null);
   const searchRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const tabsRef = useRef<HTMLDivElement>(null);
@@ -99,6 +100,7 @@ export default function GlobalSearch() {
 
   const performSearch = async (searchQuery: string) => {
     setIsLoading(true);
+    setError(null);
     try {
       const response = await fetch(
         `/api/search?q=${encodeURIComponent(searchQuery)}`
@@ -107,9 +109,17 @@ export default function GlobalSearch() {
         const data = await response.json();
         setResults(data);
         setIsOpen(true);
+      } else if (response.status === 429) {
+        setError(t("globalSearch.rateLimited") || "Too many requests. Please wait.");
+        setIsOpen(true);
+      } else {
+        setError(t("globalSearch.error") || "Search failed.");
+        setIsOpen(true);
       }
-    } catch (error) {
-      console.error("Search error:", error);
+    } catch (err) {
+      console.error("Search error:", err);
+      setError(t("globalSearch.error") || "Search failed.");
+      setIsOpen(true);
     } finally {
       setIsLoading(false);
     }
@@ -236,21 +246,25 @@ export default function GlobalSearch() {
         )}
       </div>
 
-      {isOpen && results && (
+      {isOpen && (results || error) && (
         <div
           className="absolute z-[60] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden"
           role="listbox"
         >
           {isLoading ? (
-            <div className="p-4 text-center text-gray-500 dark:text-gray-400">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2"></div>
+            <div className="p-4 text-center text-gray-500 dark:text-gray-400" role="status" aria-live="polite">
+              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500 mx-auto mb-2" aria-hidden="true"></div>
               {t("globalSearch.searching") || "Searching..."}
             </div>
-          ) : results.total === 0 ? (
+          ) : error ? (
+            <div className="p-4 text-center text-red-500 dark:text-red-400">
+              {error}
+            </div>
+          ) : results && results.total === 0 ? (
             <div className="p-4 text-center text-gray-500 dark:text-gray-400">
               {t("globalSearch.noResults") || "No results found for"} "{results.query}"
             </div>
-          ) : (
+          ) : results ? (
             <div className="flex flex-col">
               {/* Scrollable Tabs */}
               <div
@@ -333,7 +347,7 @@ export default function GlobalSearch() {
                 </button>
               </div>
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>
