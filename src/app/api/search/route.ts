@@ -1,8 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
+import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
 
 export async function GET(request: NextRequest) {
   try {
+    // Rate limiting - 30 requests per minute per IP
+    const ip = getClientIP(request);
+    const rateLimitResult = rateLimiters.search(ip);
+
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        {
+          error: "Too many search requests. Please slow down.",
+          retryAfter: Math.ceil(rateLimitResult.resetIn / 1000),
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": String(Math.ceil(rateLimitResult.resetIn / 1000)),
+          },
+        }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const query = searchParams.get("q");
 
