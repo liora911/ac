@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Grid3X3, List, Tag, X, Star } from "lucide-react";
+import { Grid3X3, List, Tag, X, Star, ArrowUpDown } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
 
@@ -66,8 +66,30 @@ export default function ArticlesList({
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
 
+  // Sort state - combined sortBy and sortOrder for easier dropdown handling
+  type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
+  const [sortOption, setSortOption] = useState<SortOption>("newest");
+
+  // Map sort option to sortBy and sortOrder params
+  const getSortParams = (option: SortOption) => {
+    switch (option) {
+      case "newest":
+        return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
+      case "oldest":
+        return { sortBy: "createdAt" as const, sortOrder: "asc" as const };
+      case "title-asc":
+        return { sortBy: "title" as const, sortOrder: "asc" as const };
+      case "title-desc":
+        return { sortBy: "title" as const, sortOrder: "desc" as const };
+      default:
+        return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
+    }
+  };
+
   // Debounce search query to prevent API call on every keystroke
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 350);
+
+  const { sortBy, sortOrder } = getSortParams(sortOption);
 
   const {
     data: articlesData,
@@ -80,6 +102,8 @@ export default function ArticlesList({
         limit: initialLimit,
         categoryId: selectedCategory || undefined,
         status: statusFilter || undefined,
+        sortBy,
+        sortOrder,
       })
     : useArticles({
         page: currentPage,
@@ -87,6 +111,8 @@ export default function ArticlesList({
         categoryId: selectedCategory || undefined,
         status: statusFilter || undefined,
         featured: featuredOnly || undefined,
+        sortBy,
+        sortOrder,
       });
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
@@ -107,6 +133,11 @@ export default function ArticlesList({
 
   const handleStatusChange = (status: StatusFilter) => {
     setStatusFilter(status);
+    setCurrentPage(1);
+  };
+
+  const handleSortChange = (sort: SortOption) => {
+    setSortOption(sort);
     setCurrentPage(1);
   };
 
@@ -198,45 +229,62 @@ export default function ArticlesList({
               </select>
             </div>
 
-            {}
-            {
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("articleForm.statusLabel")}
-                </label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) =>
-                    handleStatusChange(e.target.value as StatusFilter)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">{t("articleForm.allStatus")}</option>
-                  <option value="PUBLISHED">
-                    {t("articleForm.statusPublished")}
-                  </option>
-                  <option value="DRAFT">{t("articleForm.statusDraft")}</option>
-                  <option value="ARCHIVED">
-                    {t("articleForm.statusArchived")}
-                  </option>
-                </select>
-              </div>
-            }
+            {/* Status Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {t("articleForm.statusLabel")}
+              </label>
+              <select
+                value={statusFilter}
+                onChange={(e) =>
+                  handleStatusChange(e.target.value as StatusFilter)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">{t("articleForm.allStatus")}</option>
+                <option value="PUBLISHED">
+                  {t("articleForm.statusPublished")}
+                </option>
+                <option value="DRAFT">{t("articleForm.statusDraft")}</option>
+                <option value="ARCHIVED">
+                  {t("articleForm.statusArchived")}
+                </option>
+              </select>
+            </div>
+          </div>
 
-            {}
-            <div className="flex items-end">
-              <div className="text-sm text-gray-600">
-                {isLoading ? (
-                  t("loading")
-                ) : (
-                  <>
-                    {t("articlesPage.articlesFound").replace(
-                      "{total}",
-                      total.toString()
-                    )}
-                  </>
-                )}
-              </div>
+          {/* Sort and Results Count Row */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            {/* Sort Dropdown */}
+            <div className="flex items-center gap-2">
+              <ArrowUpDown className="w-4 h-4 text-gray-500" />
+              <label className="text-sm font-medium text-gray-700">
+                {t("articlesPage.sortBy") || "Sort by:"}
+              </label>
+              <select
+                value={sortOption}
+                onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="newest">{t("articlesPage.sortNewest") || "Newest first"}</option>
+                <option value="oldest">{t("articlesPage.sortOldest") || "Oldest first"}</option>
+                <option value="title-asc">{t("articlesPage.sortTitleAZ") || "Title A-Z"}</option>
+                <option value="title-desc">{t("articlesPage.sortTitleZA") || "Title Z-A"}</option>
+              </select>
+            </div>
+
+            {/* Results Count */}
+            <div className="text-sm text-gray-600">
+              {isLoading ? (
+                t("loading")
+              ) : (
+                <>
+                  {t("articlesPage.articlesFound").replace(
+                    "{total}",
+                    total.toString()
+                  )}
+                </>
+              )}
             </div>
           </div>
 

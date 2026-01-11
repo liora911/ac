@@ -190,7 +190,12 @@
     "createArticleDescription": "Share your knowledge and insights with the community.",
     "quickFilters": "Quick filters:",
     "activeFilters": "Active filters:",
-    "clearAllFilters": "Clear all"
+    "clearAllFilters": "Clear all",
+    "sortBy": "Sort by:",
+    "sortNewest": "Newest first",
+    "sortOldest": "Oldest first",
+    "sortTitleAZ": "Title A-Z",
+    "sortTitleZA": "Title Z-A"
   },
   "articleForm": {
     "createArticleButton": "Create Article",

@@ -198,6 +198,11 @@
     "createArticleButton": "צור מאמר",
     "createArticleDescription": "שתף את הידע והתובנות שלך עם הקהילה.",
     "quickFilters": "סינון מהיר:",
+    "sortBy": "מיין לפי:",
+    "sortNewest": "החדשים ביותר",
+    "sortOldest": "הישנים ביותר",
+    "sortTitleAZ": "כותרת א-ת",
+    "sortTitleZA": "כותרת ת-א",
     "activeFilters": "מסננים פעילים:",
     "clearAllFilters": "נקה הכל"
   },
