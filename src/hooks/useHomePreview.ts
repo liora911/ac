@@ -51,7 +51,7 @@ export function useHomePreview() {
   return useQuery<HomePreviewData, Error>({
     queryKey: homePreviewKeys.all,
     queryFn: async () => {
-      const response = await fetch("/api/search?q=");
+      const response = await fetch("/api/home-preview");
       if (!response.ok) {
         throw new Error("Failed to fetch home preview data");
       }

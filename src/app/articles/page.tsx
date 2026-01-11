@@ -34,9 +34,6 @@ export default function ArticlesPage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-[300px] flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
-              {t("articlesPage.title")}
-            </h1>
             <p
               className="text-xl text-white max-w-3xl mx-auto"
               style={{ textShadow: "1px 1px 3px rgba(0,0,0,0.8)" }}

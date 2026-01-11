@@ -176,9 +176,8 @@ export default function GlobalSearch() {
   const handleInputFocus = () => {
     if (results) {
       setIsOpen(true);
-    } else {
-      performSearch("");
     }
+    // Don't auto-search on focus - wait for user to type at least 2 characters
   };
 
   const clearSearch = () => {
