@@ -6,7 +6,10 @@ import { NextRequest } from "next/server";
 const handler = NextAuth(authOptions);
 
 // Wrap POST handler with rate limiting for login attempts
-async function rateLimitedPOST(request: NextRequest) {
+async function rateLimitedPOST(
+  request: NextRequest,
+  context: { params: Promise<{ nextauth: string[] }> }
+) {
   const ip = getClientIP(request);
   const rateLimitResult = rateLimiters.auth(ip);
 
@@ -25,7 +28,7 @@ async function rateLimitedPOST(request: NextRequest) {
     );
   }
 
-  return handler(request);
+  return handler(request, context);
 }
 
 export { handler as GET, rateLimitedPOST as POST };
