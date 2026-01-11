@@ -558,6 +558,10 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   // Check if user has premium access
   const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
 
+  // Default fallback image for articles without a featured image
+  const DEFAULT_ARTICLE_IMAGE = "/articleCard.avif";
+  const displayImage = article.featuredImage || DEFAULT_ARTICLE_IMAGE;
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString(dateLocale, {
       year: "numeric",
@@ -580,86 +584,79 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   };
 
   return (
-    <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative ${
+    <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative flex flex-col ${
       hasAccess ? "hover:shadow-md" : ""
     }`}>
       {/* Overlay for non-accessible premium content */}
       {!hasAccess && (
         <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
       )}
-      {}
-      {article.featuredImage && (
-        <div className={`relative h-48 overflow-hidden ${!hasAccess ? "grayscale-[30%]" : ""}`}>
+
+      {/* Top Section: Image with Title Overlay */}
+      <Link href={`/articles/${article.id}`} className="block relative">
+        <div className={`relative h-52 overflow-hidden ${!hasAccess ? "grayscale-[30%]" : ""}`}>
           <Image
-            src={article.featuredImage}
+            src={displayImage}
             alt={article.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
+          {/* Dark gradient overlay for text readability */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+          {/* Featured badge */}
           {article.isFeatured && (
-            <div className="absolute top-2 left-2 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
+            <div className="absolute top-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
               {t("articleCard.featured")}
             </div>
           )}
+
+          {/* Status badge for authorized users */}
+          {isAuthorized && (
+            <div className="absolute top-3 left-3">
+              <span
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                  article.status
+                )}`}
+              >
+                {article.status}
+              </span>
+            </div>
+          )}
+
           {/* Favorite Button */}
-          <div className="absolute top-2 right-2 z-10">
+          <div className="absolute top-3 right-3 z-10">
             <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
           </div>
-        </div>
-      )}
 
-      {}
-      <div className="p-6">
-        <div className="flex items-start justify-between gap-2">
-          <div className="flex-1">
-            {isAuthorized && (
-              <div className="mb-2">
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                    article.status
-                  )}`}
-                >
-                  {article.status}
-                </span>
-              </div>
-            )}
+          {/* Title overlaid on image */}
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <h3 className="text-lg font-semibold text-white line-clamp-2 drop-shadow-md">
+              {article.title}
+            </h3>
           </div>
-          {/* Favorite button for cards without image */}
-          {!article.featuredImage && (
-            <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
-          )}
         </div>
+      </Link>
 
-        {}
-        <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
-          <Link
-            href={`/articles/${article.id}`}
-            className="hover:text-blue-600 transition-colors cursor-pointer"
-          >
-            {article.title}
-          </Link>
-        </h3>
+      {/* Bottom Section: Metadata on white background */}
+      <div className="p-4 flex flex-col flex-1">
+        {/* Excerpt if available */}
+        {article.excerpt && (
+          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+            {article.excerpt.replace(/<[^>]*>?/gm, "")}
+          </p>
+        )}
 
-        {}
-        <div className="mb-4">
-          {/* <span className="text-xs font-medium text-gray-500 uppercase tracking-wide">
-            {t("articleForm.excerptLabel")}
-          </span> */}
-          {article.excerpt && (
-            <p className="text-gray-600 text-sm mt-1 line-clamp-3">
-              {article.excerpt.replace(/<[^>]*>?/gm, "")}
-            </p>
-          )}
-        </div>
+        {/* Spacer to push metadata to bottom */}
+        <div className="flex-1" />
 
-        {/* Author(s) and Meta Info */}
-        <div className="flex items-center justify-between text-sm text-gray-500">
+        {/* Author(s) and Read Time */}
+        <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
           <div className="flex items-center gap-2">
             {article.authors && article.authors.length > 0 ? (
               <AuthorAvatars authors={article.authors} size="sm" />
             ) : (
-              // Fallback for articles without the new authors array
               <div className="flex items-center space-x-2">
                 {article.author?.image && (
                   <Image
@@ -669,37 +666,35 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
                       article.publisherName ||
                       (t("articleCard.authorAnonymous") as string)
                     }
-                    width={24}
-                    height={24}
+                    width={20}
+                    height={20}
                     className="rounded-full"
                   />
                 )}
-                <span>{article.publisherName || article.author?.name}</span>
+                <span className="truncate max-w-[100px]">{article.publisherName || article.author?.name}</span>
               </div>
             )}
           </div>
-          <div className="flex items-center space-x-4">
-            <span>
-              {article.readTime} {t("articleCard.minRead")}
-            </span>
-            <span>{formatDate(article.createdAt)}</span>
-          </div>
+          <span className="flex-shrink-0">
+            {article.readTime} {t("articleCard.minRead")}
+          </span>
         </div>
 
-        {}
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex flex-wrap gap-1">
-            {article.categories && article.categories.length > 0 ? (
-              article.categories.map((cat) => (
+        {/* Date, Categories, and Premium indicator */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
+            <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(article.createdAt)}</span>
+            {(article.categories && article.categories.length > 0) ? (
+              article.categories.slice(0, 1).map((cat) => (
                 <span
                   key={cat.id}
-                  className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 truncate max-w-[80px]"
                 >
                   {cat.name}
                 </span>
               ))
             ) : article.category ? (
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 truncate max-w-[80px]">
                 {article.category.name}
               </span>
             ) : null}
@@ -707,8 +702,8 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           {/* Premium star indicator */}
           {article.isPremium && (
             hasAccess ? (
-              <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+              <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
               </div>
             ) : (
               <button
