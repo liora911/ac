@@ -7,7 +7,6 @@ import { Check, Sparkles, ArrowRight, Heart, BookOpen, Video, FileText } from "l
 import { Suspense } from "react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
-import SocialProof from "@/components/SocialProof";
 
 function PricingContent() {
   const { data: session, status } = useSession();
@@ -96,13 +95,9 @@ function PricingContent() {
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
             {t("pricing.title")}
           </h1>
-          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto mb-4">
+          <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             {t("pricing.subtitle")}
           </p>
-          {/* Social proof banner */}
-          <div className="flex justify-center">
-            <SocialProof variant="banner" />
-          </div>
         </div>
 
         {/* Support Research Message */}

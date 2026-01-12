@@ -4,8 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Lock, Sparkles, Crown, Star, Users } from "lucide-react";
-import SocialProof from "@/components/SocialProof";
+import { Lock, Sparkles, Crown } from "lucide-react";
 
 interface PremiumGateProps {
   isPremium: boolean;
@@ -91,11 +90,6 @@ export default function PremiumGate({
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             {t("premiumTeaser.benefit3")}
           </span>
-        </div>
-
-        {/* Social proof */}
-        <div className="mb-6">
-          <SocialProof variant="badge" />
         </div>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
