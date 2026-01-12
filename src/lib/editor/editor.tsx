@@ -401,11 +401,19 @@ export default function TiptapEditor({
                 </div>
               }
             >
-              {["1", "1.25", "1.5", "1.75", "2", "2.5"].map((height) => (
+              {["0.8", "0.9", "1", "1.15", "1.25", "1.5", "1.75", "2", "2.5"].map((height) => (
                 <DropdownItem
                   key={height}
                   onClick={() => editor.chain().focus().setLineHeight(height).run()}
-                  label={height === "1" ? "Single" : height === "1.5" ? "1.5 Lines" : height === "2" ? "Double" : height}
+                  label={
+                    height === "0.8" ? "Tight (0.8)" :
+                    height === "0.9" ? "Compact (0.9)" :
+                    height === "1" ? "Single" :
+                    height === "1.15" ? "Normal (1.15)" :
+                    height === "1.5" ? "1.5 Lines" :
+                    height === "2" ? "Double" :
+                    height
+                  }
                 />
               ))}
               <DropdownItem
