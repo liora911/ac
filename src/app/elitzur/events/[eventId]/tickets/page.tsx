@@ -216,14 +216,22 @@ export default function EventTicketsPage({
     }
   };
 
-  // Export to CSV
+  // Export to Excel-compatible CSV
   const exportToCSV = () => {
+    const statusMap: Record<string, string> = {
+      CONFIRMED: t("tickets.statusConfirmed"),
+      PENDING: t("tickets.statusPending"),
+      CANCELLED: t("tickets.statusCancelled"),
+      ATTENDED: t("tickets.statusAttended"),
+    };
+
     const headers = [
       t("admin.tickets.name"),
       t("admin.tickets.email"),
       t("admin.tickets.phone"),
       t("admin.tickets.seats"),
-      t("admin.tickets.status"),
+      t("admin.common.status"),
+      t("admin.tickets.ticketId"),
       t("admin.tickets.notes"),
       t("admin.tickets.reservedOn"),
     ];
@@ -231,27 +239,31 @@ export default function EventTicketsPage({
     const rows = filteredTickets.map((ticket) => [
       ticket.holderName,
       ticket.holderEmail,
-      ticket.holderPhone || "",
+      ticket.holderPhone || "-",
       ticket.numberOfSeats.toString(),
-      ticket.status,
-      ticket.notes || "",
-      new Date(ticket.createdAt).toLocaleDateString(),
+      statusMap[ticket.status] || ticket.status,
+      ticket.id,
+      ticket.notes || "-",
+      new Date(ticket.createdAt).toLocaleDateString("he-IL"),
     ]);
 
-    const csvContent = [
-      headers.join(","),
+    // Use tab separator for better Excel compatibility
+    const tsvContent = [
+      headers.join("\t"),
       ...rows.map((row) =>
-        row.map((cell) => `"${cell.replace(/"/g, '""')}"`).join(",")
+        row.map((cell) => cell.replace(/\t/g, " ").replace(/\n/g, " ")).join("\t")
       ),
     ].join("\n");
 
-    const blob = new Blob(["\uFEFF" + csvContent], {
-      type: "text/csv;charset=utf-8;",
+    // BOM for UTF-8 Hebrew support
+    const blob = new Blob(["\uFEFF" + tsvContent], {
+      type: "text/tab-separated-values;charset=utf-8;",
     });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `tickets-${event?.title || eventId}-${new Date().toISOString().split("T")[0]}.csv`;
+    const eventName = event?.title?.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, "_") || eventId;
+    link.download = `tickets-${eventName}-${new Date().toISOString().split("T")[0]}.xls`;
     link.click();
     URL.revokeObjectURL(url);
   };

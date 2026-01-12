@@ -491,6 +491,7 @@
     "reserveTicket": "שריון מקום",
     "ticketSummary": "כרטיס",
     "tickets": "כרטיסים",
+    "myTickets": "הכרטיסים שלי",
     "favorites": "המועדפים שלי"
   },
   "editEventPage": {
@@ -698,7 +699,7 @@
     "namePlaceholder": "הכנס את שמך המלא",
     "emailLabel": "כתובת אימייל",
     "emailPlaceholder": "your@email.com",
-    "phoneLabel": "טלפון (אופציונלי)",
+    "phoneLabel": "טלפון",
     "phonePlaceholder": "מספר טלפון ליצירת קשר",
     "seatsLabel": "מספר מקומות",
     "notesLabel": "הערות (אופציונלי)",
@@ -912,6 +913,7 @@
       "notes": "הערות",
       "reservedOn": "תאריך הזמנה",
       "noTicketsFound": "לא נמצאו כרטיסים לאירוע זה.",
+      "ticketId": "מספר כרטיס",
       "checkIn": "צ'ק-אין",
       "checkedIn": "עשה צ'ק-אין",
       "checkedInLabel": "הגיע",

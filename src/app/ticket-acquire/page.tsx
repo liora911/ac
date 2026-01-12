@@ -100,8 +100,14 @@ function TicketAcquireContent() {
 
     if (!formData.holderPhone.trim()) {
       errors.holderPhone = t("tickets.phoneRequired");
-    } else if (!/^[\d\s\-+()]+$/.test(formData.holderPhone)) {
-      errors.holderPhone = t("tickets.phoneInvalid");
+    } else {
+      // Extract only digits for validation
+      const digitsOnly = formData.holderPhone.replace(/[\s\-+()]/g, "");
+      // Check if valid format and not fake (all same digit or sequential)
+      const isFakeNumber = /^(\d)\1+$/.test(digitsOnly) || /^0{7,}$/.test(digitsOnly);
+      if (!/^[\d\s\-+()]+$/.test(formData.holderPhone) || digitsOnly.length < 9 || isFakeNumber) {
+        errors.holderPhone = t("tickets.phoneInvalid");
+      }
     }
 
     if (formData.numberOfSeats < 1 || formData.numberOfSeats > 4) {

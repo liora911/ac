@@ -37,7 +37,17 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!holderPhone || holderPhone.trim().length < 9) {
+    if (!holderPhone) {
+      return NextResponse.json(
+        { error: "Phone number is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate phone: extract digits, check length and reject fake numbers
+    const phoneDigits = holderPhone.replace(/[\s\-+()]/g, "");
+    const isFakePhone = /^(\d)\1+$/.test(phoneDigits) || /^0{7,}$/.test(phoneDigits);
+    if (phoneDigits.length < 9 || isFakePhone) {
       return NextResponse.json(
         { error: "Valid phone number is required" },
         { status: 400 }
