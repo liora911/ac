@@ -15,9 +15,9 @@ import {
   Presentation,
   ChevronDown,
   ChevronUp,
-  Star,
 } from "lucide-react";
 import ContentCard from "./ContentCard";
+import PremiumBadge from "@/components/PremiumBadge";
 import type { ContentItem } from "./ContentCard";
 import RichContent from "@/components/RichContent";
 
@@ -92,8 +92,8 @@ const Home = () => {
           )}
         </div>
         {item.isPremium && (
-          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          <div className="flex-shrink-0 ms-2">
+            <PremiumBadge size="sm" />
           </div>
         )}
       </Link>
@@ -117,8 +117,8 @@ const Home = () => {
           )}
         </div>
         {item.isPremium && (
-          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          <div className="flex-shrink-0 ms-2">
+            <PremiumBadge size="sm" />
           </div>
         )}
       </Link>
@@ -160,8 +160,8 @@ const Home = () => {
           )}
         </div>
         {item.isPremium && (
-          <div className="w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0 ms-2">
-            <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
+          <div className="flex-shrink-0 ms-2">
+            <PremiumBadge size="sm" />
           </div>
         )}
       </Link>

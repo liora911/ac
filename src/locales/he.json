@@ -1123,6 +1123,16 @@
     "minRead": "דק'",
     "slides": "שקפים"
   },
+  "premiumBadge": {
+    "title": "תוכן פרימיום",
+    "description": "תוכן זה זמין למנויי תוכנית חוקר בלבד",
+    "clickToSubscribe": "לחץ להרשמה",
+    "subscriberTitle": "יש לך גישה!",
+    "subscriberMessage": "אתה נהנה מגישה מלאה לתוכן פרימיום",
+    "subscriberAccess": "יש לך גישה לתוכן זה",
+    "exclusiveContent": "תוכן בלעדי למנויים",
+    "ariaLabel": "תוכן פרימיום - לחץ להרשמה למנוי"
+  },
   "pricing": {
     "title": "מנוי חוקר",
     "subtitle": "קבל גישה לכל התכנים הפרימיום - מאמרים, הרצאות ומצגות בלעדיות",

@@ -7,7 +7,8 @@ import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
-import { Clock, Calendar, Share2, Play, Link2, Check, Mail, Star } from "lucide-react";
+import { Clock, Calendar, Share2, Play, Link2, Check, Mail } from "lucide-react";
+import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
 
@@ -48,7 +49,6 @@ const LectureCard: React.FC<LectureCardProps> = ({
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [lectureUrl, setLectureUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [isStarHovered, setIsStarHovered] = useState(false);
   const { showSuccess, showError } = useNotification();
   const { t } = useTranslation();
   const { data: session } = useSession();
@@ -197,34 +197,8 @@ const LectureCard: React.FC<LectureCardProps> = ({
         >
           <Play className="w-4 h-4 fill-current" />
         </button>
-        {/* Premium star indicator - shown for premium content */}
-        {lecture.isPremium && (
-          hasAccess ? (
-            // Subscriber/Admin: filled yellow star, not clickable
-            <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-              <Star className="w-5 h-5 text-amber-500 fill-amber-500" />
-            </div>
-          ) : (
-            // Non-subscriber: empty star, fills on hover, clicks to pricing
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                router.push("/pricing");
-              }}
-              onMouseEnter={() => setIsStarHovered(true)}
-              onMouseLeave={() => setIsStarHovered(false)}
-              className="w-10 h-10 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer"
-              aria-label="תוכן פרימיום - הרשם למנוי"
-              title="תוכן פרימיום - לחץ להרשמה"
-            >
-              <Star className={`w-5 h-5 transition-all ${
-                isStarHovered
-                  ? "text-amber-500 fill-amber-500"
-                  : "text-amber-400"
-              }`} />
-            </button>
-          )
-        )}
+        {/* Premium badge indicator */}
+        {lecture.isPremium && <PremiumBadge size="md" />}
       </div>
 
       <Modal

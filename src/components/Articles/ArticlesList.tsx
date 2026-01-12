@@ -17,6 +17,7 @@ import Modal from "@/components/Modal/Modal";
 import { Grid3X3, List, Tag, X, Star, ArrowUpDown } from "lucide-react";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
+import PremiumBadge from "@/components/PremiumBadge";
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -552,7 +553,6 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   const { t, locale } = useTranslation();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
-  const [isStarHovered, setIsStarHovered] = useState(false);
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   // Check if user has premium access
@@ -699,33 +699,8 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
               </span>
             ) : null}
           </div>
-          {/* Premium star indicator */}
-          {article.isPremium && (
-            hasAccess ? (
-              <div className="w-7 h-7 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
-                <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-              </div>
-            ) : (
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  router.push("/pricing");
-                }}
-                onMouseEnter={() => setIsStarHovered(true)}
-                onMouseLeave={() => setIsStarHovered(false)}
-                className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10 flex-shrink-0"
-                aria-label="תוכן פרימיום - הרשם למנוי"
-                title="תוכן פרימיום - לחץ להרשמה"
-              >
-                <Star className={`w-4 h-4 transition-all ${
-                  isStarHovered
-                    ? "text-amber-500 fill-amber-500"
-                    : "text-amber-400"
-                }`} />
-              </button>
-            )
-          )}
+          {/* Premium badge indicator */}
+          {article.isPremium && <PremiumBadge size="sm" />}
         </div>
       </div>
       {errorModalOpen && (
