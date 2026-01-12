@@ -46,6 +46,8 @@ const STATIC_SEGMENT_KEYS: Record<string, string> = {
   "ticket-summary": "breadcrumbs.ticketSummary",
   tickets: "breadcrumbs.tickets",
   "my-tickets": "breadcrumbs.myTickets",
+  // Account
+  account: "breadcrumbs.account",
 };
 
 // Segments that should NOT be clickable (no page exists at that path)
