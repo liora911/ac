@@ -11,7 +11,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Pencil } from "lucide-react";
 import { track } from "@vercel/analytics";
 
 export default function ArticleDetailPage() {
@@ -235,6 +235,18 @@ export default function ArticleDetailPage() {
       <div className="bg-white dark:bg-gray-800 shadow-sm"></div>
 
       <article className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Admin Edit Button - Fixed position */}
+        {isAuthorized && (
+          <Link
+            href={`/articles/${article.id}/edit`}
+            className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all hover:scale-105"
+            title={t("articleDetail.editButton")}
+          >
+            <Pencil className="w-5 h-5" />
+            <span className="hidden sm:inline font-medium">{t("articleDetail.editButton")}</span>
+          </Link>
+        )}
+
         {}
         <header className="mb-8">
           {}

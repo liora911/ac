@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useMemo } from "react";
 import DOMPurify from "dompurify";
 
 interface RichContentProps {
@@ -12,20 +12,42 @@ export default function RichContent({
   content,
   className = "",
 }: RichContentProps) {
+  // Configure DOMPurify to allow style attributes for formatting
+  const sanitizedContent = useMemo(() => {
+    if (!content) return "";
+
+    return DOMPurify.sanitize(content, {
+      ADD_ATTR: ["style", "dir", "data-type"],
+      ADD_TAGS: ["iframe"],
+      ALLOW_DATA_ATTR: true,
+    });
+  }, [content]);
+
   if (!content) return null;
 
   return (
     <div className={`rich-content ${className}`}>
-      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(content) }} />
+      <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
       <style jsx global>{`
         .rich-content {
-          line-height: 1.7;
           color: inherit;
         }
 
-        /* Paragraphs */
+        /* Paragraphs - only set line-height if not specified inline */
         .rich-content p {
           margin: 0.75em 0;
+          line-height: 1.7;
+        }
+
+        /* Allow inline line-height to override */
+        .rich-content p[style*="line-height"],
+        .rich-content span[style*="line-height"],
+        .rich-content [style*="line-height"] {
+          line-height: inherit !important;
+        }
+
+        .rich-content span[style] {
+          line-height: inherit;
         }
 
         /* Headings */
