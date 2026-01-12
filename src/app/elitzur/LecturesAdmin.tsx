@@ -13,7 +13,7 @@ import { useCategories } from "@/hooks/useArticles";
 import type { Lecture } from "@/types/Lectures/lectures";
 import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
-import { AlertTriangle, Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -245,11 +245,22 @@ export default function LecturesAdmin() {
         </div>
 
         <div
-          className="mt-3 text-xs text-gray-500"
+          className="mt-3 flex items-center justify-between text-xs text-gray-500"
           aria-live="polite"
           aria-atomic="true"
         >
-          {isFetching ? t("admin.common.refreshing") : t("admin.lectures.foundLectures").replace("{count}", String(total))}
+          <span>
+            {isFetching ? t("admin.common.refreshing") : t("admin.lectures.foundLectures").replace("{count}", String(total))}
+          </span>
+          <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="inline-flex items-center gap-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded disabled:opacity-50"
+            title={t("admin.common.refresh")}
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isFetching ? "animate-spin" : ""}`} />
+            {t("admin.common.refresh")}
+          </button>
         </div>
       </div>
 
