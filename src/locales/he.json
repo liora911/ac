@@ -1133,6 +1133,30 @@
     "exclusiveContent": "תוכן בלעדי למנויים",
     "ariaLabel": "תוכן פרימיום - לחץ להרשמה למנוי"
   },
+  "premiumTeaser": {
+    "title": "תוכן פרימיום",
+    "articleDescription": "קרא את המאמר המלא עם מנוי חוקר",
+    "lectureDescription": "צפה בהרצאה המלאה עם מנוי חוקר",
+    "presentationDescription": "הורד את המצגת המלאה עם מנוי חוקר",
+    "benefit1": "מאמרים בלעדיים",
+    "benefit2": "הרצאות מלאות",
+    "benefit3": "תומך במחקר",
+    "subscribeButton": "הירשם עכשיו",
+    "priceHint": "החל מ-₪49/חודש"
+  },
+  "socialProof": {
+    "subscribersCount": "{count} חוקרים כבר הצטרפו",
+    "joinCommunity": "הצטרף לקהילת החוקרים",
+    "trustedBy": "נבחר על ידי חוקרים מובילים"
+  },
+  "premiumGate": {
+    "title": "תוכן פרימיום",
+    "description": "תוכן זה זמין למנויי תוכנית חוקר בלבד.",
+    "loginButton": "התחבר",
+    "subscribeButton": "הירשם עכשיו",
+    "upgradeButton": "שדרג לתוכנית חוקר",
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום."
+  },
   "pricing": {
     "title": "מנוי חוקר",
     "subtitle": "קבל גישה לכל התכנים הפרימיום - מאמרים, הרצאות ומצגות בלעדיות",
