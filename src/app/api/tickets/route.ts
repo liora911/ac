@@ -37,6 +37,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!holderPhone || holderPhone.trim().length < 9) {
+      return NextResponse.json(
+        { error: "Valid phone number is required" },
+        { status: 400 }
+      );
+    }
+
     // Limit seats to maximum of 4
     if (numberOfSeats < 1 || numberOfSeats > 4) {
       return NextResponse.json(

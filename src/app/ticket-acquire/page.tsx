@@ -98,7 +98,9 @@ function TicketAcquireContent() {
       errors.holderEmail = t("tickets.emailInvalid");
     }
 
-    if (formData.holderPhone && !/^[\d\s\-+()]+$/.test(formData.holderPhone)) {
+    if (!formData.holderPhone.trim()) {
+      errors.holderPhone = t("tickets.phoneRequired");
+    } else if (!/^[\d\s\-+()]+$/.test(formData.holderPhone)) {
       errors.holderPhone = t("tickets.phoneInvalid");
     }
 
@@ -501,7 +503,6 @@ function TicketAcquireContent() {
                 >
                   <Phone size={16} className="inline me-2" />
                   {t("tickets.phoneLabel")}
-                  <span className="text-gray-400 ms-1">({t("tickets.optional")})</span>
                 </label>
                 <input
                   type="tel"
@@ -509,6 +510,7 @@ function TicketAcquireContent() {
                   name="holderPhone"
                   value={formData.holderPhone}
                   onChange={handleChange}
+                  required
                   className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all ${
                     formErrors.holderPhone ? "border-red-500" : "border-gray-300"
                   }`}

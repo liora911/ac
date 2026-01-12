@@ -397,7 +397,7 @@ export default function TicketSummaryPage() {
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div className="text-sm text-gray-500">
                   <p>
-                    {t("tickets.ticketId")}: <span className="font-mono">{ticket.id.slice(0, 8)}...</span>
+                    {t("tickets.ticketId")}: <span className="font-mono text-xs break-all">{ticket.id}</span>
                   </p>
                   <p>
                     {t("tickets.reservedOn")}: {formatDateTime(ticket.createdAt)}

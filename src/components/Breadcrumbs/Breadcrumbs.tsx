@@ -44,6 +44,7 @@ const STATIC_SEGMENT_KEYS: Record<string, string> = {
   // Tickets
   "ticket-acquire": "breadcrumbs.reserveTicket",
   "ticket-summary": "breadcrumbs.ticketSummary",
+  tickets: "breadcrumbs.tickets",
 };
 
 // Segments that should NOT be clickable (no page exists at that path)
@@ -115,6 +116,8 @@ export default function Breadcrumbs() {
       ? (pathSegments[1] as string)
       : pathSegments[0] === "edit-event" && !!pathSegments[1]
       ? (pathSegments[1] as string)
+      : pathSegments[0] === "elitzur" && pathSegments[1] === "events" && !!pathSegments[2]
+      ? (pathSegments[2] as string)
       : undefined;
 
   const lectureId =

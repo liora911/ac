@@ -490,6 +490,7 @@
     "search": "חיפוש",
     "reserveTicket": "שריון מקום",
     "ticketSummary": "כרטיס",
+    "tickets": "כרטיסים",
     "favorites": "המועדפים שלי"
   },
   "editEventPage": {
@@ -760,6 +761,7 @@
     "nameMinLength": "שם חייב להכיל לפחות 2 תווים",
     "emailRequired": "כתובת אימייל היא שדה חובה",
     "emailInvalid": "כתובת אימייל לא תקינה",
+    "phoneRequired": "מספר טלפון הוא שדה חובה",
     "phoneInvalid": "מספר טלפון לא תקין",
     "seatsInvalid": "אנא בחר בין 1 ל-10 מקומות",
     "termsRequired": "יש לאשר את התנאים להמשך",
