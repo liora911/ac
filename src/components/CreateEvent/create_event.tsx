@@ -591,7 +591,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               </p>
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="isFeatured"
@@ -600,15 +600,13 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
                 }
-                className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+                className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
               />
-              <label htmlFor="isFeatured" className="cursor-pointer">
-                <span className="text-sm font-medium text-gray-900">
-                  {t("createEvent.isFeaturedLabel")}
+              <label htmlFor="isFeatured" className="cursor-pointer text-sm text-gray-700 rtl">
+                {t("createEvent.isFeaturedLabel")}
+                <span className="text-xs text-gray-500 mr-1">
+                  ({t("createEvent.isFeaturedHelp")})
                 </span>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {t("createEvent.isFeaturedHelp")}
-                </p>
               </label>
             </div>
           </>

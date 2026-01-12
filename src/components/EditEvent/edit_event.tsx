@@ -18,6 +18,7 @@ export default function EditEventForm({
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
   const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
+  const [confirmedTabs, setConfirmedTabs] = useState<Set<1 | 2 | 3>>(new Set());
   const [message, setMessage] = useState<{
     type: "success" | "error";
     text: string;
@@ -47,6 +48,24 @@ export default function EditEventForm({
 
   // Validation for Tab 1 (required fields)
   const isTab1Complete = formData.title.trim() !== "" && formData.eventType !== "" && formData.categoryId !== "" && formData.eventDate !== "";
+
+  const confirmTab = (tab: 1 | 2 | 3) => {
+    setConfirmedTabs((prev) => new Set([...prev, tab]));
+    if (tab < 3) {
+      setActiveTab((tab + 1) as 1 | 2 | 3);
+    }
+  };
+
+  const canAccessTab = (tab: 1 | 2 | 3): boolean => {
+    if (tab === 1) return true;
+    return confirmedTabs.has((tab - 1) as 1 | 2 | 3) || confirmedTabs.has(tab);
+  };
+
+  const handleTabClick = (tab: 1 | 2 | 3) => {
+    if (canAccessTab(tab)) {
+      setActiveTab(tab);
+    }
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -282,25 +301,42 @@ export default function EditEventForm({
       {/* Tab Navigation */}
       <div className="border-b border-gray-200 mb-6">
         <nav className="flex gap-1" aria-label="Tabs">
-          {([1, 2, 3] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
-                activeTab === tab
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-              }`}
-            >
-              {tab === 1 && (t("editEventForm.tabs.basicInfo") as string || "Basic Info")}
-              {tab === 2 && (t("editEventForm.tabs.details") as string || "Details")}
-              {tab === 3 && (t("editEventForm.tabs.settings") as string || "Settings")}
-              {tab === 1 && !isTab1Complete && (
-                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
-              )}
-            </button>
-          ))}
+          {([1, 2, 3] as const).map((tab) => {
+            const isAccessible = canAccessTab(tab);
+            const isConfirmed = confirmedTabs.has(tab);
+            const tabLabels = {
+              1: t("editEventForm.tabs.basicInfo") as string || "Basic Info",
+              2: t("editEventForm.tabs.details") as string || "Details",
+              3: t("editEventForm.tabs.settings") as string || "Settings",
+            };
+            return (
+              <button
+                key={tab}
+                type="button"
+                onClick={() => handleTabClick(tab)}
+                disabled={!isAccessible}
+                className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
+                  !isAccessible
+                    ? "border-transparent text-gray-300 cursor-not-allowed"
+                    : activeTab === tab
+                      ? "border-blue-600 text-blue-600 cursor-pointer"
+                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  {isConfirmed && (
+                    <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  )}
+                  {tabLabels[tab]}
+                </span>
+                {tab === 1 && !isTab1Complete && !isConfirmed && (
+                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
+                )}
+              </button>
+            );
+          })}
         </nav>
       </div>
 
@@ -417,6 +453,26 @@ export default function EditEventForm({
                 />
               </div>
             </div>
+
+            {/* Confirm Tab 1 Button */}
+            <div className="pt-4 border-t border-gray-200 mt-6">
+              <button
+                type="button"
+                onClick={() => confirmTab(1)}
+                disabled={!isTab1Complete}
+                className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
+              >
+                {t("articleForm.confirmAndContinue") || "אישור והמשך"}
+                <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+              {!isTab1Complete && (
+                <p className="text-sm text-red-600 mt-2 rtl">
+                  {t("editEventForm.requiredFieldsHint") as string || "* יש למלא את כל השדות הנדרשים"}
+                </p>
+              )}
+            </div>
           </>
         )}
 
@@ -500,6 +556,20 @@ export default function EditEventForm({
                 {t("editEventForm.maxSeatsHelp")}
               </p>
             </div>
+
+            {/* Confirm Tab 2 Button */}
+            <div className="pt-4 border-t border-gray-200 mt-6">
+              <button
+                type="button"
+                onClick={() => confirmTab(2)}
+                className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
+              >
+                {t("articleForm.confirmAndContinue") || "אישור והמשך"}
+                <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
           </>
         )}
 
@@ -551,7 +621,7 @@ export default function EditEventForm({
               </p>
             </div>
 
-            <div className="flex items-center gap-3 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <div className="flex items-center gap-2">
               <input
                 type="checkbox"
                 id="isFeatured"
@@ -560,15 +630,13 @@ export default function EditEventForm({
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
                 }
-                className="w-5 h-5 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+                className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
               />
-              <label htmlFor="isFeatured" className="cursor-pointer">
-                <span className="text-sm font-medium text-gray-900">
-                  {t("editEventForm.isFeaturedLabel")}
+              <label htmlFor="isFeatured" className="cursor-pointer text-sm text-gray-700 rtl">
+                {t("editEventForm.isFeaturedLabel")}
+                <span className="text-xs text-gray-500 mr-1">
+                  ({t("editEventForm.isFeaturedHelp")})
                 </span>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {t("editEventForm.isFeaturedHelp")}
-                </p>
               </label>
             </div>
           </>

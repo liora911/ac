@@ -361,7 +361,9 @@
     "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
     "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע",
     "isFeaturedLabel": "אירוע מומלץ",
-    "isFeaturedHelp": "אירוע זה יוצג בולט בראש עמוד האירועים. רק אירוע אחד יכול להיות מומלץ בכל פעם."
+    "isFeaturedHelp": "רק אירוע אחד יכול להיות מומלץ בכל פעם",
+    "priceLabel": "מחיר כרטיס (₪)",
+    "priceHelp": "השאר ריק או 0 לאירוע חינמי"
   },
   "editLectureForm": {
     "loginRequiredTitle": "נדרשת התחברות",
@@ -568,8 +570,10 @@
     "maxSeatsLabel": "מספר מקומות מקסימלי",
     "maxSeatsPlaceholder": "השאר ריק אם אין הגבלה",
     "maxSeatsHelp": "הגבל את מספר המקומות הזמינים לאירוע",
-    "isFeaturedLabel": "הצג כאירוע מומלץ",
-    "isFeaturedHelp": "אירועים מומלצים מוצגים בצורה בולטת בראש דף האירועים",
+    "isFeaturedLabel": "אירוע מומלץ",
+    "isFeaturedHelp": "רק אירוע אחד יכול להיות מומלץ בכל פעם",
+    "priceLabel": "מחיר כרטיס (₪)",
+    "priceHelp": "השאר ריק או 0 לאירוע חינמי",
     "confirmAndContinue": "אישור והמשך"
   },
   "createLecture": {

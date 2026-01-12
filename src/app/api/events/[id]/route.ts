@@ -101,6 +101,7 @@ export async function PUT(
       categoryId,
       maxSeats,
       isFeatured = false,
+      published = true,
       price,
     } = body;
 
@@ -165,6 +166,7 @@ export async function PUT(
         categoryId,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
+        published: Boolean(published),
         price: price && price > 0 ? price : null,
       },
       include: {
