@@ -84,7 +84,28 @@ export async function GET() {
       }
     });
 
-    return NextResponse.json(roots);
+    // Helper to count total lectures in a category (including subcategories)
+    function getTotalLectureCount(cat: TreeCategory): number {
+      let count = cat.lectures.length;
+      for (const sub of cat.subcategories) {
+        count += getTotalLectureCount(sub);
+      }
+      return count;
+    }
+
+    // Filter out categories with 0 lectures (including subcategories)
+    function filterEmptyCategories(categories: TreeCategory[]): TreeCategory[] {
+      return categories
+        .map((cat) => ({
+          ...cat,
+          subcategories: filterEmptyCategories(cat.subcategories),
+        }))
+        .filter((cat) => cat.lectures.length > 0 || cat.subcategories.length > 0);
+    }
+
+    const filteredRoots = filterEmptyCategories(roots);
+
+    return NextResponse.json(filteredRoots);
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lecture data" },
