@@ -9,7 +9,7 @@ import { useCategories } from "@/hooks/useArticles";
 import type { Event } from "@/types/Events/events";
 import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
-import { AlertTriangle, Trash2 } from "lucide-react";
+import { AlertTriangle, Trash2, Ticket } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -446,6 +446,14 @@ export default function EventsAdmin() {
                           aria-label={`View event "${event.title}"`}
                         >
                           {t("admin.common.view")}
+                        </Link>
+                        <Link
+                          href={`/elitzur/events/${event.id}/tickets`}
+                          className="inline-flex items-center gap-1 text-sm text-purple-600 hover:text-purple-800 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
+                          aria-label={`Manage tickets for event "${event.title}"`}
+                        >
+                          <Ticket className="w-3.5 h-3.5" />
+                          {t("admin.events.tickets")}
                         </Link>
                         <Link
                           href={`/edit-event/${event.id}`}

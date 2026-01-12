@@ -215,7 +215,7 @@ const PresentationsPage = () => {
             ) : (
               <>
                 <Image
-                  src={currentBannerUrl || "/presentation.jpg"}
+                  src={currentBannerUrl || "/presentations.jpg"}
                   alt={currentBannerAlt}
                   fill
                   className="object-cover"
