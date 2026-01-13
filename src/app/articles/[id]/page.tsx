@@ -1,7 +1,5 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import { JSDOM } from "jsdom";
-import DOMPurify from "dompurify";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
@@ -80,10 +78,8 @@ export async function generateMetadata({
     };
   }
 
-  // Extract first paragraph from HTML content for description
-  const window = new JSDOM("").window;
-  const purify = DOMPurify(window);
-  const cleanContent = purify.sanitize(article.content, { ALLOWED_TAGS: [] });
+  // Strip HTML tags from content for description using simple regex
+  const cleanContent = article.content.replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
   const excerpt = cleanContent.slice(0, 160).trim() + (cleanContent.length > 160 ? "..." : "");
 
   const authorNames = article.authors && article.authors.length > 0
