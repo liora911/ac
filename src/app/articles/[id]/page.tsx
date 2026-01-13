@@ -206,8 +206,8 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                   )}`}
                 >
                   {article.published
-                    ? t("articleDetail.published") || "Published"
-                    : t("articleDetail.draft") || "Draft"}
+                    ? t("admin.common.published")
+                    : t("admin.common.draft")}
                 </span>
               </>
             )}
