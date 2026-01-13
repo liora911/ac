@@ -6,6 +6,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export async function GET() {
   try {
+    console.log("Fetching events...");
     if (!prisma) {
       throw new Error("Database connection not available");
     }
@@ -75,7 +76,10 @@ export async function POST(request: NextRequest) {
 
     if (!title || !eventType || !eventDate || !categoryId) {
       return NextResponse.json(
-        { error: "Missing required fields (title, event type, date, and category)" },
+        {
+          error:
+            "Missing required fields (title, event type, date, and category)",
+        },
         { status: 400 }
       );
     }
