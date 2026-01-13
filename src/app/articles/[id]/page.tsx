@@ -150,7 +150,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   // Translations (ideally from a translation context or file)
   const translations = {
     editButton: locale === "he" ? "ערוך" : "Edit",
-    backToArticles: locale === "he" ? "חזור למאמרים" : "Back to Articles",
+    downloadPDF: locale === "he" ? "הורד PDF" : "Download PDF",
     premium: locale === "he" ? "פרימיום" : "Premium",
     featured: locale === "he" ? "מומלץ" : "Featured",
     minRead: locale === "he" ? "דקות קריאה" : "min read",
@@ -185,7 +185,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           }
           translations={{
             editButton: translations.editButton,
-            backToArticles: translations.backToArticles,
+            downloadPDF: translations.downloadPDF,
           }}
         />
 

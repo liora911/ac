@@ -3,8 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
-import { useRouter } from "next/navigation";
-import { Pencil } from "lucide-react";
+import { Pencil, Download } from "lucide-react";
 
 interface ArticleClientProps {
   articleId: string;
@@ -18,7 +17,7 @@ interface ArticleClientProps {
   publisherName?: string;
   translations: {
     editButton: string;
-    backToArticles: string;
+    downloadPDF: string;
   };
 }
 
@@ -34,7 +33,6 @@ export default function ArticleClient({
   publisherName,
   translations,
 }: ArticleClientProps) {
-  const router = useRouter();
 
   // Track article view
   useEffect(() => {
@@ -176,23 +174,15 @@ export default function ArticleClient({
         </Link>
       )}
 
-      {/* Footer Actions */}
-      <div className="mt-8 flex justify-between">
+      {/* PDF Download Button */}
+      <div className="mt-8 flex justify-center">
         <button
-          onClick={() => router.push("/articles")}
-          className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors cursor-pointer"
+          onClick={downloadPDF}
+          className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 cursor-pointer"
         >
-          ← {translations.backToArticles}
+          <Download className="w-5 h-5" />
+          <span>{translations.downloadPDF}</span>
         </button>
-
-        <div className="flex gap-2">
-          <button
-            onClick={downloadPDF}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer"
-          >
-            📄 הורד PDF
-          </button>
-        </div>
       </div>
     </>
   );
