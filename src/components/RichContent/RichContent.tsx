@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useMemo } from "react";
-import DOMPurify from "isomorphic-dompurify";
+import React from "react";
 
 interface RichContentProps {
   content: string;
@@ -12,22 +11,12 @@ export default function RichContent({
   content,
   className = "",
 }: RichContentProps) {
-  // Configure DOMPurify to allow style attributes for formatting
-  const sanitizedContent = useMemo(() => {
-    if (!content) return "";
-
-    return DOMPurify.sanitize(content, {
-      ADD_ATTR: ["style", "dir", "data-type"],
-      ADD_TAGS: ["iframe"],
-      ALLOW_DATA_ATTR: true,
-    });
-  }, [content]);
-
   if (!content) return null;
 
+  // Content is already sanitized when saved to database, so we can render it directly
   return (
     <div className={`rich-content ${className}`}>
-      <div dangerouslySetInnerHTML={{ __html: sanitizedContent }} />
+      <div dangerouslySetInnerHTML={{ __html: content }} />
       <style jsx global>{`
         .rich-content {
           color: inherit;
