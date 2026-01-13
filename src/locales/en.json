@@ -142,6 +142,7 @@
     "notFoundTitle": "Article not found",
     "notFoundMessage": "The article you're looking for doesn't exist.",
     "editButton": "Edit Article",
+    "downloadPDF": "Download PDF",
     "tagsTitle": "Tags",
     "copyleftNote": "This article is available for free download, no copyright."
   },

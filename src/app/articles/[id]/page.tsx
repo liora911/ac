@@ -10,6 +10,9 @@ import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import ArticleClient from "@/components/Article/ArticleClient";
+import DownloadPDFButton from "@/components/Article/DownloadPDFButton";
+import en from "@/locales/en.json";
+import he from "@/locales/he.json";
 
 interface ArticlePageProps {
   params: Promise<{ id: string }>;
@@ -147,21 +150,19 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
       : "bg-yellow-100 text-yellow-800";
   };
 
-  // Translations (ideally from a translation context or file)
-  const translations = {
-    editButton: locale === "he" ? "ערוך" : "Edit",
-    downloadPDF: locale === "he" ? "הורד PDF" : "Download PDF",
-    premium: locale === "he" ? "פרימיום" : "Premium",
-    featured: locale === "he" ? "מומלץ" : "Featured",
-    minRead: locale === "he" ? "דקות קריאה" : "min read",
-    tagsTitle: locale === "he" ? "תגיות" : "Tags",
-    copyleftNote:
-      locale === "he"
-        ? "כל הזכויות שמורות למחבר"
-        : "All rights reserved to the author",
-    authorAnonymous: locale === "he" ? "אנונימי" : "Anonymous",
-    published: locale === "he" ? "פורסם" : "Published",
-    draft: locale === "he" ? "טיוטה" : "Draft",
+  // Get translations from locale files
+  const translations = locale === "he" ? he : en;
+  const t = (key: string): string => {
+    const keys = key.split(".");
+    let value: any = translations;
+    for (const k of keys) {
+      if (value && typeof value === "object" && k in value) {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+    return typeof value === "string" ? value : key;
   };
 
   return (
@@ -184,8 +185,8 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
               : article.publisherName || undefined
           }
           translations={{
-            editButton: translations.editButton,
-            downloadPDF: translations.downloadPDF,
+            editButton: t("articleDetail.editButton"),
+            downloadPDF: t("articleDetail.downloadPDF"),
           }}
         />
 
@@ -194,7 +195,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             {article.isPremium && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300">
                 <Sparkles className="w-3 h-3" />
-                {translations.premium}
+                {t("articleCard.premium")}
               </span>
             )}
             {isAuthorized && (
@@ -205,8 +206,8 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                   )}`}
                 >
                   {article.published
-                    ? translations.published
-                    : translations.draft}
+                    ? t("articleDetail.published") || "Published"
+                    : t("articleDetail.draft") || "Draft"}
                 </span>
               </>
             )}
@@ -250,7 +251,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                     )}
                     <div>
                       <p className="font-medium text-gray-900 dark:text-white">
-                        {article.publisherName || translations.authorAnonymous}
+                        {article.publisherName || t("articleCard.authorAnonymous")}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
                         {formatDate(article.createdAt)}
@@ -263,7 +264,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
             <div className="text-right">
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {article.readDuration} {translations.minRead}
+                {article.readDuration} {t("articleCard.minRead")}
               </p>
               {article.categories && article.categories.length > 0 ? (
                 <div className="flex flex-wrap gap-1 mt-1">
@@ -326,7 +327,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
         </PremiumGate>
 
         <footer className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6 mb-6">
             <div className="flex items-start gap-4">
               {article.authors && article.authors.length > 0 ? (
                 <>
@@ -336,7 +337,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                       {article.authors.map((a) => a.name).join(", ")}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      {translations.copyleftNote}
+                      {t("articleDetail.copyleftNote")}
                     </p>
                   </div>
                 </>
@@ -355,15 +356,32 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {article.author?.name ||
                         article.publisherName ||
-                        translations.authorAnonymous}
+                        t("articleCard.authorAnonymous")}
                     </h3>
                     <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      {translations.copyleftNote}
+                      {t("articleDetail.copyleftNote")}
                     </p>
                   </div>
                 </>
               )}
             </div>
+          </div>
+
+          {/* PDF Download Button */}
+          <div className="flex justify-end">
+            <DownloadPDFButton
+              articleId={article.id}
+              articleTitle={article.title}
+              locale={locale}
+              dateLocale={dateLocale}
+              createdAt={article.createdAt.toISOString()}
+              publisherName={
+                article.authors && article.authors.length > 0
+                  ? article.authors.map((a) => a.name).join(", ")
+                  : article.publisherName || undefined
+              }
+              downloadText={t("articleDetail.downloadPDF")}
+            />
           </div>
         </footer>
       </article>

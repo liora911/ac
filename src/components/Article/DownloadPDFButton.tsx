@@ -1,49 +1,27 @@
 "use client";
 
-import { useEffect } from "react";
-import Link from "next/link";
+import { Download } from "lucide-react";
 import { track } from "@vercel/analytics";
-import { Pencil, Download } from "lucide-react";
 
-interface ArticleClientProps {
+interface DownloadPDFButtonProps {
   articleId: string;
   articleTitle: string;
-  isPremium: boolean;
-  categoryName?: string;
-  isAuthorized: boolean;
   locale: string;
   dateLocale: string;
   createdAt: string;
   publisherName?: string;
-  translations: {
-    editButton: string;
-    downloadPDF: string;
-  };
+  downloadText: string;
 }
 
-export default function ArticleClient({
+export default function DownloadPDFButton({
   articleId,
   articleTitle,
-  isPremium,
-  categoryName,
-  isAuthorized,
   locale,
   dateLocale,
   createdAt,
   publisherName,
-  translations,
-}: ArticleClientProps) {
-
-  // Track article view
-  useEffect(() => {
-    track("article_viewed", {
-      articleId,
-      title: articleTitle,
-      isPremium,
-      category: categoryName || "uncategorized",
-    });
-  }, [articleId, articleTitle, isPremium, categoryName]);
-
+  downloadText,
+}: DownloadPDFButtonProps) {
   const downloadPDF = () => {
     // Track PDF download
     track("article_pdf_downloaded", {
@@ -159,21 +137,12 @@ export default function ArticleClient({
   };
 
   return (
-    <>
-      {/* Admin Edit Button - Fixed position */}
-      {isAuthorized && (
-        <Link
-          href={`/articles/${articleId}/edit`}
-          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all hover:scale-105"
-          title={translations.editButton}
-        >
-          <Pencil className="w-5 h-5" />
-          <span className="hidden sm:inline font-medium">
-            {translations.editButton}
-          </span>
-        </Link>
-      )}
-
-    </>
+    <button
+      onClick={downloadPDF}
+      className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 font-medium rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors cursor-pointer shadow-sm"
+    >
+      <Download className="w-4 h-4" />
+      <span>{downloadText}</span>
+    </button>
   );
 }
