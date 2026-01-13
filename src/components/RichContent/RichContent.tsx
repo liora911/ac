@@ -22,24 +22,29 @@ export default function RichContent({
           color: inherit;
         }
 
-        /* Override inline dark colors in dark mode */
-        :global(.dark) .rich-content [style*="color: rgb(0, 0, 0)"],
-        :global(.dark) .rich-content [style*="color: #000000"],
-        :global(.dark) .rich-content [style*="color: #000"],
-        :global(.dark) .rich-content [style*="color: black"] {
-          color: #f8fafc !important;
-        }
-
-        :global(.dark) .rich-content [style*="color: rgb(51, 51, 51)"],
-        :global(.dark) .rich-content [style*="color: #333333"],
-        :global(.dark) .rich-content [style*="color: #333"] {
+        /* Override ALL inline text colors in dark mode to ensure readability */
+        /* This is aggressive but necessary since we can't predict all inline color formats */
+        :global(.dark) .rich-content * {
           color: #e2e8f0 !important;
         }
 
-        :global(.dark) .rich-content [style*="color: rgb(68, 68, 68)"],
-        :global(.dark) .rich-content [style*="color: #444444"],
-        :global(.dark) .rich-content [style*="color: #444"] {
-          color: #cbd5e1 !important;
+        /* Restore proper colors for specific elements that should have different colors */
+        :global(.dark) .rich-content a {
+          color: #60a5fa !important;
+        }
+
+        :global(.dark) .rich-content code {
+          color: #f472b6 !important;
+        }
+
+        :global(.dark) .rich-content h1,
+        :global(.dark) .rich-content h2,
+        :global(.dark) .rich-content h3 {
+          color: #f8fafc !important;
+        }
+
+        :global(.dark) .rich-content blockquote {
+          color: #9ca3af !important;
         }
 
         /* Paragraphs - only set line-height if not specified inline */
