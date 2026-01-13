@@ -12,6 +12,7 @@ interface FavoriteIds {
 interface FavoritesFull {
   articles: Array<{
     id: string;
+    slug?: string | null;
     title: string;
     articleImage?: string | null;
     publisherName: string;
