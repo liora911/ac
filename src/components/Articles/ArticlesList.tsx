@@ -438,7 +438,7 @@ export default function ArticlesList({
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 mb-1">
                           <Link
-                            href={`/articles/${article.id}`}
+                            href={`/articles/${article.slug || article.id}`}
                             className="hover:text-blue-600 transition-colors"
                           >
                             {article.title}
@@ -593,7 +593,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
       )}
 
       {/* Top Section: Image with Title Overlay */}
-      <Link href={`/articles/${article.id}`} className="block relative">
+      <Link href={`/articles/${article.slug || article.id}`} className="block relative">
         <div className={`relative h-52 overflow-hidden ${!hasAccess ? "grayscale-[30%]" : ""}`}>
           <Image
             src={displayImage}

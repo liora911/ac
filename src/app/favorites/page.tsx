@@ -275,7 +275,7 @@ function ArticleCard({
   t: (key: string) => string;
 }) {
   return (
-    <Link href={`/articles/${article.id}`}>
+    <Link href={`/articles/${article.slug || article.id}`}>
       <motion.div
         className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full"
         whileHover={{ y: -4 }}

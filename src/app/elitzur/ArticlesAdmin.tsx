@@ -450,7 +450,7 @@ export default function ArticlesAdmin() {
                         aria-label="Article actions"
                       >
                         <Link
-                          href={`/articles/${a.id}`}
+                          href={`/articles/${a.slug || a.id}`}
                           className="text-sm text-gray-700 hover:text-gray-900 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                           aria-label={`View article "${a.title}"`}
                         >

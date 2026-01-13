@@ -261,7 +261,8 @@ export default function EditArticleForm({
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push(`/articles/${articleId}`);
+        // Use slug from response if available, otherwise fall back to ID
+        router.push(`/articles/${data.slug || articleId}`);
       }
     } catch (error: any) {
       setMessage({
