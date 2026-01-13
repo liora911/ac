@@ -24,9 +24,12 @@ async function getArticle(idOrSlug: string) {
     throw new Error("Database connection not available");
   }
 
+  // Decode URL parameter (handles percent-encoded slugs like %D7%99...)
+  const decodedIdOrSlug = decodeURIComponent(idOrSlug);
+
   // Try to find by slug first (more SEO-friendly)
   let article = await prisma.article.findUnique({
-    where: { slug: idOrSlug },
+    where: { slug: decodedIdOrSlug },
     include: {
       author: {
         select: {
@@ -69,7 +72,7 @@ async function getArticle(idOrSlug: string) {
   // If not found by slug, try by ID (backward compatibility)
   if (!article) {
     article = await prisma.article.findUnique({
-      where: { id: idOrSlug },
+      where: { id: decodedIdOrSlug },
       include: {
       author: {
         select: {
