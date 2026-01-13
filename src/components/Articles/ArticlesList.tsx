@@ -191,11 +191,11 @@ export default function ArticlesList({
       )}
       {}
       {showFilters && (
-        <div className="bg-white rounded-lg shadow-sm border p-6">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t("articleForm.searchLabel")}
               </label>
               <input
@@ -203,19 +203,19 @@ export default function ArticlesList({
                 value={searchQuery}
                 onChange={(e) => handleSearch(e.target.value)}
                 placeholder={t("articleForm.searchPlaceholder") as string}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             {}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t("articleForm.categoryLabel")}
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="">{t("articleForm.allCategories")}</option>
                 {isLoadingCategories ? (
@@ -232,7 +232,7 @@ export default function ArticlesList({
 
             {/* Status Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t("articleForm.statusLabel")}
               </label>
               <select
@@ -240,7 +240,7 @@ export default function ArticlesList({
                 onChange={(e) =>
                   handleStatusChange(e.target.value as StatusFilter)
                 }
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="">{t("articleForm.allStatus")}</option>
                 <option value="PUBLISHED">
@@ -258,14 +258,14 @@ export default function ArticlesList({
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             {/* Sort Dropdown */}
             <div className="flex items-center gap-2">
-              <ArrowUpDown className="w-4 h-4 text-gray-500" />
-              <label className="text-sm font-medium text-gray-700">
+              <ArrowUpDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
                 {t("articlesPage.sortBy") || "Sort by:"}
               </label>
               <select
                 value={sortOption}
                 onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                className="px-3 py-1.5 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               >
                 <option value="newest">{t("articlesPage.sortNewest") || "Newest first"}</option>
                 <option value="oldest">{t("articlesPage.sortOldest") || "Oldest first"}</option>
@@ -275,7 +275,7 @@ export default function ArticlesList({
             </div>
 
             {/* Results Count */}
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-gray-600 dark:text-gray-400">
               {isLoading ? (
                 t("loading")
               ) : (
@@ -291,9 +291,9 @@ export default function ArticlesList({
 
           {/* Category Tags / Quick Filters */}
           {categories && categories.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100">
+            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium text-gray-600 flex items-center gap-1">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
                   <Tag className="w-4 h-4" />
                   {t("articlesPage.quickFilters") || "Quick filters:"}
                 </span>
@@ -302,7 +302,7 @@ export default function ArticlesList({
                   className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                     selectedCategory === ""
                       ? "bg-blue-600 text-white"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                   }`}
                 >
                   {t("articleForm.allCategories")}
@@ -314,7 +314,7 @@ export default function ArticlesList({
                     className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
                       selectedCategory === category.id
                         ? "bg-blue-600 text-white"
-                        : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
                     }`}
                   >
                     {category.name}
@@ -327,7 +327,7 @@ export default function ArticlesList({
           {/* Active Filters Display */}
           {(selectedCategory || searchQuery || statusFilter) && (
             <div className="mt-3 flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-500">
+              <span className="text-sm text-gray-500 dark:text-gray-400">
                 {t("articlesPage.activeFilters") || "Active filters:"}
               </span>
               {searchQuery && (
