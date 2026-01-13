@@ -22,6 +22,26 @@ export default function RichContent({
           color: inherit;
         }
 
+        /* Override inline dark colors in dark mode */
+        :global(.dark) .rich-content [style*="color: rgb(0, 0, 0)"],
+        :global(.dark) .rich-content [style*="color: #000000"],
+        :global(.dark) .rich-content [style*="color: #000"],
+        :global(.dark) .rich-content [style*="color: black"] {
+          color: #f8fafc !important;
+        }
+
+        :global(.dark) .rich-content [style*="color: rgb(51, 51, 51)"],
+        :global(.dark) .rich-content [style*="color: #333333"],
+        :global(.dark) .rich-content [style*="color: #333"] {
+          color: #e2e8f0 !important;
+        }
+
+        :global(.dark) .rich-content [style*="color: rgb(68, 68, 68)"],
+        :global(.dark) .rich-content [style*="color: #444444"],
+        :global(.dark) .rich-content [style*="color: #444"] {
+          color: #cbd5e1 !important;
+        }
+
         /* Paragraphs - only set line-height if not specified inline */
         .rich-content p {
           margin: 0.75em 0;
