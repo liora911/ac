@@ -6,7 +6,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export async function GET() {
   try {
-    console.log("Fetching events...");
+    console.log("Fetching eventds...");
     if (!prisma) {
       throw new Error("Database connection not available");
     }
