@@ -262,6 +262,7 @@ function ArticleCard({
 }: {
   article: {
     id: string;
+    slug?: string | null;
     title: string;
     articleImage?: string | null;
     publisherName: string;

@@ -1,5 +1,6 @@
 export interface SearchResult {
   id: string;
+  slug?: string;
   title: string;
   description?: string;
   content?: string;

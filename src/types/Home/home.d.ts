@@ -2,6 +2,7 @@ import { Variants } from "framer-motion";
 
 export type ContentItem = {
   id: string;
+  slug?: string;
   title: string;
   date?: string | null;
   createdAt?: string;
