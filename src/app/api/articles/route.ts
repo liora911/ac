@@ -10,12 +10,14 @@ import type {
   CreateArticleRequest,
   Article,
 } from "@/types/Articles/articles";
+import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{
   select: {
     id: true;
     title: true;
+    slug: true;
     content: true;
     articleImage: true;
     publisherName: true;
@@ -59,6 +61,7 @@ function transformArticle(article: ArticleWithRelations): Article {
   return {
     id: article.id,
     title: article.title,
+    slug: article.slug ?? undefined,
     content: article.content,
     featuredImage: article.articleImage ?? undefined,
     status: article.published ? "PUBLISHED" : "DRAFT",
@@ -372,9 +375,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Generate unique slug from title
+    const baseSlug = generateSlug(title);
+    const checkSlugExists = async (slug: string): Promise<boolean> => {
+      const existing = await prisma.article.findUnique({
+        where: { slug },
+      });
+      return existing !== null;
+    };
+    const uniqueSlug = await generateUniqueSlug(baseSlug, checkSlugExists);
+
     const article = await prisma.article.create({
       data: {
         title,
+        slug: uniqueSlug,
         content,
         articleImage: featuredImage,
         publisherName: publisherName || user.name || "Anonymous",

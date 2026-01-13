@@ -6,12 +6,14 @@ import prisma from "@/lib/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 import type { Article, UpdateArticleRequest, ArticleAuthorInput } from "@/types/Articles/articles";
 import { deleteBlobs } from "@/actions/upload";
+import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{
   select: {
     id: true;
     title: true;
+    slug: true;
     content: true;
     articleImage: true;
     publisherName: true;
@@ -55,6 +57,7 @@ function transformArticle(article: ArticleWithRelations): Article {
   return {
     id: article.id,
     title: article.title,
+    slug: article.slug ?? undefined,
     content: article.content,
     featuredImage: article.articleImage ?? undefined,
     status: article.published ? "PUBLISHED" : "DRAFT",
@@ -262,7 +265,19 @@ export async function PUT(
 
     const updateData: Prisma.ArticleUpdateInput = {};
 
-    if (title !== undefined) updateData.title = title;
+    if (title !== undefined) {
+      updateData.title = title;
+      // Regenerate slug when title changes
+      const baseSlug = generateSlug(title);
+      const checkSlugExists = async (slug: string): Promise<boolean> => {
+        const existing = await prisma.article.findFirst({
+          where: { slug, id: { not: id } },
+        });
+        return existing !== null;
+      };
+      const uniqueSlug = await generateUniqueSlug(baseSlug, checkSlugExists);
+      updateData.slug = uniqueSlug;
+    }
     if (content !== undefined) updateData.content = content;
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";

@@ -103,7 +103,7 @@ const Home = () => {
   const renderArticleItem = useCallback((item: ContentItem) => (
     <li key={item.id}>
       <Link
-        href={`/articles/${item.id}`}
+        href={`/articles/${item.slug || item.id}`}
         className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
       >
         <div className="flex-1 min-w-0">

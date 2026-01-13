@@ -68,7 +68,7 @@ const ActivityFeed: React.FC = () => {
           recentArticles.forEach((article: any) => {
             activities.push({
               id: `article-${article.id}`,
-              rawId: article.id,
+              rawId: article.slug || article.id,
               type: "article",
               title: article.title,
               action: "created",

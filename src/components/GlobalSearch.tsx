@@ -137,7 +137,7 @@ export default function GlobalSearch() {
   const getResultUrl = (result: SearchResult, type: string) => {
     switch (type) {
       case "articles":
-        return `/articles/${result.id}`;
+        return `/articles/${result.slug || result.id}`;
       case "presentations":
         return `/presentations/${result.id}`;
       case "events":

@@ -18,14 +18,15 @@ interface ArticlePageProps {
   params: Promise<{ id: string }>;
 }
 
-// Server-side function to fetch article
-async function getArticle(id: string) {
+// Server-side function to fetch article by ID or slug
+async function getArticle(idOrSlug: string) {
   if (!prisma) {
     throw new Error("Database connection not available");
   }
 
-  const article = await prisma.article.findUnique({
-    where: { id },
+  // Try to find by slug first (more SEO-friendly)
+  let article = await prisma.article.findUnique({
+    where: { slug: idOrSlug },
     include: {
       author: {
         select: {
@@ -64,6 +65,50 @@ async function getArticle(id: string) {
       },
     },
   });
+
+  // If not found by slug, try by ID (backward compatibility)
+  if (!article) {
+    article = await prisma.article.findUnique({
+      where: { id: idOrSlug },
+      include: {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
+        },
+      },
+      category: {
+        select: {
+          id: true,
+          name: true,
+          bannerImageUrl: true,
+        },
+      },
+      categories: {
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              bannerImageUrl: true,
+            },
+          },
+        },
+      },
+      authors: {
+        orderBy: { order: "asc" },
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          order: true,
+        },
+      },
+    },
+    });
+  }
 
   return article;
 }

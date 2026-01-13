@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
         },
         select: {
           id: true,
+          slug: true,
           title: true,
           content: true,
           createdAt: true,
