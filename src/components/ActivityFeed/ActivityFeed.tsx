@@ -19,6 +19,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 interface ActivityItem {
   id: string;
   rawId: string;
+  slug?: string; // For article view URLs (SEO-friendly)
   type: "article" | "event" | "lecture" | "presentation";
   title: string;
   action: "created" | "updated";
@@ -68,7 +69,8 @@ const ActivityFeed: React.FC = () => {
           recentArticles.forEach((article: any) => {
             activities.push({
               id: `article-${article.id}`,
-              rawId: article.slug || article.id,
+              rawId: article.id, // Use ID for editing, slug is only for viewing
+              slug: article.slug, // Store slug separately for view URLs
               type: "article",
               title: article.title,
               action: "created",
@@ -233,7 +235,8 @@ const ActivityFeed: React.FC = () => {
     setOpenMenuId(null);
     switch (activity.type) {
       case "article":
-        router.push(`/articles/${activity.rawId}`);
+        // Use slug for SEO-friendly URL, fallback to ID
+        router.push(`/articles/${activity.slug || activity.rawId}`);
         break;
       case "event":
         router.push(`/events`);
