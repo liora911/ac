@@ -15,7 +15,6 @@ export async function GET(request: NextRequest) {
           title: true,
           content: true,
           createdAt: true,
-          updatedAt: true,
           isPremium: true,
           category: {
             select: {
@@ -24,7 +23,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { createdAt: "desc" },
         take: 5,
       }),
       prisma.presentation.findMany({
@@ -36,7 +35,6 @@ export async function GET(request: NextRequest) {
           title: true,
           description: true,
           createdAt: true,
-          updatedAt: true,
           isPremium: true,
           category: {
             select: {
@@ -45,7 +43,7 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { updatedAt: "desc" },
+        orderBy: { createdAt: "desc" },
         take: 5,
       }),
       prisma.event.findMany({
@@ -58,8 +56,6 @@ export async function GET(request: NextRequest) {
           description: true,
           eventDate: true,
           location: true,
-          createdAt: true,
-          updatedAt: true,
         },
         orderBy: { eventDate: "desc" },
         take: 5,
@@ -71,7 +67,6 @@ export async function GET(request: NextRequest) {
           description: true,
           date: true,
           createdAt: true,
-          updatedAt: true,
           isPremium: true,
           category: {
             select: {
