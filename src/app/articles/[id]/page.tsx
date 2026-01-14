@@ -334,20 +334,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           </div>
         </header>
 
-        {article.articleImage && (
-          <div className="mb-8">
-            <div className="relative h-96 rounded-lg overflow-hidden">
-              <Image
-                src={article.articleImage}
-                alt={article.title}
-                fill
-                className="object-cover"
-                priority
-              />
-            </div>
-          </div>
-        )}
-
         {/* Article Content */}
         <PremiumGate
           isPremium={article.isPremium}
