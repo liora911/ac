@@ -52,8 +52,11 @@ interface AccountClientProps {
 function getUsernameFromEmail(email: string | null | undefined): string {
   if (!email) return "User";
   const prefix = email.split("@")[0];
-  // Capitalize first letter and clean up
-  return prefix.charAt(0).toUpperCase() + prefix.slice(1).replace(/[._-]/g, " ");
+  // Split by dots, dashes, and underscores, then capitalize each word
+  return prefix
+    .split(/[._-]/)
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
 // Get initials for avatar
@@ -202,32 +205,31 @@ function AccountContent({
 
               {/* Name and Email */}
               <div className="flex-1 pt-2 sm:pt-0 sm:pb-1">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                  <div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                     <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                       {displayName}
                     </h1>
-                    <p className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mt-0.5">
-                      <Mail className="w-4 h-4" />
-                      {user.email}
-                    </p>
+                    {/* Role Badges - moved next to name */}
+                    <div className="flex items-center gap-2">
+                      {user.role === "ADMIN" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-medium">
+                          <Shield className="w-4 h-4" />
+                          {t("account.role.admin")}
+                        </span>
+                      )}
+                      {subscription?.status === "ACTIVE" && (
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium">
+                          <Sparkles className="w-4 h-4" />
+                          {t("account.role.premium")}
+                        </span>
+                      )}
+                    </div>
                   </div>
-
-                  {/* Role Badge */}
-                  <div className="flex items-center gap-2">
-                    {user.role === "ADMIN" && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 text-sm font-medium">
-                        <Shield className="w-4 h-4" />
-                        {t("account.role.admin")}
-                      </span>
-                    )}
-                    {subscription?.status === "ACTIVE" && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium">
-                        <Sparkles className="w-4 h-4" />
-                        {t("account.role.premium")}
-                      </span>
-                    )}
-                  </div>
+                  <p className="text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                    <Mail className="w-4 h-4" />
+                    {user.email}
+                  </p>
                 </div>
               </div>
             </div>
