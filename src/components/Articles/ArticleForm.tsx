@@ -16,6 +16,7 @@ import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
 import AuthorInput from "./AuthorInput";
+import DragDropImageUpload from "@/components/Upload/upload";
 
 export default function ArticleForm({
   article,
@@ -208,6 +209,11 @@ export default function ArticleForm({
     value: ArticleFormData[K]
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleUploadError = (error: string) => {
+    console.error("Upload error:", error);
+    alert(error);
   };
 
   const addTag = () => {
@@ -451,17 +457,12 @@ export default function ArticleForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("articleForm.featuredImageUrlLabel")}
-                </label>
-                <input
-                  type="url"
-                  value={formData.featuredImage}
-                  onChange={(e) =>
-                    handleInputChange("featuredImage", e.target.value)
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="https://"
+                <DragDropImageUpload
+                  onImageSelect={(url) => handleInputChange("featuredImage", url || "")}
+                  currentImage={formData.featuredImage}
+                  label={t("articleForm.featuredImageLabel") || "Featured Image"}
+                  placeholder={t("upload.placeholder") || "PNG, JPG, GIF, WebP (max 5MB)"}
+                  onError={(error) => handleUploadError(error)}
                 />
               </div>
 

@@ -231,6 +231,7 @@
     "excerptLabel": "Excerpt",
     "excerptPlaceholder": "Brief summary of the article (auto-generated from content)",
     "featuredImageUrlLabel": "Featured Image URL",
+    "featuredImageLabel": "Featured Image",
     "categoryLabel": "Category",
     "selectCategory": "Select a category",
     "categoryTech": "Technology",
@@ -1110,5 +1111,8 @@
     "errors": {
       "generic": "Error creating subscription"
     }
+  },
+  "upload": {
+    "placeholder": "PNG, JPG, GIF, WebP (max 5MB)"
   }
 }

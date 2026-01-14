@@ -240,6 +240,7 @@
     "excerptLabel": "תקציר",
     "excerptPlaceholder": "סיכום קצר של המאמר (נוצר אוטומטית מהתוכן)",
     "featuredImageUrlLabel": "כתובת URL לתמונה ראשית",
+    "featuredImageLabel": "תמונה מרכזית",
     "categoryLabel": "קטגוריה",
     "selectCategory": "בחר קטגוריה",
     "categoryTech": "טכנולוגיה",
@@ -1211,5 +1212,8 @@
     "errors": {
       "generic": "שגיאה ביצירת המנוי"
     }
+  },
+  "upload": {
+    "placeholder": "PNG, JPG, GIF, WebP (מקסימום 5MB)"
   }
 }
