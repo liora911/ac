@@ -143,6 +143,8 @@
     "notFoundMessage": "The article you're looking for doesn't exist.",
     "editButton": "Edit Article",
     "downloadPDF": "Download PDF",
+    "share": "Share",
+    "linkCopied": "Link copied to clipboard!",
     "tagsTitle": "Tags",
     "copyleftNote": "This article is available for free download, no copyright.",
     "relatedArticles": "Related Articles"

@@ -12,6 +12,7 @@ import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import ArticleClient from "@/components/Article/ArticleClient";
 import DownloadPDFButton from "@/components/Article/DownloadPDFButton";
+import ShareButton from "@/components/Article/ShareButton";
 import en from "@/locales/en.json";
 import he from "@/locales/he.json";
 
@@ -466,8 +467,12 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             </div>
           </div>
 
-          {/* PDF Download Button */}
-          <div className="flex justify-end">
+          {/* Action Buttons */}
+          <div className="flex justify-end gap-2">
+            <ShareButton
+              shareText={t("articleDetail.share")}
+              copiedText={t("articleDetail.linkCopied")}
+            />
             <DownloadPDFButton
               articleId={article.id}
               articleTitle={article.title}

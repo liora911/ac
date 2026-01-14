@@ -14,7 +14,8 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Grid3X3, List, Tag, X, Star, ArrowUpDown } from "lucide-react";
+import { Grid3X3, List, Tag, X, Star, ArrowUpDown, Share2 } from "lucide-react";
+import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
@@ -551,9 +552,30 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
+  const { showSuccess } = useNotification();
   const [errorModalOpen, setErrorModalOpen] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/articles/${article.slug || article.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showSuccess(t("articleDetail.linkCopied"));
+    } catch {
+      const textArea = document.createElement("textarea");
+      textArea.value = url;
+      textArea.style.position = "fixed";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textArea);
+      showSuccess(t("articleDetail.linkCopied"));
+    }
+  };
 
   // Check if user has premium access
   const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
@@ -649,9 +671,18 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
               </div>
             )}
           </div>
-          <span className="flex-shrink-0">
-            {article.readTime} {t("articleCard.minRead")}
-          </span>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <span>
+              {article.readTime} {t("articleCard.minRead")}
+            </span>
+            <button
+              onClick={handleShare}
+              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              title={t("articleDetail.share")}
+            >
+              <Share2 className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+            </button>
+          </div>
         </div>
 
         {/* Date, Categories, and Premium indicator */}
