@@ -230,7 +230,8 @@ export default function Breadcrumbs() {
     ) : template.labelKey ? (
       t(template.labelKey)
     ) : (
-      decodeURIComponent(template.rawSegment ?? "")
+      // Replace dashes with spaces for better readability of slugs
+      decodeURIComponent(template.rawSegment ?? "").replaceAll("-", " ")
     );
 
     return {

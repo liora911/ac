@@ -570,19 +570,6 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
     });
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PUBLISHED":
-        return "bg-green-100 text-green-800";
-      case "DRAFT":
-        return "bg-yellow-100 text-yellow-800";
-      case "ARCHIVED":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   return (
     <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative flex flex-col ${
       hasAccess ? "hover:shadow-md" : ""
@@ -609,19 +596,6 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           {article.isFeatured && (
             <div className="absolute top-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
               {t("articleCard.featured")}
-            </div>
-          )}
-
-          {/* Status badge for authorized users */}
-          {isAuthorized && (
-            <div className="absolute top-3 left-3">
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
-                  article.status
-                )}`}
-              >
-                {article.status}
-              </span>
             </div>
           )}
 

@@ -144,7 +144,8 @@
     "editButton": "Edit Article",
     "downloadPDF": "Download PDF",
     "tagsTitle": "Tags",
-    "copyleftNote": "This article is available for free download, no copyright."
+    "copyleftNote": "This article is available for free download, no copyright.",
+    "relatedArticles": "Related Articles"
   },
   "lectureDetail": {
     "loading": "Loading lecture...",

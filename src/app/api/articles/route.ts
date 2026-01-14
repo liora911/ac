@@ -34,6 +34,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
     author: { select: { id: true; name: true; email: true; image: true } };
     category: { select: { id: true; name: true; bannerImageUrl: true } };
     categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
+    tags: { include: { tag: { select: { id: true; name: true; slug: true; color: true } } } };
     authors: { select: { id: true; name: true; imageUrl: true; order: true } };
   };
 }>;
@@ -91,7 +92,12 @@ function transformArticle(article: ArticleWithRelations): Article {
         }
       : undefined,
     categories, // Multiple categories
-    tags: [],
+    tags: article.tags?.map((at) => ({
+      id: at.tag.id,
+      name: at.tag.name,
+      slug: at.tag.slug,
+      color: at.tag.color ?? undefined,
+    })) || [],
     keywords: [],
     authors: article.authors.map((a) => ({
       id: a.id,
@@ -235,6 +241,18 @@ export async function GET(request: NextRequest) {
             },
           },
         },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              },
+            },
+          },
+        },
         authors: {
           orderBy: { order: "asc" },
           select: {
@@ -315,6 +333,7 @@ export async function POST(request: NextRequest) {
       featuredImage,
       categoryId,
       categoryIds, // Multiple categories support
+      tags, // Tag IDs to associate with article
       status = "DRAFT",
       isPremium = false,
       direction = "ltr",
@@ -415,6 +434,14 @@ export async function POST(request: NextRequest) {
             order: author.order ?? index,
           })),
         },
+        // Create tag associations if tags provided
+        tags: tags && tags.length > 0
+          ? {
+              create: tags.map((tagId) => ({
+                tagId,
+              })),
+            }
+          : undefined,
       },
       include: {
         author: {
@@ -450,6 +477,18 @@ export async function POST(request: NextRequest) {
             name: true,
             imageUrl: true,
             order: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              },
+            },
           },
         },
       },

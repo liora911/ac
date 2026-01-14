@@ -109,6 +109,7 @@ model Article {
   categoryId     String?
   authors        ArticleAuthor[]
   categories     ArticleCategory[]
+  tags           ArticleTag[]
   author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category       Category?         @relation(fields: [categoryId], references: [id])
 
@@ -141,14 +142,27 @@ model ArticleAuthor {
 }
 
 model Tag {
-  id        String   @id @default(cuid())
-  name      String   @unique
-  slug      String   @unique
+  id        String       @id @default(cuid())
+  name      String       @unique
+  slug      String       @unique
   color     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  articles  ArticleTag[]
 
   @@map("tags")
+}
+
+model ArticleTag {
+  id        String   @id @default(cuid())
+  articleId String
+  tagId     String
+  createdAt DateTime @default(now())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([articleId, tagId])
+  @@map("article_tags")
 }
 
 model Category {

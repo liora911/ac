@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
@@ -66,6 +67,18 @@ async function getArticle(idOrSlug: string) {
           order: true,
         },
       },
+      tags: {
+        include: {
+          tag: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              color: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -109,11 +122,59 @@ async function getArticle(idOrSlug: string) {
           order: true,
         },
       },
+      tags: {
+        include: {
+          tag: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              color: true,
+            },
+          },
+        },
+      },
     },
     });
   }
 
   return article;
+}
+
+// Fetch related articles that share tags with the current article
+async function getRelatedArticles(articleId: string, tagIds: string[], limit: number = 3) {
+  if (!prisma || tagIds.length === 0) {
+    return [];
+  }
+
+  const relatedArticles = await prisma.article.findMany({
+    where: {
+      published: true,
+      id: { not: articleId },
+      tags: { some: { tagId: { in: tagIds } } },
+    },
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      articleImage: true,
+      readDuration: true,
+      createdAt: true,
+      publisherName: true,
+      authors: {
+        orderBy: { order: "asc" },
+        take: 1,
+        select: {
+          name: true,
+          imageUrl: true,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+  });
+
+  return relatedArticles;
 }
 
 // Generate metadata for SEO and social sharing
@@ -179,6 +240,10 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   if (!article || (!article.published && !isAuthorized)) {
     notFound();
   }
+
+  // Fetch related articles based on shared tags
+  const tagIds = article.tags?.map((at) => at.tag.id) || [];
+  const relatedArticles = await getRelatedArticles(article.id, tagIds, 3);
 
   // Determine locale (you might want to get this from headers or context)
   const locale = article.direction === "rtl" ? "he" : "en";
@@ -418,6 +483,46 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             />
           </div>
         </footer>
+
+        {/* Related Articles Section */}
+        {relatedArticles.length > 0 && (
+          <section className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+              {t("articleDetail.relatedArticles")}
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedArticles.map((related) => (
+                <Link
+                  key={related.id}
+                  href={`/articles/${related.slug || related.id}`}
+                  className="group block bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden"
+                >
+                  {related.articleImage && (
+                    <div className="aspect-video relative overflow-hidden">
+                      <Image
+                        src={related.articleImage}
+                        alt={related.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-2">
+                      {related.title}
+                    </h3>
+                    <div className="mt-2 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+                      <span>
+                        {related.authors?.[0]?.name || related.publisherName}
+                      </span>
+                      <span>{related.readDuration} {t("articleCard.minRead")}</span>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </article>
     </div>
   );

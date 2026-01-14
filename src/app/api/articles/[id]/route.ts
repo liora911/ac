@@ -30,6 +30,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
     author: { select: { id: true; name: true; email: true; image: true } };
     category: { select: { id: true; name: true; bannerImageUrl: true } };
     categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
+    tags: { include: { tag: { select: { id: true; name: true; slug: true; color: true } } } };
     authors: { select: { id: true; name: true; imageUrl: true; order: true } };
   };
 }>;
@@ -87,7 +88,12 @@ function transformArticle(article: ArticleWithRelations): Article {
         }
       : undefined,
     categories, // Multiple categories
-    tags: [],
+    tags: article.tags?.map((at) => ({
+      id: at.tag.id,
+      name: at.tag.name,
+      slug: at.tag.slug,
+      color: at.tag.color ?? undefined,
+    })) || [],
     keywords: [],
     authors: article.authors.map((a) => ({
       id: a.id,
@@ -150,6 +156,18 @@ export async function GET(
             name: true,
             imageUrl: true,
             order: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              },
+            },
           },
         },
       },
@@ -219,6 +237,7 @@ export async function PUT(
       featuredImage,
       categoryId,
       categoryIds, // Multiple categories support
+      tags, // Tag IDs to associate with article
       status,
       isFeatured,
       isPremium,
@@ -331,6 +350,13 @@ export async function PUT(
       });
     }
 
+    // If tags are being updated, delete old ones and create new ones
+    if (tags !== undefined) {
+      await prisma.articleTag.deleteMany({
+        where: { articleId: id },
+      });
+    }
+
     const updatedArticle = await prisma.article.update({
       where: { id },
       data: {
@@ -348,6 +374,13 @@ export async function PUT(
           categories: {
             create: allCategoryIds.map((catId) => ({
               categoryId: catId,
+            })),
+          },
+        }),
+        ...(tags !== undefined && tags.length > 0 && {
+          tags: {
+            create: tags.map((tagId) => ({
+              tagId,
             })),
           },
         }),
@@ -386,6 +419,18 @@ export async function PUT(
             name: true,
             imageUrl: true,
             order: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: {
+              select: {
+                id: true,
+                name: true,
+                slug: true,
+                color: true,
+              },
+            },
           },
         },
       },

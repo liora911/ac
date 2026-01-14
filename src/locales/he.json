@@ -157,7 +157,8 @@
     "editButton": "ערוך מאמר",
     "downloadPDF": "הורד PDF",
     "tagsTitle": "תגיות",
-    "copyleftNote": "מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים"
+    "copyleftNote": "מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים",
+    "relatedArticles": "מאמרים קשורים"
   },
   "lectureDetail": {
     "loading": "טוען הרצאה...",
