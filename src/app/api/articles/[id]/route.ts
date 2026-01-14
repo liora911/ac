@@ -8,6 +8,46 @@ import type { Article, UpdateArticleRequest, ArticleAuthorInput } from "@/types/
 import { deleteBlobs } from "@/actions/upload";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 
+// Helper function to find or create tags by name
+async function findOrCreateTags(tagNames: string[]): Promise<string[]> {
+  if (!tagNames || tagNames.length === 0) return [];
+
+  const tagIds: string[] = [];
+
+  for (const name of tagNames) {
+    const trimmedName = name.trim();
+    if (!trimmedName) continue;
+
+    // Try to find existing tag
+    let tag = await prisma.tag.findUnique({
+      where: { name: trimmedName },
+    });
+
+    // If not found, create it
+    if (!tag) {
+      const slug = generateSlug(trimmedName);
+      // Ensure unique slug
+      let uniqueSlug = slug;
+      let counter = 1;
+      while (await prisma.tag.findUnique({ where: { slug: uniqueSlug } })) {
+        uniqueSlug = `${slug}-${counter}`;
+        counter++;
+      }
+
+      tag = await prisma.tag.create({
+        data: {
+          name: trimmedName,
+          slug: uniqueSlug,
+        },
+      });
+    }
+
+    tagIds.push(tag.id);
+  }
+
+  return tagIds;
+}
+
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{
   select: {
@@ -351,10 +391,13 @@ export async function PUT(
     }
 
     // If tags are being updated, delete old ones and create new ones
+    // Convert tag names to IDs (find or create tags)
+    let tagIds: string[] | undefined;
     if (tags !== undefined) {
       await prisma.articleTag.deleteMany({
         where: { articleId: id },
       });
+      tagIds = await findOrCreateTags(tags);
     }
 
     const updatedArticle = await prisma.article.update({
@@ -377,9 +420,9 @@ export async function PUT(
             })),
           },
         }),
-        ...(tags !== undefined && tags.length > 0 && {
+        ...(tagIds !== undefined && tagIds.length > 0 && {
           tags: {
-            create: tags.map((tagId) => ({
+            create: tagIds.map((tagId) => ({
               tagId,
             })),
           },
