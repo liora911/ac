@@ -20,6 +20,9 @@ export default function RichContent({
       <style jsx global>{`
         .rich-content {
           color: inherit;
+          overflow-wrap: break-word;
+          word-wrap: break-word;
+          word-break: break-word;
         }
 
         /* Override ALL inline text colors in dark mode to ensure readability */
@@ -109,6 +112,8 @@ export default function RichContent({
           color: #2563eb;
           text-decoration: underline;
           transition: color 0.15s;
+          overflow-wrap: break-word;
+          word-break: break-all;
         }
 
         .rich-content a:hover {
