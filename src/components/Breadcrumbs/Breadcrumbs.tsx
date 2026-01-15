@@ -248,7 +248,7 @@ export default function Breadcrumbs() {
   return (
     <nav
       aria-label={t("breadcrumbs.ariaLabel")}
-      className="sticky top-0 z-40 bg-gradient-to-r from-gray-50/95 to-gray-100/80 dark:from-gray-900/95 dark:to-gray-800/80 backdrop-blur-sm border-b border-gray-200/60 dark:border-gray-700/60 px-4 py-2.5"
+      className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 border-b border-gray-200/60 dark:border-gray-700/60 px-4 py-2.5"
       dir={dir}
     >
       <ol className="flex flex-wrap items-center gap-1">
