@@ -32,13 +32,36 @@ function BlackHoleIcon({ className }: { className?: string }) {
       {/* Outer glow */}
       <circle cx="16" cy="16" r="15" fill="url(#glow)" />
       {/* Accretion disk - back */}
-      <ellipse cx="16" cy="16" rx="14" ry="5" fill="none" stroke="url(#accretionDisk)" strokeWidth="2" opacity="0.6" />
+      <ellipse
+        cx="16"
+        cy="16"
+        rx="14"
+        ry="5"
+        fill="none"
+        stroke="url(#accretionDisk)"
+        strokeWidth="2"
+        opacity="0.6"
+      />
       {/* Event horizon (black hole) */}
       <circle cx="16" cy="16" r="6" fill="url(#eventHorizon)" />
       {/* Photon ring */}
-      <circle cx="16" cy="16" r="7" fill="none" stroke="#ffd700" strokeWidth="0.5" opacity="0.8" />
+      <circle
+        cx="16"
+        cy="16"
+        r="7"
+        fill="none"
+        stroke="#ffd700"
+        strokeWidth="0.5"
+        opacity="0.8"
+      />
       {/* Accretion disk - front */}
-      <path d="M 2 16 Q 16 21 30 16" fill="none" stroke="url(#accretionDisk)" strokeWidth="2.5" strokeLinecap="round" />
+      <path
+        d="M 2 16 Q 16 21 30 16"
+        fill="none"
+        stroke="url(#accretionDisk)"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -63,7 +86,7 @@ export default function Footer() {
         >
           <BlackHoleIcon className="w-4 h-4" />
           <span>
-            {isHebrew ? "פותח באהבה על ידי: Y.M" : "Developed By: Y.M"}
+            {isHebrew ? "פותח באהבה על ידי: Singularity" : "Developed By: Y.M"}
           </span>
         </div>
       </div>
