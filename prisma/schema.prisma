@@ -168,6 +168,7 @@ model ArticleTag {
 model Category {
   id                String            @id @default(cuid())
   name              String
+  description       String?
   bannerImageUrl    String?
   parentId          String?
   createdAt         DateTime          @default(now())

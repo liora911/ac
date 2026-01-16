@@ -40,7 +40,7 @@ export async function PUT(
   try {
     const { id } = await params;
 
-    const { name, parentId } = await request.json();
+    const { name, description, parentId } = await request.json();
     if (!name) {
       return NextResponse.json(
         { error: "Category name is required" },
@@ -52,6 +52,7 @@ export async function PUT(
       where: { id },
       data: {
         name,
+        description: description ?? null,
         parentId: parentId ?? null,
       },
     });

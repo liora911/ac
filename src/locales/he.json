@@ -1129,7 +1129,10 @@
       "subcategoryOf": "תת-קטגוריה של {parent}",
       "unknownParent": "קטגוריית אב לא ידועה",
       "topLevelCategory": "קטגוריה ראשית",
-      "nameCannotBeEmpty": "שם הקטגוריה לא יכול להיות ריק."
+      "nameCannotBeEmpty": "שם הקטגוריה לא יכול להיות ריק.",
+      "categoryDescription": "תיאור (אופציונלי)",
+      "categoryDescriptionPlaceholder": "טקסט שיוצג מעל המאמרים בקטגוריה זו...",
+      "categoryDescriptionHelp": "טקסט זה יופיע מעל המאמרים כאשר משתמשים גולשים בקטגוריה זו."
     }
   },
   "account": {

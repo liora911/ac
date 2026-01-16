@@ -13,6 +13,7 @@ export async function GET(request: NextRequest) {
       select: {
         id: true,
         name: true,
+        description: true,
         parentId: true,
       },
       orderBy: {
@@ -37,7 +38,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { name, parentId } = await request.json();
+    const { name, description, parentId } = await request.json();
 
     if (!name) {
       return NextResponse.json(
@@ -49,6 +50,7 @@ export async function POST(request: NextRequest) {
     const newCategory = await prisma.category.create({
       data: {
         name,
+        description: description || null,
         parentId: parentId || null,
       },
     });

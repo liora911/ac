@@ -6,6 +6,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 interface Category {
   id: string;
   name: string;
+  description?: string | null;
   parentId?: string | null;
 }
 
@@ -13,11 +14,13 @@ export default function CategoryManager() {
   const { t } = useTranslation();
   const [categories, setCategories] = useState<Category[]>([]);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryDescription, setNewCategoryDescription] = useState("");
   const [newCategoryParentId, setNewCategoryParentId] = useState<string | "">(
     ""
   );
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editedCategoryName, setEditedCategoryName] = useState("");
+  const [editedCategoryDescription, setEditedCategoryDescription] = useState("");
   const [editedCategoryParentId, setEditedCategoryParentId] = useState<
     string | ""
   >("");
@@ -65,6 +68,7 @@ export default function CategoryManager() {
         },
         body: JSON.stringify({
           name: newCategoryName.trim(),
+          description: newCategoryDescription.trim() || null,
           parentId: newCategoryParentId || null,
         }),
       });
@@ -82,6 +86,7 @@ export default function CategoryManager() {
       }
 
       setNewCategoryName("");
+      setNewCategoryDescription("");
       setNewCategoryParentId("");
       await fetchCategories();
     } catch (err) {
@@ -109,6 +114,7 @@ export default function CategoryManager() {
         },
         body: JSON.stringify({
           name: editedCategoryName.trim(),
+          description: editedCategoryDescription.trim() || null,
           parentId: editedCategoryParentId || null,
         }),
       });
@@ -127,6 +133,7 @@ export default function CategoryManager() {
 
       setEditingCategory(null);
       setEditedCategoryName("");
+      setEditedCategoryDescription("");
       setEditedCategoryParentId("");
       await fetchCategories();
     } catch (err) {
@@ -216,6 +223,26 @@ export default function CategoryManager() {
                   </div>
 
                   <div>
+                    <label
+                      htmlFor="newCategoryDescription"
+                      className="block text-xs font-medium text-gray-700"
+                    >
+                      {t("admin.categories.categoryDescription")}
+                    </label>
+                    <textarea
+                      id="newCategoryDescription"
+                      value={newCategoryDescription}
+                      onChange={(e) => setNewCategoryDescription(e.target.value)}
+                      placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
+                      rows={3}
+                      className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
+                    />
+                    <p className="mt-1 text-xs text-gray-400">
+                      {t("admin.categories.categoryDescriptionHelp")}
+                    </p>
+                  </div>
+
+                  <div>
                     <label className="block text-xs font-medium text-gray-700">
                       {t("admin.categories.parentCategory")}
                     </label>
@@ -281,17 +308,27 @@ export default function CategoryManager() {
                         {editingCategory?.id === category.id ? (
                           <form
                             onSubmit={handleEditCategory}
-                            className="flex w-full items-center gap-2"
+                            className="w-full space-y-3"
                           >
-                            <div className="flex-1 space-y-2">
+                            <div className="space-y-2">
                               <input
                                 type="text"
                                 value={editedCategoryName}
                                 onChange={(e) =>
                                   setEditedCategoryName(e.target.value)
                                 }
+                                placeholder={t("admin.categories.categoryName")}
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                 autoFocus
+                              />
+                              <textarea
+                                value={editedCategoryDescription}
+                                onChange={(e) =>
+                                  setEditedCategoryDescription(e.target.value)
+                                }
+                                placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
+                                rows={2}
+                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
                               />
                               <select
                                 value={editedCategoryParentId}
@@ -310,24 +347,27 @@ export default function CategoryManager() {
                                   ))}
                               </select>
                             </div>
-                            <button
-                              type="submit"
-                              disabled={saving || !editedCategoryName.trim()}
-                              className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-                            >
-                              {t("admin.common.save")}
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setEditingCategory(null);
-                                setEditedCategoryName("");
-                                setEditedCategoryParentId("");
-                              }}
-                              className="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
-                            >
-                              {t("admin.common.cancel")}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="submit"
+                                disabled={saving || !editedCategoryName.trim()}
+                                className="inline-flex items-center rounded-md bg-green-600 px-3 py-2 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
+                              >
+                                {t("admin.common.save")}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setEditingCategory(null);
+                                  setEditedCategoryName("");
+                                  setEditedCategoryDescription("");
+                                  setEditedCategoryParentId("");
+                                }}
+                                className="inline-flex items-center rounded-md bg-gray-100 px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-200"
+                              >
+                                {t("admin.common.cancel")}
+                              </button>
+                            </div>
                           </form>
                         ) : (
                           <>
@@ -335,7 +375,12 @@ export default function CategoryManager() {
                               <div className="truncate text-sm font-medium text-gray-900">
                                 {category.name}
                               </div>
-                              <div className="mt-0.5 text-xs text-gray-500">
+                              {category.description && (
+                                <div className="mt-0.5 text-xs text-gray-600 line-clamp-2">
+                                  {category.description}
+                                </div>
+                              )}
+                              <div className="mt-0.5 text-xs text-gray-400">
                                 {category.parentId
                                   ? t("admin.categories.subcategoryOf").replace(
                                       "{parent}",
@@ -351,6 +396,7 @@ export default function CategoryManager() {
                                 onClick={() => {
                                   setEditingCategory(category);
                                   setEditedCategoryName(category.name);
+                                  setEditedCategoryDescription(category.description || "");
                                   setEditedCategoryParentId(
                                     category.parentId || ""
                                   );

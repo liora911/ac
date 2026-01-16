@@ -1057,7 +1057,10 @@
       "subcategoryOf": "Subcategory of {parent}",
       "unknownParent": "Unknown parent",
       "topLevelCategory": "Top-level category",
-      "nameCannotBeEmpty": "Category name cannot be empty."
+      "nameCannotBeEmpty": "Category name cannot be empty.",
+      "categoryDescription": "Description (optional)",
+      "categoryDescriptionPlaceholder": "Text to display above articles in this category...",
+      "categoryDescriptionHelp": "This text will appear above articles when users browse this category."
     }
   },
   "premiumGate": {

@@ -55,6 +55,7 @@ export interface ArticleAuthorInput {
 export interface ArticleCategory {
   id: string;
   name: string;
+  description?: string;
   bannerImageUrl?: string;
   parentId?: string;
   parent?: ArticleCategory;

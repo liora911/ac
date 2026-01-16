@@ -379,6 +379,18 @@ export default function ArticlesList({
         </div>
       )}
 
+      {/* Category Description */}
+      {selectedCategory && categories && (() => {
+        const category = categories.find((c) => c.id === selectedCategory);
+        return category?.description ? (
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-2">
+            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+              {category.description}
+            </p>
+          </div>
+        ) : null;
+      })()}
+
       {}
       {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
