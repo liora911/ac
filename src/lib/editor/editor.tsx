@@ -25,6 +25,7 @@ import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Youtube from "@tiptap/extension-youtube";
 import { useEffect, useState, useRef } from "react";
 import { TextDirection } from "./text-direction";
+import DragDropImageUpload from "@/components/Upload/upload";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
@@ -656,14 +657,29 @@ export default function TiptapEditor({
       {/* Image Modal */}
       {isImageModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Insert Image</h3>
+          <div className="bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-white mb-4">Insert Image</h3>
+
+            {/* Drag & Drop Upload - reusing existing component */}
+            <DragDropImageUpload
+              onImageSelect={(url) => setImageUrl(url || "")}
+              currentImage={imageUrl || null}
+              placeholder="PNG, JPG, GIF, WebP (max 5MB)"
+              onError={(msg) => alert(msg)}
+            />
+
+            <div className="flex items-center gap-3 my-4">
+              <div className="flex-1 h-px bg-gray-600" />
+              <span className="text-sm text-gray-400">or paste URL</span>
+              <div className="flex-1 h-px bg-gray-600" />
+            </div>
+
             <input
               type="url"
               value={imageUrl}
               onChange={(e) => setImageUrl(e.target.value)}
               placeholder="https://example.com/image.jpg"
-              className="w-full p-3 border border-gray-200 rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full p-3 border border-gray-600 bg-gray-700 text-white rounded-lg mb-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             <div className="flex gap-3 mb-4">
               <input
@@ -671,26 +687,32 @@ export default function TiptapEditor({
                 value={imageWidth}
                 onChange={(e) => setImageWidth(e.target.value)}
                 placeholder="Width (px)"
-                className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <input
                 type="number"
                 value={imageHeight}
                 onChange={(e) => setImageHeight(e.target.value)}
                 placeholder="Height (px)"
-                className="flex-1 p-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 p-3 border border-gray-600 bg-gray-700 text-white rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
             <div className="flex justify-end gap-3">
               <button
-                onClick={() => setIsImageModalOpen(false)}
-                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+                onClick={() => {
+                  setIsImageModalOpen(false);
+                  setImageUrl("");
+                  setImageWidth("");
+                  setImageHeight("");
+                }}
+                className="px-4 py-2 rounded-lg border border-gray-600 text-gray-300 hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={addImage}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                disabled={!imageUrl}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Add Image
               </button>
