@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Lock, Sparkles, Crown } from "lucide-react";
+import { BookOpen, GraduationCap, Users, ArrowRight } from "lucide-react";
 
 interface PremiumGateProps {
   isPremium: boolean;
@@ -37,92 +37,105 @@ export default function PremiumGate({
   if (status === "loading") {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-amber-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-gray-400 border-t-transparent"></div>
       </div>
     );
   }
 
+  const benefits = [
+    {
+      icon: BookOpen,
+      label: t("premiumTeaser.benefit1"),
+    },
+    {
+      icon: GraduationCap,
+      label: t("premiumTeaser.benefit2"),
+    },
+    {
+      icon: Users,
+      label: t("premiumTeaser.benefit3"),
+    },
+  ];
+
   // Show premium gate
   return (
     <div className="relative">
-      {/* Preview content with blur */}
+      {/* Preview content with fade */}
       {previewContent && (
-        <div className="relative overflow-hidden max-h-96">
-          <div className="blur-sm pointer-events-none select-none">
+        <div className="relative overflow-hidden max-h-80">
+          <div className="blur-[2px] pointer-events-none select-none opacity-60">
             {previewContent}
           </div>
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/80 to-white dark:via-gray-900/80 dark:to-gray-900"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/70 to-white dark:via-gray-900/70 dark:to-gray-900"></div>
         </div>
       )}
 
-      {/* Premium gate overlay */}
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-950/40 dark:to-orange-950/40 border-2 border-amber-200 dark:border-amber-800 rounded-2xl p-8 text-center shadow-xl shadow-amber-100/50 dark:shadow-amber-900/20">
-        {/* Icon with animation */}
-        <div className="relative inline-flex items-center justify-center w-20 h-20 mb-6">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full animate-pulse opacity-20"></div>
-          <div className="relative w-16 h-16 bg-gradient-to-br from-amber-400 to-orange-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-300/50 dark:shadow-amber-900/50">
-            <Lock className="w-8 h-8 text-white" />
+      {/* Premium gate - Clean academic design */}
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl overflow-hidden shadow-sm">
+        {/* Subtle top accent line */}
+        <div className="h-1 bg-gradient-to-r from-gray-200 via-gray-400 to-gray-200 dark:from-gray-800 dark:via-gray-600 dark:to-gray-800"></div>
+
+        <div className="px-6 py-8 sm:px-10 sm:py-10">
+          {/* Header section */}
+          <div className="text-center mb-8">
+            <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 dark:text-white mb-3 tracking-tight">
+              {t("premiumGate.title")}
+            </h3>
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
+              {t("premiumGate.description")}
+            </p>
           </div>
-        </div>
 
-        {/* Title with crown */}
-        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2 flex items-center justify-center gap-2">
-          <Crown className="w-6 h-6 text-amber-500" />
-          {t("premiumGate.title") || "Premium Content"}
-        </h3>
-
-        <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
-          {t("premiumGate.description") ||
-            "This content is available exclusively to Researcher plan subscribers."}
-        </p>
-
-        {/* Benefits pills */}
-        <div className="flex flex-wrap justify-center gap-2 mb-6">
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 shadow-sm border border-gray-200 dark:border-gray-700">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            {t("premiumTeaser.benefit1")}
-          </span>
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 shadow-sm border border-gray-200 dark:border-gray-700">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            {t("premiumTeaser.benefit2")}
-          </span>
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full text-xs font-medium text-gray-700 dark:text-gray-300 shadow-sm border border-gray-200 dark:border-gray-700">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            {t("premiumTeaser.benefit3")}
-          </span>
-        </div>
-
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-          {!session ? (
-            <>
-              <Link
-                href="/auth/login"
-                className="inline-flex items-center gap-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors border border-gray-200 dark:border-gray-700"
+          {/* Benefits - horizontal on desktop, stack on mobile */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 max-w-2xl mx-auto">
+            {benefits.map((benefit, index) => (
+              <div
+                key={index}
+                className="flex items-center gap-3 sm:flex-col sm:text-center p-3 sm:p-4 rounded-lg bg-gray-50 dark:bg-gray-800/50"
               >
-                {t("premiumGate.loginButton") || "Sign In"}
-              </Link>
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">
+                  <benefit.icon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 dark:text-gray-400" />
+                </div>
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {benefit.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* CTA section */}
+          <div className="flex flex-col items-center gap-4">
+            {!session ? (
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                <Link
+                  href="/pricing"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
+                >
+                  {t("premiumGate.subscribeButton")}
+                  <ArrowRight className="w-4 h-4" />
+                </Link>
+                <Link
+                  href="/auth/login"
+                  className="w-full sm:w-auto inline-flex items-center justify-center text-gray-600 dark:text-gray-400 px-6 py-3 rounded-lg font-medium hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {t("premiumGate.loginButton")}
+                </Link>
+              </div>
+            ) : (
               <Link
                 href="/pricing"
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg transition-all shadow-lg shadow-amber-200/50 dark:shadow-amber-900/30 hover:scale-105"
+                className="inline-flex items-center justify-center gap-2 bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-lg font-medium hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors"
               >
-                <Crown className="w-5 h-5" />
-                {t("premiumGate.subscribeButton") || "Subscribe Now"}
+                {t("premiumGate.upgradeButton")}
+                <ArrowRight className="w-4 h-4" />
               </Link>
-            </>
-          ) : (
-            <Link
-              href="/pricing"
-              className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white px-6 py-3 rounded-lg transition-all shadow-lg shadow-amber-200/50 dark:shadow-amber-900/30 hover:scale-105"
-            >
-              <Crown className="w-5 h-5" />
-              {t("premiumGate.upgradeButton") || "Upgrade to Researcher"}
-            </Link>
-          )}
-        </div>
+            )}
 
-        <p className="text-sm text-gray-500 dark:text-gray-500 mt-4">
-          {t("premiumTeaser.priceHint")}
-        </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              {t("premiumTeaser.priceHint")}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -78,18 +78,46 @@ export function useResource(params = {}) {
 }
 ```
 
-### 2.4 API Response Pattern
+### 2.4 API Response Patterns
+Each resource type has its own response structure based on its needs:
+
 ```typescript
-// Success
-return NextResponse.json(data, { status: 200 });
-return NextResponse.json({ articles, total, page }, { status: 200 });
+// ARTICLES - Paginated list (large dataset)
+GET /api/articles → {
+  articles: Article[],
+  total: number,
+  page: number,
+  limit: number,
+  totalPages: number
+}
 
-// Error
-return NextResponse.json({ error: "Message" }, { status: 400|401|403|404|500 });
+// EVENTS - Simple array (smaller dataset)
+GET /api/events → Event[]
 
-// List responses should include pagination
-{ data: [], total: number, page: number, limit: number, totalPages: number }
+// LECTURES - Hierarchical tree (grouped by category)
+GET /api/lectures → TreeCategory[] // { id, name, lectures[], subcategories[] }
+
+// PRESENTATIONS - Hierarchical tree (grouped by category)
+GET /api/presentations → TreeCategory[] // { id, name, presentations[], subcategories[] }
+
+// FAVORITES - Grouped IDs by type
+GET /api/favorites → {
+  articles: string[],
+  lectures: string[],
+  presentations: string[]
+}
+
+// SINGLE ITEM (all resources)
+GET /api/[resource]/[id] → Resource
+POST /api/[resource] → Resource (created)
+PUT /api/[resource]/[id] → Resource (updated)
+DELETE /api/[resource]/[id] → { success: true }
+
+// ERROR (all endpoints)
+{ error: "Message" } with status 400|401|403|404|500
 ```
+
+**Why different patterns?** Each structure fits its use case - articles need pagination, lectures/presentations need category grouping, events are simple lists.
 
 ### 2.5 Authentication & Authorization
 ```typescript
@@ -261,11 +289,21 @@ ArticleAuthor    - articleId, name, imageUrl, order
 ### 5.3 Notification Usage
 ```typescript
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/Translation/TranslationContext";
 
 const { showSuccess, showError } = useNotification();
-showSuccess("הקישור הועתק!");  // Hebrew for "Link copied!"
-showError("שגיאה בשמירה");     // Hebrew for "Error saving"
+const { t } = useTranslation();
+
+// CORRECT - Use translation keys
+showSuccess(t("articleDetail.linkCopied"));
+showError(t("common.saveError"));
+
+// WRONG - Never hardcode strings
+// showSuccess("הקישור הועתק!");  ❌
+// showError("שגיאה בשמירה");     ❌
 ```
+
+> **Note:** The codebase currently has ~30 files with hardcoded Hebrew strings in notifications. These should be migrated to use translation keys.
 
 ---
 

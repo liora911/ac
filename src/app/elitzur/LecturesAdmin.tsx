@@ -118,11 +118,13 @@ export default function LecturesAdmin() {
       { id: lecture.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
-          showSuccess(`קטגוריית ההרצאה "${lecture.title}" עודכנה בהצלחה`);
+          showSuccess(
+            t("admin.lectures.categoryUpdated").replace("{title}", lecture.title)
+          );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון קטגוריית ההרצאה");
+          showError(t("admin.lectures.categoryError"));
         },
       }
     );
@@ -143,12 +145,14 @@ export default function LecturesAdmin() {
 
     deleteMutation.mutate(lectureToDelete.id, {
       onSuccess: () => {
-        showSuccess(`ההרצאה "${lectureToDelete.title}" נמחקה בהצלחה`);
+        showSuccess(
+          t("admin.lectures.deleteSuccess").replace("{title}", lectureToDelete.title)
+        );
         refetch();
         closeDeleteModal();
       },
       onError: () => {
-        showError("שגיאה במחיקת ההרצאה");
+        showError(t("admin.lectures.deleteError"));
       },
     });
   };

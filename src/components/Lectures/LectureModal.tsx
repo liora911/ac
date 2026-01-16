@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Clock, Calendar, Maximize2, Minimize2, ChevronDown, ChevronUp, Lock, Sparkles } from "lucide-react";
+import { X, Clock, Calendar, Maximize2, Minimize2, ChevronDown, ChevronUp, Lock, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Lecture } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -183,50 +183,50 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
             </>
           ) : (
             /* Premium Gate - shown when user doesn't have access */
-            <div className="flex-1 flex items-center justify-center p-8 bg-gradient-to-b from-gray-800 to-gray-900">
+            <div className="flex-1 flex items-center justify-center p-8 bg-gray-900">
               <div className="text-center max-w-md">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-500/20 rounded-full mb-4">
-                  <Lock className="w-8 h-8 text-amber-400" />
+                <div className="inline-flex items-center justify-center w-14 h-14 bg-gray-800 rounded-full mb-5">
+                  <Lock className="w-6 h-6 text-gray-400" />
                 </div>
 
-                <h3 className="text-2xl font-bold text-white mb-2">
-                  {t("premiumGate.title") || "תוכן פרימיום"}
+                <h3 className="text-xl font-semibold text-white mb-3">
+                  {t("premiumGate.title")}
                 </h3>
 
-                <p className="text-gray-400 mb-6">
-                  {t("premiumGate.description") || "תוכן זה זמין בלעדית למנויי תוכנית חוקר."}
+                <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                  {t("premiumTeaser.lectureDescription")}
                 </p>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                   {!session ? (
                     <>
                       <Link
-                        href="/auth/login"
-                        className="inline-flex items-center gap-2 bg-gray-700 text-gray-200 px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors"
+                        href="/pricing"
+                        className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 transition-colors"
                       >
-                        {t("premiumGate.loginButton") || "התחבר"}
+                        {t("premiumGate.subscribeButton")}
+                        <ArrowRight className="w-4 h-4" />
                       </Link>
                       <Link
-                        href="/pricing"
-                        className="inline-flex items-center gap-2 bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-colors"
+                        href="/auth/login"
+                        className="inline-flex items-center gap-2 text-gray-400 px-5 py-2.5 rounded-lg hover:text-white hover:bg-gray-800 transition-colors"
                       >
-                        <Sparkles className="w-5 h-5" />
-                        {t("premiumGate.subscribeButton") || "הרשם עכשיו"}
+                        {t("premiumGate.loginButton")}
                       </Link>
                     </>
                   ) : (
                     <Link
                       href="/pricing"
-                      className="inline-flex items-center gap-2 bg-amber-500 text-white px-6 py-3 rounded-lg hover:bg-amber-600 transition-colors"
+                      className="inline-flex items-center gap-2 bg-white text-gray-900 px-5 py-2.5 rounded-lg font-medium hover:bg-gray-100 transition-colors"
                     >
-                      <Sparkles className="w-5 h-5" />
-                      {t("premiumGate.upgradeButton") || "שדרג לתוכנית חוקר"}
+                      {t("premiumGate.upgradeButton")}
+                      <ArrowRight className="w-4 h-4" />
                     </Link>
                   )}
                 </div>
 
-                <p className="text-sm text-gray-500 mt-4">
-                  {t("premiumGate.benefits") || "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום."}
+                <p className="text-xs text-gray-600 mt-5">
+                  {t("premiumTeaser.priceHint")}
                 </p>
               </div>
             </div>
@@ -236,11 +236,11 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
           <div className="hidden sm:flex items-center justify-center gap-4 px-6 py-2 bg-gray-900/50 border-t border-gray-800 text-xs text-gray-500">
             <span>
               <kbd className="px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-mono">ESC</kbd>
-              {" "}לסגירה
+              {" "}{t("lectures.keyboardClose")}
             </span>
             <span>
               <kbd className="px-1.5 py-0.5 rounded bg-gray-800 text-gray-400 font-mono">F</kbd>
-              {" "}למסך מלא
+              {" "}{t("lectures.keyboardFullscreen")}
             </span>
           </div>
         </motion.div>

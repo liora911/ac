@@ -5,10 +5,12 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useHomeContent, useUpdateHomeContent } from "@/hooks/useHomeContent";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/Translation/TranslationContext";
 import TiptapEditor from "@/lib/editor/editor";
 import LoginForm from "@/components/Login/login";
 
 export default function HomeAdmin() {
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const isAuthorized = !!(
     session?.user?.email &&
@@ -42,11 +44,11 @@ export default function HomeAdmin() {
       },
       {
         onSuccess: () => {
-          showSuccess("תוכן דף הבית עודכן בהצלחה");
+          showSuccess(t("admin.home.updateSuccess"));
         },
         onError: (err: any) => {
           showError(
-            err?.message || "שגיאה בעדכון תוכן דף הבית, נסה שוב מאוחר יותר"
+            err?.message || t("admin.home.updateError")
           );
         },
       }
@@ -56,7 +58,7 @@ export default function HomeAdmin() {
   if (!isAuthorized) {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
-        <p className="mb-4">עליך להתחבר עם חשבון מורשה כדי לערוך את דף הבית.</p>
+        <p className="mb-4">{t("admin.home.unauthorized")}</p>
         <LoginForm />
       </div>
     );
@@ -67,15 +69,15 @@ export default function HomeAdmin() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold text-gray-900">
-            תוכן דף הבית
+            {t("admin.home.title")}
           </h2>
           <p className="mt-1 text-sm text-gray-600">
-            ערוך את תמונת דף הבית, קרדיט הצילום והביוגרפיה המוצגת בדף הראשי.
+            {t("admin.home.description")}
           </p>
         </div>
         {data?.updatedAt && (
           <p className="text-xs text-gray-500">
-            עודכן לאחרונה:{" "}
+            {t("admin.home.lastUpdated")}{" "}
             {new Date(data.updatedAt).toLocaleString("he-IL", {
               dateStyle: "short",
               timeStyle: "short",
@@ -89,14 +91,14 @@ export default function HomeAdmin() {
           className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800"
           role="alert"
         >
-          שגיאה בטעינת התוכן הקיים. ניתן עדיין לנסות ולשמור תוכן חדש.
+          {t("admin.home.loadError")}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">
-            תמונה וקרדיט
+            {t("admin.home.imageAndCredit")}
           </h3>
           <div className="space-y-4">
             <div>
@@ -104,7 +106,7 @@ export default function HomeAdmin() {
                 htmlFor="home-image-url"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                כתובת התמונה
+                {t("admin.home.imageUrl")}
               </label>
               <input
                 id="home-image-url"
@@ -121,14 +123,14 @@ export default function HomeAdmin() {
                 htmlFor="home-photo-credit"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                קרדיט צילום
+                {t("admin.home.photoCredit")}
               </label>
               <input
                 id="home-photo-credit"
                 type="text"
                 value={photoCredit}
                 onChange={(e) => setPhotoCredit(e.target.value)}
-                placeholder='לדוגמה: "צילום: אבישג שאר-ישוב"'
+                placeholder={t("admin.home.photoCreditPlaceholder")}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -136,7 +138,7 @@ export default function HomeAdmin() {
             {imageUrl && (
               <div>
                 <p className="text-sm font-medium text-gray-700 mb-2">
-                  תצוגה מקדימה:
+                  {t("admin.home.preview")}
                 </p>
                 <div className="border border-dashed border-gray-300 rounded-md p-3 flex justify-center">
                   <img
@@ -151,11 +153,11 @@ export default function HomeAdmin() {
         </div>
 
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">ביוגרפיה</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("admin.home.biography")}</h3>
           <TiptapEditor
             value={bioHtml}
             onChange={setBioHtml}
-            placeholder="כתוב כאן את טקסט הביוגרפיה שיופיע בדף הבית..."
+            placeholder={t("admin.home.biographyPlaceholder")}
             direction={direction}
             onDirectionChange={(dir) => setDirection(dir)}
             theme="light"
@@ -167,7 +169,7 @@ export default function HomeAdmin() {
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div className="text-sm text-gray-600">
-            <p>לחיצה על "שמור" תעדכן מיד את דף הבית באתר.</p>
+            <p>{t("admin.home.saveNote")}</p>
           </div>
           <button
             type="button"
@@ -175,7 +177,7 @@ export default function HomeAdmin() {
             disabled={isLoading || updateMutation.isPending}
             className="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {updateMutation.isPending ? "שומר..." : "שמור שינויים"}
+            {updateMutation.isPending ? t("admin.home.saving") : t("admin.home.saveChanges")}
           </button>
         </div>
       </div>

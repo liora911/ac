@@ -587,7 +587,7 @@ export default function ArticleForm({
                     htmlFor="isPremium"
                     className="ml-2 text-sm text-gray-700"
                   >
-                    תוכן פרימיום (למנויים בלבד)
+                    {t("premiumGate.subscriberOnlyLabel")}
                   </label>
                 </div>
               </div>

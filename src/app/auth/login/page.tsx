@@ -5,6 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/Translation/TranslationContext";
 import { User, Mail, ArrowRight } from "lucide-react";
 
 type Notice = { kind: "success" | "error" | "info"; text: string } | null;
@@ -17,6 +18,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { showSuccess, showError } = useNotification();
+  const { t } = useTranslation();
 
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
@@ -25,10 +27,10 @@ function LoginContent() {
     if (error) {
       setNotice({
         kind: "error",
-        text: "שגיאה בהתחברות. אנא נסה שוב.",
+        text: t("auth.errorTryAgain"),
       });
     }
-  }, [searchParams]);
+  }, [searchParams, t]);
 
   // Redirect if already logged in
   useEffect(() => {
@@ -54,22 +56,22 @@ function LoginContent() {
       if (result?.error) {
         setNotice({
           kind: "error",
-          text: "שגיאה בשליחת המייל. אנא נסה שוב.",
+          text: t("auth.emailError"),
         });
-        showError("שגיאה בשליחת המייל");
+        showError(t("auth.emailError"));
       } else {
         setNotice({
           kind: "success",
-          text: "נשלח קישור התחברות למייל שלך!",
+          text: t("auth.linkSent"),
         });
-        showSuccess("קישור התחברות נשלח למייל שלך!");
+        showSuccess(t("auth.linkSent"));
       }
     } catch {
       setNotice({
         kind: "error",
-        text: "משהו השתבש. אנא נסה שוב.",
+        text: t("auth.errorTryAgain"),
       });
-      showError("משהו השתבש. אנא נסה שוב.");
+      showError(t("auth.errorTryAgain"));
     } finally {
       setIsLoading(false);
     }
@@ -88,9 +90,9 @@ function LoginContent() {
             <div className="mx-auto w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mb-4">
               <User className="w-7 h-7 text-emerald-600" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900">התחברות</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t("auth.login")}</h1>
             <p className="mt-2 text-sm text-gray-600">
-              היכנס לחשבונך או צור חשבון חדש
+              {t("auth.loginOrRegister")}
             </p>
           </div>
 
@@ -117,7 +119,7 @@ function LoginContent() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                כתובת מייל
+                {t("auth.emailLabel")}
               </label>
               <div className="relative">
                 <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -157,11 +159,11 @@ function LoginContent() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  שולח קישור...
+                  {t("auth.sendingLink")}
                 </>
               ) : (
                 <>
-                  המשך עם מייל
+                  {t("auth.sendEmailLink")}
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -171,9 +173,7 @@ function LoginContent() {
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-gray-200">
             <p className="text-center text-xs text-gray-500">
-              נשלח אליך קישור התחברות חד-פעמי למייל.
-              <br />
-              אם אין לך חשבון, ייווצר לך חשבון חדש אוטומטית.
+              {t("auth.loginInfo")}
             </p>
           </div>
         </div>
@@ -184,7 +184,7 @@ function LoginContent() {
             href="/"
             className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
           >
-            ← חזור לדף הבית
+            {t("auth.backHome")}
           </a>
         </div>
       </div>

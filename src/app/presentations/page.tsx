@@ -370,7 +370,7 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
         throw new Error("Failed to delete presentation");
       }
 
-      showSuccess(`המצגת "${presentationToDelete.title}" נמחקה בהצלחה`);
+      showSuccess(t("presentations.deleteSuccess").replace("{title}", presentationToDelete.title));
       onPresentationDeleted();
       closeDeleteModal();
     } catch (error) {
@@ -550,8 +550,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                               onMouseEnter={() => setHoveredStarId(presentation.id)}
                               onMouseLeave={() => setHoveredStarId(null)}
                               className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10"
-                              aria-label="תוכן פרימיום - הרשם למנוי"
-                              title="תוכן פרימיום - לחץ להרשמה"
+                              aria-label={t("premiumGate.subscribeAriaLabel")}
+                              title={t("premiumGate.clickToSubscribe")}
                             >
                               <Star className={`w-4 h-4 transition-all ${
                                 hoveredStarId === presentation.id
@@ -632,8 +632,8 @@ const PresentationsGrid: React.FC<PresentationsGridProps> = ({
                             onMouseEnter={() => setHoveredStarId(presentation.id)}
                             onMouseLeave={() => setHoveredStarId(null)}
                             className="w-8 h-8 rounded-full border border-amber-300 hover:bg-amber-50 transition-all flex items-center justify-center cursor-pointer relative z-10 flex-shrink-0"
-                            aria-label="תוכן פרימיום - הרשם למנוי"
-                            title="תוכן פרימיום - לחץ להרשמה"
+                            aria-label={t("premiumGate.subscribeAriaLabel")}
+                            title={t("premiumGate.clickToSubscribe")}
                           >
                             <Star className={`w-4 h-4 transition-all ${
                               hoveredStarId === presentation.id

@@ -85,10 +85,10 @@ export default function MessagesAdmin() {
       if (selectedMessage?.id === messageToDelete.id) {
         setSelectedMessage(null);
       }
-      showSuccess("ההודעה נמחקה בהצלחה");
+      showSuccess(t("admin.messages.deleteSuccess"));
       closeDeleteModal();
     } catch (err) {
-      showError("שגיאה במחיקת ההודעה");
+      showError(t("admin.messages.deleteError"));
     } finally {
       setIsDeleting(false);
     }
@@ -98,7 +98,7 @@ export default function MessagesAdmin() {
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-6 text-sm text-amber-800">
         <p className="mb-4">
-          You must sign in with an authorized account to view messages.
+          {t("admin.messages.signInRequired")}
         </p>
         <LoginForm />
       </div>
@@ -129,12 +129,12 @@ export default function MessagesAdmin() {
   if (error) {
     return (
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-sm text-red-800">
-        <p>Error loading messages: {error}</p>
+        <p>{t("admin.messages.errorLoading").replace("{error}", error)}</p>
         <button
           onClick={fetchMessages}
           className="mt-2 px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
         >
-          Retry
+          {t("admin.messages.retry")}
         </button>
       </div>
     );
@@ -144,21 +144,21 @@ export default function MessagesAdmin() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Total: {messages.length} messages
+          {t("admin.messages.total").replace("{count}", String(messages.length))}
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-900">Messages</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t("admin.messages.title")}</h3>
           {messages.length === 0 ? (
             <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
               <Mail className="mx-auto h-12 w-12 text-gray-400" />
               <h3 className="mt-2 text-sm font-medium text-gray-900">
-                No messages
+                {t("admin.messages.noMessages")}
               </h3>
               <p className="mt-1 text-sm text-gray-500">
-                No contact form submissions yet.
+                {t("admin.messages.noMessagesYet")}
               </p>
             </div>
           ) : (
@@ -206,7 +206,7 @@ export default function MessagesAdmin() {
                         openDeleteModal(message);
                       }}
                       className="ml-2 p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Delete message"
+                      title={t("admin.messages.deleteMessage")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -219,14 +219,14 @@ export default function MessagesAdmin() {
 
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-gray-900">
-            Message Details
+            {t("admin.messages.messageDetails")}
           </h3>
           {selectedMessage ? (
             <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    From
+                    {t("admin.messages.from")}
                   </label>
                   <div className="flex items-center space-x-2 mt-1">
                     <User className="h-4 w-4 text-gray-400" />
@@ -247,7 +247,7 @@ export default function MessagesAdmin() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Subject
+                    {t("admin.messages.subject")}
                   </label>
                   <div className="flex items-center space-x-2 mt-1">
                     <MessageSquare className="h-4 w-4 text-gray-400" />
@@ -259,7 +259,7 @@ export default function MessagesAdmin() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Date
+                    {t("admin.messages.date")}
                   </label>
                   <div className="flex items-center space-x-2 mt-1">
                     <Calendar className="h-4 w-4 text-gray-400" />
@@ -271,7 +271,7 @@ export default function MessagesAdmin() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700">
-                    Message
+                    {t("admin.messages.message")}
                   </label>
                   <div className="mt-1 p-3 bg-gray-50 rounded-md">
                     <p className="text-sm text-gray-900 whitespace-pre-wrap">
@@ -316,7 +316,7 @@ export default function MessagesAdmin() {
       <Modal
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
-        title="מחיקת הודעה"
+        title={t("admin.messages.deleteTitle")}
         hideFooter
       >
         <div className="text-center">
@@ -324,13 +324,13 @@ export default function MessagesAdmin() {
             <AlertTriangle className="w-7 h-7 text-red-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            האם אתה בטוח?
+            {t("admin.messages.deleteConfirm")}
           </h3>
           <p className="text-gray-600 text-sm mb-6">
-            פעולה זו תמחק לצמיתות את ההודעה מ-
+            {t("admin.messages.deleteWarning")}
             <span className="font-medium text-gray-900"> {messageToDelete?.name}</span>.
             <br />
-            לא ניתן לבטל פעולה זו.
+            {t("admin.messages.deleteIrreversible")}
           </p>
           <div className="flex gap-3 justify-center">
             <button
@@ -339,7 +339,7 @@ export default function MessagesAdmin() {
               disabled={isDeleting}
               className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
             >
-              ביטול
+              {t("admin.common.cancel")}
             </button>
             <button
               type="button"
@@ -353,12 +353,12 @@ export default function MessagesAdmin() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  מוחק...
+                  {t("admin.messages.deleting")}
                 </>
               ) : (
                 <>
                   <Trash2 className="w-4 h-4" />
-                  מחק הודעה
+                  {t("admin.messages.deleteButton")}
                 </>
               )}
             </button>

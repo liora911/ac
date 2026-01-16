@@ -42,7 +42,20 @@
     "title": "תחומי המחקר שלי מגוונים, וכוללים מכניקת קוונטים, תורת היחסות, תרמודינמיקה, ביולוגיה אבולוציונית, פסיכואנליזה ופילוסופיית התודעה.",
     "description": "כאן תמצאו מצגות שלי בנושאים שונים. הן זמינות להורדה חינם.",
     "download": "הורד מצגת",
-    "viewOnline": "צפה אונליין"
+    "viewOnline": "צפה אונליין",
+    "share": "שתף",
+    "downloadPdf": "הורד PDF",
+    "openGoogleSlides": "פתח ב-Google Slides",
+    "descriptionTitle": "תיאור",
+    "contentTitle": "תוכן",
+    "createdBy": "נוצר על ידי:",
+    "metadata": "קטגוריה: {category} • נוצר: {date}",
+    "shareTitle": "שתף מצגת זו",
+    "shareInstruction": "העתק את הקישור למטה כדי לשתף את המצגת.",
+    "linkCopied": "קישור למצגת הועתק",
+    "copyError": "שגיאה בהעתקת הקישור",
+    "pdfGenerationError": "לא ניתן ליצור PDF עבור קישור המצגת הזה",
+    "deleteSuccess": "המצגת \"{title}\" נמחקה בהצלחה"
   },
   "app": {
     "title": "אבשלום אליצור"
@@ -174,13 +187,30 @@
     "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים.",
     "premium": "פרימיום"
   },
+  "lectures": {
+    "share": "שתף",
+    "watch": "צפה בהרצאה",
+    "shareTitle": "שיתוף הרצאה",
+    "lectureLink": "קישור להרצאה",
+    "quickShare": "שיתוף מהיר",
+    "copiedDiscord": "הועתק! הדבק בדיסקורד",
+    "deleteSuccess": "ההרצאה \"{title}\" נמחקה בהצלחה",
+    "deleteError": "נכשל במחיקת ההרצאה",
+    "theaterModeOn": "מצב תיאטרון",
+    "theaterModeOff": "יציאה ממצב תיאטרון",
+    "keyboardClose": "לסגירה",
+    "keyboardFullscreen": "למסך מלא"
+  },
   "premiumGate": {
     "title": "תוכן פרימיום",
     "description": "תוכן זה זמין בלעדית למנויי תוכנית חוקר.",
     "loginButton": "התחבר",
     "subscribeButton": "הרשם עכשיו",
     "upgradeButton": "שדרג לתוכנית חוקר",
-    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום."
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום.",
+    "subscriberOnlyLabel": "תוכן פרימיום (למנויים בלבד)",
+    "subscribeAriaLabel": "תוכן פרימיום - הרשם למנוי",
+    "clickToSubscribe": "תוכן פרימיום - לחץ להרשמה"
   },
   "articlesPage": {
     "title": "מאמרים",
@@ -880,7 +910,16 @@
       "deleteWarning": "פעולה זו תמחק לצמיתות את המאמר",
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
-      "deleteButton": "מחק מאמר"
+      "deleteButton": "מחק מאמר",
+      "statusChanged": "המאמר \"{title}\" {status} בהצלחה",
+      "statusPublished": "פורסם",
+      "statusDraft": "הועבר לטיוטה",
+      "statusError": "שגיאה בעדכון סטטוס המאמר",
+      "categoryUpdated": "קטגוריית המאמר \"{title}\" עודכנה בהצלחה",
+      "categoryError": "שגיאה בעדכון קטגוריית המאמר",
+      "deleteSuccess": "המאמר \"{title}\" נמחק בהצלחה",
+      "deleteError": "שגיאה במחיקת המאמר",
+      "removeAuthor": "הסר מחבר"
     },
     "events": {
       "newEvent": "+ אירוע חדש",
@@ -897,7 +936,11 @@
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
       "deleteButton": "מחק אירוע",
-      "tickets": "כרטיסים"
+      "tickets": "כרטיסים",
+      "categoryUpdated": "קטגוריית האירוע \"{title}\" עודכנה בהצלחה",
+      "categoryError": "שגיאה בעדכון קטגוריית האירוע",
+      "deleteSuccess": "האירוע \"{title}\" נמחק בהצלחה",
+      "deleteError": "שגיאה במחיקת האירוע"
     },
     "tickets": {
       "title": "ניהול כרטיסים",
@@ -944,7 +987,11 @@
       "deleteWarning": "פעולה זו תמחק לצמיתות את ההרצאה",
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
-      "deleteButton": "מחק הרצאה"
+      "deleteButton": "מחק הרצאה",
+      "categoryUpdated": "קטגוריית ההרצאה \"{title}\" עודכנה בהצלחה",
+      "categoryError": "שגיאה בעדכון קטגוריית ההרצאה",
+      "deleteSuccess": "ההרצאה \"{title}\" נמחקה בהצלחה",
+      "deleteError": "שגיאה במחיקת ההרצאה"
     },
     "presentations": {
       "newPresentation": "+ מצגת חדשה",
@@ -959,7 +1006,15 @@
       "deleteWarning": "פעולה זו תמחק לצמיתות את המצגת",
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
-      "deleteButton": "מחק מצגת"
+      "deleteButton": "מחק מצגת",
+      "statusChanged": "המצגת \"{title}\" {status} בהצלחה",
+      "statusPublished": "פורסמה",
+      "statusUnpublished": "הוסרה מפרסום",
+      "statusError": "שגיאה בעדכון סטטוס המצגת",
+      "categoryUpdated": "קטגוריית המצגת \"{title}\" עודכנה בהצלחה",
+      "categoryError": "שגיאה בעדכון קטגוריית המצגת",
+      "deleteSuccess": "המצגת \"{title}\" נמחקה בהצלחה",
+      "deleteError": "שגיאה במחיקת המצגת"
     },
     "messages": {
       "title": "הודעות",
@@ -981,7 +1036,67 @@
       "deleteWarning": "פעולה זו תמחק לצמיתות את ההודעה מ-",
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
-      "deleteButton": "מחק הודעה"
+      "deleteButton": "מחק הודעה",
+      "deleteSuccess": "ההודעה נמחקה בהצלחה",
+      "deleteError": "שגיאה במחיקת ההודעה",
+      "signInRequired": "יש להתחבר עם חשבון מורשה כדי לצפות בהודעות.",
+      "retry": "נסה שוב"
+    },
+    "subscriptions": {
+      "loadError": "שגיאה בטעינת משתמשים",
+      "emailRequired": "יש להזין כתובת אימייל",
+      "grantSuccess": "מנוי הוענק בהצלחה ל-{email}",
+      "grantError": "שגיאה בהענקת מנוי",
+      "revokeSuccess": "מנוי בוטל בהצלחה עבור {email}",
+      "revokeError": "שגיאה בביטול מנוי",
+      "title": "ניהול מנויים",
+      "activeCount": "{count} מנויים פעילים מתוך {total} משתמשים",
+      "grantSubscription": "הענק מנוי",
+      "searchPlaceholder": "חיפוש לפי אימייל או שם...",
+      "allUsers": "כל המשתמשים",
+      "subscribedOnly": "מנויים בלבד",
+      "unsubscribedOnly": "ללא מנוי",
+      "noUsersFound": "לא נמצאו משתמשים",
+      "noSubscription": "ללא מנוי",
+      "active": "פעיל",
+      "canceled": "בוטל",
+      "pastDue": "תשלום באיחור",
+      "expired": "פג תוקף",
+      "noName": "ללא שם",
+      "admin": "מנהל",
+      "revokeSubscription": "בטל מנוי",
+      "grantTitle": "הענקת מנוי",
+      "emailLabel": "כתובת אימייל",
+      "emailHelp": "אם המשתמש לא קיים במערכת, הוא יווצר אוטומטית",
+      "durationLabel": "משך המנוי",
+      "duration1Month": "חודש אחד",
+      "duration3Months": "3 חודשים",
+      "duration1Year": "שנה",
+      "durationLifetime": "לכל החיים (100 שנה)",
+      "cancel": "ביטול",
+      "revokeTitle": "ביטול מנוי",
+      "revokeConfirm": "האם אתה בטוח שברצונך לבטל את המנוי של {email}?",
+      "revoking": "מבטל..."
+    },
+    "home": {
+      "title": "תוכן דף הבית",
+      "description": "ערוך את תמונת דף הבית, קרדיט הצילום והביוגרפיה המוצגת בדף הראשי.",
+      "unauthorized": "עליך להתחבר עם חשבון מורשה כדי לערוך את דף הבית.",
+      "updateSuccess": "תוכן דף הבית עודכן בהצלחה",
+      "updateError": "שגיאה בעדכון תוכן דף הבית, נסה שוב מאוחר יותר",
+      "lastUpdated": "עודכן לאחרונה:",
+      "loadError": "שגיאה בטעינת התוכן הקיים. ניתן עדיין לנסות ולשמור תוכן חדש.",
+      "imageAndCredit": "תמונה וקרדיט",
+      "imageUrl": "כתובת התמונה",
+      "imageUrlPlaceholder": "https://example.com/image.jpg",
+      "photoCredit": "קרדיט צילום",
+      "photoCreditPlaceholder": "לדוגמה: \"צילום: אבישג שאר-ישוב\"",
+      "preview": "תצוגה מקדימה:",
+      "biography": "ביוגרפיה",
+      "biographyPlaceholder": "כתוב כאן את טקסט הביוגרפיה שיופיע בדף הבית...",
+      "saveNote": "לחיצה על \"שמור\" תעדכן מיד את דף הבית באתר.",
+      "saving": "שומר...",
+      "saveChanges": "שמור שינויים"
     },
     "nav": {
       "title": "פאנל ניהול",
@@ -1090,7 +1205,9 @@
       "title": "עוזר AI",
       "description": "שאל אותי איך לעשות משהו באפליקציה",
       "startChat": "התחל צ'אט",
-      "emptyState": "נסה אחת מהשאלות הבאות:"
+      "emptyState": "נסה אחת מהשאלות הבאות:",
+      "clearChat": "נקה צ'אט",
+      "send": "שלח"
     }
   },
   "favorites": {
@@ -1126,7 +1243,67 @@
   "common": {
     "premium": "פרימיום",
     "minRead": "דק'",
-    "slides": "שקפים"
+    "slides": "שקפים",
+    "saveError": "שגיאה בשמירה. אנא נסה שוב.",
+    "deleteError": "שגיאה במחיקה. אנא נסה שוב.",
+    "loadError": "שגיאה בטעינת נתונים.",
+    "linkCopied": "הקישור הועתק!",
+    "copyError": "לא ניתן להעתיק קישור",
+    "copyNotSupported": "לא ניתן להעתיק בדפדפן זה",
+    "copy": "העתק",
+    "copied": "הועתק!",
+    "close": "סגור",
+    "error": "שגיאה",
+    "removeImage": "הסר תמונה"
+  },
+  "auth": {
+    "signOutSuccess": "התנתקת בהצלחה מהמערכת",
+    "unauthorized": "משתמש זה אינו מורשה גישה",
+    "emailError": "שגיאה בשליחת המייל",
+    "linkSent": "קישור התחברות נשלח למייל שלך!",
+    "errorTryAgain": "משהו השתבש. אנא נסה שוב.",
+    "adminPanel": "פאנל ניהול",
+    "adminOnly": "התחברות למורשים בלבד",
+    "emailLabel": "כתובת מייל",
+    "sendingLink": "שולח קישור...",
+    "sendLoginLink": "שלח קישור התחברות",
+    "adminLoginInfo": "נשלח אליך קישור התחברות חד-פעמי למייל. רק משתמשים מורשים יוכלו להתחבר.",
+    "backHome": "← חזור לדף הבית",
+    "login": "התחברות",
+    "loginOrRegister": "היכנס לחשבונך או צור חשבון חדש",
+    "sending": "שולח...",
+    "sendEmailLink": "שלח קישור למייל",
+    "loginInfo": "נשלח אליך קישור התחברות חד-פעמי למייל. אם אין לך חשבון, ייווצר לך חשבון חדש אוטומטית.",
+    "welcome": "ברוך הבא!",
+    "userLoggedIn": "משתמש מחובר:",
+    "signOut": "צא מהמערכת",
+    "signIn": "התחבר למערכת",
+    "emailLinkInfo": "נשלח אליך קישור התחברות חד-פעמי למייל.",
+    "noPasswordInfo": "אין צורך בסיסמאות או הרשמה. אנחנו נשלח אימות למייל שלך."
+  },
+  "activity": {
+    "actions": "פעולות",
+    "deleteItem": "מחיקת פריט",
+    "deleteSuccess": "{type} \"{title}\" נמחק בהצלחה",
+    "deleteError": "שגיאה במחיקה",
+    "noActivity": "אין פעילות אחרונה",
+    "view": "צפייה",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "deleteConfirm": "האם אתה בטוח?",
+    "deleteWarning": "פעולה זו תמחק לצמיתות את",
+    "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
+    "deleting": "מוחק...",
+    "lessThanHourAgo": "לפני פחות משעה",
+    "hoursAgo": "לפני {count} שעות",
+    "yesterday": "אתמול",
+    "daysAgo": "לפני {count} ימים",
+    "weeksAgo": "לפני {count} שבועות",
+    "monthsAgo": "לפני {count} חודשים",
+    "typeArticle": "מאמר",
+    "typeEvent": "אירוע",
+    "typeLecture": "הרצאה",
+    "typePresentation": "מצגת"
   },
   "premiumBadge": {
     "title": "תוכן פרימיום",
@@ -1160,7 +1337,10 @@
     "loginButton": "התחבר",
     "subscribeButton": "הירשם עכשיו",
     "upgradeButton": "שדרג לתוכנית חוקר",
-    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום."
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום.",
+    "subscriberOnlyLabel": "תוכן פרימיום (למנויים בלבד)",
+    "subscribeAriaLabel": "תוכן פרימיום - הרשם למנוי",
+    "clickToSubscribe": "תוכן פרימיום - לחץ להרשמה"
   },
   "pricing": {
     "title": "מנוי חוקר",

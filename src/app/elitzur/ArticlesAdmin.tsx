@@ -98,15 +98,18 @@ export default function ArticlesAdmin() {
       { id: article.id, status: nextStatus },
       {
         onSuccess: () => {
+          const statusText = nextStatus === "PUBLISHED"
+            ? t("admin.articles.statusPublished")
+            : t("admin.articles.statusDraft");
           showSuccess(
-            `המאמר "${article.title}" ${
-              nextStatus === "PUBLISHED" ? "פורסם" : "הועבר לטיוטה"
-            } בהצלחה`
+            t("admin.articles.statusChanged")
+              .replace("{title}", article.title)
+              .replace("{status}", statusText)
           );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון סטטוס המאמר");
+          showError(t("admin.articles.statusError"));
         },
       }
     );
@@ -117,11 +120,13 @@ export default function ArticlesAdmin() {
       { id: article.id, categoryId: newCategoryId || undefined },
       {
         onSuccess: () => {
-          showSuccess(`קטגוריית המאמר "${article.title}" עודכנה בהצלחה`);
+          showSuccess(
+            t("admin.articles.categoryUpdated").replace("{title}", article.title)
+          );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון קטגוריית המאמר");
+          showError(t("admin.articles.categoryError"));
         },
       }
     );
@@ -142,12 +147,14 @@ export default function ArticlesAdmin() {
 
     deleteMutation.mutate(articleToDelete.id, {
       onSuccess: () => {
-        showSuccess(`המאמר "${articleToDelete.title}" נמחק בהצלחה`);
+        showSuccess(
+          t("admin.articles.deleteSuccess").replace("{title}", articleToDelete.title)
+        );
         refetch();
         closeDeleteModal();
       },
       onError: () => {
-        showError("שגיאה במחיקת המאמר");
+        showError(t("admin.articles.deleteError"));
       },
     });
   };

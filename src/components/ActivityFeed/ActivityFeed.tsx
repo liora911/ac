@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useTranslation } from "@/contexts/Translation/TranslationContext";
 
 interface ActivityItem {
   id: string;
@@ -30,6 +31,7 @@ interface ActivityItem {
 const ActivityFeed: React.FC = () => {
   const router = useRouter();
   const { showSuccess, showError } = useNotification();
+  const { t } = useTranslation();
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
@@ -200,16 +202,16 @@ const ActivityFeed: React.FC = () => {
     }
   };
 
-  const getTypeLabelHe = (type: string) => {
+  const getTypeLabel = (type: string) => {
     switch (type) {
       case "article":
-        return "מאמר";
+        return t("activity.typeArticle");
       case "event":
-        return "אירוע";
+        return t("activity.typeEvent");
       case "lecture":
-        return "הרצאה";
+        return t("activity.typeLecture");
       case "presentation":
-        return "מצגת";
+        return t("activity.typePresentation");
       default:
         return "";
     }
@@ -222,13 +224,13 @@ const ActivityFeed: React.FC = () => {
       (now.getTime() - time.getTime()) / (1000 * 60 * 60)
     );
 
-    if (diffInHours < 1) return "לפני פחות משעה";
-    if (diffInHours < 24) return `לפני ${diffInHours} שעות`;
+    if (diffInHours < 1) return t("activity.lessThanHourAgo");
+    if (diffInHours < 24) return t("activity.hoursAgo").replace("{count}", String(diffInHours));
     const diffInDays = Math.floor(diffInHours / 24);
-    if (diffInDays === 1) return "אתמול";
-    if (diffInDays < 7) return `לפני ${diffInDays} ימים`;
-    if (diffInDays < 30) return `לפני ${Math.floor(diffInDays / 7)} שבועות`;
-    return `לפני ${Math.floor(diffInDays / 30)} חודשים`;
+    if (diffInDays === 1) return t("activity.yesterday");
+    if (diffInDays < 7) return t("activity.daysAgo").replace("{count}", String(diffInDays));
+    if (diffInDays < 30) return t("activity.weeksAgo").replace("{count}", String(Math.floor(diffInDays / 7)));
+    return t("activity.monthsAgo").replace("{count}", String(Math.floor(diffInDays / 30)));
   };
 
   const handleView = (activity: ActivityItem) => {
@@ -292,14 +294,14 @@ const ActivityFeed: React.FC = () => {
 
       if (response.ok) {
         setActivities((prev) => prev.filter((a) => a.id !== activityToDelete.id));
-        showSuccess(`${getTypeLabelHe(activityToDelete.type)} "${activityToDelete.title}" נמחק בהצלחה`);
+        showSuccess(t("activity.deleteSuccess").replace("{type}", getTypeLabel(activityToDelete.type)).replace("{title}", activityToDelete.title));
         closeDeleteModal();
       } else {
-        showError("שגיאה במחיקה");
+        showError(t("activity.deleteError"));
       }
     } catch (error) {
       console.error("Failed to delete:", error);
-      showError("שגיאה במחיקה");
+      showError(t("activity.deleteError"));
     } finally {
       setDeleting(null);
     }
@@ -328,7 +330,7 @@ const ActivityFeed: React.FC = () => {
   if (activities.length === 0) {
     return (
       <div className="text-center py-8 text-gray-500">
-        אין פעילות אחרונה
+        {t("activity.noActivity")}
       </div>
     );
   }
@@ -361,7 +363,7 @@ const ActivityFeed: React.FC = () => {
               </p>
               <div className="flex items-center gap-2 text-xs text-gray-500">
                 <span className={`px-1.5 py-0.5 rounded ${bg} ${color} font-medium`}>
-                  {getTypeLabelHe(activity.type)}
+                  {getTypeLabel(activity.type)}
                 </span>
                 <span>•</span>
                 <span>{formatTimeAgo(activity.timestamp)}</span>
@@ -383,7 +385,7 @@ const ActivityFeed: React.FC = () => {
                   }
                 }}
                 className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-200 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
-                aria-label="פעולות"
+                aria-label={t("activity.actions")}
               >
                 <MoreVertical className="w-4 h-4 text-gray-500" />
               </button>
@@ -399,21 +401,21 @@ const ActivityFeed: React.FC = () => {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <Eye className="w-4 h-4" />
-                    <span>צפייה</span>
+                    <span>{t("activity.view")}</span>
                   </button>
                   <button
                     onClick={() => handleEdit(activity)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                   >
                     <Pencil className="w-4 h-4" />
-                    <span>עריכה</span>
+                    <span>{t("activity.edit")}</span>
                   </button>
                   <button
                     onClick={() => openDeleteModal(activity)}
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
-                    <span>מחיקה</span>
+                    <span>{t("activity.delete")}</span>
                   </button>
                 </div>
               )}
@@ -426,7 +428,7 @@ const ActivityFeed: React.FC = () => {
       <Modal
         isOpen={deleteModalOpen}
         onClose={closeDeleteModal}
-        title="מחיקת פריט"
+        title={t("activity.deleteItem")}
         hideFooter
       >
         <div className="text-center">
@@ -434,13 +436,13 @@ const ActivityFeed: React.FC = () => {
             <AlertTriangle className="w-7 h-7 text-red-600" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 mb-2">
-            האם אתה בטוח?
+            {t("activity.deleteConfirm")}
           </h3>
           <p className="text-gray-600 text-sm mb-6">
-            פעולה זו תמחק לצמיתות את {activityToDelete ? getTypeLabelHe(activityToDelete.type) : ""}
+            {t("activity.deleteWarning")} {activityToDelete ? getTypeLabel(activityToDelete.type) : ""}
             <span className="font-medium text-gray-900"> &quot;{activityToDelete?.title}&quot;</span>.
             <br />
-            לא ניתן לבטל פעולה זו.
+            {t("activity.deleteIrreversible")}
           </p>
           <div className="flex gap-3 justify-center">
             <button
@@ -449,7 +451,7 @@ const ActivityFeed: React.FC = () => {
               disabled={!!deleting}
               className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
             >
-              ביטול
+              {t("admin.common.cancel")}
             </button>
             <button
               type="button"
@@ -463,12 +465,12 @@ const ActivityFeed: React.FC = () => {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  מוחק...
+                  {t("activity.deleting")}
                 </>
               ) : (
                 <>
                   <Trash2 className="w-4 h-4" />
-                  מחק
+                  {t("activity.delete")}
                 </>
               )}
             </button>

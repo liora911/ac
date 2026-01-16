@@ -72,14 +72,14 @@ const LectureCard: React.FC<LectureCardProps> = ({
       if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(lectureUrl);
         setCopied(true);
-        showSuccess("הלינק הועתק!");
+        showSuccess(t("common.linkCopied"));
         setTimeout(() => setCopied(false), 2000);
       } else {
-        showError("לא ניתן להעתיק לינק בדפדפן זה");
+        showError(t("common.copyNotSupported"));
       }
     } catch (error) {
       console.error("Failed to copy lecture URL", error);
-      showError("אירעה שגיאה בהעתקת הלינק");
+      showError(t("common.copyError"));
     }
   };
 
@@ -100,10 +100,10 @@ const LectureCard: React.FC<LectureCardProps> = ({
     try {
       if (typeof navigator !== "undefined" && navigator.clipboard) {
         await navigator.clipboard.writeText(discordText);
-        showSuccess("הועתק! הדבק בדיסקורד");
+        showSuccess(t("lectures.copiedDiscord"));
       }
     } catch (error) {
-      showError("אירעה שגיאה בהעתקה");
+      showError(t("common.copyError"));
     }
   };
 
@@ -181,7 +181,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
             setIsShareOpen(true);
           }}
           className="w-10 h-10 rounded-full border border-gray-200 hover:bg-gray-50 transition-colors flex items-center justify-center cursor-pointer"
-          aria-label="שתף"
+          aria-label={t("lectures.share")}
         >
           <Share2 className="w-4 h-4 text-gray-600" />
         </button>
@@ -193,7 +193,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
               ? "bg-blue-600 text-white hover:bg-blue-700 shadow-md hover:shadow-lg cursor-pointer"
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
-          aria-label="צפה בהרצאה"
+          aria-label={t("lectures.watch")}
         >
           <Play className="w-4 h-4 fill-current" />
         </button>
@@ -204,14 +204,14 @@ const LectureCard: React.FC<LectureCardProps> = ({
       <Modal
         isOpen={isShareOpen}
         onClose={() => setIsShareOpen(false)}
-        title="שיתוף הרצאה"
+        title={t("lectures.shareTitle")}
         hideFooter
       >
         <div className="space-y-4">
           {/* Copy Link */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              קישור להרצאה
+              {t("lectures.lectureLink")}
             </label>
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
@@ -232,12 +232,12 @@ const LectureCard: React.FC<LectureCardProps> = ({
                 {copied ? (
                   <>
                     <Check className="w-4 h-4" />
-                    הועתק!
+                    {t("common.copied")}
                   </>
                 ) : (
                   <>
                     <Link2 className="w-4 h-4" />
-                    העתק
+                    {t("common.copy")}
                   </>
                 )}
               </button>
@@ -247,7 +247,7 @@ const LectureCard: React.FC<LectureCardProps> = ({
           {/* Share Options */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              שיתוף מהיר
+              {t("lectures.quickShare")}
             </label>
             <div className="grid grid-cols-2 gap-2">
               {/* WhatsApp */}

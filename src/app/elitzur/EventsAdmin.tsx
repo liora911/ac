@@ -93,11 +93,13 @@ export default function EventsAdmin() {
       { id: event.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
-          showSuccess(`קטגוריית האירוע "${event.title}" עודכנה בהצלחה`);
+          showSuccess(
+            t("admin.events.categoryUpdated").replace("{title}", event.title)
+          );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון קטגוריית האירוע");
+          showError(t("admin.events.categoryError"));
         },
       }
     );
@@ -118,12 +120,14 @@ export default function EventsAdmin() {
 
     deleteMutation.mutate(eventToDelete.id, {
       onSuccess: () => {
-        showSuccess(`האירוע "${eventToDelete.title}" נמחק בהצלחה`);
+        showSuccess(
+          t("admin.events.deleteSuccess").replace("{title}", eventToDelete.title)
+        );
         refetch();
         closeDeleteModal();
       },
       onError: () => {
-        showError("שגיאה במחיקת האירוע");
+        showError(t("admin.events.deleteError"));
       },
     });
   };

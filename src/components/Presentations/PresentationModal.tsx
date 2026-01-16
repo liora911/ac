@@ -79,10 +79,10 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(shareLink);
-      showSuccess("קישור למצגת הועתק");
+      showSuccess(t("presentations.linkCopied"));
       setIsShareModalOpen(false);
     } catch (error) {
-      showError("שגיאה בהעתקת הקישור");
+      showError(t("presentations.copyError"));
     }
   };
 
@@ -90,7 +90,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
     if (pdfUrl) {
       window.open(pdfUrl, "_blank", "noopener,noreferrer");
     } else {
-      showWarning("לא ניתן ליצור PDF עבור קישור המצגת הזה");
+      showWarning(t("presentations.pdfGenerationError"));
     }
   };
 
@@ -117,14 +117,14 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
                   onClick={() => setIsShareModalOpen(true)}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 text-gray-800 text-sm font-medium hover:bg-gray-200 transition-colors cursor-pointer border border-gray-300"
                 >
-                  <span>🔗 Share</span>
+                  <span>🔗 {t("presentations.share")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={handleDownloadPdf}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition-colors cursor-pointer"
                 >
-                  <span>📄 Download PDF</span>
+                  <span>📄 {t("presentations.downloadPdf")}</span>
                 </button>
                 <a
                   href={presentation.googleSlidesUrl as string}
@@ -132,7 +132,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors cursor-pointer"
                 >
-                  <span>Open in Google Slides</span>
+                  <span>{t("presentations.openGoogleSlides")}</span>
                   <span aria-hidden="true">↗</span>
                 </a>
               </div>
@@ -218,26 +218,27 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Description
+              {t("presentations.descriptionTitle")}
             </h2>
             <RichContent content={presentation.description} className="text-gray-700" />
           </div>
 
           <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 mb-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Content
+              {t("presentations.contentTitle")}
             </h2>
             <RichContent content={presentation.content} className="text-gray-700" />
           </div>
 
           <div className="text-center text-gray-500 border-t border-gray-200 pt-6">
             <p>
-              Created by:{" "}
+              {t("presentations.createdBy")}{" "}
               {presentation.author.name || presentation.author.email}
             </p>
             <p className="text-sm mt-1">
-              Category: {presentation.category.name} • Created:{" "}
-              {new Date(presentation.createdAt).toLocaleDateString(dateLocale)}
+              {t("presentations.metadata")
+                .replace("{category}", presentation.category.name)
+                .replace("{date}", new Date(presentation.createdAt).toLocaleDateString(dateLocale))}
             </p>
           </div>
         </div>
@@ -246,10 +247,10 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
           <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/40">
             <div className="bg-white rounded-lg shadow-lg p-5 w-full max-w-md">
               <h2 className="text-lg font-semibold mb-3 text-gray-900">
-                Share this presentation
+                {t("presentations.shareTitle")}
               </h2>
               <p className="text-sm text-gray-600 mb-3">
-                Copy the link below to share this presentation.
+                {t("presentations.shareInstruction")}
               </p>
               <div className="flex items-center gap-2 mb-4">
                 <input
@@ -263,7 +264,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
                   onClick={handleCopyLink}
                   className="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
                 >
-                  Copy
+                  {t("common.copy")}
                 </button>
               </div>
               <div className="flex justify-end gap-2">
@@ -272,7 +273,7 @@ const PresentationModal: React.FC<PresentationModalProps> = ({
                   onClick={() => setIsShareModalOpen(false)}
                   className="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors cursor-pointer"
                 >
-                  Close
+                  {t("common.close")}
                 </button>
               </div>
             </div>

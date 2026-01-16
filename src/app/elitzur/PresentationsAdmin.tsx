@@ -114,15 +114,18 @@ export default function PresentationsAdmin() {
       { id: presentation.id, published: nextPublished },
       {
         onSuccess: () => {
+          const statusText = nextPublished
+            ? t("admin.presentations.statusPublished")
+            : t("admin.presentations.statusUnpublished");
           showSuccess(
-            `המצגת "${presentation.title}" ${
-              nextPublished ? "פורסמה" : "הוסרה מפרסום"
-            } בהצלחה`
+            t("admin.presentations.statusChanged")
+              .replace("{title}", presentation.title)
+              .replace("{status}", statusText)
           );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון סטטוס המצגת");
+          showError(t("admin.presentations.statusError"));
         },
       }
     );
@@ -136,11 +139,13 @@ export default function PresentationsAdmin() {
       { id: presentation.id, categoryId: newCategoryId },
       {
         onSuccess: () => {
-          showSuccess(`קטגוריית המצגת "${presentation.title}" עודכנה בהצלחה`);
+          showSuccess(
+            t("admin.presentations.categoryUpdated").replace("{title}", presentation.title)
+          );
           refetch();
         },
         onError: () => {
-          showError("שגיאה בעדכון קטגוריית המצגת");
+          showError(t("admin.presentations.categoryError"));
         },
       }
     );
@@ -161,12 +166,14 @@ export default function PresentationsAdmin() {
 
     deleteMutation.mutate(presentationToDelete.id, {
       onSuccess: () => {
-        showSuccess(`המצגת "${presentationToDelete.title}" נמחקה בהצלחה`);
+        showSuccess(
+          t("admin.presentations.deleteSuccess").replace("{title}", presentationToDelete.title)
+        );
         refetch();
         closeDeleteModal();
       },
       onError: () => {
-        showError("שגיאה במחיקת המצגת");
+        showError(t("admin.presentations.deleteError"));
       },
     });
   };

@@ -262,10 +262,10 @@ const Lectures: React.FC<LecturesProps> = ({
       setSelectedLectures((prevLectures) =>
         prevLectures.filter((lecture) => lecture.id !== lectureToDelete.id)
       );
-      showSuccess(`ההרצאה "${lectureToDelete.title}" נמחקה בהצלחה`);
+      showSuccess(t("lectures.deleteSuccess").replace("{title}", lectureToDelete.title));
       closeDeleteModal();
     } catch {
-      showError("נכשל במחיקת ההרצאה");
+      showError(t("lectures.deleteError"));
     } finally {
       setIsDeleting(false);
     }
@@ -502,9 +502,9 @@ const Lectures: React.FC<LecturesProps> = ({
           <Modal
             isOpen={errorModalOpen}
             onClose={() => setErrorModalOpen(false)}
-            title="שגיאה"
+            title={t("common.error")}
             message={errorMessage}
-            confirmText="סגור"
+            confirmText={t("common.close")}
           />
         )}
 
@@ -512,7 +512,7 @@ const Lectures: React.FC<LecturesProps> = ({
         <Modal
           isOpen={deleteModalOpen}
           onClose={closeDeleteModal}
-          title="מחיקת הרצאה"
+          title={t("admin.lectures.deleteTitle")}
           hideFooter
         >
           <div className="text-center">
@@ -520,13 +520,13 @@ const Lectures: React.FC<LecturesProps> = ({
               <AlertTriangle className="w-7 h-7 text-red-600" />
             </div>
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              האם אתה בטוח?
+              {t("admin.lectures.deleteConfirm")}
             </h3>
             <p className="text-gray-600 text-sm mb-6">
-              פעולה זו תמחק לצמיתות את ההרצאה
+              {t("admin.lectures.deleteWarning")}
               <span className="font-medium text-gray-900"> &quot;{lectureToDelete?.title}&quot;</span>.
               <br />
-              לא ניתן לבטל פעולה זו.
+              {t("admin.lectures.deleteIrreversible")}
             </p>
             <div className="flex gap-3 justify-center">
               <button
@@ -535,7 +535,7 @@ const Lectures: React.FC<LecturesProps> = ({
                 disabled={isDeleting}
                 className="px-5 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors font-medium disabled:opacity-50"
               >
-                ביטול
+                {t("admin.common.cancel")}
               </button>
               <button
                 type="button"
@@ -549,12 +549,12 @@ const Lectures: React.FC<LecturesProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    מוחק...
+                    {t("admin.lectures.deleting")}
                   </>
                 ) : (
                   <>
                     <Trash2 className="w-4 h-4" />
-                    מחק הרצאה
+                    {t("admin.lectures.deleteButton")}
                   </>
                 )}
               </button>

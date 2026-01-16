@@ -59,7 +59,7 @@ export default function SubscriptionsAdmin() {
       const data = await res.json();
       setUsers(data.users);
     } catch (error) {
-      showError("שגיאה בטעינת משתמשים");
+      showError(t("admin.subscriptions.loadError"));
     } finally {
       setLoading(false);
     }
@@ -71,7 +71,7 @@ export default function SubscriptionsAdmin() {
 
   const handleGrantSubscription = async () => {
     if (!grantEmail.trim()) {
-      showError("יש להזין כתובת אימייל");
+      showError(t("admin.subscriptions.emailRequired"));
       return;
     }
 
@@ -92,13 +92,13 @@ export default function SubscriptionsAdmin() {
         throw new Error(data.error || "Failed to grant subscription");
       }
 
-      showSuccess(`מנוי הוענק בהצלחה ל-${grantEmail}`);
+      showSuccess(t("admin.subscriptions.grantSuccess").replace("{email}", grantEmail));
       setShowGrantModal(false);
       setGrantEmail("");
       setGrantDuration("1month");
       fetchUsers();
     } catch (error) {
-      showError(error instanceof Error ? error.message : "שגיאה בהענקת מנוי");
+      showError(error instanceof Error ? error.message : t("admin.subscriptions.grantError"));
     } finally {
       setGrantLoading(false);
     }
@@ -121,12 +121,12 @@ export default function SubscriptionsAdmin() {
         throw new Error(data.error || "Failed to revoke subscription");
       }
 
-      showSuccess(`מנוי בוטל בהצלחה עבור ${selectedUser.email}`);
+      showSuccess(t("admin.subscriptions.revokeSuccess").replace("{email}", selectedUser.email));
       setShowRevokeModal(false);
       setSelectedUser(null);
       fetchUsers();
     } catch (error) {
-      showError(error instanceof Error ? error.message : "שגיאה בביטול מנוי");
+      showError(error instanceof Error ? error.message : t("admin.subscriptions.revokeError"));
     } finally {
       setRevokeLoading(false);
     }
@@ -149,7 +149,7 @@ export default function SubscriptionsAdmin() {
       return (
         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
           <XCircle className="w-3 h-3" />
-          ללא מנוי
+          {t("admin.subscriptions.noSubscription")}
         </span>
       );
     }
@@ -159,28 +159,28 @@ export default function SubscriptionsAdmin() {
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">
             <CheckCircle className="w-3 h-3" />
-            פעיל
+            {t("admin.subscriptions.active")}
           </span>
         );
       case "CANCELED":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
             <AlertCircle className="w-3 h-3" />
-            בוטל
+            {t("admin.subscriptions.canceled")}
           </span>
         );
       case "PAST_DUE":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700">
             <AlertCircle className="w-3 h-3" />
-            תשלום באיחור
+            {t("admin.subscriptions.pastDue")}
           </span>
         );
       case "EXPIRED":
         return (
           <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
             <XCircle className="w-3 h-3" />
-            פג תוקף
+            {t("admin.subscriptions.expired")}
           </span>
         );
       default:
@@ -203,9 +203,9 @@ export default function SubscriptionsAdmin() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">ניהול מנויים</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{t("admin.subscriptions.title")}</h2>
           <p className="text-gray-500 mt-1">
-            {subscribedCount} מנויים פעילים מתוך {users.length} משתמשים
+            {t("admin.subscriptions.activeCount").replace("{count}", String(subscribedCount)).replace("{total}", String(users.length))}
           </p>
         </div>
         <button
@@ -213,7 +213,7 @@ export default function SubscriptionsAdmin() {
           className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors cursor-pointer"
         >
           <UserPlus className="w-4 h-4" />
-          הענק מנוי
+          {t("admin.subscriptions.grantSubscription")}
         </button>
       </div>
 
@@ -223,7 +223,7 @@ export default function SubscriptionsAdmin() {
           <Search className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input
             type="text"
-            placeholder="חיפוש לפי אימייל או שם..."
+            placeholder={t("admin.subscriptions.searchPlaceholder")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pr-10 pl-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent"
@@ -234,9 +234,9 @@ export default function SubscriptionsAdmin() {
           onChange={(e) => setFilterType(e.target.value as typeof filterType)}
           className="px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white cursor-pointer"
         >
-          <option value="all">כל המשתמשים</option>
-          <option value="subscribed">מנויים בלבד</option>
-          <option value="unsubscribed">ללא מנוי</option>
+          <option value="all">{t("admin.subscriptions.allUsers")}</option>
+          <option value="subscribed">{t("admin.subscriptions.subscribedOnly")}</option>
+          <option value="unsubscribed">{t("admin.subscriptions.unsubscribedOnly")}</option>
         </select>
       </div>
 
@@ -248,7 +248,7 @@ export default function SubscriptionsAdmin() {
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="text-center py-12 text-gray-500">
-            לא נמצאו משתמשים
+            {t("admin.subscriptions.noUsersFound")}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -270,12 +270,12 @@ export default function SubscriptionsAdmin() {
                           {user.email?.charAt(0).toUpperCase() || "?"}
                         </div>
                         <div>
-                          <p className="font-medium text-gray-900">{user.name || "ללא שם"}</p>
+                          <p className="font-medium text-gray-900">{user.name || t("admin.subscriptions.noName")}</p>
                           <p className="text-sm text-gray-500">{user.email}</p>
                         </div>
                         {user.role === "ADMIN" && (
                           <span className="px-2 py-0.5 text-xs font-medium bg-purple-100 text-purple-700 rounded">
-                            מנהל
+                            {t("admin.subscriptions.admin")}
                           </span>
                         )}
                       </div>
@@ -303,7 +303,7 @@ export default function SubscriptionsAdmin() {
                           className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer"
                         >
                           <UserMinus className="w-4 h-4" />
-                          בטל מנוי
+                          {t("admin.subscriptions.revokeSubscription")}
                         </button>
                       ) : (
                         <button
@@ -314,7 +314,7 @@ export default function SubscriptionsAdmin() {
                           className="inline-flex items-center gap-1 px-3 py-1.5 text-sm text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                         >
                           <Crown className="w-4 h-4" />
-                          הענק מנוי
+                          {t("admin.subscriptions.grantSubscription")}
                         </button>
                       )}
                     </td>
@@ -333,13 +333,13 @@ export default function SubscriptionsAdmin() {
           setShowGrantModal(false);
           setGrantEmail("");
         }}
-        title="הענקת מנוי"
+        title={t("admin.subscriptions.grantTitle")}
         hideFooter
       >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              כתובת אימייל
+              {t("admin.subscriptions.emailLabel")}
             </label>
             <div className="relative">
               <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -352,23 +352,23 @@ export default function SubscriptionsAdmin() {
               />
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              אם המשתמש לא קיים במערכת, הוא יווצר אוטומטית
+              {t("admin.subscriptions.emailHelp")}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              משך המנוי
+              {t("admin.subscriptions.durationLabel")}
             </label>
             <select
               value={grantDuration}
               onChange={(e) => setGrantDuration(e.target.value as typeof grantDuration)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white cursor-pointer"
             >
-              <option value="1month">חודש אחד</option>
-              <option value="3months">3 חודשים</option>
-              <option value="1year">שנה</option>
-              <option value="lifetime">לכל החיים (100 שנה)</option>
+              <option value="1month">{t("admin.subscriptions.duration1Month")}</option>
+              <option value="3months">{t("admin.subscriptions.duration3Months")}</option>
+              <option value="1year">{t("admin.subscriptions.duration1Year")}</option>
+              <option value="lifetime">{t("admin.subscriptions.durationLifetime")}</option>
             </select>
           </div>
 
@@ -380,7 +380,7 @@ export default function SubscriptionsAdmin() {
               }}
               className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors cursor-pointer"
             >
-              ביטול
+              {t("admin.subscriptions.cancel")}
             </button>
             <button
               onClick={handleGrantSubscription}
@@ -392,7 +392,7 @@ export default function SubscriptionsAdmin() {
               ) : (
                 <Crown className="w-4 h-4" />
               )}
-              הענק מנוי
+              {t("admin.subscriptions.grantSubscription")}
             </button>
           </div>
         </div>
@@ -405,11 +405,11 @@ export default function SubscriptionsAdmin() {
           setShowRevokeModal(false);
           setSelectedUser(null);
         }}
-        title="ביטול מנוי"
-        message={`האם אתה בטוח שברצונך לבטל את המנוי של ${selectedUser?.email}?`}
+        title={t("admin.subscriptions.revokeTitle")}
+        message={t("admin.subscriptions.revokeConfirm").replace("{email}", selectedUser?.email || "")}
         showCancel
-        cancelText="ביטול"
-        confirmText={revokeLoading ? "מבטל..." : "בטל מנוי"}
+        cancelText={t("admin.subscriptions.cancel")}
+        confirmText={revokeLoading ? t("admin.subscriptions.revoking") : t("admin.subscriptions.revokeSubscription")}
         onConfirm={handleRevokeSubscription}
       />
     </div>
