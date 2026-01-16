@@ -2,7 +2,7 @@
 
 import { signOut } from "next-auth/react";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useTranslation } from "@/contexts/Translation/TranslationContext";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 export default function SignOutButton() {
   const { showSuccess } = useNotification();

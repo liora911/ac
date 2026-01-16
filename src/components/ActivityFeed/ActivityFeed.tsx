@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useTranslation } from "@/contexts/Translation/TranslationContext";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface ActivityItem {
   id: string;

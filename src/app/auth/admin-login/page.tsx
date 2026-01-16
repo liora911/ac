@@ -5,7 +5,7 @@ import { signIn, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useTranslation } from "@/contexts/Translation/TranslationContext";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Shield, Mail, ArrowRight } from "lucide-react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 

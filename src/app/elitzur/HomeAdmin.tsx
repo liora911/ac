@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useHomeContent, useUpdateHomeContent } from "@/hooks/useHomeContent";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useTranslation } from "@/contexts/Translation/TranslationContext";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import TiptapEditor from "@/lib/editor/editor";
 import LoginForm from "@/components/Login/login";
 
