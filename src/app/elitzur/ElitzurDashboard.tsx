@@ -314,7 +314,7 @@ export default function ElitzurDashboard() {
                       key={tab.key}
                       type="button"
                       onClick={() => setActive(tab.key)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
                         isActive
                           ? "bg-blue-600 text-white shadow-sm"
                           : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"

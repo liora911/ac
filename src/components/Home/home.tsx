@@ -188,7 +188,7 @@ const Home = () => {
                   alt="Avshalom C. Elitzur"
                   width={180}
                   height={180}
-                  className="relative rounded-full grayscale hover:grayscale-0 transition-all duration-500 shadow-2xl"
+                  className="relative rounded-full shadow-2xl"
                   priority
                   sizes="180px"
                   quality={85}
