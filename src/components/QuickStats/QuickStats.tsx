@@ -116,7 +116,7 @@ const QuickStats: React.FC = () => {
         return (
           <div
             key={index}
-            className="p-4 rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+            className="p-4 rounded-xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           >
             {/* Icon + Label */}
             <div className="flex items-center gap-3 mb-3">
