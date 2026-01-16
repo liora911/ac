@@ -172,158 +172,155 @@ const Home = () => {
     <main className="flex flex-col min-h-screen text-[var(--foreground)]">
       {/* Hero Section */}
       <motion.section
-        className="relative py-12 md:py-16 px-6"
+        className="relative py-16 md:py-20 px-6 bg-gradient-to-b from-slate-50 to-white dark:from-slate-900 dark:to-slate-950"
         initial="hidden"
         animate="visible"
         variants={containerVariants}
       >
         <div className="max-w-4xl mx-auto">
-          <motion.div
-            className="bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--card)]/80 rounded-2xl p-8 md:p-12 border border-[var(--border)] shadow-xl"
-            variants={itemVariants}
-          >
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              {/* Profile Image */}
-              <motion.div
-                className="shrink-0"
-                whileHover={{ scale: 1.02 }}
-                transition={{ type: "spring", stiffness: 300 }}
-              >
+          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-14">
+            {/* Profile Image */}
+            <motion.div className="shrink-0" variants={itemVariants}>
+              <div className="relative">
+                <div className="absolute -inset-1 bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-700 dark:to-slate-800 rounded-full blur-sm" />
                 <Image
                   src="/acpfp2.png"
                   alt="Avshalom C. Elitzur"
-                  width={160}
-                  height={160}
-                  className="rounded-full border-4 border-blue-500/30 shadow-xl ring-4 ring-white/20 dark:ring-gray-800/40"
+                  width={180}
+                  height={180}
+                  className="relative rounded-full grayscale hover:grayscale-0 transition-all duration-500 shadow-2xl"
                   priority
-                  sizes="160px"
+                  sizes="180px"
                   quality={85}
                 />
-                <p className="text-xs text-center mt-2 text-[var(--muted-foreground)]">
-                  {photoCreditText}
-                </p>
-              </motion.div>
-
-              {/* Name and Info */}
-              <div className="flex-1 text-center md:text-start">
-                <motion.h1
-                  className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-                  variants={itemVariants}
-                >
-                  {t("home.name")}
-                </motion.h1>
-                <motion.p
-                  className="text-lg md:text-xl mt-2 text-[var(--muted-foreground)] italic"
-                  variants={itemVariants}
-                >
-                  {t("home.tagline")}
-                </motion.p>
-
-                <motion.p
-                  className="mt-4 text-[var(--foreground)]"
-                  variants={itemVariants}
-                >
-                  {t("home.greeting")}
-                </motion.p>
-
-                {/* Social Links */}
-                {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (
-                  <motion.div
-                    className="flex justify-center md:justify-start gap-4 mt-5"
-                    variants={itemVariants}
-                  >
-                    {siteSettings?.facebookUrl && (
-                      <Suspense
-                        fallback={
-                          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-                        }
-                      >
-                        <a
-                          href={siteSettings.facebookUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-colors"
-                          aria-label={t("home.social.facebook")}
-                        >
-                          <FaFacebook size={20} />
-                        </a>
-                      </Suspense>
-                    )}
-                    {siteSettings?.youtubeUrl && (
-                      <Suspense
-                        fallback={
-                          <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
-                        }
-                      >
-                        <a
-                          href={siteSettings.youtubeUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="w-10 h-10 flex items-center justify-center rounded-full bg-red-600 hover:bg-red-700 text-white transition-colors"
-                          aria-label={t("home.social.youtube")}
-                        >
-                          <FaYoutube size={20} />
-                        </a>
-                      </Suspense>
-                    )}
-                  </motion.div>
-                )}
               </div>
-            </div>
-
-            {/* Bio Section */}
-            <motion.div className="mt-8 pt-6 border-t border-[var(--border)]" variants={itemVariants}>
-              <button
-                onClick={() => setShowBio(!showBio)}
-                className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline font-medium cursor-pointer mx-auto md:mx-0"
-              >
-                {showBio ? (
-                  <>
-                    {t("home.bio.buttonHide")}
-                    <ChevronUp size={18} />
-                  </>
-                ) : (
-                  <>
-                    {t("home.bio.buttonRead")}
-                    <ChevronDown size={18} />
-                  </>
-                )}
-              </button>
-
-              <AnimatePresence>
-                {showBio && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="overflow-hidden"
-                  >
-                    <div
-                      className="mt-4 text-[var(--foreground)] leading-relaxed max-w-none"
-                      dir={isRTL ? "rtl" : "ltr"}
-                    >
-                      {hasDynamicBio ? (
-                        <RichContent content={bioHtml} />
-                      ) : (
-                        <div className="space-y-4" dir="rtl">
-                          <p>
-                            אבשלום אליצור הוא פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ&apos;פמאן בקליפורניה, בראשות פרופ&apos; יקיר אהרונוב, לצד חתני פרס נובל פול אנגלרט ודייוויד גרוס.
-                          </p>
-                          <p>
-                            תחומי התמחותו הם תורת הקוונטים, יחסות ותרמודינמיקה, וכן תרמודינמיקה של מערכות חיות. בין תגליותיו נמנים ניסוי אליצור-ויידמן (1993), בשמו הידוע יותר &quot;ניסוי הפצצה-שלא-התפוצצה&quot;.
-                          </p>
-                          <p>
-                            את עבודותיו הציג במפגשים המדעיים היוקרתיים בעולם, כולל הרצאות מליאה והרצאות keynote לצד חתני-פרס נובל, בין השאר באוניברסיטאות קיימברידג&apos; ופרינסטון, במכון שרדינגר בווינה וב-ETH בציריך.
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
+              <p className="text-xs text-center mt-3 text-slate-500 dark:text-slate-400">
+                {photoCreditText}
+              </p>
             </motion.div>
-          </motion.div>
+
+            {/* Name and Info */}
+            <div className="flex-1 text-center md:text-start">
+              <motion.h1
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight"
+                variants={itemVariants}
+              >
+                {t("home.name")}
+              </motion.h1>
+              <motion.p
+                className="text-lg md:text-xl mt-3 text-slate-500 dark:text-slate-400"
+                variants={itemVariants}
+              >
+                {t("home.tagline")}
+              </motion.p>
+
+              <motion.p
+                className="mt-5 text-slate-600 dark:text-slate-300 leading-relaxed"
+                variants={itemVariants}
+              >
+                {t("home.greeting")}
+              </motion.p>
+
+              {/* Social Links */}
+              {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (
+                <motion.div
+                  className="flex justify-center md:justify-start gap-3 mt-6"
+                  variants={itemVariants}
+                >
+                  {siteSettings?.facebookUrl && (
+                    <Suspense
+                      fallback={
+                        <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                      }
+                    >
+                      <a
+                        href={siteSettings.facebookUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition-colors"
+                        aria-label={t("home.social.facebook")}
+                      >
+                        <FaFacebook size={18} />
+                      </a>
+                    </Suspense>
+                  )}
+                  {siteSettings?.youtubeUrl && (
+                    <Suspense
+                      fallback={
+                        <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                      }
+                    >
+                      <a
+                        href={siteSettings.youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition-colors"
+                        aria-label={t("home.social.youtube")}
+                      >
+                        <FaYoutube size={18} />
+                      </a>
+                    </Suspense>
+                  )}
+                </motion.div>
+              )}
+
+              {/* Bio Toggle */}
+              <motion.div className="mt-6" variants={itemVariants}>
+                <button
+                  onClick={() => setShowBio(!showBio)}
+                  className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-sm font-medium transition-colors"
+                >
+                  {showBio ? (
+                    <>
+                      {t("home.bio.buttonHide")}
+                      <ChevronUp size={16} />
+                    </>
+                  ) : (
+                    <>
+                      {t("home.bio.buttonRead")}
+                      <ChevronDown size={16} />
+                    </>
+                  )}
+                </button>
+              </motion.div>
+            </div>
+          </div>
+
+          {/* Bio Section - Expanded */}
+          <AnimatePresence>
+            {showBio && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-10 pt-8 border-t border-slate-200 dark:border-slate-800">
+                  <div
+                    className="text-slate-600 dark:text-slate-300 leading-relaxed"
+                    dir={isRTL ? "rtl" : "ltr"}
+                  >
+                    {hasDynamicBio ? (
+                      <RichContent content={bioHtml} />
+                    ) : (
+                      <div className="space-y-4" dir="rtl">
+                        <p>
+                          אבשלום אליצור הוא פרופסור-נלווה במכון למחקרים קוונטיים באוניברסיטת צ&apos;פמאן בקליפורניה, בראשות פרופ&apos; יקיר אהרונוב, לצד חתני פרס נובל פול אנגלרט ודייוויד גרוס.
+                        </p>
+                        <p>
+                          תחומי התמחותו הם תורת הקוונטים, יחסות ותרמודינמיקה, וכן תרמודינמיקה של מערכות חיות. בין תגליותיו נמנים ניסוי אליצור-ויידמן (1993), בשמו הידוע יותר &quot;ניסוי הפצצה-שלא-התפוצצה&quot;.
+                        </p>
+                        <p>
+                          את עבודותיו הציג במפגשים המדעיים היוקרתיים בעולם, כולל הרצאות מליאה והרצאות keynote לצד חתני-פרס נובל, בין השאר באוניברסיטאות קיימברידג&apos; ופרינסטון, במכון שרדינגר בווינה וב-ETH בציריך.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </motion.section>
 
