@@ -899,6 +899,17 @@
       "deleteError": "Error deleting article",
       "removeAuthor": "Remove author"
     },
+    "embeddings": {
+      "title": "AI Search Embeddings",
+      "description": "Generate embeddings for AI-powered semantic search",
+      "generate": "Generate",
+      "generating": "Generating...",
+      "pending": "{count} articles pending",
+      "allComplete": "All articles indexed",
+      "complete": "complete",
+      "success": "Generated embeddings for {processed} of {total} articles",
+      "error": "Failed to generate embeddings"
+    },
     "events": {
       "newEvent": "+ New Event",
       "filters": "Event filters",

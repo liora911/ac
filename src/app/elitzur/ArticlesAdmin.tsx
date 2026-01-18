@@ -17,7 +17,7 @@ import type {
 } from "@/types/Articles/articles";
 import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
-import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
+import { AlertTriangle, Trash2, RefreshCw, Sparkles, Loader2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -51,6 +51,16 @@ export default function ArticlesAdmin() {
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [articleToDelete, setArticleToDelete] = useState<Article | null>(null);
+
+  // Embedding state
+  const [embeddingStatus, setEmbeddingStatus] = useState<{
+    total: number;
+    withEmbeddings: number;
+    withoutEmbeddings: number;
+    progress: number;
+  } | null>(null);
+  const [isGeneratingEmbeddings, setIsGeneratingEmbeddings] = useState(false);
+  const [embeddingStatusLoading, setEmbeddingStatusLoading] = useState(false);
 
   const queryParams: ArticlesQueryParams = useMemo(
     () => ({
@@ -159,6 +169,59 @@ export default function ArticlesAdmin() {
     });
   };
 
+  // Fetch embedding status
+  const fetchEmbeddingStatus = async () => {
+    setEmbeddingStatusLoading(true);
+    try {
+      const response = await fetch("/api/articles/embeddings");
+      if (response.ok) {
+        const data = await response.json();
+        setEmbeddingStatus(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch embedding status:", err);
+    } finally {
+      setEmbeddingStatusLoading(false);
+    }
+  };
+
+  // Generate embeddings for articles without them
+  const generateEmbeddings = async () => {
+    setIsGeneratingEmbeddings(true);
+    try {
+      const response = await fetch("/api/articles/embeddings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ regenerate: false }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        showSuccess(
+          t("admin.embeddings.success")
+            .replace("{processed}", String(data.processed))
+            .replace("{total}", String(data.total))
+        );
+        fetchEmbeddingStatus();
+      } else {
+        const error = await response.json();
+        showError(error.error || t("admin.embeddings.error"));
+      }
+    } catch (err) {
+      console.error("Failed to generate embeddings:", err);
+      showError(t("admin.embeddings.error"));
+    } finally {
+      setIsGeneratingEmbeddings(false);
+    }
+  };
+
+  // Fetch embedding status on mount
+  useEffect(() => {
+    if (isAuthorized) {
+      fetchEmbeddingStatus();
+    }
+  }, [isAuthorized]);
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -170,6 +233,87 @@ export default function ArticlesAdmin() {
             {t("admin.articles.newArticle")}
           </Link>
         </div>
+      </div>
+
+      {/* AI Embeddings Section */}
+      <div className="rounded-xl border border-purple-200 bg-purple-50 p-4 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-purple-900">
+                {t("admin.embeddings.title")}
+              </h3>
+              <p className="text-xs text-purple-700">
+                {t("admin.embeddings.description")}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {embeddingStatusLoading ? (
+              <div className="text-xs text-purple-600 flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                {t("admin.common.loading")}
+              </div>
+            ) : embeddingStatus ? (
+              <div className="text-right">
+                <div className="text-sm font-medium text-purple-900">
+                  {embeddingStatus.withEmbeddings} / {embeddingStatus.total}
+                </div>
+                <div className="text-xs text-purple-600">
+                  {embeddingStatus.withoutEmbeddings > 0
+                    ? t("admin.embeddings.pending").replace("{count}", String(embeddingStatus.withoutEmbeddings))
+                    : t("admin.embeddings.allComplete")}
+                </div>
+              </div>
+            ) : null}
+
+            <button
+              onClick={generateEmbeddings}
+              disabled={isGeneratingEmbeddings || (embeddingStatus?.withoutEmbeddings === 0)}
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGeneratingEmbeddings ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t("admin.embeddings.generating")}
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  {t("admin.embeddings.generate")}
+                </>
+              )}
+            </button>
+
+            <button
+              onClick={fetchEmbeddingStatus}
+              disabled={embeddingStatusLoading}
+              className="p-2 text-purple-600 hover:bg-purple-100 rounded-md transition-colors disabled:opacity-50"
+              title={t("admin.common.refresh")}
+            >
+              <RefreshCw className={`w-4 h-4 ${embeddingStatusLoading ? "animate-spin" : ""}`} />
+            </button>
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        {embeddingStatus && embeddingStatus.total > 0 && (
+          <div className="mt-3">
+            <div className="w-full bg-purple-200 rounded-full h-2">
+              <div
+                className="bg-purple-600 h-2 rounded-full transition-all duration-300"
+                style={{ width: `${embeddingStatus.progress}%` }}
+              />
+            </div>
+            <div className="text-xs text-purple-600 mt-1 text-right">
+              {embeddingStatus.progress}% {t("admin.embeddings.complete")}
+            </div>
+          </div>
+        )}
       </div>
 
       <div

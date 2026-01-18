@@ -938,6 +938,17 @@
       "deleteError": "שגיאה במחיקת המאמר",
       "removeAuthor": "הסר מחבר"
     },
+    "embeddings": {
+      "title": "אינדוקס חיפוש AI",
+      "description": "יצירת אינדוקס לחיפוש סמנטי מבוסס AI",
+      "generate": "יצירה",
+      "generating": "מייצר...",
+      "pending": "{count} מאמרים ממתינים",
+      "allComplete": "כל המאמרים מאונדקסים",
+      "complete": "הושלם",
+      "success": "נוצר אינדוקס ל-{processed} מתוך {total} מאמרים",
+      "error": "שגיאה ביצירת אינדוקס"
+    },
     "events": {
       "newEvent": "+ אירוע חדש",
       "filters": "סינון אירועים",
