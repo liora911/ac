@@ -7,14 +7,14 @@ module.exports = [
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
       "no-unused-vars": "off",
-      "no-console": "warn",
+      "no-console": "off",
     },
   },
   {
     files: ["**/*.js", "**/*.jsx"],
     rules: {
       "no-unused-vars": "off",
-      "no-console": "warn",
+      "no-console": "off",
     },
   },
 ];
