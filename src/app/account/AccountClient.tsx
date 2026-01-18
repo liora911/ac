@@ -21,11 +21,16 @@ import {
   FileText,
   Video,
   Heart,
+  Filter,
+  Check,
+  X,
 } from "lucide-react";
 import { Suspense } from "react";
 import { UserRole } from "@prisma/client";
 import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
+import { useCategories } from "@/hooks/useArticles";
 
 interface AccountClientProps {
   user: {
@@ -99,9 +104,20 @@ function AccountContent({
   stats,
 }: AccountClientProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [isEditingPreferences, setIsEditingPreferences] = useState(false);
   const searchParams = useSearchParams();
   const { t, locale } = useTranslation();
   const isRTL = locale === "he";
+
+  // Category preferences
+  const {
+    selectedCategoryIds,
+    setSelectedCategories,
+    resetPreferences,
+    shouldFilterContent,
+  } = useCategoryPreferences();
+  const { data: categories } = useCategories();
+  const [tempSelectedIds, setTempSelectedIds] = useState<string[]>(selectedCategoryIds);
 
   const success = searchParams.get("subscription") === "success";
   const displayName = user.name || getUsernameFromEmail(user.email);
@@ -394,6 +410,158 @@ function AccountContent({
               </Link>
             </div>
           </div>
+        </div>
+
+        {/* Content Preferences Card */}
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
+                <Filter className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 dark:text-white">
+                  {t("categoryPreferences.managePreferences") || "Content Preferences"}
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {shouldFilterContent
+                    ? `${selectedCategoryIds.length} ${selectedCategoryIds.length === 1 ? "category" : "categories"} selected`
+                    : t("categoryPreferences.showingAll") || "Showing all content"}
+                </p>
+              </div>
+            </div>
+            {!isEditingPreferences && (
+              <button
+                onClick={() => {
+                  setTempSelectedIds(selectedCategoryIds);
+                  setIsEditingPreferences(true);
+                }}
+                className="text-sm text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-200 font-medium"
+              >
+                {t("categoryPreferences.changePreferences") || "Change"}
+              </button>
+            )}
+          </div>
+
+          {isEditingPreferences ? (
+            <div className="space-y-4">
+              {/* Show All Option */}
+              <button
+                onClick={() => setTempSelectedIds([])}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                  tempSelectedIds.length === 0
+                    ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30"
+                    : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                }`}
+              >
+                <div
+                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    tempSelectedIds.length === 0
+                      ? "border-indigo-500 bg-indigo-500"
+                      : "border-gray-300 dark:border-gray-500"
+                  }`}
+                >
+                  {tempSelectedIds.length === 0 && <Check className="w-3 h-3 text-white" />}
+                </div>
+                <span className={`font-medium text-sm ${
+                  tempSelectedIds.length === 0
+                    ? "text-indigo-700 dark:text-indigo-300"
+                    : "text-gray-700 dark:text-gray-300"
+                }`}>
+                  {t("categoryPreferences.showAll") || "Show me everything"}
+                </span>
+              </button>
+
+              {/* Category Checkboxes */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto">
+                {categories?.map((category) => {
+                  const isSelected = tempSelectedIds.includes(category.id);
+                  return (
+                    <button
+                      key={category.id}
+                      onClick={() => {
+                        setTempSelectedIds((prev) =>
+                          prev.includes(category.id)
+                            ? prev.filter((id) => id !== category.id)
+                            : [...prev, category.id]
+                        );
+                      }}
+                      className={`flex items-center gap-2 p-2.5 rounded-lg border transition-all ${
+                        isSelected
+                          ? "border-indigo-500 bg-indigo-50 dark:bg-indigo-900/30"
+                          : "border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600"
+                      }`}
+                    >
+                      <div
+                        className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+                          isSelected
+                            ? "border-indigo-500 bg-indigo-500"
+                            : "border-gray-300 dark:border-gray-500"
+                        }`}
+                      >
+                        {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                      </div>
+                      <span className={`text-sm ${
+                        isSelected
+                          ? "text-indigo-700 dark:text-indigo-300 font-medium"
+                          : "text-gray-700 dark:text-gray-300"
+                      }`}>
+                        {category.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-2 pt-2">
+                <button
+                  onClick={() => setIsEditingPreferences(false)}
+                  className="flex-1 py-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {t("admin.common.cancel") || "Cancel"}
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCategories(tempSelectedIds);
+                    setIsEditingPreferences(false);
+                  }}
+                  className="flex-1 py-2 px-4 rounded-xl bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition-colors"
+                >
+                  {t("admin.common.save") || "Save"}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {shouldFilterContent ? (
+                <>
+                  <div className="flex flex-wrap gap-2">
+                    {categories
+                      ?.filter((c) => selectedCategoryIds.includes(c.id))
+                      .map((category) => (
+                        <span
+                          key={category.id}
+                          className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300"
+                        >
+                          {category.name}
+                        </span>
+                      ))}
+                  </div>
+                  <button
+                    onClick={resetPreferences}
+                    className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 underline"
+                  >
+                    {t("categoryPreferences.resetToAll") || "Reset to show all"}
+                  </button>
+                </>
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t("categoryPreferences.welcomeDescription") || "You're seeing all content. Change preferences to filter by specific categories."}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Admin Panel Link */}
