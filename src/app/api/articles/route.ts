@@ -55,6 +55,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
   select: {
     id: true;
     title: true;
+    subtitle: true;
     slug: true;
     content: true;
     articleImage: true;
@@ -100,6 +101,7 @@ function transformArticle(article: ArticleWithRelations): Article {
   return {
     id: article.id,
     title: article.title,
+    subtitle: article.subtitle ?? undefined,
     slug: article.slug ?? undefined,
     content: article.content,
     featuredImage: article.articleImage ?? undefined,
@@ -367,6 +369,7 @@ export async function POST(request: NextRequest) {
     const body: CreateArticleRequest = await request.json();
     const {
       title,
+      subtitle,
       content,
       featuredImage,
       categoryId,
@@ -448,6 +451,7 @@ export async function POST(request: NextRequest) {
     const article = await prisma.article.create({
       data: {
         title,
+        subtitle: subtitle || null,
         slug: uniqueSlug,
         content,
         articleImage: featuredImage,

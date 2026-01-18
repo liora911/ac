@@ -51,6 +51,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
   select: {
     id: true;
     title: true;
+    subtitle: true;
     slug: true;
     content: true;
     articleImage: true;
@@ -96,6 +97,7 @@ function transformArticle(article: ArticleWithRelations): Article {
   return {
     id: article.id,
     title: article.title,
+    subtitle: article.subtitle ?? undefined,
     slug: article.slug ?? undefined,
     content: article.content,
     featuredImage: article.articleImage ?? undefined,
@@ -152,64 +154,77 @@ export async function GET(
     }
 
     const { id } = await params;
+    // Decode URL-encoded slug (for Hebrew/non-ASCII slugs)
+    const decodedId = decodeURIComponent(id);
 
     const session = await getServerSession(authOptions);
     const isAuthorized =
       session?.user?.email &&
       ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-    const article = await prisma.article.findUnique({
-      where: { id },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            image: true,
-          },
+    const includeOptions = {
+      author: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          image: true,
         },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            bannerImageUrl: true,
-          },
+      },
+      category: {
+        select: {
+          id: true,
+          name: true,
+          bannerImageUrl: true,
         },
-        categories: {
-          include: {
-            category: {
-              select: {
-                id: true,
-                name: true,
-                bannerImageUrl: true,
-              },
-            },
-          },
-        },
-        authors: {
-          orderBy: { order: "asc" },
-          select: {
-            id: true,
-            name: true,
-            imageUrl: true,
-            order: true,
-          },
-        },
-        tags: {
-          include: {
-            tag: {
-              select: {
-                id: true,
-                name: true,
-                slug: true,
-                color: true,
-              },
+      },
+      categories: {
+        include: {
+          category: {
+            select: {
+              id: true,
+              name: true,
+              bannerImageUrl: true,
             },
           },
         },
       },
+      authors: {
+        orderBy: { order: "asc" } as const,
+        select: {
+          id: true,
+          name: true,
+          imageUrl: true,
+          order: true,
+        },
+      },
+      tags: {
+        include: {
+          tag: {
+            select: {
+              id: true,
+              name: true,
+              slug: true,
+              color: true,
+            },
+          },
+        },
+      },
+    };
+
+    // Try to find by ID first, then by slug
+    let article = await prisma.article.findUnique({
+      where: { id: decodedId },
+      include: includeOptions,
     });
+
+    // If not found by ID, try by slug
+    if (!article) {
+      article = await prisma.article.findUnique({
+        where: { slug: decodedId },
+        include: includeOptions,
+      });
+    }
 
     if (!article) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
@@ -270,6 +285,7 @@ export async function PUT(
     const body: UpdateArticleRequest = await request.json();
     const {
       title,
+      subtitle,
       content,
       excerpt,
       featuredImage,
@@ -335,6 +351,7 @@ export async function PUT(
       const uniqueSlug = await generateUniqueSlug(baseSlug, checkSlugExists);
       updateData.slug = uniqueSlug;
     }
+    if (subtitle !== undefined) updateData.subtitle = subtitle || null;
     if (content !== undefined) updateData.content = content;
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
