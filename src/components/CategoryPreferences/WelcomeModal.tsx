@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Check } from "lucide-react";
+import { User, Check } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
@@ -48,6 +48,12 @@ export default function WelcomeModal() {
     markWelcomeSeen();
   };
 
+  const handleSkip = () => {
+    // Skip = show all content (no filtering)
+    setSelectedCategories([]);
+    markWelcomeSeen();
+  };
+
   if (!shouldShowWelcome) return null;
 
   return (
@@ -74,7 +80,7 @@ export default function WelcomeModal() {
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8 text-white text-center">
             <div className="flex justify-center mb-4">
               <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <Sparkles className="w-8 h-8" />
+                <User className="w-8 h-8" />
               </div>
             </div>
             <h2 className="text-2xl font-bold mb-2">
@@ -173,13 +179,19 @@ export default function WelcomeModal() {
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-6">
+          <div className="px-6 pb-6 space-y-3">
             <button
               onClick={handleContinue}
               disabled={!showAll && selectedIds.length === 0}
               className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {t("categoryPreferences.continue") || "Continue"}
+            </button>
+            <button
+              onClick={handleSkip}
+              className="w-full py-2 px-4 text-gray-500 dark:text-gray-400 text-sm hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+            >
+              {t("categoryPreferences.skip") || "Skip for now"}
             </button>
           </div>
         </motion.div>
