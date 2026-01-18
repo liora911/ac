@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Search, Sparkles, X, Loader2 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Article } from "@/types/Articles/articles";
@@ -32,21 +32,6 @@ interface SemanticSearchProps {
   onLoading: (loading: boolean) => void;
 }
 
-// Debounce hook
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
-}
-
 export default function SemanticSearch({ onResults, onLoading }: SemanticSearchProps) {
   const { t, locale } = useTranslation();
   const isHebrew = locale === "he";
@@ -57,13 +42,9 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
   const [error, setError] = useState<string | null>(null);
   const [lastResults, setLastResults] = useState<SemanticSearchResult[] | null>(null);
 
-  const debouncedQuery = useDebouncedValue(query, 500);
-
-  // Perform semantic search
-  const performSearch = useCallback(async (searchQuery: string) => {
-    if (!searchQuery.trim() || !isAIMode) {
-      onResults(null, false);
-      setLastResults(null);
+  // Perform semantic search - only called on button click or Enter
+  const performSearch = useCallback(async () => {
+    if (!query.trim() || !isAIMode) {
       return;
     }
 
@@ -76,7 +57,7 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          query: searchQuery.trim(),
+          query: query.trim(),
           limit: 10,
           minSimilarity: 0.5,
         }),
@@ -136,27 +117,26 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
       setIsSearching(false);
       onLoading(false);
     }
-  }, [isAIMode, onResults, onLoading]);
+  }, [query, isAIMode, onResults, onLoading]);
 
-  // Trigger search when debounced query changes
-  useEffect(() => {
-    if (isAIMode && debouncedQuery) {
-      performSearch(debouncedQuery);
-    } else if (!debouncedQuery) {
-      onResults(null, isAIMode);
-      setLastResults(null);
-      setError(null);
+  // Handle Enter key
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && isAIMode && query.trim()) {
+      performSearch();
     }
-  }, [debouncedQuery, isAIMode, performSearch, onResults]);
+  };
 
-  // When AI mode is turned off, clear results
-  useEffect(() => {
-    if (!isAIMode) {
+  // Toggle AI mode
+  const toggleAIMode = () => {
+    const newMode = !isAIMode;
+    setIsAIMode(newMode);
+    if (!newMode) {
+      // Turning off AI mode - clear results
       onResults(null, false);
       setLastResults(null);
       setError(null);
     }
-  }, [isAIMode, onResults]);
+  };
 
   const clearSearch = () => {
     setQuery("");
@@ -172,63 +152,82 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
   return (
     <div className="w-full">
       {/* Search Input */}
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          {isSearching ? (
-            <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
-          ) : isAIMode ? (
-            <Sparkles className="h-5 w-5 text-purple-500" />
-          ) : (
-            <Search className="h-5 w-5 text-gray-400" />
+      <div className="relative flex gap-2">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            {isSearching ? (
+              <Loader2 className="h-5 w-5 text-blue-500 animate-spin" />
+            ) : isAIMode ? (
+              <Sparkles className="h-5 w-5 text-purple-500" />
+            ) : (
+              <Search className="h-5 w-5 text-gray-400" />
+            )}
+          </div>
+
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder={placeholderText as string}
+            dir={isHebrew ? "rtl" : "ltr"}
+            className={`
+              w-full pl-10 pr-10 py-3
+              border rounded-xl
+              focus:outline-none focus:ring-2
+              bg-white dark:bg-gray-800
+              text-gray-900 dark:text-gray-100
+              transition-all duration-200
+              ${isAIMode
+                ? "border-purple-300 dark:border-purple-600 focus:ring-purple-500 focus:border-purple-500"
+                : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+              }
+            `}
+          />
+
+          {/* Clear button */}
+          {query && (
+            <button
+              onClick={clearSearch}
+              className="absolute inset-y-0 right-2 flex items-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            >
+              <X className="h-4 w-4" />
+            </button>
           )}
         </div>
 
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder={placeholderText as string}
-          dir={isHebrew ? "rtl" : "ltr"}
-          className={`
-            w-full pl-10 pr-24 py-3
-            border rounded-xl
-            focus:outline-none focus:ring-2
-            bg-white dark:bg-gray-800
-            text-gray-900 dark:text-gray-100
-            transition-all duration-200
-            ${isAIMode
-              ? "border-purple-300 dark:border-purple-600 focus:ring-purple-500 focus:border-purple-500"
-              : "border-gray-300 dark:border-gray-600 focus:ring-blue-500 focus:border-blue-500"
-            }
-          `}
-        />
-
-        {/* Clear button */}
-        {query && (
-          <button
-            onClick={clearSearch}
-            className="absolute inset-y-0 right-20 flex items-center pr-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-
         {/* AI Mode Toggle */}
         <button
-          onClick={() => setIsAIMode(!isAIMode)}
+          onClick={toggleAIMode}
           className={`
-            absolute inset-y-0 right-2 flex items-center px-3 my-1.5 rounded-lg
+            flex items-center px-3 py-2 rounded-xl
             text-sm font-medium transition-all duration-200
             ${isAIMode
-              ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
+              ? "bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800 border border-purple-300 dark:border-purple-600"
+              : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
             }
           `}
           title={isAIMode ? (t("semanticSearch.disableAI") || "Switch to regular search") : (t("semanticSearch.enableAI") || "Enable AI search")}
         >
-          <Sparkles className={`h-4 w-4 ${isAIMode ? "mr-1" : ""}`} />
-          {isAIMode && <span className="hidden sm:inline">{t("semanticSearch.aiLabel") || "AI"}</span>}
+          <Sparkles className="h-4 w-4" />
+          <span className="hidden sm:inline ml-1">{t("semanticSearch.aiLabel") || "AI"}</span>
         </button>
+
+        {/* Search Button - only visible in AI mode */}
+        {isAIMode && (
+          <button
+            onClick={performSearch}
+            disabled={isSearching || !query.trim()}
+            className="flex items-center px-4 py-2 rounded-xl bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isSearching ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Search className="h-4 w-4" />
+            )}
+            <span className="hidden sm:inline ml-1">{t("semanticSearch.searchButton") || "Search"}</span>
+          </button>
+        )}
       </div>
 
       {/* AI Mode Description */}
@@ -236,7 +235,7 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
         <div className="mt-2 flex items-start gap-2 text-sm text-purple-600 dark:text-purple-400">
           <Sparkles className="h-4 w-4 mt-0.5 flex-shrink-0" />
           <span>
-            {t("semanticSearch.description") || "AI search understands meaning, not just keywords. Try describing what you want to learn about."}
+            {t("semanticSearch.description") || "AI search understands meaning, not just keywords. Press Enter or click Search."}
           </span>
         </div>
       )}
