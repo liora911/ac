@@ -1183,6 +1183,19 @@
       "subscriptionPortal": "Could not open subscription portal"
     }
   },
+  "categoryPreferences": {
+    "welcomeTitle": "Welcome! What interests you?",
+    "welcomeDescription": "Select topics to personalize your experience, or skip to see everything.",
+    "showAll": "Show me everything",
+    "or": "or select specific topics",
+    "continue": "Continue",
+    "saved": "Preferences saved!",
+    "managePreferences": "Content Preferences",
+    "resetToAll": "Reset to show all",
+    "filterActive": "Filtered by your preferences",
+    "showingAll": "Showing all content",
+    "changePreferences": "Change preferences"
+  },
   "settings": {
     "title": "Settings",
     "language": "Language",

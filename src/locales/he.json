@@ -1243,6 +1243,19 @@
       "subscriptionPortal": "שגיאה בפתיחת ניהול המנוי"
     }
   },
+  "categoryPreferences": {
+    "welcomeTitle": "!ברוכים הבאים! מה מעניין אותך?",
+    "welcomeDescription": "בחר נושאים כדי להתאים את התוכן שלך, או דלג כדי לראות הכל.",
+    "showAll": "הראה לי הכל",
+    "or": "או בחר נושאים ספציפיים",
+    "continue": "המשך",
+    "saved": "ההעדפות נשמרו!",
+    "managePreferences": "העדפות תוכן",
+    "resetToAll": "אפס להראות הכל",
+    "filterActive": "מסונן לפי ההעדפות שלך",
+    "showingAll": "מציג את כל התוכן",
+    "changePreferences": "שנה העדפות"
+  },
   "settings": {
     "title": "הגדרות",
     "language": "שפה",

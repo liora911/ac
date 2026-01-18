@@ -9,7 +9,9 @@ import QueryProvider from "@/lib/react-query/QueryProvider";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
+import { CategoryPreferencesProvider } from "@/contexts/CategoryPreferencesContext";
 import MotionProvider from "@/components/Motion/MotionProvider";
+import WelcomeModal from "@/components/CategoryPreferences/WelcomeModal";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
 import { Analytics } from "@vercel/analytics/react";
@@ -117,16 +119,19 @@ export default function RootLayout({
               <NotificationProvider>
                 <ThemeProvider>
                   <SettingsProvider>
-                    <MotionProvider>
-                      <div className="flex flex-col min-h-screen">
-                        <Header />
-                        <MainContent>
-                          <Breadcrumbs />
-                          {children}
-                        </MainContent>
-                        <Footer />
-                      </div>
-                    </MotionProvider>
+                    <CategoryPreferencesProvider>
+                      <MotionProvider>
+                        <div className="flex flex-col min-h-screen">
+                          <Header />
+                          <MainContent>
+                            <Breadcrumbs />
+                            {children}
+                          </MainContent>
+                          <Footer />
+                        </div>
+                        <WelcomeModal />
+                      </MotionProvider>
+                    </CategoryPreferencesProvider>
                   </SettingsProvider>
                 </ThemeProvider>
               </NotificationProvider>

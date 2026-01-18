@@ -20,6 +20,8 @@ import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import SemanticSearch from "./SemanticSearch";
+import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
+import { Settings2 } from "lucide-react";
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -61,6 +63,13 @@ export default function ArticlesList({
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
+
+  // Category preferences for filtering
+  const {
+    selectedCategoryIds: preferredCategories,
+    shouldFilterContent,
+    resetPreferences,
+  } = useCategoryPreferences();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
@@ -126,14 +135,36 @@ export default function ArticlesList({
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
   // Use semantic results if in semantic mode with results, otherwise use regular results
-  const articles = (isSemanticMode && semanticResults !== null)
+  const rawArticles = (isSemanticMode && semanticResults !== null)
     ? semanticResults
     : (articlesData?.articles || []);
+
+  // Filter articles by user's category preferences (client-side filtering)
+  const articles = shouldFilterContent
+    ? rawArticles.filter((article) => {
+        // Check if article has any category that matches user's preferences
+        const articleCategoryIds = [
+          ...(article.categories?.map((c) => c.id) || []),
+          article.category?.id,
+        ].filter(Boolean) as string[];
+
+        // If article has no categories, include it by default
+        if (articleCategoryIds.length === 0) return true;
+
+        // Check if any of the article's categories match user preferences
+        return articleCategoryIds.some((catId) =>
+          preferredCategories.includes(catId)
+        );
+      })
+    : rawArticles;
+
   const totalPages = (isSemanticMode && semanticResults !== null)
     ? 1
     : (articlesData?.totalPages || 1);
   const total = (isSemanticMode && semanticResults !== null)
     ? semanticResults.length
+    : shouldFilterContent
+    ? articles.length
     : (articlesData?.total || 0);
 
   // Semantic search handlers
@@ -213,6 +244,27 @@ export default function ArticlesList({
           </div>
         </div>
       )}
+      {/* Category Preference Indicator */}
+      {shouldFilterContent && (
+        <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg px-4 py-3 flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-2 text-purple-700 dark:text-purple-300">
+            <Settings2 className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              {t("categoryPreferences.filterActive") || "Filtered by your preferences"}
+            </span>
+            <span className="text-xs text-purple-500 dark:text-purple-400">
+              ({preferredCategories.length} {preferredCategories.length === 1 ? "category" : "categories"})
+            </span>
+          </div>
+          <button
+            onClick={resetPreferences}
+            className="text-sm text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-200 underline"
+          >
+            {t("categoryPreferences.resetToAll") || "Show all content"}
+          </button>
+        </div>
+      )}
+
       {/* Semantic Search - AI-powered search box */}
       {showFilters && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
