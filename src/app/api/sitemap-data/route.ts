@@ -73,10 +73,9 @@ export async function GET() {
         _count: { id: true },
       }),
 
-      // Count lectures per category
+      // Count lectures per category (Lecture model has no published field)
       prisma.lecture.groupBy({
         by: ["categoryId"],
-        where: { published: true },
         _count: { id: true },
       }),
 
@@ -89,7 +88,7 @@ export async function GET() {
 
       // Total counts
       prisma.article.count({ where: { published: true } }),
-      prisma.lecture.count({ where: { published: true } }),
+      prisma.lecture.count(), // Lecture model has no published field
       prisma.presentation.count({ where: { published: true } }),
       prisma.event.count({ where: { eventDate: { gte: new Date() } } }),
       prisma.event.count({ where: { eventDate: { lt: new Date() } } }),
