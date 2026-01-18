@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 function BlackHoleIcon({ className }: { className?: string }) {
   return (
@@ -80,6 +81,14 @@ export default function Footer() {
     <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-950 px-4 py-5 sm:py-6">
       <div className="max-w-5xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400">
         <p dir={isHebrew ? "rtl" : "ltr"}>{t("footer.contact")}</p>
+        <div className="mt-3 flex items-center justify-center gap-4">
+          <Link
+            href="/site-map"
+            className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+          >
+            {t("nav.sitemap")}
+          </Link>
+        </div>
         <div
           className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-gray-400"
           dir={isHebrew ? "rtl" : "ltr"}

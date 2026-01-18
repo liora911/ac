@@ -93,6 +93,7 @@ model Subscription {
 model Article {
   id             String            @id @default(cuid())
   title          String
+  subtitle       String?
   slug           String?           @unique
   content        String
   articleImage   String?

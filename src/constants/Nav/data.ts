@@ -10,5 +10,4 @@ export const navItems: NavItem[] = [
   { label: "nav.lectures", href: "/lectures", icon: "LectureIcon" },
   { label: "nav.events", href: "/events", icon: "EventIcon" },
   { label: "nav.contact", href: "/contact", icon: "ContactIcon" },
-  { label: "nav.sitemap", href: "/site-map", icon: "SitemapIcon" },
 ];

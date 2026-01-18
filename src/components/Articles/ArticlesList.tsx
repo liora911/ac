@@ -457,6 +457,9 @@ export default function ArticlesList({
                             {article.title}
                           </Link>
                         </h3>
+                        {article.subtitle && (
+                          <p className="text-gray-500 text-sm mb-1">{article.subtitle}</p>
+                        )}
                         <p className="text-gray-600 text-sm line-clamp-2 mb-2">
                           {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
                         </p>
@@ -643,6 +646,11 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
             <h3 className="text-lg font-semibold text-white line-clamp-2 drop-shadow-md">
               {article.title}
             </h3>
+            {article.subtitle && (
+              <p className="text-sm text-gray-200 line-clamp-1 mt-1 drop-shadow-md">
+                {article.subtitle}
+              </p>
+            )}
           </div>
         </div>
       </Link>

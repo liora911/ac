@@ -1,6 +1,7 @@
 export interface Article {
   id: string;
   title: string;
+  subtitle?: string;
   slug?: string;
   excerpt?: string;
   content: string;
@@ -73,6 +74,7 @@ export type ArticleStatus = "DRAFT" | "PUBLISHED" | "ARCHIVED";
 
 export interface CreateArticleRequest {
   title: string;
+  subtitle?: string;
   content: string;
   excerpt?: string;
   featuredImage?: string;
@@ -117,6 +119,7 @@ export interface ArticlesQueryParams {
 
 export interface ArticleFormData {
   title: string;
+  subtitle: string;
   content: string;
   excerpt: string;
   featuredImage: string;
