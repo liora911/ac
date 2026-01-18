@@ -241,6 +241,19 @@
     "activeFilters": "מסננים פעילים:",
     "clearAllFilters": "נקה הכל"
   },
+  "semanticSearch": {
+    "placeholder": "תאר מה אתה מחפש...",
+    "enableAI": "הפעל חיפוש AI",
+    "disableAI": "עבור לחיפוש רגיל",
+    "aiLabel": "AI",
+    "description": "חיפוש AI מבין משמעות, לא רק מילות מפתח. נסה לתאר מה אתה רוצה ללמוד.",
+    "resultsFound": "נמצאו {count} מאמרים קשורים",
+    "topMatch": "התאמה מובילה",
+    "relevance": "רלוונטיות",
+    "noResults": "לא נמצאו מאמרים התואמים לתיאור שלך. נסה מילים אחרות או בטל את חיפוש ה-AI.",
+    "generateEmbeddings": "צור וקטורים לכל המאמרים",
+    "embeddingsRequired": "חיפוש AI דורש וקטורים. אנא צור אותם קודם."
+  },
   "articleForm": {
     "createArticleButton": "צור מאמר",
     "searchLabel": "חיפוש",

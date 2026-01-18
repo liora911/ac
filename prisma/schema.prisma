@@ -108,6 +108,8 @@ model Article {
   direction      String            @default("ltr")
   authorId       String
   categoryId     String?
+  embedding      Float[]           // Semantic search embedding vector
+  embeddingModel String?           // Model used to generate embedding (e.g., "text-embedding-004")
   authors        ArticleAuthor[]
   categories     ArticleCategory[]
   tags           ArticleTag[]

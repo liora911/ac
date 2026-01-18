@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -19,6 +19,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
+import SemanticSearch from "./SemanticSearch";
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -67,6 +68,11 @@ export default function ArticlesList({
   type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
+
+  // Semantic search state
+  const [semanticResults, setSemanticResults] = useState<Article[] | null>(null);
+  const [isSemanticMode, setIsSemanticMode] = useState(false);
+  const [isSemanticLoading, setIsSemanticLoading] = useState(false);
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
@@ -119,9 +125,26 @@ export default function ArticlesList({
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
-  const articles = articlesData?.articles || [];
-  const totalPages = articlesData?.totalPages || 1;
-  const total = articlesData?.total || 0;
+  // Use semantic results if in semantic mode with results, otherwise use regular results
+  const articles = (isSemanticMode && semanticResults !== null)
+    ? semanticResults
+    : (articlesData?.articles || []);
+  const totalPages = (isSemanticMode && semanticResults !== null)
+    ? 1
+    : (articlesData?.totalPages || 1);
+  const total = (isSemanticMode && semanticResults !== null)
+    ? semanticResults.length
+    : (articlesData?.total || 0);
+
+  // Semantic search handlers
+  const handleSemanticResults = useCallback((results: Article[] | null, isAIMode: boolean) => {
+    setSemanticResults(results);
+    setIsSemanticMode(isAIMode);
+  }, []);
+
+  const handleSemanticLoading = useCallback((loading: boolean) => {
+    setIsSemanticLoading(loading);
+  }, []);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
@@ -190,11 +213,22 @@ export default function ArticlesList({
           </div>
         </div>
       )}
-      {}
+      {/* Semantic Search - AI-powered search box */}
       {showFilters && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {}
+          {/* Semantic Search Component */}
+          <div className="mb-4">
+            <SemanticSearch
+              onResults={handleSemanticResults}
+              onLoading={handleSemanticLoading}
+            />
+          </div>
+
+          {/* Hide other filters when in semantic mode with results */}
+          {!(isSemanticMode && semanticResults && semanticResults.length > 0) && (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Regular search (hidden label, input shown as fallback) */}
+            {!isSemanticMode && (
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t("articleForm.searchLabel")}
@@ -207,8 +241,9 @@ export default function ArticlesList({
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
+            )}
 
-            {}
+            {/* Category Filter */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 {t("articleForm.categoryLabel")}
@@ -254,6 +289,7 @@ export default function ArticlesList({
               </select>
             </div>
           </div>
+          )}
 
           {/* Sort and Results Count Row */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -277,8 +313,13 @@ export default function ArticlesList({
 
             {/* Results Count */}
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              {isLoading ? (
+              {isLoading || isSemanticLoading ? (
                 t("loading")
+              ) : isSemanticMode && semanticResults !== null ? (
+                <span className="text-purple-600 dark:text-purple-400">
+                  {t("semanticSearch.resultsFound")?.replace("{count}", total.toString()) ||
+                    `Found ${total} related articles`}
+                </span>
               ) : (
                 <>
                   {t("articlesPage.articlesFound").replace(
@@ -391,8 +432,8 @@ export default function ArticlesList({
         ) : null;
       })()}
 
-      {}
-      {isLoading && (
+      {/* Loading State */}
+      {(isLoading || isSemanticLoading) && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: initialLimit }).map((_, index) => (
             <div
@@ -410,8 +451,8 @@ export default function ArticlesList({
         </div>
       )}
 
-      {}
-      {!isLoading &&
+      {/* Articles Grid/List */}
+      {!isLoading && !isSemanticLoading &&
         articles.length > 0 &&
         (viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
