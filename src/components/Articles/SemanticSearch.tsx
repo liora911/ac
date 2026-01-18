@@ -104,14 +104,17 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
         slug: r.slug || undefined,
         content: "",
         featuredImage: r.articleImage || undefined,
-        articleImage: r.articleImage || undefined,
         status: "PUBLISHED" as const,
         isFeatured: false,
         isPremium: r.isPremium,
-        publisherName: r.publisherName,
-        readDuration: r.readDuration,
+        viewCount: 0,
+        readTime: r.readDuration,
+        keywords: [],
         createdAt: r.createdAt,
         updatedAt: r.createdAt,
+        authorId: "",
+        author: { id: "", name: r.publisherName },
+        publisherName: r.publisherName,
         authors: r.authors.map((a) => ({
           id: "",
           name: a.name,
@@ -120,8 +123,6 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
         })),
         categories: r.categories,
         tags: [],
-        // Add similarity score for display
-        _similarity: r.similarity,
       }));
 
       setLastResults(data.results);
