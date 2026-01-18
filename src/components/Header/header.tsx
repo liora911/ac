@@ -21,6 +21,7 @@ import {
   MdPerson,
   MdSearch,
   MdLogin,
+  MdAccountTree,
 } from "react-icons/md";
 
 const IconMap: { [key: string]: React.ElementType } = {
@@ -33,6 +34,7 @@ const IconMap: { [key: string]: React.ElementType } = {
   PersonIcon: MdPerson,
   MdSearch: MdSearch,
   LoginIcon: MdLogin,
+  SitemapIcon: MdAccountTree,
 };
 
 export default function Header() {

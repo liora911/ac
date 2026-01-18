@@ -5,7 +5,8 @@
     "lectures": "הרצאות",
     "contact": "צור קשר",
     "events": "אירועים",
-    "onlineEvents": "אירועים מקוונים"
+    "onlineEvents": "אירועים מקוונים",
+    "sitemap": "מפת האתר"
   },
   "home": {
     "name": "אבשלום אליצור",
@@ -1432,5 +1433,27 @@
   },
   "upload": {
     "placeholder": "PNG, JPG, GIF, WebP (מקסימום 5MB)"
+  },
+  "sitemap": {
+    "title": "מפת האתר",
+    "description": "גלה את כל התכנים הזמינים באתר, מאורגנים לפי קטגוריות.",
+    "mainPages": "עמודים ראשיים",
+    "contentByCategory": "תוכן לפי קטגוריה",
+    "home": "דף הבית",
+    "articles": "מאמרים",
+    "lectures": "הרצאות",
+    "presentations": "מצגות",
+    "events": "אירועים",
+    "categories": "קטגוריות",
+    "search": "חיפוש",
+    "contact": "צור קשר",
+    "pricing": "תוכניות מנוי",
+    "favorites": "המועדפים שלי",
+    "account": "החשבון שלי",
+    "uncategorized": "ללא קטגוריה",
+    "upcomingEvents": "אירועים קרובים",
+    "pastEvents": "אירועים שעברו",
+    "noEvents": "אין אירועים מתוכננים",
+    "helpText": "לחץ על פריט כדי לנווט אליו ישירות. השתמש בחצים כדי לפתוח/לסגור חלקים."
   }
 }
