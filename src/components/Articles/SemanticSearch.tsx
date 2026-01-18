@@ -77,8 +77,8 @@ export default function SemanticSearch({ onResults, onLoading }: SemanticSearchP
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: searchQuery.trim(),
-          limit: 20,
-          minSimilarity: 0.25,
+          limit: 10,
+          minSimilarity: 0.5,
         }),
       });
 
