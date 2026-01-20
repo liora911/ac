@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Grid3X3, List, Tag, X, Star, ArrowUpDown, Share2 } from "lucide-react";
+import { Tag, X, Star, ArrowUpDown, Share2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -76,12 +76,7 @@ export default function ArticlesList({
   const [currentPage, setCurrentPage] = useState(1);
   type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
-  const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
-
-  // Semantic search state
-  const [semanticResults, setSemanticResults] = useState<Article[] | null>(null);
-  const [isSemanticMode, setIsSemanticMode] = useState(false);
-  const [isSemanticLoading, setIsSemanticLoading] = useState(false);
+  const viewMode = initialViewMode;
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
@@ -134,17 +129,15 @@ export default function ArticlesList({
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
-  // Use semantic results if in semantic mode with results, otherwise use regular results
-  const rawArticles = (isSemanticMode && semanticResults !== null)
-    ? semanticResults
-    : (articlesData?.articles || []);
+  // Get raw articles from API
+  const rawArticles = articlesData?.articles || [];
 
   // Filter articles by user's category preferences (client-side filtering)
   const articles = shouldFilterContent
-    ? rawArticles.filter((article) => {
+    ? rawArticles.filter((article: Article) => {
         // Check if article has any category that matches user's preferences
         const articleCategoryIds = [
-          ...(article.categories?.map((c) => c.id) || []),
+          ...(article.categories?.map((c: { id: string }) => c.id) || []),
           article.category?.id,
         ].filter(Boolean) as string[];
 
@@ -158,27 +151,16 @@ export default function ArticlesList({
       })
     : rawArticles;
 
-  const totalPages = (isSemanticMode && semanticResults !== null)
-    ? 1
-    : (articlesData?.totalPages || 1);
-  const total = (isSemanticMode && semanticResults !== null)
-    ? semanticResults.length
-    : shouldFilterContent
-    ? articles.length
-    : (articlesData?.total || 0);
-
-  // Semantic search handlers
-  const handleSemanticResults = useCallback((results: Article[] | null, isAIMode: boolean) => {
-    setSemanticResults(results);
-    setIsSemanticMode(isAIMode);
-  }, []);
-
-  const handleSemanticLoading = useCallback((loading: boolean) => {
-    setIsSemanticLoading(loading);
-  }, []);
+  const totalPages = articlesData?.totalPages || 1;
+  const total = shouldFilterContent ? articles.length : (articlesData?.total || 0);
 
   const handleSearch = (query: string) => {
     setSearchQuery(query);
+    setCurrentPage(1);
+  };
+
+  const handleClearSearch = () => {
+    setSearchQuery("");
     setCurrentPage(1);
   };
 
@@ -216,34 +198,6 @@ export default function ArticlesList({
 
   return (
     <div className="space-y-6">
-      {showFilters && (
-        <div className="flex justify-end mb-4">
-          <div className="flex items-center space-x-1">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "grid"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-              title="Grid view"
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 rounded-md transition-colors ${
-                viewMode === "list"
-                  ? "bg-blue-600 text-white"
-                  : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-              }`}
-              title="List view"
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      )}
       {/* Category Preference Indicator */}
       {shouldFilterContent && (
         <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg px-4 py-3 flex items-center justify-between flex-wrap gap-2">
@@ -268,16 +222,14 @@ export default function ArticlesList({
       {/* Semantic Search - AI-powered search box */}
       {showFilters && (
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
-          {/* Semantic Search Component */}
+          {/* Search Component */}
           <div className="mb-4">
             <SemanticSearch
-              onResults={handleSemanticResults}
-              onLoading={handleSemanticLoading}
+              onSearch={handleSearch}
+              onClear={handleClearSearch}
             />
           </div>
 
-          {/* Hide other filters when in semantic mode with results */}
-          {!(isSemanticMode && semanticResults && semanticResults.length > 0) && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Category Filter */}
             <div>
@@ -325,7 +277,6 @@ export default function ArticlesList({
               </select>
             </div>
           </div>
-          )}
 
           {/* Sort and Results Count Row */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -349,20 +300,13 @@ export default function ArticlesList({
 
             {/* Results Count */}
             <div className="text-sm text-gray-600 dark:text-gray-400">
-              {isLoading || isSemanticLoading ? (
+              {isLoading ? (
                 t("loading")
-              ) : isSemanticMode && semanticResults !== null ? (
-                <span className="text-purple-600 dark:text-purple-400">
-                  {t("semanticSearch.resultsFound")?.replace("{count}", total.toString()) ||
-                    `Found ${total} related articles`}
-                </span>
               ) : (
-                <>
-                  {t("articlesPage.articlesFound").replace(
-                    "{total}",
-                    total.toString()
-                  )}
-                </>
+                t("articlesPage.articlesFound").replace(
+                  "{total}",
+                  total.toString()
+                )
               )}
             </div>
           </div>
@@ -469,7 +413,7 @@ export default function ArticlesList({
       })()}
 
       {/* Loading State */}
-      {(isLoading || isSemanticLoading) && (
+      {isLoading && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: initialLimit }).map((_, index) => (
             <div
@@ -488,7 +432,7 @@ export default function ArticlesList({
       )}
 
       {/* Articles Grid/List */}
-      {!isLoading && !isSemanticLoading &&
+      {!isLoading &&
         articles.length > 0 &&
         (viewMode === "grid" ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

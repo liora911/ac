@@ -10,18 +10,11 @@ import {
   MdEvent,
   MdMic,
 } from "react-icons/md";
-import ArticleModal from "@/components/Articles/ArticleModal";
-import PresentationModal from "@/components/Presentations/PresentationModal";
-import EventModal from "@/components/Events/EventModal";
-import LectureModal from "@/components/Lectures/LectureModal";
-import { Article } from "@/types/Articles/articles";
-import { Presentation } from "@/types/Presentations/presentations";
-import { Event } from "@/types/Events/events";
-import { Lecture } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
 interface SearchResult {
   id: string;
+  slug?: string;
   title: string;
   description?: string;
   content?: string;
@@ -54,12 +47,6 @@ function SearchPageContent() {
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
-  const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
-  const [selectedPresentation, setSelectedPresentation] =
-    useState<Presentation | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
-  const [modalLoading, setModalLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Safely strip HTML using DOM parser (secure against XSS)
@@ -117,39 +104,19 @@ function SearchPageContent() {
     }
   };
 
-  const handleResultClick = async (result: SearchResult, type: string) => {
-    setModalLoading(true);
-    try {
-      const response = await fetch(`/api/${type}/${result.id}`);
-      if (response.ok) {
-        const data = await response.json();
-        switch (type) {
-          case "articles":
-            setSelectedArticle(data);
-            break;
-          case "presentations":
-            setSelectedPresentation(data);
-            break;
-          case "events":
-            setSelectedEvent(data);
-            break;
-          case "lectures":
-            setSelectedLecture(data);
-            break;
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching item details:", error);
-    } finally {
-      setModalLoading(false);
+  const getItemUrl = (result: SearchResult, type: string) => {
+    switch (type) {
+      case "articles":
+        return `/articles/${result.slug || result.id}`;
+      case "presentations":
+        return `/presentations/${result.id}`;
+      case "events":
+        return `/events/${result.id}`;
+      case "lectures":
+        return `/lectures/${result.id}`;
+      default:
+        return "#";
     }
-  };
-
-  const closeModals = () => {
-    setSelectedArticle(null);
-    setSelectedPresentation(null);
-    setSelectedEvent(null);
-    setSelectedLecture(null);
   };
 
   const getResultIcon = (type: string) => {
@@ -333,10 +300,10 @@ function SearchPageContent() {
             {results.total > 0 && (
               <div className="space-y-3 sm:space-y-4">
                 {filteredResults.map((result) => (
-                  <div
+                  <Link
                     key={`${result.type}-${result.id}`}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow cursor-pointer"
-                    onClick={() => handleResultClick(result, result.type)}
+                    href={getItemUrl(result, result.type)}
+                    className="block bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
                       <div className="flex-shrink-0 text-blue-600">
@@ -388,7 +355,7 @@ function SearchPageContent() {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 ))}
               </div>
             )}
@@ -444,14 +411,6 @@ function SearchPageContent() {
             </p>
           </div>
         )}
-
-        <ArticleModal article={selectedArticle} onClose={closeModals} />
-        <PresentationModal
-          presentation={selectedPresentation}
-          onClose={closeModals}
-        />
-        <EventModal event={selectedEvent} isOpen={!!selectedEvent} onClose={closeModals} locale={locale} />
-        <LectureModal lecture={selectedLecture} onClose={closeModals} />
       </div>
     </div>
   );

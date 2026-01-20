@@ -221,7 +221,7 @@ export async function GET(request: NextRequest) {
     }
 
     if (query.featured !== undefined) {
-      where.order = { gt: 0 };
+      where.isFeatured = query.featured;
     }
 
     if (query.search) {
