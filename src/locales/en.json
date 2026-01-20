@@ -515,6 +515,8 @@
     "adminSettings": "Admin settings",
     "myAccount": "My Account",
     "login": "Login",
+    "logout": "Logout",
+    "menu": "Menu",
     "brandAriaLabel": "Avshalom Elitzur - Home",
     "mainNavigation": "Main navigation",
     "closeNavigationMenu": "Close navigation menu",
