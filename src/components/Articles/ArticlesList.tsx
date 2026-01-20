@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Tag, X, Star, ArrowUpDown, Share2 } from "lucide-react";
+import { Tag, X, Star, ArrowUpDown, Share2, Grid3X3, List } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -76,7 +76,7 @@ export default function ArticlesList({
   const [currentPage, setCurrentPage] = useState(1);
   type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
-  const viewMode = initialViewMode;
+  const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
@@ -278,7 +278,7 @@ export default function ArticlesList({
             </div>
           </div>
 
-          {/* Sort and Results Count Row */}
+          {/* Sort, View Toggle and Results Count Row */}
           <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             {/* Sort Dropdown */}
             <div className="flex items-center gap-2">
@@ -298,16 +298,45 @@ export default function ArticlesList({
               </select>
             </div>
 
-            {/* Results Count */}
-            <div className="text-sm text-gray-600 dark:text-gray-400">
-              {isLoading ? (
-                t("loading")
-              ) : (
-                t("articlesPage.articlesFound").replace(
-                  "{total}",
-                  total.toString()
-                )
-              )}
+            {/* View Toggle and Results Count */}
+            <div className="flex items-center gap-3">
+              {/* Results Count */}
+              <div className="text-sm text-gray-600 dark:text-gray-400">
+                {isLoading ? (
+                  t("loading")
+                ) : (
+                  t("articlesPage.articlesFound").replace(
+                    "{total}",
+                    total.toString()
+                  )
+                )}
+              </div>
+
+              {/* View Toggle Buttons */}
+              <div className="flex items-center gap-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode("grid")}
+                  className={`p-1.5 rounded transition-colors ${
+                    viewMode === "grid"
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                  title="Grid view"
+                >
+                  <Grid3X3 className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode("list")}
+                  className={`p-1.5 rounded transition-colors ${
+                    viewMode === "list"
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                  title="List view"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
@@ -448,69 +477,90 @@ export default function ArticlesList({
             ))}
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {articles.map((article) => (
-              <div
+              <Link
                 key={article.id}
-                className="bg-white rounded-lg shadow-sm border overflow-hidden hover:shadow-md transition-shadow"
+                href={`/articles/${article.slug || article.id}`}
+                className="group block"
               >
-                <div className="flex">
-                  {article.featuredImage && (
-                    <div className="w-32 h-24 flex-shrink-0">
-                      <Image
-                        src={article.featuredImage}
-                        alt={article.title}
-                        width={128}
-                        height={96}
-                        className="object-cover w-full h-full"
-                        sizes="128px"
-                      />
-                    </div>
-                  )}
-                  <div className="flex-1 p-4">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-1">
-                          <Link
-                            href={`/articles/${article.slug || article.id}`}
-                            className="hover:text-blue-600 transition-colors"
-                          >
+                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all p-4">
+                  <div className="flex gap-4">
+                    {/* Thumbnail */}
+                    {article.featuredImage && (
+                      <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                        <Image
+                          src={article.featuredImage}
+                          alt={article.title}
+                          width={128}
+                          height={128}
+                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                          sizes="128px"
+                        />
+                      </div>
+                    )}
+
+                    {/* Content */}
+                    <div className="flex-1 min-w-0 flex flex-col justify-between">
+                      {/* Top Section */}
+                      <div>
+                        <div className="flex items-start justify-between gap-3 mb-1">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                             {article.title}
-                          </Link>
-                        </h3>
-                        {article.subtitle && (
-                          <p className="text-gray-500 text-sm mb-1">{article.subtitle}</p>
-                        )}
-                        <p className="text-gray-600 text-sm line-clamp-2 mb-2">
-                          {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
-                        </p>
-                        <div className="flex items-center space-x-4 text-xs text-gray-500">
-                          <div className="flex items-center gap-2">
-                            {article.authors && article.authors.length > 0 ? (
-                              <AuthorAvatars authors={article.authors} size="sm" />
-                            ) : (
-                              <span>
-                                By:{" "}
-                                {article.publisherName ||
-                                  article.author?.name ||
-                                  "Anonymous"}
-                              </span>
+                          </h3>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            {article.isPremium && <PremiumBadge size="sm" />}
+                            {article.isFeatured && (
+                              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
                             )}
                           </div>
-                          <span>{article.readTime} {t("articleCard.minRead")}</span>
-                          <span>
-                            {new Date(article.createdAt).toLocaleDateString(dateLocale, {
-                              year: "numeric",
-                              month: "long",
-                              day: "numeric",
-                            })}
-                          </span>
                         </div>
+
+                        {article.subtitle && (
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
+                            {article.subtitle}
+                          </p>
+                        )}
+
+                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
+                          {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
+                        </p>
+                      </div>
+
+                      {/* Bottom Section - Meta */}
+                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                        {article.authors && article.authors.length > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <AuthorAvatars authors={article.authors} size="sm" />
+                          </div>
+                        ) : (
+                          <span>
+                            {article.publisherName || article.author?.name || "Anonymous"}
+                          </span>
+                        )}
+                        <span>•</span>
+                        <span>{article.readTime} {t("articleCard.minRead")}</span>
+                        <span>•</span>
+                        <span>
+                          {new Date(article.createdAt).toLocaleDateString(dateLocale, {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                        {article.category && (
+                          <>
+                            <span>•</span>
+                            <span className="text-blue-600 dark:text-blue-400">
+                              {article.category.name}
+                            </span>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ))}

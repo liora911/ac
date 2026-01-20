@@ -10,7 +10,6 @@ import LanguageToggle from "./LanguageToggle";
 import ThemeToggleSection from "./ThemeToggleSection";
 import FontSizeToggle from "./FontSizeToggle";
 import ReduceMotionToggle from "./ReduceMotionToggle";
-import DefaultViewToggle from "./DefaultViewToggle";
 
 type SettingsPanelProps = {
   isOpen: boolean;
@@ -100,9 +99,6 @@ export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
 
               {/* Reduce Motion Toggle Section */}
               <ReduceMotionToggle />
-
-              {/* Default View Toggle Section */}
-              <DefaultViewToggle />
             </div>
 
             {/* Support Footer */}
