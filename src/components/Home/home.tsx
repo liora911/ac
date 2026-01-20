@@ -15,6 +15,7 @@ import {
   Presentation,
   ChevronDown,
   ChevronUp,
+  Star,
 } from "lucide-react";
 import ContentCard from "./ContentCard";
 import PremiumBadge from "@/components/PremiumBadge";
@@ -39,7 +40,7 @@ const FaYoutube = dynamic(
 );
 
 const Home = () => {
-  const { t, locale } = useTranslation();
+  const { t, locale, setLocale } = useTranslation();
   const isRTL = locale === "he";
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
@@ -106,15 +107,20 @@ const Home = () => {
         href={`/articles/${item.slug || item.id}`}
         className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
       >
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-            {item.title}
-          </p>
-          {item.createdAt && (
-            <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {formatDate(item.createdAt as string)}
-            </p>
+        <div className="flex-1 min-w-0 flex items-center gap-2">
+          {item.isFeatured && (
+            <Star className="w-4 h-4 text-amber-500 fill-amber-500 flex-shrink-0" />
           )}
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
+              {item.title}
+            </p>
+            {item.createdAt && (
+              <p className="text-xs text-[var(--muted-foreground)] mt-1">
+                {formatDate(item.createdAt as string)}
+              </p>
+            )}
+          </div>
         </div>
         {item.isPremium && (
           <div className="flex-shrink-0 ms-2">
@@ -220,6 +226,33 @@ const Home = () => {
               >
                 {t("home.greeting")}
               </motion.p>
+
+              {/* Language Switcher */}
+              <motion.div
+                className="flex justify-center md:justify-start gap-2 mt-6"
+                variants={itemVariants}
+              >
+                <button
+                  onClick={() => setLocale("he")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    locale === "he"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  עברית
+                </button>
+                <button
+                  onClick={() => setLocale("en")}
+                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
+                    locale === "en"
+                      ? "bg-blue-600 text-white shadow-md"
+                      : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  English
+                </button>
+              </motion.div>
 
               {/* Social Links */}
               {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (

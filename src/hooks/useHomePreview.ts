@@ -6,6 +6,7 @@ export type PreviewArticle = {
   content: string;
   createdAt: string;
   isPremium?: boolean;
+  isFeatured?: boolean;
   category?: { id: string; name: string } | null;
 };
 

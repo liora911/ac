@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
           content: true,
           createdAt: true,
           isPremium: true,
+          isFeatured: true,
           category: {
             select: {
               id: true,
@@ -23,7 +24,10 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: [
+          { isFeatured: "desc" }, // Featured first
+          { createdAt: "desc" },  // Then by date
+        ],
         take: 5,
       }),
       prisma.article.findMany({
