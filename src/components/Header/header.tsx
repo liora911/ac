@@ -197,7 +197,7 @@ export default function Header() {
               {profileMenuOpen && (
                 <div
                   ref={profileMenuRef}
-                  className="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2"
+                  className="absolute right-0 mt-2 w-64 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 overflow-hidden"
                 >
                   {/* User Info */}
                   {session && (

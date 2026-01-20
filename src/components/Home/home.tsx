@@ -40,7 +40,7 @@ const FaYoutube = dynamic(
 );
 
 const Home = () => {
-  const { t, locale, setLocale } = useTranslation();
+  const { t, locale } = useTranslation();
   const isRTL = locale === "he";
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
@@ -226,33 +226,6 @@ const Home = () => {
               >
                 {t("home.greeting")}
               </motion.p>
-
-              {/* Language Switcher */}
-              <motion.div
-                className="flex justify-center md:justify-start gap-2 mt-6"
-                variants={itemVariants}
-              >
-                <button
-                  onClick={() => setLocale("he")}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    locale === "he"
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  עברית
-                </button>
-                <button
-                  onClick={() => setLocale("en")}
-                  className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                    locale === "en"
-                      ? "bg-blue-600 text-white shadow-md"
-                      : "bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
-                  }`}
-                >
-                  English
-                </button>
-              </motion.div>
 
               {/* Social Links */}
               {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (
