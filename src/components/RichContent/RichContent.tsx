@@ -284,22 +284,27 @@ export default function RichContent({
           margin: 1em 0;
           overflow-x: auto;
           display: block;
+          border: 2px solid #9ca3af;
+        }
+
+        :global(.dark) .rich-content table {
+          border-color: #6b7280;
         }
 
         .rich-content table th,
         .rich-content table td {
-          border: 1px solid #d1d5db;
+          border: 1px solid #9ca3af;
           padding: 0.625em 0.875em;
           text-align: left;
         }
 
         :global(.dark) .rich-content table th,
         :global(.dark) .rich-content table td {
-          border-color: #4b5563;
+          border-color: #6b7280;
         }
 
         .rich-content table th {
-          background: #f9fafb;
+          background: #f3f4f6;
           font-weight: 600;
         }
 
@@ -312,7 +317,7 @@ export default function RichContent({
         }
 
         :global(.dark) .rich-content table tr:hover {
-          background: #374151;
+          background: #1f2937;
         }
 
         /* Images */
