@@ -38,6 +38,7 @@ export type PreviewPresentation = {
 
 export type HomePreviewData = {
   articles: PreviewArticle[];
+  featuredArticles: PreviewArticle[];
   lectures: PreviewLecture[];
   events: PreviewEvent[];
   presentations: PreviewPresentation[];
@@ -58,6 +59,7 @@ export function useHomePreview() {
       const data = await response.json();
       return {
         articles: data.articles || [],
+        featuredArticles: data.featuredArticles || [],
         lectures: data.lectures || [],
         events: data.events || [],
         presentations: data.presentations || [],

@@ -30,6 +30,7 @@
       "youtube": "YouTube"
     },
     "sections": {
+      "featuredArticles": "Featured Articles",
       "latestLectures": "Latest Lectures",
       "recentArticles": "Recent Articles",
       "upcomingEvents": "Upcoming Events",

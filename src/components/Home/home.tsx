@@ -356,50 +356,67 @@ const Home = () => {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Lectures */}
-              <ContentCard
-                title={t("home.sections.latestLectures")}
-                icon={Video}
-                iconColor="bg-red-500"
-                items={previewData?.lectures || []}
-                href="/lectures"
-                itemVariants={itemVariants}
-                renderItem={renderLectureItem}
-              />
+            <div className="space-y-6">
+              {/* Featured Articles - Only show if exist */}
+              {previewData?.featuredArticles && previewData.featuredArticles.length > 0 && (
+                <div className="mb-8">
+                  <ContentCard
+                    title={t("home.sections.featuredArticles")}
+                    icon={FileText}
+                    iconColor="bg-amber-500"
+                    items={previewData.featuredArticles}
+                    href="/articles"
+                    itemVariants={itemVariants}
+                    renderItem={renderArticleItem}
+                  />
+                </div>
+              )}
 
-              {/* Articles */}
-              <ContentCard
-                title={t("home.sections.recentArticles")}
-                icon={FileText}
-                iconColor="bg-blue-500"
-                items={previewData?.articles || []}
-                href="/articles"
-                itemVariants={itemVariants}
-                renderItem={renderArticleItem}
-              />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Articles */}
+                <ContentCard
+                  title={t("home.sections.recentArticles")}
+                  icon={FileText}
+                  iconColor="bg-blue-500"
+                  items={previewData?.articles || []}
+                  href="/articles"
+                  itemVariants={itemVariants}
+                  renderItem={renderArticleItem}
+                />
 
-              {/* Events */}
-              <ContentCard
-                title={t("home.sections.upcomingEvents")}
-                icon={Calendar}
-                iconColor="bg-green-500"
-                items={previewData?.events || []}
-                href="/events"
-                itemVariants={itemVariants}
-                renderItem={renderEventItem}
-              />
+                {/* Lectures */}
+                <ContentCard
+                  title={t("home.sections.latestLectures")}
+                  icon={Video}
+                  iconColor="bg-red-500"
+                  items={previewData?.lectures || []}
+                  href="/lectures"
+                  itemVariants={itemVariants}
+                  renderItem={renderLectureItem}
+                />
 
-              {/* Presentations */}
-              <ContentCard
-                title={t("home.sections.presentations")}
-                icon={Presentation}
-                iconColor="bg-purple-500"
-                items={previewData?.presentations || []}
-                href="/presentations"
-                itemVariants={itemVariants}
-                renderItem={renderPresentationItem}
-              />
+                {/* Events */}
+                <ContentCard
+                  title={t("home.sections.upcomingEvents")}
+                  icon={Calendar}
+                  iconColor="bg-green-500"
+                  items={previewData?.events || []}
+                  href="/events"
+                  itemVariants={itemVariants}
+                  renderItem={renderEventItem}
+                />
+
+                {/* Presentations */}
+                <ContentCard
+                  title={t("home.sections.presentations")}
+                  icon={Presentation}
+                  iconColor="bg-purple-500"
+                  items={previewData?.presentations || []}
+                  href="/presentations"
+                  itemVariants={itemVariants}
+                  renderItem={renderPresentationItem}
+                />
+              </div>
             </div>
           )}
         </div>

@@ -4,7 +4,7 @@ import prisma from "@/lib/prisma/prisma";
 // Dedicated endpoint for home page preview - returns recent items from each category
 export async function GET(request: NextRequest) {
   try {
-    const [articles, presentations, events, lectures] = await Promise.all([
+    const [articles, featuredArticles, presentations, events, lectures] = await Promise.all([
       prisma.article.findMany({
         where: {
           published: true,
@@ -25,6 +25,28 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { createdAt: "desc" },
         take: 5,
+      }),
+      prisma.article.findMany({
+        where: {
+          published: true,
+          isFeatured: true,
+        },
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          content: true,
+          createdAt: true,
+          isPremium: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+        take: 6,
       }),
       prisma.presentation.findMany({
         where: {
@@ -86,6 +108,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         articles,
+        featuredArticles,
         presentations,
         events,
         lectures,

@@ -60,6 +60,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
     readDuration: true;
     published: true;
     isPremium: true;
+    isFeatured: true;
     order: true;
     createdAt: true;
     updatedAt: true;
@@ -103,7 +104,7 @@ function transformArticle(article: ArticleWithRelations): Article {
     featuredImage: article.articleImage ?? undefined,
     status: article.published ? "PUBLISHED" : "DRAFT",
     publishedAt: article.published ? article.createdAt.toISOString() : undefined,
-    isFeatured: false,
+    isFeatured: article.isFeatured,
     isPremium: article.isPremium,
     viewCount: 0,
     readTime: article.readDuration,
@@ -356,6 +357,7 @@ export async function PUT(
     if (featuredImage !== undefined) updateData.articleImage = featuredImage;
     if (status !== undefined) updateData.published = status === "PUBLISHED";
     if (isPremium !== undefined) updateData.isPremium = isPremium;
+    if (isFeatured !== undefined) updateData.isFeatured = isFeatured;
     if (direction !== undefined) updateData.direction = direction;
     if (publisherName !== undefined) updateData.publisherName = publisherName;
     if (publisherImage !== undefined) {

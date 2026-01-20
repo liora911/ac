@@ -64,6 +64,7 @@ type ArticleWithRelations = Prisma.ArticleGetPayload<{
     readDuration: true;
     published: true;
     isPremium: true;
+    isFeatured: true;
     order: true;
     createdAt: true;
     updatedAt: true;
@@ -107,7 +108,7 @@ function transformArticle(article: ArticleWithRelations): Article {
     featuredImage: article.articleImage ?? undefined,
     status: article.published ? "PUBLISHED" : "DRAFT",
     publishedAt: article.published ? article.createdAt.toISOString() : undefined,
-    isFeatured: false,
+    isFeatured: article.isFeatured,
     isPremium: article.isPremium,
     viewCount: 0,
     readTime: article.readDuration,
@@ -377,6 +378,7 @@ export async function POST(request: NextRequest) {
       tags, // Tag IDs to associate with article
       status = "DRAFT",
       isPremium = false,
+      isFeatured = false,
       direction = "ltr",
       publisherName,
       publisherImage,
@@ -461,6 +463,7 @@ export async function POST(request: NextRequest) {
         readDuration: Math.max(1, Math.ceil(content.replace(/<[^>]*>/g, '').split(/\s+/).filter(w => w.length > 0).length / 200)),
         published: status === "PUBLISHED",
         isPremium,
+        isFeatured,
         authorId: user.id,
         direction,
         categoryId: allCategoryIds[0] || null, // Keep first category for backward compat
