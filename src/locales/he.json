@@ -1255,7 +1255,9 @@
     "resetToAll": "אפס להראות הכל",
     "filterActive": "מסונן לפי ההעדפות שלך",
     "showingAll": "מציג את כל התוכן",
-    "changePreferences": "שנה העדפות"
+    "changePreferences": "שנה העדפות",
+    "categoriesSelected": "קטגוריות נבחרו",
+    "categorySelected": "קטגוריה נבחרה"
   },
   "settings": {
     "title": "הגדרות",

@@ -2,13 +2,15 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Check } from "lucide-react";
+import { User, Check, Sun, Moon } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useTheme } from "@/contexts/ThemeContext";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
 
 export default function WelcomeModal() {
-  const { t, locale } = useTranslation();
+  const { t, locale, setLocale } = useTranslation();
+  const { theme, toggleTheme } = useTheme();
   const isRTL = locale === "he";
   const { shouldShowWelcome, setSelectedCategories, markWelcomeSeen } = useCategoryPreferences();
   const { data: categories, isLoading } = useCategories();
@@ -76,6 +78,48 @@ export default function WelcomeModal() {
           transition={{ type: "spring", duration: 0.5 }}
           className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
         >
+          {/* Settings Bar - Language & Theme (Universal Icons) */}
+          <div className="absolute top-4 right-4 left-4 flex justify-between items-center z-10">
+            {/* Language Toggle */}
+            <div className="flex gap-1 bg-white/20 backdrop-blur-sm rounded-lg p-1">
+              <button
+                onClick={() => setLocale("en")}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  locale === "en"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
+                title="English"
+              >
+                EN
+              </button>
+              <button
+                onClick={() => setLocale("he")}
+                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  locale === "he"
+                    ? "bg-white text-blue-600 shadow-sm"
+                    : "text-white/80 hover:text-white hover:bg-white/10"
+                }`}
+                title="עברית"
+              >
+                עב
+              </button>
+            </div>
+
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-white/30 transition-all"
+              title={theme === "dark" ? "Light mode" : "Dark mode"}
+            >
+              {theme === "dark" ? (
+                <Sun className="w-5 h-5 text-white" />
+              ) : (
+                <Moon className="w-5 h-5 text-white" />
+              )}
+            </button>
+          </div>
+
           {/* Header with gradient */}
           <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8 text-white text-center">
             <div className="flex justify-center mb-4">

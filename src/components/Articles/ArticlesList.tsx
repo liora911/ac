@@ -253,7 +253,7 @@ export default function ArticlesList({
               {t("categoryPreferences.filterActive") || "Filtered by your preferences"}
             </span>
             <span className="text-xs text-purple-500 dark:text-purple-400">
-              ({preferredCategories.length} {preferredCategories.length === 1 ? "category" : "categories"})
+              ({preferredCategories.length} {preferredCategories.length === 1 ? t("categoryPreferences.categorySelected") : t("categoryPreferences.categoriesSelected")})
             </span>
           </div>
           <button

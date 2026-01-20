@@ -1195,7 +1195,9 @@
     "resetToAll": "Reset to show all",
     "filterActive": "Filtered by your preferences",
     "showingAll": "Showing all content",
-    "changePreferences": "Change preferences"
+    "changePreferences": "Change preferences",
+    "categoriesSelected": "categories selected",
+    "categorySelected": "category selected"
   },
   "settings": {
     "title": "Settings",

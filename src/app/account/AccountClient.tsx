@@ -425,7 +425,7 @@ function AccountContent({
                 </h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {shouldFilterContent
-                    ? `${selectedCategoryIds.length} ${selectedCategoryIds.length === 1 ? "category" : "categories"} selected`
+                    ? `${selectedCategoryIds.length} ${selectedCategoryIds.length === 1 ? t("categoryPreferences.categorySelected") : t("categoryPreferences.categoriesSelected")}`
                     : t("categoryPreferences.showingAll") || "Showing all content"}
                 </p>
               </div>
