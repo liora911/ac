@@ -36,6 +36,7 @@ export default function Header() {
   const profileButtonRef = useRef<HTMLButtonElement>(null);
 
   const isAdmin = session?.user?.role === "ADMIN";
+  const isRTL = locale === "he";
 
   // Close menus on outside click
   useEffect(() => {
@@ -197,12 +198,7 @@ export default function Header() {
               {profileMenuOpen && (
                 <div
                   ref={profileMenuRef}
-                  className="fixed mt-2 w-64 bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 overflow-hidden z-[60]"
-                  style={{
-                    right: Math.max(16, window.innerWidth - (profileButtonRef.current?.getBoundingClientRect().right || 0)),
-                    top: (profileButtonRef.current?.getBoundingClientRect().bottom || 0) + 8,
-                    maxWidth: `calc(100vw - 2rem)`,
-                  }}
+                  className={`absolute ${isRTL ? "left-0" : "right-0"} mt-2 w-64 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-900 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 py-2 overflow-hidden z-[60]`}
                 >
                   {/* User Info */}
                   {session && (
