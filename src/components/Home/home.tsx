@@ -398,7 +398,7 @@ const Home = () => {
                     icon={FileText}
                     iconColor="bg-amber-500"
                     items={previewData.featuredArticles}
-                    href="/articles"
+                    href="/articles?featured=true"
                     itemVariants={itemVariants}
                     renderItem={renderArticleItem}
                   />

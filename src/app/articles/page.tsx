@@ -2,6 +2,7 @@
 
 import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { useSearchParams } from "next/navigation";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
@@ -17,8 +18,10 @@ const ArticlesList = dynamic(
   }
 );
 
-export default function ArticlesPage() {
+function ArticlesPageContent() {
   const { t } = useTranslation();
+  const searchParams = useSearchParams();
+  const featuredOnly = searchParams.get('featured') === 'true';
 
   return (
     <div className="min-h-screen bg-gray-50 bg-cover bg-center">
@@ -46,21 +49,28 @@ export default function ArticlesPage() {
 
       {}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Suspense
-          fallback={
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-            </div>
-          }
-        >
-          <ArticlesList
-            initialLimit={12}
-            showFilters={true}
-            showPagination={true}
-            viewMode="grid"
-          />
-        </Suspense>
+        <ArticlesList
+          initialLimit={12}
+          showFilters={true}
+          showPagination={true}
+          viewMode="grid"
+          featuredOnly={featuredOnly}
+        />
       </div>
     </div>
+  );
+}
+
+export default function ArticlesPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <ArticlesPageContent />
+    </Suspense>
   );
 }
