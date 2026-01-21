@@ -22,13 +22,16 @@ export default function HomeAdmin() {
   const { data, isLoading, error } = useHomeContent();
   const updateMutation = useUpdateHomeContent();
 
+  const [heroHtml, setHeroHtml] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [photoCredit, setPhotoCredit] = useState<string>("");
   const [bioHtml, setBioHtml] = useState<string>("");
-  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const [heroDirection, setHeroDirection] = useState<"ltr" | "rtl">("rtl");
+  const [bioDirection, setBioDirection] = useState<"ltr" | "rtl">("rtl");
 
   useEffect(() => {
     if (data) {
+      setHeroHtml(data.heroHtml ?? "");
       setImageUrl(data.imageUrl ?? "");
       setPhotoCredit(data.photoCredit ?? "");
       setBioHtml(data.bioHtml ?? "");
@@ -38,6 +41,7 @@ export default function HomeAdmin() {
   const handleSave = () => {
     updateMutation.mutate(
       {
+        heroHtml: heroHtml.trim() || null,
         imageUrl: imageUrl.trim() || null,
         photoCredit: photoCredit.trim() || null,
         bioHtml: bioHtml || "",
@@ -94,6 +98,24 @@ export default function HomeAdmin() {
           {t("admin.home.loadError")}
         </div>
       )}
+
+      {/* Hero Section Editor */}
+      <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          {t("admin.home.heroSection")}
+        </h3>
+        <p className="text-sm text-gray-500 mb-4">
+          {t("admin.home.heroDescription")}
+        </p>
+        <TiptapEditor
+          value={heroHtml}
+          onChange={setHeroHtml}
+          placeholder={t("admin.home.heroPlaceholder")}
+          direction={heroDirection}
+          onDirectionChange={(dir) => setHeroDirection(dir)}
+          theme="light"
+        />
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -158,8 +180,8 @@ export default function HomeAdmin() {
             value={bioHtml}
             onChange={setBioHtml}
             placeholder={t("admin.home.biographyPlaceholder")}
-            direction={direction}
-            onDirectionChange={(dir) => setDirection(dir)}
+            direction={bioDirection}
+            onDirectionChange={(dir) => setBioDirection(dir)}
             theme="light"
             className="mt-3"
           />

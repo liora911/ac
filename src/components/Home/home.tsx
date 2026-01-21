@@ -207,25 +207,40 @@ const Home = () => {
 
             {/* Name and Info */}
             <div className="flex-1 text-center md:text-start">
-              <motion.h1
-                className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight"
-                variants={itemVariants}
-              >
-                {t("home.name")}
-              </motion.h1>
-              <motion.p
-                className="text-lg md:text-xl mt-3 text-slate-500 dark:text-slate-400"
-                variants={itemVariants}
-              >
-                {t("home.tagline")}
-              </motion.p>
+              {homeContent?.heroHtml ? (
+                <motion.div
+                  variants={itemVariants}
+                  className="prose prose-slate dark:prose-invert max-w-none
+                    prose-headings:text-slate-900 dark:prose-headings:text-white
+                    prose-h1:text-3xl prose-h1:md:text-4xl prose-h1:lg:text-5xl prose-h1:font-bold prose-h1:tracking-tight
+                    prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed
+                    [&>*:first-child]:mt-0"
+                >
+                  <RichContent content={homeContent.heroHtml} />
+                </motion.div>
+              ) : (
+                <>
+                  <motion.h1
+                    className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white tracking-tight"
+                    variants={itemVariants}
+                  >
+                    {t("home.name")}
+                  </motion.h1>
+                  <motion.p
+                    className="text-lg md:text-xl mt-3 text-slate-500 dark:text-slate-400"
+                    variants={itemVariants}
+                  >
+                    {t("home.tagline")}
+                  </motion.p>
 
-              <motion.p
-                className="mt-5 text-slate-600 dark:text-slate-300 leading-relaxed"
-                variants={itemVariants}
-              >
-                {t("home.greeting")}
-              </motion.p>
+                  <motion.p
+                    className="mt-5 text-slate-600 dark:text-slate-300 leading-relaxed"
+                    variants={itemVariants}
+                  >
+                    {t("home.greeting")}
+                  </motion.p>
+                </>
+              )}
 
               {/* Social Links */}
               {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (

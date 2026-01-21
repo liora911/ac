@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export type HomeContent = {
   id: string;
+  heroHtml: string | null;
   imageUrl: string | null;
   photoCredit: string | null;
   bioHtml: string;
@@ -9,6 +10,7 @@ export type HomeContent = {
 };
 
 export type UpdateHomeContentPayload = {
+  heroHtml?: string | null;
   imageUrl?: string | null;
   photoCredit?: string | null;
   bioHtml?: string;
@@ -30,6 +32,7 @@ export function useHomeContent() {
       const data = await response.json();
       return {
         id: data.id ?? "home",
+        heroHtml: data.heroHtml ?? null,
         imageUrl: data.imageUrl ?? null,
         photoCredit: data.photoCredit ?? null,
         bioHtml: data.bioHtml ?? "",
@@ -62,6 +65,7 @@ export function useUpdateHomeContent() {
       const data = await response.json();
       return {
         id: data.id ?? "home",
+        heroHtml: data.heroHtml ?? null,
         imageUrl: data.imageUrl ?? null,
         photoCredit: data.photoCredit ?? null,
         bioHtml: data.bioHtml ?? "",

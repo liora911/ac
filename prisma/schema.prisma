@@ -289,6 +289,7 @@ model Message {
 
 model HomeContent {
   id          String   @id @default("home")
+  heroHtml    String?
   imageUrl    String?
   photoCredit String?
   bioHtml     String

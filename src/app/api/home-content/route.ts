@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
 type HomeContentPayload = {
+  heroHtml?: string | null;
   imageUrl?: string | null;
   photoCredit?: string | null;
   bioHtml?: string;
@@ -24,6 +25,7 @@ export async function GET() {
       return NextResponse.json(
         {
           id: "home",
+          heroHtml: null,
           imageUrl: null,
           photoCredit: null,
           bioHtml: "",
@@ -66,17 +68,19 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = (await request.json()) as HomeContentPayload;
-    const { imageUrl = null, photoCredit = null, bioHtml = "" } = body;
+    const { heroHtml = null, imageUrl = null, photoCredit = null, bioHtml = "" } = body;
 
     const updated = await prisma.homeContent.upsert({
       where: { id: "home" },
       create: {
         id: "home",
+        heroHtml,
         imageUrl,
         photoCredit,
         bioHtml,
       },
       update: {
+        heroHtml,
         imageUrl,
         photoCredit,
         bioHtml,
