@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
           { isFeatured: "desc" }, // Featured first
           { createdAt: "desc" },  // Then by date
         ],
-        take: 5,
+        take: 10,
       }),
       prisma.article.findMany({
         where: {
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 10,
       }),
       prisma.event.findMany({
         where: {
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
           location: true,
         },
         orderBy: { eventDate: "desc" },
-        take: 5,
+        take: 10,
       }),
       prisma.lecture.findMany({
         select: {
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 10,
       }),
     ]);
 
