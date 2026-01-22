@@ -31,6 +31,7 @@
     },
     "sections": {
       "featuredArticles": "Featured Articles",
+      "featuredEvents": "Featured Events",
       "latestLectures": "Latest Lectures",
       "recentArticles": "Recent Articles",
       "upcomingEvents": "Upcoming Events",

@@ -42,6 +42,7 @@ export type HomePreviewData = {
   featuredArticles: PreviewArticle[];
   lectures: PreviewLecture[];
   events: PreviewEvent[];
+  featuredEvents: PreviewEvent[];
   presentations: PreviewPresentation[];
 };
 
@@ -63,6 +64,7 @@ export function useHomePreview() {
         featuredArticles: data.featuredArticles || [],
         lectures: data.lectures || [],
         events: data.events || [],
+        featuredEvents: data.featuredEvents || [],
         presentations: data.presentations || [],
       };
     },

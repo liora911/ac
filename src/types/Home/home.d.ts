@@ -9,6 +9,7 @@ export type ContentItem = {
   imageUrl?: string | null;
   articleImage?: string | null;
   bannerImageUrl?: string | null;
+  videoUrl?: string | null;
   imageUrls?: string[];
   isPremium?: boolean;
   isFeatured?: boolean;

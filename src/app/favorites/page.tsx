@@ -19,27 +19,7 @@ import { useFavoritesFull, useRemoveFavorite } from "@/hooks/useFavorites";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { LecturePlaceholder, PresentationPlaceholder } from "@/components/Placeholders";
 import { stripHtml } from "@/lib/utils/stripHtml";
-
-type TabType = "articles" | "lectures" | "presentations";
-
-// Extract YouTube video ID from various URL formats
-function getYouTubeVideoId(url?: string | null): string | null {
-  if (!url) return null;
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/,
-  ];
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-// Get YouTube thumbnail URL
-function getYouTubeThumbnail(videoId: string): string {
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-}
+import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 
 const tabs: { id: TabType; icon: React.ElementType; labelKey: string }[] = [
   { id: "articles", icon: FileText, labelKey: "favorites.tabs.articles" },

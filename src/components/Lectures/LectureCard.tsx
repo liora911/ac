@@ -11,28 +11,7 @@ import { Clock, Calendar, Share2, Play, Link2, Check, Mail } from "lucide-react"
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
-
-// Extract YouTube video ID from various URL formats
-function getYouTubeVideoId(url?: string): string | null {
-  if (!url) return null;
-
-  // Match patterns: youtube.com/watch?v=ID, youtu.be/ID, youtube.com/embed/ID
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/,
-    /^([a-zA-Z0-9_-]{11})$/, // Just the ID itself
-  ];
-
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) return match[1];
-  }
-  return null;
-}
-
-// Get YouTube thumbnail URL (maxresdefault for best quality, with fallback)
-function getYouTubeThumbnail(videoId: string): string {
-  return `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
-}
+import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 
 interface LectureCardProps {
   lecture: Lecture;

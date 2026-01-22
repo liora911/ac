@@ -80,6 +80,22 @@ export async function GET(request: NextRequest) {
               bannerImageUrl: true,
               isFeatured: true,
             },
+            orderBy: [{ isFeatured: "desc" }, { eventDate: "desc" }],
+            skip,
+            take: limit + 1,
+          });
+          break;
+
+        case "featuredEvents":
+          items = await prisma.event.findMany({
+            where: { published: true, isFeatured: true },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              bannerImageUrl: true,
+              isFeatured: true,
+            },
             orderBy: { eventDate: "desc" },
             skip,
             take: limit + 1,
@@ -93,6 +109,7 @@ export async function GET(request: NextRequest) {
               title: true,
               description: true,
               bannerImageUrl: true,
+              videoUrl: true,
               isPremium: true,
             },
             orderBy: { createdAt: "desc" },
@@ -122,7 +139,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Default: return initial load for all types (9 items each)
-    const [articles, featuredArticles, presentations, events, lectures] = await Promise.all([
+    const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
       prisma.article.findMany({
         where: { published: true },
         select: {
@@ -172,6 +189,18 @@ export async function GET(request: NextRequest) {
           bannerImageUrl: true,
           isFeatured: true,
         },
+        orderBy: [{ isFeatured: "desc" }, { eventDate: "desc" }],
+        take: DEFAULT_LIMIT,
+      }),
+      prisma.event.findMany({
+        where: { published: true, isFeatured: true },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          bannerImageUrl: true,
+          isFeatured: true,
+        },
         orderBy: { eventDate: "desc" },
         take: DEFAULT_LIMIT,
       }),
@@ -181,6 +210,7 @@ export async function GET(request: NextRequest) {
           title: true,
           description: true,
           bannerImageUrl: true,
+          videoUrl: true,
           isPremium: true,
         },
         orderBy: { createdAt: "desc" },
@@ -197,6 +227,7 @@ export async function GET(request: NextRequest) {
         featuredArticles,
         presentations,
         events,
+        featuredEvents,
         lectures,
         total,
       },

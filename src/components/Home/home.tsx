@@ -11,6 +11,7 @@ import { ChevronDown, ChevronUp } from "lucide-react";
 import CarouselSection from "./CarouselSection";
 import RichContent from "@/components/RichContent";
 import type { ContentItem } from "@/types/Home/home";
+import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
 
 const FETCH_BATCH_SIZE = 9;
 
@@ -80,7 +81,7 @@ const Home = () => {
   }, []);
 
   const getLectureImage = useCallback((item: ContentItem) => {
-    return item.bannerImageUrl || null;
+    return item.bannerImageUrl || getYouTubeThumbnailFromUrl(item.videoUrl);
   }, []);
 
   const getEventImage = useCallback((item: ContentItem) => {
@@ -335,6 +336,20 @@ const Home = () => {
                 getImageUrl={getLectureImage}
                 getSubtitle={getDescriptionSubtitle}
               />
+
+              {/* Featured Events */}
+              {previewData?.featuredEvents && previewData.featuredEvents.length > 0 && (
+                <CarouselSection
+                  title={t("home.sections.featuredEvents")}
+                  items={previewData.featuredEvents}
+                  href="/events?featured=true"
+                  linkPrefix="/events"
+                  contentType="featuredEvents"
+                  onLoadMore={handleLoadMore}
+                  getImageUrl={getEventImage}
+                  getSubtitle={getDescriptionSubtitle}
+                />
+              )}
 
               {/* Events */}
               <CarouselSection
