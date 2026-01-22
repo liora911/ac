@@ -13,7 +13,7 @@ import RichContent from "@/components/RichContent";
 import type { ContentItem } from "@/types/Home/home";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
 
-const FETCH_BATCH_SIZE = 9;
+const FETCH_BATCH_SIZE = 9; // v2 - two-column hero
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
