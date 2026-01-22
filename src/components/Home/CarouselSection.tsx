@@ -8,6 +8,7 @@ import { ChevronLeft, ChevronRight, Loader2, Star } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import type { ContentItem } from "@/types/Home/home";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 const ITEMS_PER_PAGE = 3;
 const AUTO_ROTATE_MS = 10000;
@@ -23,7 +24,7 @@ interface CarouselSectionProps {
   contentType: string;
   onLoadMore: (type: string, skip: number) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
   getImageUrl: (item: ContentItem) => string | null;
-  getSubtitle: (item: ContentItem) => string | null;
+  getSubtitle?: (item: ContentItem) => string | null;
 }
 
 const CarouselSection: React.FC<CarouselSectionProps> = ({
@@ -133,7 +134,21 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     exit: (d: number) => ({ x: d > 0 ? -100 : 100, opacity: 0 }),
   };
 
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return (
+      <div className="mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
+          <Link href={href} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+            {t("home.sections.viewAll")}
+          </Link>
+        </div>
+        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+          {t("home.sections.noContent")}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -189,7 +204,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
-                const subtitle = getSubtitle(item);
+                const rawSubtitle = getSubtitle?.(item);
+                const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
                 const itemLink = useSlug && item.slug
                   ? `${linkPrefix}/${item.slug}`
                   : `${linkPrefix}/${item.id}`;
@@ -209,7 +225,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
                       )}
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
                       <div className="absolute top-3 right-3 flex items-center gap-2">
                         {item.isFeatured && (

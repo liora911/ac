@@ -11,6 +11,7 @@ import {
   MdMic,
 } from "react-icons/md";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 interface SearchResult {
   id: string;
@@ -48,22 +49,6 @@ function SearchPageContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [error, setError] = useState<string | null>(null);
-
-  // Safely strip HTML using DOM parser (secure against XSS)
-  const stripHtml = (html: string) => {
-    if (typeof window === "undefined") {
-      // Server-side fallback: remove tags and decode common entities
-      return html
-        .replace(/<[^>]*>/g, "")
-        .replace(/&nbsp;/g, " ")
-        .replace(/&amp;/g, "&")
-        .replace(/&lt;/g, "<")
-        .replace(/&gt;/g, ">")
-        .replace(/&quot;/g, '"');
-    }
-    const doc = new DOMParser().parseFromString(html, "text/html");
-    return doc.body.textContent || "";
-  };
 
   useEffect(() => {
     const q = searchParams.get("q");

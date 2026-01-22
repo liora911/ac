@@ -18,14 +18,9 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useFavoritesFull, useRemoveFavorite } from "@/hooks/useFavorites";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { LecturePlaceholder, PresentationPlaceholder } from "@/components/Placeholders";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 type TabType = "articles" | "lectures" | "presentations";
-
-// Helper function to strip HTML tags from text
-function stripHtml(html: string): string {
-  if (!html) return "";
-  return html.replace(/<[^>]*>/g, "").trim();
-}
 
 // Extract YouTube video ID from various URL formats
 function getYouTubeVideoId(url?: string | null): string | null {
