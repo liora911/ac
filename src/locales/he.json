@@ -1339,7 +1339,10 @@
     "copied": "הועתק!",
     "close": "סגור",
     "error": "שגיאה",
-    "removeImage": "הסר תמונה"
+    "removeImage": "הסר תמונה",
+    "previous": "הקודם",
+    "next": "הבא",
+    "page": "עמוד"
   },
   "auth": {
     "signOutSuccess": "התנתקת בהצלחה מהמערכת",

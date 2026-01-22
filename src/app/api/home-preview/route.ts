@@ -1,14 +1,134 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 
+const DEFAULT_LIMIT = 9;
+
 // Dedicated endpoint for home page preview - returns recent items from each category
+// Supports pagination via query params: type, skip, limit
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+    const skip = parseInt(searchParams.get("skip") || "0", 10);
+    const limit = parseInt(searchParams.get("limit") || String(DEFAULT_LIMIT), 10);
+
+    // If type is specified, return paginated results for that type only
+    if (type) {
+      let items: unknown[] = [];
+      let hasMore = false;
+
+      switch (type) {
+        case "articles":
+          items = await prisma.article.findMany({
+            where: { published: true },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              content: true,
+              createdAt: true,
+              isPremium: true,
+              isFeatured: true,
+              category: { select: { id: true, name: true } },
+            },
+            orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+            skip,
+            take: limit + 1, // Fetch one extra to check if there's more
+          });
+          break;
+
+        case "featuredArticles":
+          items = await prisma.article.findMany({
+            where: { published: true, isFeatured: true },
+            select: {
+              id: true,
+              slug: true,
+              title: true,
+              content: true,
+              createdAt: true,
+              isPremium: true,
+              category: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit + 1,
+          });
+          break;
+
+        case "presentations":
+          items = await prisma.presentation.findMany({
+            where: { published: true },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              createdAt: true,
+              isPremium: true,
+              category: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit + 1,
+          });
+          break;
+
+        case "events":
+          items = await prisma.event.findMany({
+            where: { published: true },
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              eventDate: true,
+              location: true,
+            },
+            orderBy: { eventDate: "desc" },
+            skip,
+            take: limit + 1,
+          });
+          break;
+
+        case "lectures":
+          items = await prisma.lecture.findMany({
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              date: true,
+              createdAt: true,
+              isPremium: true,
+              category: { select: { id: true, name: true } },
+            },
+            orderBy: { createdAt: "desc" },
+            skip,
+            take: limit + 1,
+          });
+          break;
+
+        default:
+          return NextResponse.json({ error: "Invalid type" }, { status: 400 });
+      }
+
+      // Check if there are more items
+      hasMore = items.length > limit;
+      if (hasMore) {
+        items = items.slice(0, limit);
+      }
+
+      return NextResponse.json(
+        { items, hasMore },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
+          },
+        }
+      );
+    }
+
+    // Default: return initial load for all types (9 items each)
     const [articles, featuredArticles, presentations, events, lectures] = await Promise.all([
       prisma.article.findMany({
-        where: {
-          published: true,
-        },
+        where: { published: true },
         select: {
           id: true,
           slug: true,
@@ -17,24 +137,13 @@ export async function GET(request: NextRequest) {
           createdAt: true,
           isPremium: true,
           isFeatured: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          category: { select: { id: true, name: true } },
         },
-        orderBy: [
-          { isFeatured: "desc" }, // Featured first
-          { createdAt: "desc" },  // Then by date
-        ],
-        take: 10,
+        orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+        take: DEFAULT_LIMIT,
       }),
       prisma.article.findMany({
-        where: {
-          published: true,
-          isFeatured: true,
-        },
+        where: { published: true, isFeatured: true },
         select: {
           id: true,
           slug: true,
@@ -42,40 +151,26 @@ export async function GET(request: NextRequest) {
           content: true,
           createdAt: true,
           isPremium: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          category: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "desc" },
-        take: 6,
+        take: DEFAULT_LIMIT,
       }),
       prisma.presentation.findMany({
-        where: {
-          published: true,
-        },
+        where: { published: true },
         select: {
           id: true,
           title: true,
           description: true,
           createdAt: true,
           isPremium: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          category: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "desc" },
-        take: 10,
+        take: DEFAULT_LIMIT,
       }),
       prisma.event.findMany({
-        where: {
-          published: true,
-        },
+        where: { published: true },
         select: {
           id: true,
           title: true,
@@ -84,7 +179,7 @@ export async function GET(request: NextRequest) {
           location: true,
         },
         orderBy: { eventDate: "desc" },
-        take: 10,
+        take: DEFAULT_LIMIT,
       }),
       prisma.lecture.findMany({
         select: {
@@ -94,15 +189,10 @@ export async function GET(request: NextRequest) {
           date: true,
           createdAt: true,
           isPremium: true,
-          category: {
-            select: {
-              id: true,
-              name: true,
-            },
-          },
+          category: { select: { id: true, name: true } },
         },
         orderBy: { createdAt: "desc" },
-        take: 10,
+        take: DEFAULT_LIMIT,
       }),
     ]);
 

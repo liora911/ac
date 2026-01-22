@@ -1304,7 +1304,10 @@
     "copied": "Copied!",
     "close": "Close",
     "error": "Error",
-    "removeImage": "Remove image"
+    "removeImage": "Remove image",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page"
   },
   "auth": {
     "signOutSuccess": "Successfully signed out",

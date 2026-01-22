@@ -22,6 +22,8 @@ import PremiumBadge from "@/components/PremiumBadge";
 import type { ContentItem } from "./ContentCard";
 import RichContent from "@/components/RichContent";
 
+const FETCH_BATCH_SIZE = 9;
+
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
   {
@@ -46,6 +48,22 @@ const Home = () => {
   const { data: homeContent } = useHomeContent();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
   const { data: siteSettings } = useSiteSettings();
+
+  // Load more items for carousel pagination
+  const handleLoadMore = useCallback(async (type: string, skip: number): Promise<{ items: ContentItem[]; hasMore: boolean }> => {
+    try {
+      const response = await fetch(`/api/home-preview?type=${type}&skip=${skip}&limit=${FETCH_BATCH_SIZE}`);
+      if (!response.ok) throw new Error("Failed to fetch");
+      const data = await response.json();
+      return {
+        items: data.items || [],
+        hasMore: data.hasMore ?? false,
+      };
+    } catch (error) {
+      console.error("Failed to load more items:", error);
+      return { items: [], hasMore: false };
+    }
+  }, []);
 
   const photoCreditText = homeContent?.photoCredit || t("home.photoCredit");
   const bioHtml = homeContent?.bioHtml || "";
@@ -389,6 +407,8 @@ const Home = () => {
                     href="/articles?featured=true"
                     itemVariants={itemVariants}
                     renderItem={renderArticleItem}
+                    contentType="featuredArticles"
+                    onLoadMore={handleLoadMore}
                   />
                 </div>
               )}
@@ -403,6 +423,8 @@ const Home = () => {
                   href="/articles"
                   itemVariants={itemVariants}
                   renderItem={renderArticleItem}
+                  contentType="articles"
+                  onLoadMore={handleLoadMore}
                 />
 
                 {/* Lectures */}
@@ -414,6 +436,8 @@ const Home = () => {
                   href="/lectures"
                   itemVariants={itemVariants}
                   renderItem={renderLectureItem}
+                  contentType="lectures"
+                  onLoadMore={handleLoadMore}
                 />
 
                 {/* Events */}
@@ -425,6 +449,8 @@ const Home = () => {
                   href="/events"
                   itemVariants={itemVariants}
                   renderItem={renderEventItem}
+                  contentType="events"
+                  onLoadMore={handleLoadMore}
                 />
 
                 {/* Presentations */}
@@ -436,6 +462,8 @@ const Home = () => {
                   href="/presentations"
                   itemVariants={itemVariants}
                   renderItem={renderPresentationItem}
+                  contentType="presentations"
+                  onLoadMore={handleLoadMore}
                 />
               </div>
             </div>
