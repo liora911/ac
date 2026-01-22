@@ -4,9 +4,12 @@ export type ContentItem = {
   id: string;
   slug?: string;
   title: string;
-  date?: string | null;
-  createdAt?: string;
-  eventDate?: string;
+  subtitle?: string | null;
+  description?: string | null;
+  imageUrl?: string | null;
+  articleImage?: string | null;
+  bannerImageUrl?: string | null;
+  imageUrls?: string[];
   isPremium?: boolean;
   isFeatured?: boolean;
 };

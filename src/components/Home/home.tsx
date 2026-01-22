@@ -4,23 +4,13 @@ import { useHomeContent } from "@/hooks/useHomeContent";
 import { useHomePreview } from "@/hooks/useHomePreview";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useState, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  Video,
-  FileText,
-  Calendar,
-  Presentation,
-  ChevronDown,
-  ChevronUp,
-  Star,
-} from "lucide-react";
-import ContentCard from "./ContentCard";
-import PremiumBadge from "@/components/PremiumBadge";
-import type { ContentItem } from "./ContentCard";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import CarouselSection from "./CarouselSection";
 import RichContent from "@/components/RichContent";
+import type { ContentItem } from "@/types/Home/home";
 
 const FETCH_BATCH_SIZE = 9;
 
@@ -84,113 +74,31 @@ const Home = () => {
     visible: { opacity: 1, y: 0 },
   };
 
-  const formatDate = useCallback((dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString(isRTL ? "he-IL" : "en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  }, [isRTL]);
+  // Helper functions to get image URLs for each content type
+  const getArticleImage = useCallback((item: ContentItem) => {
+    return item.articleImage || null;
+  }, []);
 
-  // Memoized render functions to prevent unnecessary re-renders
-  const renderLectureItem = useCallback((item: ContentItem) => (
-    <li key={item.id}>
-      <Link
-        href={`/lectures/${item.id}`}
-        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-      >
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-            {item.title}
-          </p>
-          {item.date && (
-            <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {formatDate(item.date as string)}
-            </p>
-          )}
-        </div>
-        {item.isPremium && (
-          <div className="flex-shrink-0 ms-2">
-            <PremiumBadge size="sm" />
-          </div>
-        )}
-      </Link>
-    </li>
-  ), [formatDate]);
+  const getLectureImage = useCallback((item: ContentItem) => {
+    return item.bannerImageUrl || null;
+  }, []);
 
-  const renderArticleItem = useCallback((item: ContentItem) => (
-    <li key={item.id}>
-      <Link
-        href={`/articles/${item.slug || item.id}`}
-        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-      >
-        <div className="flex-1 min-w-0 flex items-center gap-2">
-          {item.isFeatured && (
-            <Star className="w-4 h-4 text-amber-500 fill-amber-500 flex-shrink-0" />
-          )}
-          <div className="flex-1 min-w-0">
-            <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-              {item.title}
-            </p>
-            {item.createdAt && (
-              <p className="text-xs text-[var(--muted-foreground)] mt-1">
-                {formatDate(item.createdAt as string)}
-              </p>
-            )}
-          </div>
-        </div>
-        {item.isPremium && (
-          <div className="flex-shrink-0 ms-2">
-            <PremiumBadge size="sm" />
-          </div>
-        )}
-      </Link>
-    </li>
-  ), [formatDate]);
+  const getEventImage = useCallback((item: ContentItem) => {
+    return item.bannerImageUrl || null;
+  }, []);
 
-  const renderEventItem = useCallback((item: ContentItem) => (
-    <li key={item.id}>
-      <Link
-        href={`/events/${item.id}`}
-        className="block p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-      >
-        <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-          {item.title}
-        </p>
-        {item.eventDate && (
-          <p className="text-xs text-[var(--muted-foreground)] mt-1">
-            {formatDate(item.eventDate as string)}
-          </p>
-        )}
-      </Link>
-    </li>
-  ), [formatDate]);
+  const getPresentationImage = useCallback((item: ContentItem) => {
+    return item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : null;
+  }, []);
 
-  const renderPresentationItem = useCallback((item: ContentItem) => (
-    <li key={item.id}>
-      <Link
-        href={`/presentations/${item.id}`}
-        className="flex items-center justify-between p-3 rounded-lg hover:bg-[var(--secondary)] transition-colors group"
-      >
-        <div className="flex-1 min-w-0">
-          <p className="font-medium text-[var(--foreground)] group-hover:text-blue-600 dark:group-hover:text-blue-400 line-clamp-1">
-            {item.title}
-          </p>
-          {item.createdAt && (
-            <p className="text-xs text-[var(--muted-foreground)] mt-1">
-              {formatDate(item.createdAt as string)}
-            </p>
-          )}
-        </div>
-        {item.isPremium && (
-          <div className="flex-shrink-0 ms-2">
-            <PremiumBadge size="sm" />
-          </div>
-        )}
-      </Link>
-    </li>
-  ), [formatDate]);
+  // Helper functions to get subtitles
+  const getArticleSubtitle = useCallback((item: ContentItem) => {
+    return item.subtitle || null;
+  }, []);
+
+  const getDescriptionSubtitle = useCallback((item: ContentItem) => {
+    return item.description || null;
+  }, []);
 
   return (
     <main className="flex flex-col min-h-screen text-[var(--foreground)]">
@@ -364,112 +272,97 @@ const Home = () => {
       </motion.section>
 
       {/* Content Preview Section */}
-      <motion.section
-        className="py-8 md:py-12 px-6 bg-[var(--background)]"
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-      >
+      <section className="py-8 md:py-12 px-6 bg-[var(--background)]">
         <div className="max-w-6xl mx-auto">
-          <motion.h2
-            className="text-2xl font-bold text-start mb-8 text-[var(--foreground)]"
-            variants={itemVariants}
-          >
+          <h2 className="text-2xl font-bold text-start mb-8 text-[var(--foreground)]">
             {t("home.sections.exploreContent")}
-          </motion.h2>
+          </h2>
 
           {previewLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-10">
               {[...Array(4)].map((_, i) => (
-                <div
-                  key={i}
-                  className="bg-[var(--card)] rounded-xl border border-[var(--border)] p-6 animate-pulse"
-                >
-                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4" />
-                  <div className="space-y-3">
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-full" />
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-4/5" />
-                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/5" />
+                <div key={i}>
+                  <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {[...Array(3)].map((_, j) => (
+                      <div
+                        key={j}
+                        className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
+                      />
+                    ))}
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="space-y-6">
-              {/* Featured Articles - Only show if exist */}
+            <div>
+              {/* Featured Articles */}
               {previewData?.featuredArticles && previewData.featuredArticles.length > 0 && (
-                <div className="mb-8">
-                  <ContentCard
-                    title={t("home.sections.featuredArticles")}
-                    icon={FileText}
-                    iconColor="bg-amber-500"
-                    items={previewData.featuredArticles}
-                    href="/articles?featured=true"
-                    itemVariants={itemVariants}
-                    renderItem={renderArticleItem}
-                    contentType="featuredArticles"
-                    onLoadMore={handleLoadMore}
-                  />
-                </div>
+                <CarouselSection
+                  title={t("home.sections.featuredArticles")}
+                  items={previewData.featuredArticles}
+                  href="/articles?featured=true"
+                  linkPrefix="/articles"
+                  useSlug={true}
+                  contentType="featuredArticles"
+                  onLoadMore={handleLoadMore}
+                  getImageUrl={getArticleImage}
+                  getSubtitle={getArticleSubtitle}
+                />
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Articles */}
-                <ContentCard
-                  title={t("home.sections.recentArticles")}
-                  icon={FileText}
-                  iconColor="bg-blue-500"
-                  items={previewData?.articles || []}
-                  href="/articles"
-                  itemVariants={itemVariants}
-                  renderItem={renderArticleItem}
-                  contentType="articles"
-                  onLoadMore={handleLoadMore}
-                />
+              {/* Recent Articles */}
+              <CarouselSection
+                title={t("home.sections.recentArticles")}
+                items={previewData?.articles || []}
+                href="/articles"
+                linkPrefix="/articles"
+                useSlug={true}
+                contentType="articles"
+                onLoadMore={handleLoadMore}
+                getImageUrl={getArticleImage}
+                getSubtitle={getArticleSubtitle}
+              />
 
-                {/* Lectures */}
-                <ContentCard
-                  title={t("home.sections.latestLectures")}
-                  icon={Video}
-                  iconColor="bg-red-500"
-                  items={previewData?.lectures || []}
-                  href="/lectures"
-                  itemVariants={itemVariants}
-                  renderItem={renderLectureItem}
-                  contentType="lectures"
-                  onLoadMore={handleLoadMore}
-                />
+              {/* Lectures */}
+              <CarouselSection
+                title={t("home.sections.latestLectures")}
+                items={previewData?.lectures || []}
+                href="/lectures"
+                linkPrefix="/lectures"
+                contentType="lectures"
+                onLoadMore={handleLoadMore}
+                getImageUrl={getLectureImage}
+                getSubtitle={getDescriptionSubtitle}
+              />
 
-                {/* Events */}
-                <ContentCard
-                  title={t("home.sections.upcomingEvents")}
-                  icon={Calendar}
-                  iconColor="bg-green-500"
-                  items={previewData?.events || []}
-                  href="/events"
-                  itemVariants={itemVariants}
-                  renderItem={renderEventItem}
-                  contentType="events"
-                  onLoadMore={handleLoadMore}
-                />
+              {/* Events */}
+              <CarouselSection
+                title={t("home.sections.upcomingEvents")}
+                items={previewData?.events || []}
+                href="/events"
+                linkPrefix="/events"
+                contentType="events"
+                onLoadMore={handleLoadMore}
+                getImageUrl={getEventImage}
+                getSubtitle={getDescriptionSubtitle}
+              />
 
-                {/* Presentations */}
-                <ContentCard
-                  title={t("home.sections.presentations")}
-                  icon={Presentation}
-                  iconColor="bg-purple-500"
-                  items={previewData?.presentations || []}
-                  href="/presentations"
-                  itemVariants={itemVariants}
-                  renderItem={renderPresentationItem}
-                  contentType="presentations"
-                  onLoadMore={handleLoadMore}
-                />
-              </div>
+              {/* Presentations */}
+              <CarouselSection
+                title={t("home.sections.presentations")}
+                items={previewData?.presentations || []}
+                href="/presentations"
+                linkPrefix="/presentations"
+                contentType="presentations"
+                onLoadMore={handleLoadMore}
+                getImageUrl={getPresentationImage}
+                getSubtitle={getDescriptionSubtitle}
+              />
             </div>
           )}
         </div>
-      </motion.section>
+      </section>
     </main>
   );
 };
