@@ -21,6 +21,8 @@ import { LecturePlaceholder, PresentationPlaceholder } from "@/components/Placeh
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 
+type TabType = "articles" | "lectures" | "presentations";
+
 const tabs: { id: TabType; icon: React.ElementType; labelKey: string }[] = [
   { id: "articles", icon: FileText, labelKey: "favorites.tabs.articles" },
   { id: "lectures", icon: Video, labelKey: "favorites.tabs.lectures" },
