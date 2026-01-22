@@ -11,7 +11,6 @@ import type { ContentItem } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 
 const ITEMS_PER_PAGE = 3;
-const AUTO_ROTATE_MS = 10000;
 const COOLDOWN_MS = 500;
 const BATCH_SIZE = 9;
 
@@ -46,7 +45,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const [direction, setDirection] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialItems.length >= BATCH_SIZE);
-  const [isPaused, setIsPaused] = useState(false);
   const cooldownRef = useRef(false);
 
   useEffect(() => {
@@ -109,19 +107,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     if (idx !== page) navigate(idx > page ? 1 : -1, idx);
   }, [page, navigate]);
 
-  useEffect(() => {
-    if (isPaused || totalPages <= 1) return;
-    const interval = setInterval(() => {
-      if (page < totalPages - 1) {
-        setDirection(1);
-        setPage(p => p + 1);
-      } else {
-        setDirection(-1);
-        setPage(0);
-      }
-    }, AUTO_ROTATE_MS);
-    return () => clearInterval(interval);
-  }, [isPaused, page, totalPages]);
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -151,11 +136,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   }
 
   return (
-    <div
-      className="mb-10"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-    >
+    <div className="mb-10">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
         <Link href={href} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
