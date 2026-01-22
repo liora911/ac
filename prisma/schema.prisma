@@ -288,12 +288,14 @@ model Message {
 }
 
 model HomeContent {
-  id          String   @id @default("home")
-  heroHtml    String?
-  imageUrl    String?
-  photoCredit String?
-  bioHtml     String
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default("home")
+  heroHtml      String?  // Legacy field - kept for backwards compatibility
+  heroHtmlLeft  String?  // Left column (English/LTR content)
+  heroHtmlRight String?  // Right column (Hebrew/RTL content)
+  imageUrl      String?
+  photoCredit   String?
+  bioHtml       String
+  updatedAt     DateTime @updatedAt
 
   @@map("home_content")
 }

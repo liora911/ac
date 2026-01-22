@@ -134,7 +134,40 @@ const Home = () => {
 
             {/* Name and Info */}
             <div className="flex-1 text-center md:text-start">
-              {homeContent?.heroHtml ? (
+              {/* Two-column bilingual layout */}
+              {(homeContent?.heroHtmlLeft || homeContent?.heroHtmlRight) ? (
+                <motion.div
+                  variants={itemVariants}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10"
+                >
+                  {/* Left Column - English/LTR */}
+                  {homeContent?.heroHtmlLeft && (
+                    <div
+                      dir="ltr"
+                      className="prose prose-slate dark:prose-invert max-w-none text-left
+                        prose-headings:text-slate-900 dark:prose-headings:text-white
+                        prose-h1:text-2xl prose-h1:md:text-3xl prose-h1:font-bold prose-h1:tracking-tight
+                        prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed
+                        [&>*:first-child]:mt-0"
+                    >
+                      <RichContent content={homeContent.heroHtmlLeft} />
+                    </div>
+                  )}
+                  {/* Right Column - Hebrew/RTL */}
+                  {homeContent?.heroHtmlRight && (
+                    <div
+                      dir="rtl"
+                      className="prose prose-slate dark:prose-invert max-w-none text-right
+                        prose-headings:text-slate-900 dark:prose-headings:text-white
+                        prose-h1:text-2xl prose-h1:md:text-3xl prose-h1:font-bold prose-h1:tracking-tight
+                        prose-p:text-slate-600 dark:prose-p:text-slate-300 prose-p:leading-relaxed
+                        [&>*:first-child]:mt-0"
+                    >
+                      <RichContent content={homeContent.heroHtmlRight} />
+                    </div>
+                  )}
+                </motion.div>
+              ) : homeContent?.heroHtml ? (
                 <motion.div
                   variants={itemVariants}
                   className="prose prose-slate dark:prose-invert max-w-none

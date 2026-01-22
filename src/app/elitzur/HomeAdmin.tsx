@@ -22,16 +22,17 @@ export default function HomeAdmin() {
   const { data, isLoading, error } = useHomeContent();
   const updateMutation = useUpdateHomeContent();
 
-  const [heroHtml, setHeroHtml] = useState<string>("");
+  const [heroHtmlLeft, setHeroHtmlLeft] = useState<string>("");
+  const [heroHtmlRight, setHeroHtmlRight] = useState<string>("");
   const [imageUrl, setImageUrl] = useState<string>("");
   const [photoCredit, setPhotoCredit] = useState<string>("");
   const [bioHtml, setBioHtml] = useState<string>("");
-  const [heroDirection, setHeroDirection] = useState<"ltr" | "rtl">("rtl");
   const [bioDirection, setBioDirection] = useState<"ltr" | "rtl">("rtl");
 
   useEffect(() => {
     if (data) {
-      setHeroHtml(data.heroHtml ?? "");
+      setHeroHtmlLeft(data.heroHtmlLeft ?? "");
+      setHeroHtmlRight(data.heroHtmlRight ?? "");
       setImageUrl(data.imageUrl ?? "");
       setPhotoCredit(data.photoCredit ?? "");
       setBioHtml(data.bioHtml ?? "");
@@ -41,7 +42,8 @@ export default function HomeAdmin() {
   const handleSave = () => {
     updateMutation.mutate(
       {
-        heroHtml: heroHtml.trim() || null,
+        heroHtmlLeft: heroHtmlLeft.trim() || null,
+        heroHtmlRight: heroHtmlRight.trim() || null,
         imageUrl: imageUrl.trim() || null,
         photoCredit: photoCredit.trim() || null,
         bioHtml: bioHtml || "",
@@ -99,22 +101,44 @@ export default function HomeAdmin() {
         </div>
       )}
 
-      {/* Hero Section Editor */}
+      {/* Hero Section - Two Column Layout */}
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-gray-900 mb-2">
           {t("admin.home.heroSection")}
         </h3>
         <p className="text-sm text-gray-500 mb-4">
-          {t("admin.home.heroDescription")}
+          {t("admin.home.heroTwoColumnDescription")}
         </p>
-        <TiptapEditor
-          value={heroHtml}
-          onChange={setHeroHtml}
-          placeholder={t("admin.home.heroPlaceholder")}
-          direction={heroDirection}
-          onDirectionChange={(dir) => setHeroDirection(dir)}
-          theme="light"
-        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Left Column - English/LTR */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t("admin.home.leftColumn")} (English)
+            </label>
+            <TiptapEditor
+              value={heroHtmlLeft}
+              onChange={setHeroHtmlLeft}
+              placeholder={t("admin.home.leftColumnPlaceholder")}
+              direction="ltr"
+              theme="light"
+            />
+          </div>
+
+          {/* Right Column - Hebrew/RTL */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {t("admin.home.rightColumn")} (עברית)
+            </label>
+            <TiptapEditor
+              value={heroHtmlRight}
+              onChange={setHeroHtmlRight}
+              placeholder={t("admin.home.rightColumnPlaceholder")}
+              direction="rtl"
+              theme="light"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -135,7 +159,7 @@ export default function HomeAdmin() {
                 type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder=":https://example.com/image.jpg"
+                placeholder="https://example.com/image.jpg"
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -165,7 +189,7 @@ export default function HomeAdmin() {
                 <div className="border border-dashed border-gray-300 rounded-md p-3 flex justify-center">
                   <img
                     src={imageUrl}
-                    alt="תצוגה מקדימה של תמונת דף הבית"
+                    alt="Home page image preview"
                     className="max-h-48 rounded-md object-contain"
                   />
                 </div>

@@ -6,6 +6,8 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 
 type HomeContentPayload = {
   heroHtml?: string | null;
+  heroHtmlLeft?: string | null;
+  heroHtmlRight?: string | null;
   imageUrl?: string | null;
   photoCredit?: string | null;
   bioHtml?: string;
@@ -26,6 +28,8 @@ export async function GET() {
         {
           id: "home",
           heroHtml: null,
+          heroHtmlLeft: null,
+          heroHtmlRight: null,
           imageUrl: null,
           photoCredit: null,
           bioHtml: "",
@@ -68,19 +72,23 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = (await request.json()) as HomeContentPayload;
-    const { heroHtml = null, imageUrl = null, photoCredit = null, bioHtml = "" } = body;
+    const { heroHtml = null, heroHtmlLeft = null, heroHtmlRight = null, imageUrl = null, photoCredit = null, bioHtml = "" } = body;
 
     const updated = await prisma.homeContent.upsert({
       where: { id: "home" },
       create: {
         id: "home",
         heroHtml,
+        heroHtmlLeft,
+        heroHtmlRight,
         imageUrl,
         photoCredit,
         bioHtml,
       },
       update: {
         heroHtml,
+        heroHtmlLeft,
+        heroHtmlRight,
         imageUrl,
         photoCredit,
         bioHtml,

@@ -1083,6 +1083,11 @@
       "loadError": "Error loading existing content. You can still try to save new content.",
       "heroSection": "Hero Section",
       "heroDescription": "This content appears at the top of the homepage next to your photo. You can write your name, tagline, greeting, or anything else.",
+      "heroTwoColumnDescription": "Edit the two-column hero section. The left column displays English content (LTR) and the right column displays Hebrew content (RTL).",
+      "leftColumn": "Left Column",
+      "rightColumn": "Right Column",
+      "leftColumnPlaceholder": "Write English content here (name, title, greeting...)",
+      "rightColumnPlaceholder": "Write Hebrew content here (name, title, greeting...)",
       "heroPlaceholder": "Write your name, tagline, greeting, etc...",
       "imageAndCredit": "Image and Credit",
       "imageUrl": "Image URL",
@@ -1132,6 +1137,16 @@
       "categoryDescriptionPlaceholder": "Text to display above articles in this category...",
       "categoryDescriptionHelp": "This text will appear above articles when users browse this category."
     }
+  },
+  "premiumBadge": {
+    "title": "Premium Content",
+    "description": "This content is available to Researcher plan subscribers only",
+    "clickToSubscribe": "Click to subscribe",
+    "subscriberTitle": "You have access!",
+    "subscriberMessage": "You enjoy full access to premium content",
+    "subscriberAccess": "You have access to this content",
+    "exclusiveContent": "Exclusive content for subscribers",
+    "ariaLabel": "Premium content - Click to subscribe"
   },
   "premiumGate": {
     "title": "Premium Content",
