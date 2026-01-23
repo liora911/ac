@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
               isPremium: true,
               isFeatured: true,
             },
-            orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
+            orderBy: { createdAt: "desc" },
             skip,
             take: limit + 1,
           });
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Default: return initial load for all types (9 items each)
-    // Sorted oldest to newest so carousel shows chronological progression
+    // Articles sorted newest first, other content sorted oldest to newest
     const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
       prisma.article.findMany({
         where: { published: true },
@@ -152,7 +152,7 @@ export async function GET(request: NextRequest) {
           isPremium: true,
           isFeatured: true,
         },
-        orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
+        orderBy: { createdAt: "desc" },
         take: DEFAULT_LIMIT,
       }),
       prisma.article.findMany({
