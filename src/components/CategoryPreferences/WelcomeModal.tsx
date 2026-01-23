@@ -76,15 +76,15 @@ export default function WelcomeModal() {
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: "spring", duration: 0.5 }}
-          className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+          className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col"
         >
           {/* Settings Bar - Language & Theme (Universal Icons) */}
-          <div className="absolute top-4 right-4 left-4 flex justify-between items-center z-10">
+          <div className="absolute top-2 right-3 left-3 flex justify-between items-center z-10">
             {/* Language Toggle */}
-            <div className="flex gap-1 bg-white/20 backdrop-blur-sm rounded-lg p-1">
+            <div className="flex gap-0.5 bg-white/20 backdrop-blur-sm rounded-md p-0.5">
               <button
                 onClick={() => setLocale("en")}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
                   locale === "en"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-white/80 hover:text-white hover:bg-white/10"
@@ -95,7 +95,7 @@ export default function WelcomeModal() {
               </button>
               <button
                 onClick={() => setLocale("he")}
-                className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
                   locale === "he"
                     ? "bg-white text-blue-600 shadow-sm"
                     : "text-white/80 hover:text-white hover:bg-white/10"
@@ -109,61 +109,61 @@ export default function WelcomeModal() {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-lg flex items-center justify-center hover:bg-white/30 transition-all"
+              className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white/30 transition-all"
               title={theme === "dark" ? "Light mode" : "Dark mode"}
             >
               {theme === "dark" ? (
-                <Sun className="w-5 h-5 text-white" />
+                <Sun className="w-4 h-4 text-white" />
               ) : (
-                <Moon className="w-5 h-5 text-white" />
+                <Moon className="w-4 h-4 text-white" />
               )}
             </button>
           </div>
 
-          {/* Header with gradient */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-6 py-8 text-white text-center">
-            <div className="flex justify-center mb-4">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-                <User className="w-8 h-8" />
+          {/* Header with gradient - compact */}
+          <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 pt-10 pb-4 text-white text-center shrink-0">
+            <div className="flex justify-center mb-2">
+              <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5" />
               </div>
             </div>
-            <h2 className="text-2xl font-bold mb-2">
+            <h2 className="text-lg font-bold mb-1">
               {t("categoryPreferences.welcomeTitle") || "Welcome! What interests you?"}
             </h2>
-            <p className="text-white/80 text-sm">
+            <p className="text-white/80 text-xs">
               {t("categoryPreferences.welcomeDescription") ||
                 "Select topics to personalize your experience, or skip to see everything."}
             </p>
           </div>
 
           {/* Content */}
-          <div className="p-6">
+          <div className="p-4 overflow-y-auto flex-1 min-h-0">
             {isLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+              <div className="flex justify-center py-6">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600" />
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {/* Show All Option */}
                 <button
                   onClick={handleShowAll}
-                  className={`w-full flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                  className={`w-full flex items-center gap-2.5 p-2.5 rounded-lg border-2 transition-all ${
                     showAll
                       ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
                       : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                   }`}
                 >
                   <div
-                    className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+                    className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors shrink-0 ${
                       showAll
                         ? "border-blue-500 bg-blue-500"
                         : "border-gray-300 dark:border-gray-500"
                     }`}
                   >
-                    {showAll && <Check className="w-4 h-4 text-white" />}
+                    {showAll && <Check className="w-3 h-3 text-white" />}
                   </div>
                   <span
-                    className={`font-medium ${
+                    className={`font-medium text-sm ${
                       showAll
                         ? "text-blue-700 dark:text-blue-300"
                         : "text-gray-700 dark:text-gray-300"
@@ -174,39 +174,39 @@ export default function WelcomeModal() {
                 </button>
 
                 {/* Divider */}
-                <div className="flex items-center gap-3 py-2">
+                <div className="flex items-center gap-2 py-1">
                   <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
                     {t("categoryPreferences.or") || "or select specific topics"}
                   </span>
                   <div className="flex-1 h-px bg-gray-200 dark:bg-gray-600" />
                 </div>
 
                 {/* Category Checkboxes */}
-                <div className="grid grid-cols-1 gap-2 max-h-[240px] overflow-y-auto pr-1">
+                <div className="grid grid-cols-1 gap-1.5">
                   {categories?.map((category) => {
                     const isSelected = selectedIds.includes(category.id);
                     return (
                       <button
                         key={category.id}
                         onClick={() => toggleCategory(category.id)}
-                        className={`flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                        className={`flex items-center gap-2.5 p-2 rounded-lg border-2 transition-all ${
                           isSelected
                             ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30"
                             : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                         }`}
                       >
                         <div
-                          className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                          className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
                             isSelected
                               ? "border-purple-500 bg-purple-500"
                               : "border-gray-300 dark:border-gray-500"
                           }`}
                         >
-                          {isSelected && <Check className="w-3 h-3 text-white" />}
+                          {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
                         </div>
                         <span
-                          className={`font-medium text-sm ${
+                          className={`font-medium text-xs ${
                             isSelected
                               ? "text-purple-700 dark:text-purple-300"
                               : "text-gray-700 dark:text-gray-300"
@@ -223,17 +223,17 @@ export default function WelcomeModal() {
           </div>
 
           {/* Footer */}
-          <div className="px-6 pb-6 space-y-3">
+          <div className="px-4 pb-4 space-y-2 shrink-0">
             <button
               onClick={handleContinue}
               disabled={!showAll && selectedIds.length === 0}
-              className="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {t("categoryPreferences.continue") || "Continue"}
             </button>
             <button
               onClick={handleSkip}
-              className="w-full py-2 px-4 text-gray-500 dark:text-gray-400 text-sm hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+              className="w-full py-1.5 px-4 text-gray-500 dark:text-gray-400 text-xs hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
             >
               {t("categoryPreferences.skip") || "Skip for now"}
             </button>

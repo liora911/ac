@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
               isPremium: true,
               isFeatured: true,
             },
-            orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+            orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
             skip,
             take: limit + 1,
           });
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
               isPremium: true,
               isFeatured: true,
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: "asc" },
             skip,
             take: limit + 1,
           });
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
               imageUrls: true,
               isPremium: true,
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: "asc" },
             skip,
             take: limit + 1,
           });
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
               bannerImageUrl: true,
               isFeatured: true,
             },
-            orderBy: [{ isFeatured: "desc" }, { eventDate: "desc" }],
+            orderBy: [{ isFeatured: "desc" }, { eventDate: "asc" }],
             skip,
             take: limit + 1,
           });
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
               bannerImageUrl: true,
               isFeatured: true,
             },
-            orderBy: { eventDate: "desc" },
+            orderBy: { eventDate: "asc" },
             skip,
             take: limit + 1,
           });
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
               videoUrl: true,
               isPremium: true,
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { createdAt: "asc" },
             skip,
             take: limit + 1,
           });
@@ -139,6 +139,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Default: return initial load for all types (9 items each)
+    // Sorted oldest to newest so carousel shows chronological progression
     const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
       prisma.article.findMany({
         where: { published: true },
@@ -151,7 +152,7 @@ export async function GET(request: NextRequest) {
           isPremium: true,
           isFeatured: true,
         },
-        orderBy: [{ isFeatured: "desc" }, { createdAt: "desc" }],
+        orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
         take: DEFAULT_LIMIT,
       }),
       prisma.article.findMany({
@@ -165,7 +166,7 @@ export async function GET(request: NextRequest) {
           isPremium: true,
           isFeatured: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "asc" },
         take: DEFAULT_LIMIT,
       }),
       prisma.presentation.findMany({
@@ -177,7 +178,7 @@ export async function GET(request: NextRequest) {
           imageUrls: true,
           isPremium: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "asc" },
         take: DEFAULT_LIMIT,
       }),
       prisma.event.findMany({
@@ -189,7 +190,7 @@ export async function GET(request: NextRequest) {
           bannerImageUrl: true,
           isFeatured: true,
         },
-        orderBy: [{ isFeatured: "desc" }, { eventDate: "desc" }],
+        orderBy: [{ isFeatured: "desc" }, { eventDate: "asc" }],
         take: DEFAULT_LIMIT,
       }),
       prisma.event.findMany({
@@ -201,7 +202,7 @@ export async function GET(request: NextRequest) {
           bannerImageUrl: true,
           isFeatured: true,
         },
-        orderBy: { eventDate: "desc" },
+        orderBy: { eventDate: "asc" },
         take: DEFAULT_LIMIT,
       }),
       prisma.lecture.findMany({
@@ -213,7 +214,7 @@ export async function GET(request: NextRequest) {
           videoUrl: true,
           isPremium: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { createdAt: "asc" },
         take: DEFAULT_LIMIT,
       }),
     ]);
