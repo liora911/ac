@@ -7,12 +7,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Loader2, Star } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
+import ContentPreviewPopover from "./ContentPreviewPopover";
 import type { ContentItem } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 
 const ITEMS_PER_PAGE = 3;
 const COOLDOWN_MS = 500;
 const BATCH_SIZE = 9;
+const HOVER_DELAY_MS = 500;
 
 interface CarouselSectionProps {
   title: string;
@@ -46,6 +48,11 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [hasMore, setHasMore] = useState(initialItems.length >= BATCH_SIZE);
   const cooldownRef = useRef(false);
+
+  // Hover preview state
+  const [hoveredItem, setHoveredItem] = useState<ContentItem | null>(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     setItems(initialItems);
@@ -107,6 +114,34 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     if (idx !== page) navigate(idx > page ? 1 : -1, idx);
   }, [page, navigate]);
 
+  // Hover preview handlers
+  const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top;
+
+    hoverTimerRef.current = setTimeout(() => {
+      setHoveredItem(item);
+      setHoverPosition({ x, y });
+    }, HOVER_DELAY_MS);
+  }, []);
+
+  const handleCardMouseLeave = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    setHoveredItem(null);
+  }, []);
+
+  // Cleanup hover timer on unmount
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -192,7 +227,13 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                   : `${linkPrefix}/${item.id}`;
 
                 return (
-                  <Link key={item.id} href={itemLink} className="block group/card">
+                  <Link
+                    key={item.id}
+                    href={itemLink}
+                    className="block group/card"
+                    onMouseEnter={(e) => handleCardMouseEnter(item, e)}
+                    onMouseLeave={handleCardMouseLeave}
+                  >
                     <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
                       {imageUrl ? (
                         <Image
@@ -252,6 +293,18 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           </div>
         )}
       </div>
+
+      {/* Hover Preview Popover */}
+      <AnimatePresence>
+        {hoveredItem && (
+          <ContentPreviewPopover
+            item={hoveredItem}
+            imageUrl={getImageUrl(hoveredItem)}
+            subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
+            position={hoverPosition}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
