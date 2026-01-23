@@ -7,9 +7,19 @@ import {
   Send,
   CheckCircle,
   AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { track } from "@vercel/analytics";
+
+const SUBJECT_OPTIONS = [
+  { value: "general", labelKey: "contact.subjects.general" },
+  { value: "article", labelKey: "contact.subjects.article" },
+  { value: "collaboration", labelKey: "contact.subjects.collaboration" },
+  { value: "event", labelKey: "contact.subjects.event" },
+  { value: "technical", labelKey: "contact.subjects.technical" },
+  { value: "other", labelKey: "contact.subjects.other" },
+];
 
 const Contact = () => {
   const { t, locale } = useTranslation();
@@ -50,16 +60,16 @@ const Contact = () => {
       newErrors.email = t("contact.emailInvalid");
     }
 
-    if (!formData.subject.trim()) {
+    if (!formData.subject) {
       newErrors.subject = t("contact.subjectRequired");
-    } else if (formData.subject.trim().length < 5) {
-      newErrors.subject = t("contact.subjectMinLength");
     }
 
     if (!formData.message.trim()) {
       newErrors.message = t("contact.messageRequired");
     } else if (formData.message.trim().length < 10) {
       newErrors.message = t("contact.messageMinLength");
+    } else if (formData.message.length > 500) {
+      newErrors.message = t("contact.messageMaxLength");
     }
 
     setErrors(newErrors);
@@ -67,7 +77,7 @@ const Contact = () => {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prevState) => ({
@@ -228,19 +238,27 @@ const Contact = () => {
               {t("contact.subjectLabel")}
             </label>
             <div className="relative">
-              <MessageSquare className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
+              <MessageSquare className="absolute left-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+              <ChevronDown className="absolute right-3 top-3 h-5 w-5 text-gray-400 pointer-events-none" />
+              <select
                 name="subject"
                 id="subject"
                 value={formData.subject}
                 onChange={handleChange}
                 required
-                className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
+                className={`mt-1 block w-full pl-10 pr-10 py-2 bg-white border rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 appearance-none cursor-pointer ${
                   errors.subject ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder={t("contact.subjectPlaceholder")}
-              />
+                } ${!formData.subject ? "text-gray-400" : ""}`}
+              >
+                <option value="" disabled>
+                  {t("contact.subjectPlaceholder")}
+                </option>
+                {SUBJECT_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {t(option.labelKey)}
+                  </option>
+                ))}
+              </select>
             </div>
             {errors.subject && (
               <div className="flex items-center mt-1 text-sm text-red-600">
@@ -269,11 +287,17 @@ const Contact = () => {
                 value={formData.message}
                 onChange={handleChange}
                 required
+                maxLength={500}
                 className={`mt-1 block w-full pl-10 pr-3 py-2 bg-white border rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm text-gray-900 ${
                   errors.message ? "border-red-500" : "border-gray-300"
                 }`}
                 placeholder={t("contact.messagePlaceholder")}
               />
+            </div>
+            <div className="flex justify-end mt-1">
+              <span className={`text-xs ${formData.message.length > 450 ? "text-orange-500" : "text-gray-400"}`}>
+                {formData.message.length}/500
+              </span>
             </div>
             {errors.message && (
               <div className="flex items-center mt-1 text-sm text-red-600">
