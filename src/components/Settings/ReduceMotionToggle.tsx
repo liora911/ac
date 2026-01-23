@@ -2,7 +2,7 @@
 
 import { useSettings } from "@/contexts/SettingsContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Sparkles, Circle } from "lucide-react";
+import { Zap, ZapOff } from "lucide-react";
 
 export default function ReduceMotionToggle() {
   const { reduceMotion, setReduceMotion } = useSettings();
@@ -10,46 +10,37 @@ export default function ReduceMotionToggle() {
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-        {t("settings.motion")}
-      </label>
-      <div className="relative flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
-        {/* Sliding indicator */}
-        <div
-          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-gray-600 rounded-md shadow-sm transition-transform duration-200 ease-out ${
-            reduceMotion ? "translate-x-[calc(100%+4px)]" : "translate-x-0"
-          }`}
-        />
-
-        {/* Animations On */}
+      <div className="flex items-center gap-2 mb-3">
+        <Zap className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t("settings.motion")}
+        </label>
+      </div>
+      <div className="grid grid-cols-2 gap-2">
         <button
           onClick={() => setReduceMotion(false)}
-          className={`relative flex-1 py-2.5 px-4 flex items-center justify-center gap-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+          className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 ${
             !reduceMotion
-              ? "text-gray-900 dark:text-white"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "border-green-500 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+              : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500"
           }`}
-          aria-pressed={!reduceMotion}
         >
-          <Sparkles className="w-4 h-4" />
+          <Zap className="w-4 h-4" />
           {t("settings.motionOn") || "On"}
         </button>
-
-        {/* Animations Off */}
         <button
           onClick={() => setReduceMotion(true)}
-          className={`relative flex-1 py-2.5 px-4 flex items-center justify-center gap-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+          className={`py-3 px-4 rounded-xl border-2 text-sm font-medium transition-all duration-150 cursor-pointer flex items-center justify-center gap-2 ${
             reduceMotion
-              ? "text-gray-900 dark:text-white"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+              ? "border-gray-500 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200"
+              : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500"
           }`}
-          aria-pressed={reduceMotion}
         >
-          <Circle className="w-4 h-4" />
+          <ZapOff className="w-4 h-4" />
           {t("settings.motionOff") || "Reduced"}
         </button>
       </div>
-      <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
         {t("settings.motionDescription") || "Reduce animations for accessibility"}
       </p>
     </div>

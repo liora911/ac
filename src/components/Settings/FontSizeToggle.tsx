@@ -3,50 +3,43 @@
 import { useSettings } from "@/contexts/SettingsContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { FontSize } from "@/types/SettingsContext/settings";
+import { Type } from "lucide-react";
 
 export default function FontSizeToggle() {
   const { fontSize, setFontSize } = useSettings();
   const { t } = useTranslation();
 
-  const sizes: { key: FontSize; label: string }[] = [
-    { key: "small", label: t("settings.fontSmall") || "S" },
-    { key: "medium", label: t("settings.fontMedium") || "M" },
-    { key: "large", label: t("settings.fontLarge") || "L" },
+  const sizes: { key: FontSize; label: string; sample: string }[] = [
+    { key: "small", label: t("settings.fontSmall") || "Small", sample: "Aa" },
+    { key: "medium", label: t("settings.fontMedium") || "Medium", sample: "Aa" },
+    { key: "large", label: t("settings.fontLarge") || "Large", sample: "Aa" },
   ];
-
-  const activeIndex = sizes.findIndex((s) => s.key === fontSize);
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-        {t("settings.fontSize")}
-      </label>
-      <div className="relative flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
-        {/* Sliding indicator */}
-        <div
-          className="absolute top-1 bottom-1 w-[calc(33.333%-2.67px)] bg-white dark:bg-gray-600 rounded-md shadow-sm transition-transform duration-200 ease-out"
-          style={{
-            transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * 4}px))`,
-          }}
-        />
-
+      <div className="flex items-center gap-2 mb-3">
+        <Type className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+        <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          {t("settings.fontSize")}
+        </label>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
         {sizes.map((size) => (
           <button
             key={size.key}
             onClick={() => setFontSize(size.key)}
-            className={`relative flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+            className={`py-3 px-2 rounded-xl border-2 transition-all duration-150 cursor-pointer flex flex-col items-center gap-1 ${
               fontSize === size.key
-                ? "text-gray-900 dark:text-white"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                : "border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-500"
             }`}
-            aria-pressed={fontSize === size.key}
           >
             <span
               className={`font-serif ${
-                size.key === "small" ? "text-xs" : size.key === "medium" ? "text-sm" : "text-base"
+                size.key === "small" ? "text-sm" : size.key === "medium" ? "text-lg" : "text-2xl"
               }`}
             >
-              A
+              {size.sample}
             </span>
             <span className="text-xs">{size.label}</span>
           </button>
