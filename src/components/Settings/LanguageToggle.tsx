@@ -5,56 +5,40 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 export default function LanguageToggle() {
   const { locale, setLocale, t } = useTranslation();
 
-  // USA flag colors: Red #B22234, White #FFFFFF, Blue #3C3B6E
-  const usaGradient = `linear-gradient(
-    135deg,
-    rgba(178, 34, 52, 0.35) 0%,
-    rgba(255, 255, 255, 0.5) 25%,
-    rgba(60, 59, 110, 0.4) 50%,
-    rgba(255, 255, 255, 0.5) 75%,
-    rgba(178, 34, 52, 0.35) 100%
-  )`;
-
-  // Israel flag colors: Blue #0038B8, White #FFFFFF
-  const israelGradient = `linear-gradient(
-    135deg,
-    rgba(0, 56, 184, 0.35) 0%,
-    rgba(255, 255, 255, 0.6) 50%,
-    rgba(0, 56, 184, 0.35) 100%
-  )`;
-
   return (
     <div className="w-full">
-      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
         {t("settings.language")}
       </label>
-      <div className="flex rounded-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden shadow-sm">
-        {/* English Button */}
+      <div className="relative flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+        {/* Sliding indicator */}
+        <div
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-gray-600 rounded-md shadow-sm transition-transform duration-200 ease-out ${
+            locale === "he" ? "translate-x-[calc(100%+4px)]" : "translate-x-0"
+          }`}
+        />
+
+        {/* English */}
         <button
           onClick={() => setLocale("en")}
-          className={`flex-1 py-4 px-6 text-lg font-bold transition-all duration-300 cursor-pointer
-            ${locale === "en"
-              ? "text-gray-900 dark:text-white shadow-inner ring-2 ring-inset ring-blue-400/50"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-            }`}
-          style={locale === "en" ? { background: usaGradient } : {}}
+          className={`relative flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+            locale === "en"
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
           aria-pressed={locale === "en"}
         >
           English
         </button>
 
-        {/* Divider */}
-        <div className="w-0.5 bg-gray-300 dark:bg-gray-600" />
-
-        {/* Hebrew Button */}
+        {/* Hebrew */}
         <button
           onClick={() => setLocale("he")}
-          className={`flex-1 py-4 px-6 text-lg font-bold transition-all duration-300 cursor-pointer
-            ${locale === "he"
-              ? "text-gray-900 dark:text-white shadow-inner ring-2 ring-inset ring-blue-400/50"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-            }`}
-          style={locale === "he" ? { background: israelGradient } : {}}
+          className={`relative flex-1 py-2.5 px-4 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+            locale === "he"
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
           aria-pressed={locale === "he"}
         >
           עברית

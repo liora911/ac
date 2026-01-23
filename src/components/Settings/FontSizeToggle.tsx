@@ -8,43 +8,48 @@ export default function FontSizeToggle() {
   const { fontSize, setFontSize } = useSettings();
   const { t } = useTranslation();
 
-  const sizes: { key: FontSize; label: string; icon: string }[] = [
-    { key: "small", label: t("settings.fontSmall") || "Small", icon: "A" },
-    { key: "medium", label: t("settings.fontMedium") || "Medium", icon: "A" },
-    { key: "large", label: t("settings.fontLarge") || "Large", icon: "A" },
+  const sizes: { key: FontSize; label: string }[] = [
+    { key: "small", label: t("settings.fontSmall") || "S" },
+    { key: "medium", label: t("settings.fontMedium") || "M" },
+    { key: "large", label: t("settings.fontLarge") || "L" },
   ];
+
+  const activeIndex = sizes.findIndex((s) => s.key === fontSize);
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
         {t("settings.fontSize")}
       </label>
-      <div className="flex rounded-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden shadow-sm">
-        {sizes.map((size, index) => (
-          <div key={size.key} className="flex flex-1">
-            <button
-              onClick={() => setFontSize(size.key)}
-              className={`flex-1 py-4 px-3 flex items-center justify-center gap-1.5
-                font-bold transition-all duration-300 cursor-pointer
-                ${fontSize === size.key
-                  ? "bg-gradient-to-r from-blue-500 via-blue-400 to-blue-500 text-white shadow-inner ring-2 ring-inset ring-blue-300/50"
-                  : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-                }`}
-              aria-pressed={fontSize === size.key}
+      <div className="relative flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+        {/* Sliding indicator */}
+        <div
+          className="absolute top-1 bottom-1 w-[calc(33.333%-2.67px)] bg-white dark:bg-gray-600 rounded-md shadow-sm transition-transform duration-200 ease-out"
+          style={{
+            transform: `translateX(calc(${activeIndex * 100}% + ${activeIndex * 4}px))`,
+          }}
+        />
+
+        {sizes.map((size) => (
+          <button
+            key={size.key}
+            onClick={() => setFontSize(size.key)}
+            className={`relative flex-1 py-2.5 px-3 flex items-center justify-center gap-1.5 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+              fontSize === size.key
+                ? "text-gray-900 dark:text-white"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+            aria-pressed={fontSize === size.key}
+          >
+            <span
+              className={`font-serif ${
+                size.key === "small" ? "text-xs" : size.key === "medium" ? "text-sm" : "text-base"
+              }`}
             >
-              <span
-                className={`font-serif ${
-                  size.key === "small" ? "text-sm" : size.key === "medium" ? "text-base" : "text-xl"
-                }`}
-              >
-                {size.icon}
-              </span>
-              <span className="text-sm">{size.label}</span>
-            </button>
-            {index < sizes.length - 1 && (
-              <div className="w-0.5 bg-gray-300 dark:bg-gray-600" />
-            )}
-          </div>
+              A
+            </span>
+            <span className="text-xs">{size.label}</span>
+          </button>
         ))}
       </div>
     </div>

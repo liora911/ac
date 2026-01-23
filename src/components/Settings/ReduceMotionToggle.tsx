@@ -2,7 +2,7 @@
 
 import { useSettings } from "@/contexts/SettingsContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { MdAnimation, MdMotionPhotosOff } from "react-icons/md";
+import { Sparkles, Circle } from "lucide-react";
 
 export default function ReduceMotionToggle() {
   const { reduceMotion, setReduceMotion } = useSettings();
@@ -10,44 +10,46 @@ export default function ReduceMotionToggle() {
 
   return (
     <div className="w-full">
-      <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+      <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
         {t("settings.motion")}
       </label>
-      <div className="flex rounded-2xl border-2 border-gray-300 dark:border-gray-600 overflow-hidden shadow-sm">
+      <div className="relative flex p-1 bg-gray-100 dark:bg-gray-700/50 rounded-lg">
+        {/* Sliding indicator */}
+        <div
+          className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-white dark:bg-gray-600 rounded-md shadow-sm transition-transform duration-200 ease-out ${
+            reduceMotion ? "translate-x-[calc(100%+4px)]" : "translate-x-0"
+          }`}
+        />
+
         {/* Animations On */}
         <button
           onClick={() => setReduceMotion(false)}
-          className={`flex-1 py-4 px-6 flex items-center justify-center gap-2
-            text-lg font-bold transition-all duration-300 cursor-pointer
-            ${!reduceMotion
-              ? "bg-gradient-to-r from-green-500 via-emerald-400 to-green-500 text-white shadow-inner ring-2 ring-inset ring-green-300/50"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-            }`}
+          className={`relative flex-1 py-2.5 px-4 flex items-center justify-center gap-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+            !reduceMotion
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
           aria-pressed={!reduceMotion}
         >
-          <MdAnimation size={24} />
-          <span className="text-sm">{t("settings.motionOn") || "On"}</span>
+          <Sparkles className="w-4 h-4" />
+          {t("settings.motionOn") || "On"}
         </button>
 
-        {/* Divider */}
-        <div className="w-0.5 bg-gray-300 dark:bg-gray-600" />
-
-        {/* Animations Off (Reduced) */}
+        {/* Animations Off */}
         <button
           onClick={() => setReduceMotion(true)}
-          className={`flex-1 py-4 px-6 flex items-center justify-center gap-2
-            text-lg font-bold transition-all duration-300 cursor-pointer
-            ${reduceMotion
-              ? "bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 text-white shadow-inner ring-2 ring-inset ring-gray-400/50"
-              : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
-            }`}
+          className={`relative flex-1 py-2.5 px-4 flex items-center justify-center gap-2 text-sm font-medium rounded-md transition-colors duration-200 cursor-pointer ${
+            reduceMotion
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+          }`}
           aria-pressed={reduceMotion}
         >
-          <MdMotionPhotosOff size={24} />
-          <span className="text-sm">{t("settings.motionOff") || "Reduced"}</span>
+          <Circle className="w-4 h-4" />
+          {t("settings.motionOff") || "Reduced"}
         </button>
       </div>
-      <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+      <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
         {t("settings.motionDescription") || "Reduce animations for accessibility"}
       </p>
     </div>
