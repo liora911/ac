@@ -180,11 +180,12 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
       </div>
 
       <div className="relative group">
+        {/* Desktop navigation arrows - hidden on mobile */}
         {showLeftArrow && (
           <button
             onClick={handleLeft}
             disabled={isLoading}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
             <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-gray-700 dark:text-gray-200" />
@@ -195,7 +196,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           <button
             onClick={handleRight}
             disabled={isLoading}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
             {isLoading ? (
@@ -206,7 +207,66 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           </button>
         )}
 
-        <div className="overflow-hidden px-1">
+        {/* Mobile: Horizontal scroll */}
+        <div className="sm:hidden overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
+          <div className="flex gap-4" style={{ width: "max-content" }}>
+            {items.map((item) => {
+              const imageUrl = getImageUrl(item);
+              const rawSubtitle = getSubtitle?.(item);
+              const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
+              const itemLink = useSlug && item.slug
+                ? `${linkPrefix}/${item.slug}`
+                : `${linkPrefix}/${item.id}`;
+
+              return (
+                <Link
+                  key={item.id}
+                  href={itemLink}
+                  className="block group/card flex-shrink-0 w-72"
+                >
+                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md">
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={item.title}
+                        fill
+                        className="object-cover"
+                        sizes="288px"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
+                    )}
+
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                    <div className="absolute top-3 right-3 flex items-center gap-2">
+                      {item.isFeatured && (
+                        <div className="bg-amber-500 p-1.5 rounded-full shadow-lg">
+                          <Star className="w-4 h-4 text-white fill-white" />
+                        </div>
+                      )}
+                      {item.isPremium && <PremiumBadge size="sm" />}
+                    </div>
+
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
+                      <h3 className="text-white font-semibold text-base line-clamp-2 drop-shadow-lg">
+                        {item.title}
+                      </h3>
+                      {subtitle && (
+                        <p className="text-white/80 text-sm mt-1 line-clamp-1 drop-shadow-md">
+                          {subtitle}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Desktop: Paginated grid */}
+        <div className="hidden sm:block overflow-hidden px-1">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={page}
@@ -216,7 +276,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid grid-cols-2 lg:grid-cols-3 gap-4"
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
@@ -241,7 +301,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                           alt={item.title}
                           fill
                           className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                          sizes="(max-width: 1024px) 50vw, 33vw"
                         />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
@@ -276,8 +336,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           </AnimatePresence>
         </div>
 
+        {/* Desktop pagination dots - hidden on mobile */}
         {totalPages > 1 && (
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="hidden sm:flex justify-center gap-2 mt-4">
             {Array.from({ length: totalPages }).map((_, idx) => (
               <button
                 key={idx}
