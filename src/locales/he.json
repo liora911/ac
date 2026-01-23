@@ -1272,7 +1272,17 @@
     "showingAll": "מציג את כל התוכן",
     "changePreferences": "שנה העדפות",
     "categoriesSelected": "קטגוריות נבחרו",
-    "categorySelected": "קטגוריה נבחרה"
+    "categorySelected": "קטגוריה נבחרה",
+    "step2Title": "ליצור חשבון?",
+    "step2Description": "פתח תכונות נוספות עם חשבון חינמי",
+    "benefitTickets": "כרטיסים לאירועים",
+    "benefitTicketsDesc": "רכוש ונהל את כרטיסי האירועים שלך במקום אחד",
+    "benefitFavorites": "שמור מועדפים",
+    "benefitFavoritesDesc": "שמור מאמרים, הרצאות ומצגות לצפייה מאוחר יותר",
+    "benefitPremium": "תוכן פרימיום",
+    "benefitPremiumDesc": "הירשם למנוי לגישה לתוכן בלעדי ולתמיכה במחקר של אבשלום",
+    "register": "הרשמה",
+    "enterAsGuest": "כניסה כאורח"
   },
   "settings": {
     "title": "הגדרות",

@@ -1223,7 +1223,17 @@
     "showingAll": "Showing all content",
     "changePreferences": "Change preferences",
     "categoriesSelected": "categories selected",
-    "categorySelected": "category selected"
+    "categorySelected": "category selected",
+    "step2Title": "Create an Account?",
+    "step2Description": "Unlock additional features with a free account",
+    "benefitTickets": "Event Tickets",
+    "benefitTicketsDesc": "Purchase and manage your event tickets in one place",
+    "benefitFavorites": "Save Favorites",
+    "benefitFavoritesDesc": "Save articles, lectures, and presentations to revisit later",
+    "benefitPremium": "Premium Content",
+    "benefitPremiumDesc": "Subscribe to access exclusive content and support Avshalom's research",
+    "register": "Register",
+    "enterAsGuest": "Enter as Guest"
   },
   "settings": {
     "title": "Settings",
