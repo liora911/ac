@@ -39,7 +39,9 @@
       "viewAll": "צפה בהכל",
       "noItems": "אין פריטים עדיין",
       "noContent": "אין תוכן זמין עדיין",
-      "exploreContent": "גלה תוכן"
+      "exploreContent": "גלה תוכן",
+      "featured": "מומלץ",
+      "featuredDescription": "מאמרים מומלצים"
     }
   },
   "presentations": {

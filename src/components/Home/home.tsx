@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import CarouselSection from "./CarouselSection";
+import FeaturedCarouselSection from "./FeaturedCarouselSection";
 import RichContent from "@/components/RichContent";
 import type { ContentItem } from "@/types/Home/home";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
@@ -332,7 +333,7 @@ const Home = () => {
             <div>
               {/* Featured Articles */}
               {previewData?.featuredArticles && previewData.featuredArticles.length > 0 && (
-                <CarouselSection
+                <FeaturedCarouselSection
                   title={t("home.sections.featuredArticles")}
                   items={previewData.featuredArticles}
                   href="/articles?featured=true"
@@ -370,6 +371,18 @@ const Home = () => {
                 getSubtitle={getDescriptionSubtitle}
               />
 
+              {/* Presentations */}
+              <CarouselSection
+                title={t("home.sections.presentations")}
+                items={previewData?.presentations || []}
+                href="/presentations"
+                linkPrefix="/presentations"
+                contentType="presentations"
+                onLoadMore={handleLoadMore}
+                getImageUrl={getPresentationImage}
+                getSubtitle={getDescriptionSubtitle}
+              />
+
               {/* Featured Events */}
               {previewData?.featuredEvents && previewData.featuredEvents.length > 0 && (
                 <CarouselSection
@@ -393,18 +406,6 @@ const Home = () => {
                 contentType="events"
                 onLoadMore={handleLoadMore}
                 getImageUrl={getEventImage}
-                getSubtitle={getDescriptionSubtitle}
-              />
-
-              {/* Presentations */}
-              <CarouselSection
-                title={t("home.sections.presentations")}
-                items={previewData?.presentations || []}
-                href="/presentations"
-                linkPrefix="/presentations"
-                contentType="presentations"
-                onLoadMore={handleLoadMore}
-                getImageUrl={getPresentationImage}
                 getSubtitle={getDescriptionSubtitle}
               />
             </div>

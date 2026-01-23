@@ -39,7 +39,9 @@
       "viewAll": "View All",
       "noItems": "No items yet",
       "noContent": "No content available yet",
-      "exploreContent": "Explore Content"
+      "exploreContent": "Explore Content",
+      "featured": "Featured",
+      "featuredDescription": "Handpicked content just for you"
     }
   },
   "presentations": {
