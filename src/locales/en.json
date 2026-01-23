@@ -230,7 +230,9 @@
     "sortNewest": "Newest first",
     "sortOldest": "Oldest first",
     "sortTitleAZ": "Title A-Z",
-    "sortTitleZA": "Title Z-A"
+    "sortTitleZA": "Title Z-A",
+    "filters": "Filters",
+    "applyFilters": "Apply Filters"
   },
   "semanticSearch": {
     "placeholder": "Describe what you're looking for...",

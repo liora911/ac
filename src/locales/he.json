@@ -242,7 +242,9 @@
     "sortTitleAZ": "כותרת א-ת",
     "sortTitleZA": "כותרת ת-א",
     "activeFilters": "מסננים פעילים:",
-    "clearAllFilters": "נקה הכל"
+    "clearAllFilters": "נקה הכל",
+    "filters": "מסננים",
+    "applyFilters": "החל מסננים"
   },
   "semanticSearch": {
     "placeholder": "תאר מה אתה מחפש...",

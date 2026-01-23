@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Tag, X, Star, ArrowUpDown, Share2, Grid3X3, List } from "lucide-react";
+import { Tag, X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -22,6 +22,8 @@ import PremiumBadge from "@/components/PremiumBadge";
 import SemanticSearch from "./SemanticSearch";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { Settings2 } from "lucide-react";
+import BottomSheet from "@/components/BottomSheet/BottomSheet";
+import MobileArticleCard from "./MobileArticleCard";
 
 // Custom hook for debouncing values
 function useDebouncedValue<T>(value: T, delay: number): T {
@@ -77,6 +79,7 @@ export default function ArticlesList({
   type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
@@ -219,9 +222,152 @@ export default function ArticlesList({
         </div>
       )}
 
-      {/* Semantic Search - AI-powered search box */}
+      {/* Mobile: Filter button + Results count */}
       {showFilters && (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
+        <div className="sm:hidden">
+          <div className="flex items-center justify-between gap-3 mb-4">
+            <button
+              onClick={() => setIsFilterSheetOpen(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <Filter className="w-4 h-4" />
+              <span className="font-medium">{t("articlesPage.filters")}</span>
+              {(selectedCategory || searchQuery || statusFilter) && (
+                <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {[selectedCategory, searchQuery, statusFilter].filter(Boolean).length}
+                </span>
+              )}
+            </button>
+            <div className="text-sm text-gray-600 dark:text-gray-400">
+              {isLoading ? (
+                t("loading")
+              ) : (
+                t("articlesPage.articlesFound").replace("{total}", total.toString())
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Bottom Sheet for Filters */}
+          <BottomSheet
+            isOpen={isFilterSheetOpen}
+            onClose={() => setIsFilterSheetOpen(false)}
+            title={t("articlesPage.filters")}
+          >
+            <div className="space-y-4">
+              {/* Search */}
+              <div>
+                <SemanticSearch
+                  onSearch={handleSearch}
+                  onClear={handleClearSearch}
+                />
+              </div>
+
+              {/* Category Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t("articleForm.categoryLabel")}
+                </label>
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="">{t("articleForm.allCategories")}</option>
+                  {isLoadingCategories ? (
+                    <option disabled>{t("articleForm.loadingCategories")}</option>
+                  ) : (
+                    categories?.map((category) => (
+                      <option key={category.id} value={category.id}>
+                        {category.name}
+                      </option>
+                    ))
+                  )}
+                </select>
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t("articleForm.statusLabel")}
+                </label>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => handleStatusChange(e.target.value as StatusFilter)}
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="">{t("articleForm.allStatus")}</option>
+                  <option value="PUBLISHED">{t("articleForm.statusPublished")}</option>
+                  <option value="DRAFT">{t("articleForm.statusDraft")}</option>
+                  <option value="ARCHIVED">{t("articleForm.statusArchived")}</option>
+                </select>
+              </div>
+
+              {/* Sort */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t("articlesPage.sortBy") || "Sort by"}
+                </label>
+                <select
+                  value={sortOption}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="newest">{t("articlesPage.sortNewest") || "Newest first"}</option>
+                  <option value="oldest">{t("articlesPage.sortOldest") || "Oldest first"}</option>
+                  <option value="title-asc">{t("articlesPage.sortTitleAZ") || "Title A-Z"}</option>
+                  <option value="title-desc">{t("articlesPage.sortTitleZA") || "Title Z-A"}</option>
+                </select>
+              </div>
+
+              {/* Category Quick Filters */}
+              {categories && categories.length > 0 && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {t("articlesPage.quickFilters") || "Quick filters"}
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    <button
+                      onClick={() => handleCategoryChange("")}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                        selectedCategory === ""
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      }`}
+                    >
+                      {t("articleForm.allCategories")}
+                    </button>
+                    {categories.map((category) => (
+                      <button
+                        key={category.id}
+                        onClick={() => handleCategoryChange(category.id)}
+                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                          selectedCategory === category.id
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
+                        }`}
+                      >
+                        {category.name}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Apply button */}
+              <button
+                onClick={() => setIsFilterSheetOpen(false)}
+                className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors mt-4"
+              >
+                {t("articlesPage.applyFilters")}
+              </button>
+            </div>
+          </BottomSheet>
+        </div>
+      )}
+
+      {/* Desktop: Full filter panel */}
+      {showFilters && (
+        <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
           {/* Search Component */}
           <div className="mb-4">
             <SemanticSearch
@@ -443,127 +589,161 @@ export default function ArticlesList({
 
       {/* Loading State */}
       {isLoading && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: initialLimit }).map((_, index) => (
-            <div
-              key={index}
-              className="bg-white rounded-lg shadow-sm border overflow-hidden animate-pulse"
-            >
-              <div className="h-48 bg-gray-200"></div>
-              <div className="p-6">
-                <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+        <>
+          {/* Mobile Loading Skeleton */}
+          <div className="sm:hidden space-y-3">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-3 animate-pulse"
+              >
+                <div className="flex gap-3">
+                  <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-lg flex-shrink-0" />
+                  <div className="flex-1">
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-3/4" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded mb-2 w-1/2" />
+                    <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+                  </div>
+                </div>
               </div>
-            </div>
+            ))}
+          </div>
+
+          {/* Desktop Loading Skeleton */}
+          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {Array.from({ length: initialLimit }).map((_, index) => (
+              <div
+                key={index}
+                className="bg-white rounded-lg shadow-sm border overflow-hidden animate-pulse"
+              >
+                <div className="h-48 bg-gray-200"></div>
+                <div className="p-6">
+                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Mobile: Compact card list */}
+      {!isLoading && articles.length > 0 && (
+        <div className="sm:hidden space-y-3">
+          {articles.map((article) => (
+            <MobileArticleCard key={article.id} article={article} />
           ))}
         </div>
       )}
 
-      {/* Articles Grid/List */}
+      {/* Desktop: Articles Grid/List */}
       {!isLoading &&
-        articles.length > 0 &&
-        (viewMode === "grid" ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {articles.map((article) => (
-              <ArticleCard
-                key={article.id}
-                article={article}
-                isAuthorized={!!isAuthorized}
-                onDeleteSuccess={() => {
-                  console.log("update interface then delete");
-                }}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {articles.map((article) => (
-              <Link
-                key={article.id}
-                href={`/articles/${article.slug || article.id}`}
-                className="group block"
-              >
-                <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all p-4">
-                  <div className="flex gap-4">
-                    {/* Thumbnail */}
-                    {article.featuredImage && (
-                      <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                        <Image
-                          src={article.featuredImage}
-                          alt={article.title}
-                          width={128}
-                          height={128}
-                          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                          sizes="128px"
-                        />
-                      </div>
-                    )}
+        articles.length > 0 && (
+          <div className="hidden sm:block">
+            {viewMode === "grid" ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {articles.map((article) => (
+                  <ArticleCard
+                    key={article.id}
+                    article={article}
+                    isAuthorized={!!isAuthorized}
+                    onDeleteSuccess={() => {
+                      console.log("update interface then delete");
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {articles.map((article) => (
+                  <Link
+                    key={article.id}
+                    href={`/articles/${article.slug || article.id}`}
+                    className="group block"
+                  >
+                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all p-4">
+                      <div className="flex gap-4">
+                        {/* Thumbnail */}
+                        {article.featuredImage && (
+                          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                            <Image
+                              src={article.featuredImage}
+                              alt={article.title}
+                              width={128}
+                              height={128}
+                              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                              sizes="128px"
+                            />
+                          </div>
+                        )}
 
-                    {/* Content */}
-                    <div className="flex-1 min-w-0 flex flex-col justify-between">
-                      {/* Top Section */}
-                      <div>
-                        <div className="flex items-start justify-between gap-3 mb-1">
-                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                            {article.title}
-                          </h3>
-                          <div className="flex items-center gap-2 flex-shrink-0">
-                            {article.isPremium && <PremiumBadge size="sm" />}
-                            {article.isFeatured && (
-                              <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                        {/* Content */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          {/* Top Section */}
+                          <div>
+                            <div className="flex items-start justify-between gap-3 mb-1">
+                              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                                {article.title}
+                              </h3>
+                              <div className="flex items-center gap-2 flex-shrink-0">
+                                {article.isPremium && <PremiumBadge size="sm" />}
+                                {article.isFeatured && (
+                                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                )}
+                              </div>
+                            </div>
+
+                            {article.subtitle && (
+                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
+                                {article.subtitle}
+                              </p>
+                            )}
+
+                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
+                              {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
+                            </p>
+                          </div>
+
+                          {/* Bottom Section - Meta */}
+                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                            {article.authors && article.authors.length > 0 ? (
+                              <div className="flex items-center gap-2">
+                                <AuthorAvatars authors={article.authors} size="sm" />
+                              </div>
+                            ) : (
+                              <span>
+                                {article.publisherName || article.author?.name || "Anonymous"}
+                              </span>
+                            )}
+                            <span>•</span>
+                            <span>{article.readTime} {t("articleCard.minRead")}</span>
+                            <span>•</span>
+                            <span>
+                              {new Date(article.createdAt).toLocaleDateString(dateLocale, {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })}
+                            </span>
+                            {article.category && (
+                              <>
+                                <span>•</span>
+                                <span className="text-blue-600 dark:text-blue-400">
+                                  {article.category.name}
+                                </span>
+                              </>
                             )}
                           </div>
                         </div>
-
-                        {article.subtitle && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
-                            {article.subtitle}
-                          </p>
-                        )}
-
-                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
-                          {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
-                        </p>
-                      </div>
-
-                      {/* Bottom Section - Meta */}
-                      <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
-                        {article.authors && article.authors.length > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <AuthorAvatars authors={article.authors} size="sm" />
-                          </div>
-                        ) : (
-                          <span>
-                            {article.publisherName || article.author?.name || "Anonymous"}
-                          </span>
-                        )}
-                        <span>•</span>
-                        <span>{article.readTime} {t("articleCard.minRead")}</span>
-                        <span>•</span>
-                        <span>
-                          {new Date(article.createdAt).toLocaleDateString(dateLocale, {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                          })}
-                        </span>
-                        {article.category && (
-                          <>
-                            <span>•</span>
-                            <span className="text-blue-600 dark:text-blue-400">
-                              {article.category.name}
-                            </span>
-                          </>
-                        )}
                       </div>
                     </div>
-                  </div>
-                </div>
-              </Link>
-            ))}
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        ))}
+        )}
 
       {}
       {!isLoading && articles.length === 0 && (
