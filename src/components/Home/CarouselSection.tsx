@@ -53,6 +53,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const [hoveredItem, setHoveredItem] = useState<ContentItem | null>(null);
   const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
   const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveringPopoverRef = useRef(false);
+  const pendingItemRef = useRef<ContentItem | null>(null);
 
   useEffect(() => {
     setItems(initialItems);
@@ -116,9 +118,10 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 
   // Hover preview handlers
   const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top;
+    // Store cursor position
+    const x = e.clientX;
+    const y = e.clientY;
+    pendingItemRef.current = item;
 
     hoverTimerRef.current = setTimeout(() => {
       setHoveredItem(item);
@@ -126,11 +129,34 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     }, HOVER_DELAY_MS);
   }, []);
 
+  const handleCardMouseMove = useCallback((e: React.MouseEvent) => {
+    // Update position while moving over card (before popover shows)
+    if (!hoveredItem && pendingItemRef.current) {
+      setHoverPosition({ x: e.clientX, y: e.clientY });
+    }
+  }, [hoveredItem]);
+
   const handleCardMouseLeave = useCallback(() => {
     if (hoverTimerRef.current) {
       clearTimeout(hoverTimerRef.current);
       hoverTimerRef.current = null;
     }
+    pendingItemRef.current = null;
+
+    // Delay closing to allow moving to popover
+    setTimeout(() => {
+      if (!isHoveringPopoverRef.current) {
+        setHoveredItem(null);
+      }
+    }, 100);
+  }, []);
+
+  const handlePopoverMouseEnter = useCallback(() => {
+    isHoveringPopoverRef.current = true;
+  }, []);
+
+  const handlePopoverMouseLeave = useCallback(() => {
+    isHoveringPopoverRef.current = false;
     setHoveredItem(null);
   }, []);
 
@@ -292,6 +318,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                     href={itemLink}
                     className="block group/card"
                     onMouseEnter={(e) => handleCardMouseEnter(item, e)}
+                    onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                   >
                     <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
@@ -363,6 +390,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             imageUrl={getImageUrl(hoveredItem)}
             subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
             position={hoverPosition}
+            onMouseEnter={handlePopoverMouseEnter}
+            onMouseLeave={handlePopoverMouseLeave}
           />
         )}
       </AnimatePresence>

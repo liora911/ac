@@ -12,6 +12,8 @@ interface ContentPreviewPopoverProps {
   imageUrl: string | null;
   subtitle: string | null;
   position: { x: number; y: number };
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
@@ -19,6 +21,8 @@ const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
   imageUrl,
   subtitle,
   position,
+  onMouseEnter,
+  onMouseLeave,
 }) => {
 
   // Calculate position to keep popover in viewport
@@ -46,8 +50,10 @@ const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.9, y: 10 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700 pointer-events-none"
+      className="fixed z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
       style={{ left, top }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       {/* Image */}
       <div className="relative h-36 bg-gray-200 dark:bg-gray-700">
