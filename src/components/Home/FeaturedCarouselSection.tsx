@@ -4,7 +4,12 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Loader2, Star, Sparkles } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Loader2,
+  Sparkles,
+} from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import ContentPreviewPopover from "./ContentPreviewPopover";
@@ -23,7 +28,10 @@ interface FeaturedCarouselSectionProps {
   linkPrefix: string;
   useSlug?: boolean;
   contentType: string;
-  onLoadMore: (type: string, skip: number) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
+  onLoadMore: (
+    type: string,
+    skip: number,
+  ) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
   getImageUrl: (item: ContentItem) => string | null;
   getSubtitle?: (item: ContentItem) => string | null;
 }
@@ -63,7 +71,10 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
   }, [initialItems]);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+  const currentItems = items.slice(
+    page * ITEMS_PER_PAGE,
+    (page + 1) * ITEMS_PER_PAGE,
+  );
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -74,7 +85,9 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
     cooldownRef.current = true;
     setDirection(dir);
     setPage(newPage);
-    setTimeout(() => { cooldownRef.current = false; }, COOLDOWN_MS);
+    setTimeout(() => {
+      cooldownRef.current = false;
+    }, COOLDOWN_MS);
   }, []);
 
   const loadMore = useCallback(async () => {
@@ -83,7 +96,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
     try {
       const result = await onLoadMore(contentType, items.length);
       if (result.items.length > 0) {
-        setItems(prev => [...prev, ...result.items]);
+        setItems((prev) => [...prev, ...result.items]);
         setHasMore(result.hasMore);
         return true;
       }
@@ -112,27 +125,36 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
     if (page > 0) navigate(-1, page - 1);
   }, [page, navigate]);
 
-  const goToPage = useCallback((idx: number) => {
-    if (idx !== page) navigate(idx > page ? 1 : -1, idx);
-  }, [page, navigate]);
+  const goToPage = useCallback(
+    (idx: number) => {
+      if (idx !== page) navigate(idx > page ? 1 : -1, idx);
+    },
+    [page, navigate],
+  );
 
   // Hover preview handlers
-  const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
-    const x = e.clientX;
-    const y = e.clientY;
-    pendingItemRef.current = item;
+  const handleCardMouseEnter = useCallback(
+    (item: ContentItem, e: React.MouseEvent) => {
+      const x = e.clientX;
+      const y = e.clientY;
+      pendingItemRef.current = item;
 
-    hoverTimerRef.current = setTimeout(() => {
-      setHoveredItem(item);
-      setHoverPosition({ x, y });
-    }, HOVER_DELAY_MS);
-  }, []);
+      hoverTimerRef.current = setTimeout(() => {
+        setHoveredItem(item);
+        setHoverPosition({ x, y });
+      }, HOVER_DELAY_MS);
+    },
+    [],
+  );
 
-  const handleCardMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!hoveredItem && pendingItemRef.current) {
-      setHoverPosition({ x: e.clientX, y: e.clientY });
-    }
-  }, [hoveredItem]);
+  const handleCardMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!hoveredItem && pendingItemRef.current) {
+        setHoverPosition({ x: e.clientX, y: e.clientY });
+      }
+    },
+    [hoveredItem],
+  );
 
   const handleCardMouseLeave = useCallback(() => {
     if (hoverTimerRef.current) {
@@ -189,10 +211,9 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">{title}</h2>
-            <p className="text-sm text-amber-700 dark:text-amber-400">
-              {t("home.sections.featuredDescription") || "Handpicked content just for you"}
-            </p>
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+              {title}
+            </h2>
           </div>
         </div>
         <Link
@@ -239,9 +260,10 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
               const imageUrl = getImageUrl(item);
               const rawSubtitle = getSubtitle?.(item);
               const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
-              const itemLink = useSlug && item.slug
-                ? `${linkPrefix}/${item.slug}`
-                : `${linkPrefix}/${item.id}`;
+              const itemLink =
+                useSlug && item.slug
+                  ? `${linkPrefix}/${item.slug}`
+                  : `${linkPrefix}/${item.id}`;
 
               return (
                 <Link
@@ -264,17 +286,11 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                    {/* Featured badge */}
-                    <div className="absolute top-3 left-3">
-                      <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-lg">
-                        <Star className="w-3 h-3 fill-white" />
-                        <span>{t("home.sections.featured") || "Featured"}</span>
+                    {item.isPremium && (
+                      <div className="absolute top-3 right-3">
+                        <PremiumBadge size="sm" />
                       </div>
-                    </div>
-
-                    <div className="absolute top-3 right-3">
-                      {item.isPremium && <PremiumBadge size="sm" />}
-                    </div>
+                    )}
 
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
@@ -310,9 +326,10 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                 const imageUrl = getImageUrl(item);
                 const rawSubtitle = getSubtitle?.(item);
                 const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
-                const itemLink = useSlug && item.slug
-                  ? `${linkPrefix}/${item.slug}`
-                  : `${linkPrefix}/${item.id}`;
+                const itemLink =
+                  useSlug && item.slug
+                    ? `${linkPrefix}/${item.slug}`
+                    : `${linkPrefix}/${item.id}`;
 
                 return (
                   <Link
@@ -338,17 +355,11 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-                      {/* Featured badge */}
-                      <div className="absolute top-3 left-3">
-                        <div className="flex items-center gap-1.5 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow-lg">
-                          <Star className="w-3 h-3 fill-white" />
-                          <span>{t("home.sections.featured") || "Featured"}</span>
+                      {item.isPremium && (
+                        <div className="absolute top-3 right-3">
+                          <PremiumBadge size="sm" />
                         </div>
-                      </div>
-
-                      <div className="absolute top-3 right-3">
-                        {item.isPremium && <PremiumBadge size="sm" />}
-                      </div>
+                      )}
 
                       <div className="absolute bottom-0 left-0 right-0 p-4">
                         <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
@@ -393,7 +404,9 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           <ContentPreviewPopover
             item={hoveredItem}
             imageUrl={getImageUrl(hoveredItem)}
-            subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
+            subtitle={
+              getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null
+            }
             position={hoverPosition}
             onMouseEnter={handlePopoverMouseEnter}
             onMouseLeave={handlePopoverMouseLeave}

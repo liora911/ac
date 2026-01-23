@@ -15,6 +15,7 @@ import WelcomeModal from "@/components/CategoryPreferences/WelcomeModal";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const poppins = Poppins({
   weight: ["400", "700"],
@@ -139,6 +140,7 @@ export default function RootLayout({
           </AuthSessionProvider>
         </QueryProvider>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

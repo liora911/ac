@@ -1188,7 +1188,8 @@
       "messages": "הודעות",
       "subscriptions": "מנויים",
       "settings": "הגדרות מערכת",
-      "recentActivity": "פעילות אחרונה"
+      "recentActivity": "פעילות אחרונה",
+      "devMetrics": "מדדי מפתחים"
     },
     "categories": {
       "addNew": "הוסף קטגוריה חדשה",
@@ -1389,6 +1390,22 @@
     "signIn": "התחבר למערכת",
     "emailLinkInfo": "נשלח אליך קישור התחברות חד-פעמי למייל.",
     "noPasswordInfo": "אין צורך בסיסמאות או הרשמה. אנחנו נשלח אימות למייל שלך."
+  },
+  "devMetrics": {
+    "title": "מדדי מפתחים",
+    "subtitle": "ביצועי אתר ותנועה",
+    "setupRequired": "נדרשת הגדרה",
+    "setupDescription": "כדי לצפות במדדי מפתחים, יש להגדיר את טוקן Vercel Analytics במשתני הסביבה.",
+    "learnMore": "למד כיצד לקבל את הטוקן",
+    "previewMode": "מצב תצוגה מקדימה - נתוני דוגמה",
+    "previewDescription": "להלן תצוגה מקדימה של איך ייראה הדשבורד לאחר ההגדרה.",
+    "pageViews": "צפיות בדף",
+    "visitors": "מבקרים",
+    "mobileTraffic": "תנועת מובייל",
+    "avgLCP": "ממוצע LCP",
+    "coreWebVitals": "מדדי ליבה של האינטרנט",
+    "topPages": "דפים מובילים",
+    "deviceBreakdown": "חלוקה לפי מכשיר"
   },
   "activity": {
     "actions": "פעולות",

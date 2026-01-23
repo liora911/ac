@@ -40,8 +40,7 @@
       "noItems": "No items yet",
       "noContent": "No content available yet",
       "exploreContent": "Explore Content",
-      "featured": "Featured",
-      "featuredDescription": "Handpicked content just for you"
+      "featured": "Featured"
     }
   },
   "presentations": {
@@ -1118,7 +1117,8 @@
       "messages": "Messages",
       "subscriptions": "Subscriptions",
       "settings": "System Settings",
-      "recentActivity": "Recent Activity"
+      "recentActivity": "Recent Activity",
+      "devMetrics": "Developer Metrics"
     },
     "categories": {
       "addNew": "Add new category",
@@ -1266,6 +1266,22 @@
       "clearChat": "Clear chat",
       "send": "Send"
     }
+  },
+  "devMetrics": {
+    "title": "Developer Metrics",
+    "subtitle": "Web Vitals & Traffic Analytics",
+    "setupRequired": "Analytics Setup Required",
+    "setupDescription": "To view developer metrics, you need to configure your Vercel Analytics API token in the environment variables.",
+    "learnMore": "Learn how to get your token",
+    "previewMode": "Preview Mode - Sample Data",
+    "previewDescription": "Below is a preview of what your metrics dashboard will look like once configured.",
+    "pageViews": "Page Views",
+    "visitors": "Visitors",
+    "mobileTraffic": "Mobile Traffic",
+    "avgLCP": "Avg. LCP",
+    "coreWebVitals": "Core Web Vitals",
+    "topPages": "Top Pages",
+    "deviceBreakdown": "Device Breakdown"
   },
   "activity": {
     "actions": "Actions",

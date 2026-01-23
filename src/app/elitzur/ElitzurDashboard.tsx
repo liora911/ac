@@ -17,6 +17,7 @@ import MessagesAdmin from "./MessagesAdmin";
 import SubscriptionsAdmin from "./SubscriptionsAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import HomeAdmin from "./HomeAdmin";
+import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
   Home,
@@ -28,6 +29,7 @@ import {
   MessageSquare,
   CreditCard,
   Settings,
+  BarChart3,
   LucideIcon,
   ChevronLeft,
   ChevronRight,
@@ -52,6 +54,7 @@ const iconMap: Record<string, LucideIcon> = {
   MessageSquare,
   CreditCard,
   Settings,
+  BarChart3,
 };
 
 export default function ElitzurDashboard() {
@@ -385,6 +388,8 @@ export default function ElitzurDashboard() {
           {active === "subscriptions" && <SubscriptionsAdmin />}
 
           {active === "settings" && <SettingsAdmin />}
+
+          {active === "devMetrics" && <DevMetrics />}
         </div>
       </main>
     </div>

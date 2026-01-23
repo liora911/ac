@@ -8,7 +8,8 @@ export type TabKey =
   | "presentations"
   | "messages"
   | "subscriptions"
-  | "settings";
+  | "settings"
+  | "devMetrics";
 
 export interface Tab {
   key: TabKey;
@@ -28,4 +29,5 @@ export const TABS: Tab[] = [
   { key: "messages", label: "הודעות", icon: "MessageSquare" },
   { key: "subscriptions", label: "מנויים", icon: "CreditCard" },
   { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
+  { key: "devMetrics", label: "מדדי מפתחים", icon: "BarChart3" },
 ];
