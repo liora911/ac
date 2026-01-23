@@ -7,9 +7,10 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
-import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function WelcomeModal() {
+  const router = useRouter();
   const { t, locale, setLocale } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const isRTL = locale === "he";
@@ -62,7 +63,7 @@ export default function WelcomeModal() {
 
   const handleRegister = () => {
     markWelcomeSeen();
-    signIn("email");
+    router.push("/auth/login");
   };
 
   const handleGuest = () => {
