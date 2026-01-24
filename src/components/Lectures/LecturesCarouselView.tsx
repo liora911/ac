@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Category, Lecture } from "@/types/Lectures/lectures";
-import { Clock, Play, Lock, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
+import { Clock, Play, Lock, ChevronLeft, ChevronRight, Search, X, Share2 } from "lucide-react";
+import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
@@ -195,15 +196,10 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
   return (
     <section className="relative">
       {/* Category Header */}
-      <div className="flex items-center justify-between mb-4 px-1">
-        <div className="flex items-center gap-3">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-            {category.name}
-          </h2>
-          <span className="text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2.5 py-1 rounded-full">
-            {category.lectures.length} {t("lecturesPage.lectures")}
-          </span>
-        </div>
+      <div className="mb-4 px-1">
+        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+          {category.name}
+        </h2>
       </div>
 
       {/* Carousel Container */}
@@ -268,7 +264,7 @@ interface LectureCardProps {
 
 function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardProps) {
   const { t } = useTranslation();
-  const [isHovered, setIsHovered] = useState(false);
+  const { showSuccess, showError } = useNotification();
 
   const youtubeId = getYouTubeVideoId(lecture.videoUrl);
   const thumbnailUrl =
@@ -282,19 +278,23 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardPr
     }
   };
 
+  const handleShare = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = `${window.location.origin}/lectures/${lecture.id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showSuccess(t("lectureDetail.linkCopied"));
+    } catch {
+      showError(t("lectureDetail.copyError"));
+    }
+  };
+
   return (
-    <div
-      className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]">
       <Link
         href={`/lectures/${lecture.id}`}
-        className={`block bg-white dark:bg-gray-800 rounded-xl overflow-hidden border transition-all duration-300 ${
-          hasAccess
-            ? "border-gray-200 dark:border-gray-700 hover:shadow-xl hover:border-blue-300 dark:hover:border-blue-600 hover:-translate-y-1"
-            : "border-gray-200 dark:border-gray-700"
-        }`}
+        className="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
         onClick={(e) => !hasAccess && e.preventDefault()}
       >
         {/* Thumbnail */}
@@ -303,9 +303,7 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardPr
             <img
               src={thumbnailUrl}
               alt={lecture.title}
-              className={`w-full h-full object-cover transition-transform duration-500 ${
-                hasAccess && isHovered ? "scale-110" : "scale-100"
-              } ${!hasAccess ? "grayscale-[40%] brightness-75" : ""}`}
+              className={`w-full h-full object-cover ${!hasAccess ? "grayscale-[40%] brightness-75" : ""}`}
             />
           ) : (
             <LecturePlaceholder
@@ -330,25 +328,30 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardPr
             </div>
           )}
 
-          {/* Favorite button */}
-          <div className="absolute top-2 end-2 z-10">
+          {/* Action buttons - top right */}
+          <div className="absolute top-2 end-2 z-20 flex items-center gap-1.5">
+            <button
+              onClick={handleShare}
+              className="p-1.5 rounded-full bg-black/50 hover:bg-black/70 backdrop-blur-sm transition-colors cursor-pointer"
+              title={t("common.share")}
+            >
+              <Share2 className="w-4 h-4 text-white" />
+            </button>
             <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
           </div>
 
-          {/* Play button overlay */}
+          {/* Play button overlay - center */}
           {hasAccess ? (
             <button
               onClick={handlePlayClick}
-              className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 cursor-pointer ${
-                isHovered ? "opacity-100" : "opacity-0"
-              }`}
+              className="absolute inset-0 flex items-center justify-center z-10 cursor-pointer"
             >
-              <div className="w-14 h-14 rounded-full bg-blue-600 hover:bg-blue-700 flex items-center justify-center shadow-lg transform hover:scale-110 transition-transform">
+              <div className="w-14 h-14 rounded-full bg-blue-600/90 flex items-center justify-center shadow-lg">
                 <Play className="w-6 h-6 text-white fill-white ms-0.5" />
               </div>
             </button>
           ) : (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30 z-10">
               <div className="w-14 h-14 rounded-full bg-gray-800/80 flex items-center justify-center">
                 <Lock className="w-6 h-6 text-gray-400" />
               </div>

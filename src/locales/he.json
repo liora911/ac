@@ -198,7 +198,9 @@
     "editButton": "ערוך הרצאה",
     "duration": "משך בדקות",
     "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים.",
-    "premium": "פרימיום"
+    "premium": "פרימיום",
+    "linkCopied": "הקישור הועתק!",
+    "copyError": "שגיאה בהעתקת הקישור"
   },
   "lectures": {
     "share": "שתף",

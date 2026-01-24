@@ -184,7 +184,9 @@
     "editButton": "Edit Lecture",
     "duration": "Duration in minutes",
     "copyleftNote": "This lecture is available for free viewing, no copyright.",
-    "premium": "Premium"
+    "premium": "Premium",
+    "linkCopied": "Link copied to clipboard!",
+    "copyError": "Failed to copy link"
   },
   "lectures": {
     "share": "Share",

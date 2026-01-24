@@ -10,8 +10,10 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Share2 } from "lucide-react";
 import { track } from "@vercel/analytics";
+import FavoriteButton from "@/components/FavoriteButton";
+import { useNotification } from "@/contexts/NotificationContext";
 
 export default function LectureDetailPage() {
   const params = useParams();
@@ -19,9 +21,20 @@ export default function LectureDetailPage() {
   const { data: session } = useSession();
   const lectureId = params.id as string;
   const { t, locale } = useTranslation();
+  const { showSuccess, showError } = useNotification();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const { data: lecture, isLoading, error } = useLecture(lectureId);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      showSuccess(t("lectureDetail.linkCopied"));
+    } catch {
+      showError(t("lectureDetail.copyError"));
+    }
+  };
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
@@ -154,10 +167,20 @@ export default function LectureDetailPage() {
               </div>
             </div>
 
-            <div className="text-right">
+            <div className="flex items-center gap-4">
               <p className="text-sm text-gray-900">
                 {t("lectureDetail.duration")}: {lecture.duration}
               </p>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={handleShare}
+                  className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                  title={t("common.share")}
+                >
+                  <Share2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                </button>
+                <FavoriteButton itemId={lectureId} itemType="LECTURE" size="md" />
+              </div>
             </div>
           </div>
         </header>
