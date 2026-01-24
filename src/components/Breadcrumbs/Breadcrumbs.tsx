@@ -26,6 +26,7 @@ const STATIC_SEGMENT_KEYS: Record<string, string> = {
   lectures: "nav.lectures",
   events: "nav.events",
   contact: "nav.contact",
+  about: "breadcrumbs.about",
   search: "breadcrumbs.search",
   // Admin
   elitzur: "breadcrumbs.adminDashboard",
