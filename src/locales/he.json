@@ -92,6 +92,7 @@
   },
   "presentationsPage": {
     "title": "מצגות בנושאים שונים לפי קטגוריות",
+    "subtitle": "חקור מצגות בנושאים שונים לפי קטגוריות",
     "cancelButton": "ביטול",
     "createPresentationButton": "העלאת מצגת חדשה",
     "bannerLoading": "טוען באנר...",
@@ -103,13 +104,17 @@
     "headingWithCategory": "מצגות בקטגוריה:",
     "heading": "מצגות",
     "imagesLabel": "תמונות",
+    "slides": "שקפים",
     "byLabel": "מאת",
     "deleteButton": "מחק",
     "deleteConfirm": "האם אתה בטוח שברצונך למחוק מצגת זו?",
     "deleteFailed": "נכשל במחיקת המצגת.",
     "noPresentationsInCategory": "אין מצגות זמינות בקטגוריה זו.",
     "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג מצגות.",
-    "image": "תמונה"
+    "image": "תמונה",
+    "searchPlaceholder": "חפש מצגות לפי כותרת, תיאור או קטגוריה...",
+    "searchResults": "תוצאות חיפוש",
+    "noSearchResults": "לא נמצאו מצגות התואמות לחיפוש"
   },
   "eventDetail": {
     "loading": "טוען אירוע...",

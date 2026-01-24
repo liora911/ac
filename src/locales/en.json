@@ -91,6 +91,7 @@
   },
   "presentationsPage": {
     "title": "Presentations by category on various topics",
+    "subtitle": "Explore presentations on various topics by category",
     "cancelButton": "Cancel",
     "createPresentationButton": "Upload New Presentation",
     "bannerLoading": "Loading banner...",
@@ -102,13 +103,17 @@
     "headingWithCategory": "Presentations in category:",
     "heading": "Presentations",
     "imagesLabel": "Images",
+    "slides": "slides",
     "byLabel": "By",
     "deleteButton": "Delete",
     "deleteConfirm": "Are you sure you want to delete this presentation?",
     "deleteFailed": "Failed to delete the presentation.",
     "noPresentationsInCategory": "No presentations available in this category.",
     "selectCategoryPrompt": "Please select a category to view presentations.",
-    "image": "Image"
+    "image": "Image",
+    "searchPlaceholder": "Search presentations by title, description or category...",
+    "searchResults": "Search results",
+    "noSearchResults": "No presentations found matching your search"
   },
   "eventDetail": {
     "loading": "Loading event...",
