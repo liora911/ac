@@ -626,9 +626,10 @@
     "charCount": "{count}/500",
     "submitButton": "שלח הודעה",
     "submitting": "שולח...",
-    "successTitle": "הודעה",
+    "successTitle": "ההודעה נשלחה",
     "successMessage": "הפרטים נשלחו בהצלחה! נחזור אליך בהקדם האפשרי",
-    "closeButton": "סגור"
+    "closeButton": "סגור",
+    "submitError": "שליחת ההודעה נכשלה. אנא נסה שנית."
   },
   "createEvent": {
     "loading": "טוען...",

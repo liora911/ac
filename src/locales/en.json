@@ -609,9 +609,10 @@
     "charCount": "{count}/500",
     "submitButton": "Send Message",
     "submitting": "Sending...",
-    "successTitle": "Message",
+    "successTitle": "Message Sent",
     "successMessage": "Your details have been sent successfully! We'll get back to you as soon as possible",
-    "closeButton": "Close"
+    "closeButton": "Close",
+    "submitError": "Failed to send message. Please try again."
   },
   "createEvent": {
     "loading": "Loading...",
