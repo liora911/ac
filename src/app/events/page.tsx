@@ -23,7 +23,7 @@ const FeaturedEvent = dynamic(
     loading: () => (
       <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
     ),
-  }
+  },
 );
 
 const CreateEventForm = dynamic(
@@ -34,7 +34,7 @@ const CreateEventForm = dynamic(
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     ),
-  }
+  },
 );
 
 const EventsCalendar = dynamic(
@@ -45,12 +45,15 @@ const EventsCalendar = dynamic(
         <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
         <div className="grid grid-cols-7 gap-1">
           {[...Array(35)].map((_, i) => (
-            <div key={i} className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg" />
+            <div
+              key={i}
+              className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg"
+            />
           ))}
         </div>
       </div>
     ),
-  }
+  },
 );
 
 const EventsPage = () => {
@@ -72,7 +75,7 @@ const EventsPage = () => {
         const response = await fetch("/api/events");
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch events: ${response.statusText} (status: ${response.status})`
+            `Failed to fetch events: ${response.statusText} (status: ${response.status})`,
           );
         }
         const data: Event[] = await response.json();
@@ -136,7 +139,7 @@ const EventsPage = () => {
         const response = await fetch("/api/events");
         if (!response.ok) {
           throw new Error(
-            `Failed to fetch events: ${response.statusText} (status: ${response.status})`
+            `Failed to fetch events: ${response.statusText} (status: ${response.status})`,
           );
         }
         const data: Event[] = await response.json();
@@ -178,10 +181,6 @@ const EventsPage = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-            {t("eventsPage.title")}
-          </h1>
-
           {/* View Toggle */}
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
@@ -194,7 +193,9 @@ const EventsPage = () => {
               aria-label={t("eventsPage.listView")}
             >
               <List className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("eventsPage.listView")}</span>
+              <span className="hidden sm:inline">
+                {t("eventsPage.listView")}
+              </span>
             </button>
             <button
               onClick={() => setViewMode("calendar")}
@@ -206,7 +207,9 @@ const EventsPage = () => {
               aria-label={t("eventsPage.calendarView")}
             >
               <CalendarDays className="w-4 h-4" />
-              <span className="hidden sm:inline">{t("eventsPage.calendarView")}</span>
+              <span className="hidden sm:inline">
+                {t("eventsPage.calendarView")}
+              </span>
             </button>
           </div>
         </div>
@@ -294,7 +297,9 @@ const EventsPage = () => {
               >
                 <Events
                   onBannerUpdate={() => {}}
-                  eventsData={remainingEvents.length > 0 ? remainingEvents : eventsData}
+                  eventsData={
+                    remainingEvents.length > 0 ? remainingEvents : eventsData
+                  }
                   featuredEventId={featuredEvent?.id}
                 />
               </Suspense>
@@ -305,7 +310,10 @@ const EventsPage = () => {
                     <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
                     <div className="grid grid-cols-7 gap-1">
                       {[...Array(35)].map((_, i) => (
-                        <div key={i} className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg" />
+                        <div
+                          key={i}
+                          className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg"
+                        />
                       ))}
                     </div>
                   </div>
