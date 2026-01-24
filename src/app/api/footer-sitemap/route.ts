@@ -72,7 +72,13 @@ export async function GET() {
       categories: categoriesWithArticles.map((cat) => ({
         id: cat.id,
         name: cat.name,
-        articles: cat.articles,
+        articles: cat.articles
+          .filter((article) => article.slug) // Only include articles with slugs
+          .map((article) => ({
+            id: article.id,
+            title: article.title,
+            slug: article.slug as string,
+          })),
       })),
     };
 
