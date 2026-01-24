@@ -117,16 +117,10 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex-shrink-0 text-xl sm:text-2xl font-extrabold tracking-tight hover:scale-105 transition-transform duration-200"
-            style={{
-              background: "linear-gradient(135deg, #007bff 0%, #6610f2 100%)",
-              backgroundClip: "text",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+            className="flex-shrink-0 text-xl sm:text-2xl font-extrabold tracking-tight hover:scale-105 transition-transform duration-200 text-gray-900 dark:text-white"
             aria-label={t("header.brandAriaLabel")}
           >
-            Avshalom C. Elitzur
+            {t("header.brandName")}
           </Link>
 
           {/* Desktop Navigation */}

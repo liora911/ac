@@ -522,6 +522,7 @@
     "login": "Login",
     "logout": "Logout",
     "menu": "Menu",
+    "brandName": "Avshalom C. Elitzur",
     "brandAriaLabel": "Avshalom Elitzur - Home",
     "mainNavigation": "Main navigation",
     "closeNavigationMenu": "Close navigation menu",
