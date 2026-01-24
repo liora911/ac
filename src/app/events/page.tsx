@@ -7,6 +7,7 @@ import { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import EventModal from "@/components/Events/EventModal";
+import { List, CalendarDays } from "lucide-react";
 
 const Events = dynamic(() => import("@/components/Events/Events"), {
   loading: () => (
@@ -36,6 +37,22 @@ const CreateEventForm = dynamic(
   }
 );
 
+const EventsCalendar = dynamic(
+  () => import("@/components/Events/EventsCalendar"),
+  {
+    loading: () => (
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
+        <div className="grid grid-cols-7 gap-1">
+          {[...Array(35)].map((_, i) => (
+            <div key={i} className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg" />
+          ))}
+        </div>
+      </div>
+    ),
+  }
+);
+
 const EventsPage = () => {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
@@ -45,6 +62,7 @@ const EventsPage = () => {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -160,9 +178,37 @@ const EventsPage = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-bold text-gray-900">
+          <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             {t("eventsPage.title")}
           </h1>
+
+          {/* View Toggle */}
+          <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode("list")}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
+                viewMode === "list"
+                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }`}
+              aria-label={t("eventsPage.listView")}
+            >
+              <List className="w-4 h-4" />
+              <span className="hidden sm:inline">{t("eventsPage.listView")}</span>
+            </button>
+            <button
+              onClick={() => setViewMode("calendar")}
+              className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
+                viewMode === "calendar"
+                  ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+              }`}
+              aria-label={t("eventsPage.calendarView")}
+            >
+              <CalendarDays className="w-4 h-4" />
+              <span className="hidden sm:inline">{t("eventsPage.calendarView")}</span>
+            </button>
+          </div>
         </div>
 
         {showCreateForm && isAuthorized && (
@@ -235,22 +281,39 @@ const EventsPage = () => {
           </p>
         )}
 
-        {/* Events List */}
+        {/* Events List or Calendar */}
         {!isLoading && !error && eventsData && eventsData.length > 0 && (
           <div id="events-list">
-            <Suspense
-              fallback={
-                <div className="flex justify-center items-center py-12">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                </div>
-              }
-            >
-              <Events
-                onBannerUpdate={() => {}}
-                eventsData={remainingEvents.length > 0 ? remainingEvents : eventsData}
-                featuredEventId={featuredEvent?.id}
-              />
-            </Suspense>
+            {viewMode === "list" ? (
+              <Suspense
+                fallback={
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  </div>
+                }
+              >
+                <Events
+                  onBannerUpdate={() => {}}
+                  eventsData={remainingEvents.length > 0 ? remainingEvents : eventsData}
+                  featuredEventId={featuredEvent?.id}
+                />
+              </Suspense>
+            ) : (
+              <Suspense
+                fallback={
+                  <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+                    <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
+                    <div className="grid grid-cols-7 gap-1">
+                      {[...Array(35)].map((_, i) => (
+                        <div key={i} className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg" />
+                      ))}
+                    </div>
+                  </div>
+                }
+              >
+                <EventsCalendar events={eventsData} />
+              </Suspense>
+            )}
           </div>
         )}
 

@@ -159,7 +159,15 @@
     "bannerPlaceholder": "תמונה/באנר של האירועים יופיע כאן",
     "loading": "טוען אירועים...",
     "errorPrefix": "שגיאה בטעינת אירועים",
-    "noEventsFound": "לא נמצאו אירועים."
+    "noEventsFound": "לא נמצאו אירועים.",
+    "listView": "רשימה",
+    "calendarView": "לוח שנה"
+  },
+  "eventsCalendar": {
+    "previousMonth": "חודש קודם",
+    "nextMonth": "חודש הבא",
+    "today": "היום",
+    "eventIndicator": "אירוע"
   },
   "editLecturePage": {
     "title": "עריכת הרצאה"

@@ -157,7 +157,15 @@
     "bannerPlaceholder": "Event image/banner will appear here",
     "loading": "Loading events...",
     "errorPrefix": "Error loading events",
-    "noEventsFound": "No events found."
+    "noEventsFound": "No events found.",
+    "listView": "List",
+    "calendarView": "Calendar"
+  },
+  "eventsCalendar": {
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "eventIndicator": "Event"
   },
   "articleDetail": {
     "loading": "Loading article...",
