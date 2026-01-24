@@ -160,7 +160,7 @@ export default function ElitzurDashboard() {
       : "Hello Professor, how can I assist you today?";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Logout Confirmation Modal */}
       <Modal
         isOpen={showLogoutModal}
@@ -174,7 +174,7 @@ export default function ElitzurDashboard() {
       />
 
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-30">
+      <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between gap-4 h-14">
             {/* AI Assistant Input */}
@@ -189,7 +189,7 @@ export default function ElitzurDashboard() {
                   onChange={(e) => setAiInput(e.target.value)}
                   onFocus={() => aiMessages.length > 0 && setShowAiChat(true)}
                   placeholder={placeholderText}
-                  className="w-full py-2 ps-10 pe-10 text-sm rounded-full border border-gray-200 bg-gray-50 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full py-2 ps-10 pe-10 text-sm rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
                 <button
                   type="submit"
@@ -206,7 +206,7 @@ export default function ElitzurDashboard() {
 
               {/* AI Chat Panel */}
               {showAiChat && aiMessages.length > 0 && (
-                <div className="absolute top-full mt-2 start-0 w-full sm:w-96 rounded-xl border border-gray-200 bg-white shadow-2xl overflow-hidden z-50">
+                <div className="absolute top-full mt-2 start-0 w-full sm:w-96 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl overflow-hidden z-50">
                   <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
                     <div className="flex items-center gap-2">
                       <Bot className="w-4 h-4" />
@@ -222,7 +222,7 @@ export default function ElitzurDashboard() {
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="max-h-64 overflow-y-auto p-3 space-y-3 bg-gray-50">
+                  <div className="max-h-64 overflow-y-auto p-3 space-y-3 bg-gray-50 dark:bg-gray-900">
                     {aiMessages.map((message) => (
                       <div
                         key={message.id}
@@ -237,7 +237,7 @@ export default function ElitzurDashboard() {
                           className={`max-w-[80%] px-3 py-2 rounded-lg text-sm ${
                             message.role === "user"
                               ? "bg-blue-500 text-white"
-                              : "bg-white text-gray-900 border border-gray-200"
+                              : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
                           }`}
                         >
                           <p className="whitespace-pre-wrap">
@@ -253,7 +253,7 @@ export default function ElitzurDashboard() {
                         <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center flex-shrink-0">
                           <Bot className="w-3 h-3 text-white" />
                         </div>
-                        <div className="px-3 py-2 rounded-lg bg-white border border-gray-200">
+                        <div className="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                           <Loader2 className="w-4 h-4 animate-spin text-purple-500" />
                         </div>
                       </div>
@@ -266,17 +266,17 @@ export default function ElitzurDashboard() {
 
             {/* User Section */}
             {session && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-full flex-shrink-0">
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full flex-shrink-0">
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm">
                   {session.user?.email?.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-medium text-gray-700 hidden sm:block max-w-[200px] truncate">
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block max-w-[200px] truncate">
                   {session.user?.email}
                 </span>
-                <div className="w-px h-5 bg-blue-200 hidden sm:block" />
+                <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 hidden sm:block" />
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 rounded-full transition-colors"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
                   title={t("admin.nav.logout")}
                 >
                   <LogOut className="w-4 h-4" />
@@ -290,17 +290,17 @@ export default function ElitzurDashboard() {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="relative border-t border-gray-100">
+        <div className="relative border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="relative flex items-center">
-              {/* Right scroll arrow (RTL - scrolls content left) */}
+              {/* Right scroll arrow */}
               {showRightArrow && (
                 <button
                   onClick={() => scroll("right")}
-                  className="absolute right-0 z-10 h-full px-2 bg-gradient-to-l from-white via-white to-transparent flex items-center"
-                  aria-label="גלול ימינה"
+                  className="absolute right-0 z-10 flex items-center justify-center w-8 h-8 my-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  aria-label="Scroll right"
                 >
-                  <ChevronRight className="w-5 h-5 text-gray-400" />
+                  <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                 </button>
               )}
 
@@ -308,7 +308,7 @@ export default function ElitzurDashboard() {
               <div
                 ref={tabsContainerRef}
                 onScroll={checkScrollArrows}
-                className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2 scroll-smooth"
+                className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2 scroll-smooth px-1"
                 role="tablist"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >
@@ -322,8 +322,8 @@ export default function ElitzurDashboard() {
                       onClick={() => setActive(tab.key)}
                       className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
                         isActive
-                          ? "bg-blue-600 text-white shadow-sm"
-                          : "text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
+                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                       }`}
                       role="tab"
                       aria-selected={isActive}
@@ -339,14 +339,14 @@ export default function ElitzurDashboard() {
                 })}
               </div>
 
-              {/* Left scroll arrow (RTL - scrolls content right) */}
+              {/* Left scroll arrow */}
               {showLeftArrow && (
                 <button
                   onClick={() => scroll("left")}
-                  className="absolute left-0 z-10 h-full px-2 bg-gradient-to-r from-white via-white to-transparent flex items-center"
-                  aria-label="גלול שמאלה"
+                  className="absolute left-0 z-10 flex items-center justify-center w-8 h-8 my-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  aria-label="Scroll left"
                 >
-                  <ChevronLeft className="w-5 h-5 text-gray-400" />
+                  <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
                 </button>
               )}
             </div>
@@ -365,8 +365,8 @@ export default function ElitzurDashboard() {
             <div className="space-y-6">
               <QuickStats />
               <QuickActions />
-              <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                   {t("admin.nav.recentActivity")}
                 </h3>
                 <ActivityFeed />

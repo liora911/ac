@@ -14,7 +14,7 @@ import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Modal from "@/components/Modal/Modal";
-import { Tag, X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter } from "lucide-react";
+import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -319,40 +319,6 @@ export default function ArticlesList({
                 </select>
               </div>
 
-              {/* Category Quick Filters */}
-              {categories && categories.length > 0 && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {t("articlesPage.quickFilters") || "Quick filters"}
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => handleCategoryChange("")}
-                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                        selectedCategory === ""
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                      }`}
-                    >
-                      {t("articleForm.allCategories")}
-                    </button>
-                    {categories.map((category) => (
-                      <button
-                        key={category.id}
-                        onClick={() => handleCategoryChange(category.id)}
-                        className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                          selectedCategory === category.id
-                            ? "bg-blue-600 text-white"
-                            : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
-                        }`}
-                      >
-                        {category.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Apply button */}
               <button
                 onClick={() => setIsFilterSheetOpen(false)}
@@ -485,41 +451,6 @@ export default function ArticlesList({
               </div>
             </div>
           </div>
-
-          {/* Category Tags / Quick Filters */}
-          {categories && categories.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400 flex items-center gap-1">
-                  <Tag className="w-4 h-4" />
-                  {t("articlesPage.quickFilters") || "Quick filters:"}
-                </span>
-                <button
-                  onClick={() => handleCategoryChange("")}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === ""
-                      ? "bg-blue-600 text-white"
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                  }`}
-                >
-                  {t("articleForm.allCategories")}
-                </button>
-                {categories.map((category) => (
-                  <button
-                    key={category.id}
-                    onClick={() => handleCategoryChange(category.id)}
-                    className={`px-3 py-1.5 rounded-full text-sm font-medium transition-colors ${
-                      selectedCategory === category.id
-                        ? "bg-blue-600 text-white"
-                        : "bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600"
-                    }`}
-                  >
-                    {category.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Active Filters Display */}
           {(selectedCategory || searchQuery || statusFilter) && (
