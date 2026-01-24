@@ -2,8 +2,8 @@
 
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { usePathname } from "next/navigation";
-import Link from "next/link";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText } from "lucide-react";
 
 interface ArticlePreview {
@@ -168,14 +168,6 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
           <p>{t("footer.contact")}</p>
-          <div className="mt-3 flex items-center justify-center gap-4">
-            <Link
-              href="/site-map"
-              className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-            >
-              {t("nav.sitemap")}
-            </Link>
-          </div>
           <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
             <BlackHoleIcon className="w-4 h-4" />
             <span>

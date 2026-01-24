@@ -5,8 +5,7 @@
     "lectures": "Lectures",
     "contact": "Contact",
     "events": "Events",
-    "onlineEvents": "Online Events",
-    "sitemap": "Site Map"
+    "onlineEvents": "Online Events"
   },
   "home": {
     "name": "Avshalom C. Elitzur",
@@ -1480,27 +1479,5 @@
   },
   "upload": {
     "placeholder": "PNG, JPG, GIF, WebP (max 5MB)"
-  },
-  "sitemap": {
-    "title": "Site Map",
-    "description": "Explore all content available on this website organized by category.",
-    "mainPages": "Main Pages",
-    "contentByCategory": "Content by Category",
-    "home": "Home",
-    "articles": "Articles",
-    "lectures": "Lectures",
-    "presentations": "Presentations",
-    "events": "Events",
-    "categories": "Categories",
-    "search": "Search",
-    "contact": "Contact",
-    "pricing": "Subscription Plans",
-    "favorites": "My Favorites",
-    "account": "My Account",
-    "uncategorized": "Uncategorized",
-    "upcomingEvents": "Upcoming Events",
-    "pastEvents": "Past Events",
-    "noEvents": "No events scheduled",
-    "helpText": "Click on any item to navigate directly to it. Use the arrows to expand/collapse sections."
   }
 }
