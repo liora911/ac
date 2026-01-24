@@ -1,6 +1,7 @@
 export type TabKey =
   | "user"
   | "home"
+  | "about"
   | "categories"
   | "articles"
   | "events"
@@ -21,6 +22,7 @@ export interface Tab {
 export const TABS: Tab[] = [
   { key: "user", label: "משתמש פעיל", icon: "User" },
   { key: "home", label: "דף הבית", icon: "Home" },
+  { key: "about", label: "אודות", icon: "UserCircle" },
   { key: "categories", label: "קטגוריות", icon: "FolderTree" },
   { key: "articles", label: "מאמרים", icon: "FileText" },
   { key: "events", label: "אירועים", icon: "CalendarDays" },

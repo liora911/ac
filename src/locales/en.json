@@ -556,7 +556,8 @@
     "title": "Create New Event"
   },
   "footer": {
-    "contact": "Contact: avshalom@iyar.org.il"
+    "contact": "Contact: avshalom@iyar.org.il",
+    "browseByCategory": "Browse Articles by Category"
   },
   "contact": {
     "title": "Contact Form",
@@ -1124,6 +1125,7 @@
       "logout": "Logout",
       "user": "Active User",
       "home": "Homepage",
+      "about": "About Page",
       "categories": "Categories",
       "articles": "Articles",
       "events": "Events",
@@ -1369,7 +1371,22 @@
     "removeImage": "Remove image",
     "previous": "Previous",
     "next": "Next",
-    "page": "Page"
+    "page": "Page",
+    "loading": "Loading..."
+  },
+  "about": {
+    "notAvailable": "This page is not available yet.",
+    "title": "About",
+    "editTitle": "Edit About Page",
+    "titleEnLabel": "Title (English)",
+    "titleHeLabel": "Title (Hebrew)",
+    "contentEnLabel": "Content (English)",
+    "contentHeLabel": "Content (Hebrew)",
+    "imageLabel": "Featured Image",
+    "publishedLabel": "Published",
+    "publishedDescription": "When enabled, the About page will be visible to visitors",
+    "saveSuccess": "About page saved successfully",
+    "saveError": "Failed to save about page"
   },
   "auth": {
     "signOutSuccess": "Successfully signed out",

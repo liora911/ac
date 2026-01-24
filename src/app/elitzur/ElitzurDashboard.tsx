@@ -17,10 +17,12 @@ import MessagesAdmin from "./MessagesAdmin";
 import SubscriptionsAdmin from "./SubscriptionsAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import HomeAdmin from "./HomeAdmin";
+import AboutAdmin from "./AboutAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
   Home,
+  UserCircle,
   FolderTree,
   FileText,
   CalendarDays,
@@ -46,6 +48,7 @@ import { TabKey, TABS } from "@/constants/ElitzurTabs";
 const iconMap: Record<string, LucideIcon> = {
   User,
   Home,
+  UserCircle,
   FolderTree,
   FileText,
   CalendarDays,
@@ -372,6 +375,8 @@ export default function ElitzurDashboard() {
           )}
 
           {active === "home" && <HomeAdmin />}
+
+          {active === "about" && <AboutAdmin />}
 
           {active === "categories" && <CategoryManager />}
 

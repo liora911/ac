@@ -573,7 +573,8 @@
     "title": "יצירת אירוע חדש"
   },
   "footer": {
-    "contact": "להזמנות: avshalom@iyar.org.il"
+    "contact": "להזמנות: avshalom@iyar.org.il",
+    "browseByCategory": "עיון במאמרים לפי קטגוריה"
   },
   "contact": {
     "title": "טופס יצירת קשר",
@@ -1195,6 +1196,7 @@
       "logout": "יציאה",
       "user": "משתמש פעיל",
       "home": "דף הבית",
+      "about": "עמוד אודות",
       "categories": "קטגוריות",
       "articles": "מאמרים",
       "events": "אירועים",
@@ -1379,7 +1381,22 @@
     "removeImage": "הסר תמונה",
     "previous": "הקודם",
     "next": "הבא",
-    "page": "עמוד"
+    "page": "עמוד",
+    "loading": "טוען..."
+  },
+  "about": {
+    "notAvailable": "עמוד זה אינו זמין כרגע.",
+    "title": "אודות",
+    "editTitle": "עריכת עמוד אודות",
+    "titleEnLabel": "כותרת (אנגלית)",
+    "titleHeLabel": "כותרת (עברית)",
+    "contentEnLabel": "תוכן (אנגלית)",
+    "contentHeLabel": "תוכן (עברית)",
+    "imageLabel": "תמונה ראשית",
+    "publishedLabel": "פורסם",
+    "publishedDescription": "כאשר מופעל, עמוד האודות יהיה גלוי למבקרים",
+    "saveSuccess": "עמוד האודות נשמר בהצלחה",
+    "saveError": "שגיאה בשמירת עמוד האודות"
   },
   "auth": {
     "signOutSuccess": "התנתקת בהצלחה מהמערכת",

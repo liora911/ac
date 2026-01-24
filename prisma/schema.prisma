@@ -314,6 +314,19 @@ model SiteSettings {
   @@map("site_settings")
 }
 
+model AboutPage {
+  id          String   @id @default("about")
+  titleEn     String   @default("About")
+  titleHe     String   @default("אודות")
+  contentEn   String?  // English content (HTML)
+  contentHe   String?  // Hebrew content (HTML)
+  imageUrl    String?
+  published   Boolean  @default(false)
+  updatedAt   DateTime @updatedAt
+
+  @@map("about_page")
+}
+
 enum ArticleStatus {
   DRAFT
   PUBLISHED

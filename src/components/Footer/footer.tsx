@@ -3,6 +3,24 @@
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { ChevronDown, ChevronUp, FolderOpen, FileText } from "lucide-react";
+
+interface ArticlePreview {
+  id: string;
+  title: string;
+  slug: string;
+}
+
+interface CategoryWithArticles {
+  id: string;
+  name: string;
+  articles: ArticlePreview[];
+}
+
+interface FooterSitemapData {
+  categories: CategoryWithArticles[];
+}
 
 function BlackHoleIcon({ className }: { className?: string }) {
   return (
@@ -30,9 +48,7 @@ function BlackHoleIcon({ className }: { className?: string }) {
           <stop offset="100%" stopColor="#ff6b3522" />
         </radialGradient>
       </defs>
-      {/* Outer glow */}
       <circle cx="16" cy="16" r="15" fill="url(#glow)" />
-      {/* Accretion disk - back */}
       <ellipse
         cx="16"
         cy="16"
@@ -43,9 +59,7 @@ function BlackHoleIcon({ className }: { className?: string }) {
         strokeWidth="2"
         opacity="0.6"
       />
-      {/* Event horizon (black hole) */}
       <circle cx="16" cy="16" r="6" fill="url(#eventHorizon)" />
-      {/* Photon ring */}
       <circle
         cx="16"
         cy="16"
@@ -55,7 +69,6 @@ function BlackHoleIcon({ className }: { className?: string }) {
         strokeWidth="0.5"
         opacity="0.8"
       />
-      {/* Accretion disk - front */}
       <path
         d="M 2 16 Q 16 21 30 16"
         fill="none"
@@ -67,10 +80,64 @@ function BlackHoleIcon({ className }: { className?: string }) {
   );
 }
 
+function CategoryItem({ category }: { category: CategoryWithArticles }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className="text-start">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors w-full cursor-pointer"
+      >
+        <FolderOpen className="w-4 h-4 flex-shrink-0" />
+        <span className="truncate">{category.name}</span>
+        <span className="text-xs text-gray-400">({category.articles.length})</span>
+        {isExpanded ? (
+          <ChevronUp className="w-4 h-4 ms-auto flex-shrink-0" />
+        ) : (
+          <ChevronDown className="w-4 h-4 ms-auto flex-shrink-0" />
+        )}
+      </button>
+
+      {isExpanded && category.articles.length > 0 && (
+        <ul className="mt-2 ms-6 space-y-1.5">
+          {category.articles.map((article) => (
+            <li key={article.id}>
+              <Link
+                href={`/articles/${article.slug}`}
+                className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+              >
+                <FileText className="w-3 h-3 flex-shrink-0" />
+                <span className="line-clamp-1">{article.title}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
 export default function Footer() {
   const { t, locale } = useTranslation();
   const pathname = usePathname();
   const isHebrew = locale === "he";
+  const [sitemapData, setSitemapData] = useState<FooterSitemapData | null>(null);
+
+  useEffect(() => {
+    const fetchSitemapData = async () => {
+      try {
+        const res = await fetch("/api/footer-sitemap");
+        if (res.ok) {
+          const data = await res.json();
+          setSitemapData(data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch footer sitemap:", error);
+      }
+    };
+    fetchSitemapData();
+  }, []);
 
   // Hide footer on auth pages
   if (pathname?.startsWith("/auth")) {
@@ -78,25 +145,43 @@ export default function Footer() {
   }
 
   return (
-    <footer className="w-full border-t border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-950 px-4 py-5 sm:py-6">
-      <div className="max-w-5xl mx-auto text-center text-sm text-gray-600 dark:text-gray-400">
-        <p dir={isHebrew ? "rtl" : "ltr"}>{t("footer.contact")}</p>
-        <div className="mt-3 flex items-center justify-center gap-4">
-          <Link
-            href="/site-map"
-            className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
-          >
-            {t("nav.sitemap")}
-          </Link>
-        </div>
-        <div
-          className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-gray-400"
-          dir={isHebrew ? "rtl" : "ltr"}
-        >
-          <BlackHoleIcon className="w-4 h-4" />
-          <span>
-            {isHebrew ? "פותח באהבה על ידי: Singularity" : "Developed By: Y.M"}
-          </span>
+    <footer
+      className="w-full border-t border-gray-200 dark:border-gray-700 bg-slate-50 dark:bg-gray-950 px-4 py-8"
+      dir={isHebrew ? "rtl" : "ltr"}
+    >
+      <div className="max-w-6xl mx-auto">
+        {/* Categories Sitemap */}
+        {sitemapData && sitemapData.categories.length > 0 && (
+          <div className="mb-8">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <FolderOpen className="w-4 h-4" />
+              {t("footer.browseByCategory")}
+            </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {sitemapData.categories.map((category) => (
+                <CategoryItem key={category.id} category={category} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Bottom section */}
+        <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
+          <p>{t("footer.contact")}</p>
+          <div className="mt-3 flex items-center justify-center gap-4">
+            <Link
+              href="/site-map"
+              className="text-xs text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {t("nav.sitemap")}
+            </Link>
+          </div>
+          <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+            <BlackHoleIcon className="w-4 h-4" />
+            <span>
+              {isHebrew ? "פותח באהבה על ידי: Singularity" : "Developed By: Y.M"}
+            </span>
+          </div>
         </div>
       </div>
     </footer>
