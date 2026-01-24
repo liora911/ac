@@ -60,6 +60,8 @@ import {
   IndentIncrease,
   IndentDecrease,
   Type,
+  Mic,
+  MicOff,
 } from "lucide-react";
 
 // Tooltip Component
@@ -113,6 +115,50 @@ const Dropdown = ({
   );
 };
 
+// TypeScript declaration for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList;
+  resultIndex: number;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  start(): void;
+  stop(): void;
+  abort(): void;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: Event & { error: string }) => void) | null;
+  onend: (() => void) | null;
+  onstart: (() => void) | null;
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition;
+    webkitSpeechRecognition: new () => SpeechRecognition;
+  }
+}
+
 export default function TiptapEditor({
   value,
   onChange,
@@ -132,6 +178,17 @@ export default function TiptapEditor({
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+
+  // Speech-to-text state
+  const [isListening, setIsListening] = useState(false);
+  const [speechSupported, setSpeechSupported] = useState(false);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
+
+  // Check for speech recognition support
+  useEffect(() => {
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    setSpeechSupported(!!SpeechRecognitionAPI);
+  }, []);
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -194,6 +251,65 @@ export default function TiptapEditor({
       editor.chain().focus().setTextDirection(direction).run();
     }
   }, [direction, editor, currentDirection]);
+
+  // Toggle speech recognition
+  const toggleSpeechRecognition = () => {
+    if (!speechSupported || !editor) return;
+
+    if (isListening) {
+      // Stop listening
+      recognitionRef.current?.stop();
+      setIsListening(false);
+      return;
+    }
+
+    // Start listening
+    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognitionAPI();
+
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = currentDirection === "rtl" ? "he-IL" : "en-US";
+
+    recognition.onstart = () => {
+      setIsListening(true);
+    };
+
+    recognition.onresult = (event: SpeechRecognitionEvent) => {
+      let finalTranscript = "";
+
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        const result = event.results[i];
+        if (result.isFinal) {
+          finalTranscript += result[0].transcript;
+        }
+      }
+
+      if (finalTranscript && editor) {
+        // Insert the transcribed text at cursor position
+        editor.chain().focus().insertContent(finalTranscript + " ").run();
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Speech recognition error:", event.error);
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  // Cleanup speech recognition on unmount
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop();
+    };
+  }, []);
 
   if (!editor) return null;
 
@@ -606,8 +722,21 @@ export default function TiptapEditor({
             </Dropdown>
           </div>
 
-          {/* Direction Toggle */}
-          <div className="ml-auto">
+          {/* Speech-to-Text & Direction Toggle */}
+          <div className="ml-auto flex items-center gap-1">
+            {speechSupported && (
+              <ToolbarButton
+                onClick={toggleSpeechRecognition}
+                isActive={isListening}
+                title={isListening ? "Stop Dictation" : "Start Dictation"}
+              >
+                {isListening ? (
+                  <MicOff className="w-4 h-4 text-red-500" />
+                ) : (
+                  <Mic className="w-4 h-4" />
+                )}
+              </ToolbarButton>
+            )}
             <ToolbarButton
               onClick={() => {
                 const newDirection = currentDirection === "ltr" ? "rtl" : "ltr";
