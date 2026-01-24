@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 
-// Cache for 30 minutes
+// Cache for 24 hours (aggressive caching for footer sitemap)
 let cachedData: FooterSitemapData | null = null;
 let cacheTimestamp = 0;
-const CACHE_DURATION = 30 * 60 * 1000; // 30 minutes
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 interface ArticlePreview {
   id: string;
@@ -26,11 +26,12 @@ export async function GET() {
   try {
     const now = Date.now();
 
-    // Return cached data if still valid
+    // Return cached data if still valid (24 hours)
     if (cachedData && now - cacheTimestamp < CACHE_DURATION) {
       return NextResponse.json(cachedData, {
         headers: {
-          "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
+          // Cache for 24 hours, allow stale for 48 hours while revalidating
+          "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=172800",
           "X-Cache": "HIT",
         },
       });
@@ -88,7 +89,9 @@ export async function GET() {
 
     return NextResponse.json(responseData, {
       headers: {
-        "Cache-Control": "public, s-maxage=1800, stale-while-revalidate=3600",
+        // Cache for 24 hours, allow stale for 48 hours while revalidating
+        "Cache-Control": "public, s-maxage=86400, stale-while-revalidate=172800",
+        "X-Cache": "MISS",
       },
     });
   } catch (error) {

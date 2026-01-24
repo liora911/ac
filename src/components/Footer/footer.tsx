@@ -118,6 +118,42 @@ function CategoryItem({ category }: { category: CategoryWithArticles }) {
   );
 }
 
+// Client-side cache key and duration
+const SITEMAP_CACHE_KEY = "footer-sitemap-cache";
+const SITEMAP_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+interface CachedSitemapData {
+  data: FooterSitemapData;
+  timestamp: number;
+}
+
+function getCachedSitemapData(): FooterSitemapData | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const cached = localStorage.getItem(SITEMAP_CACHE_KEY);
+    if (!cached) return null;
+    const { data, timestamp }: CachedSitemapData = JSON.parse(cached);
+    if (Date.now() - timestamp < SITEMAP_CACHE_DURATION) {
+      return data;
+    }
+    // Cache expired, remove it
+    localStorage.removeItem(SITEMAP_CACHE_KEY);
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedSitemapData(data: FooterSitemapData): void {
+  if (typeof window === "undefined") return;
+  try {
+    const cacheEntry: CachedSitemapData = { data, timestamp: Date.now() };
+    localStorage.setItem(SITEMAP_CACHE_KEY, JSON.stringify(cacheEntry));
+  } catch {
+    // Ignore localStorage errors (quota exceeded, etc.)
+  }
+}
+
 export default function Footer() {
   const { t, locale } = useTranslation();
   const pathname = usePathname();
@@ -125,12 +161,20 @@ export default function Footer() {
   const [sitemapData, setSitemapData] = useState<FooterSitemapData | null>(null);
 
   useEffect(() => {
+    // Try to get cached data first
+    const cached = getCachedSitemapData();
+    if (cached) {
+      setSitemapData(cached);
+      return; // Don't fetch if cache is valid
+    }
+
     const fetchSitemapData = async () => {
       try {
         const res = await fetch("/api/footer-sitemap");
         if (res.ok) {
           const data = await res.json();
           setSitemapData(data);
+          setCachedSitemapData(data); // Cache the response
         }
       } catch (error) {
         console.error("Failed to fetch footer sitemap:", error);

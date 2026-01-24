@@ -11,44 +11,7 @@ import type {
   Article,
 } from "@/types/Articles/articles";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
-
-// Helper function to find or create tags by name
-async function findOrCreateTags(tagNames: string[]): Promise<string[]> {
-  if (!tagNames || tagNames.length === 0) return [];
-
-  const tagIds: string[] = [];
-
-  for (const name of tagNames) {
-    const trimmedName = name.trim();
-    if (!trimmedName) continue;
-
-    // Try to find existing tag by name
-    let tag = await prisma.tag.findUnique({
-      where: { name: trimmedName },
-    });
-
-    // If not found, create a new tag
-    if (!tag) {
-      const baseSlug = generateSlug(trimmedName);
-      // Reuse the existing generateUniqueSlug helper to ensure unique slug
-      const uniqueSlug = await generateUniqueSlug(baseSlug, async (slug) => {
-        const existing = await prisma.tag.findUnique({ where: { slug } });
-        return existing !== null;
-      });
-
-      tag = await prisma.tag.create({
-        data: {
-          name: trimmedName,
-          slug: uniqueSlug,
-        },
-      });
-    }
-
-    tagIds.push(tag.id);
-  }
-
-  return tagIds;
-}
+import { findOrCreateTags } from "@/lib/prisma/tags";
 
 // Type for article with included relations
 type ArticleWithRelations = Prisma.ArticleGetPayload<{

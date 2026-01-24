@@ -18,17 +18,9 @@ import Modal from "@/components/Modal/Modal";
 import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 type StatusFilter = "" | "published" | "unpublished";
-
-function useDebouncedValue<T>(value: T, delay = 350) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
 
 export default function PresentationsAdmin() {
   const { t } = useTranslation();
