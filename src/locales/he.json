@@ -142,7 +142,12 @@
     "createdAtLabel": "נוצר ב",
     "image": "תמונה",
     "fullViewAlt": "תצוגה מלאה",
-    "downloadPdf": "הורד PDF"
+    "downloadPdf": "הורד PDF",
+    "watchInPlayer": "צפה בנגן",
+    "openInGoogleSlides": "פתח ב-Google Slides",
+    "enterFullscreen": "מסך מלא",
+    "exitFullscreen": "צא ממסך מלא",
+    "playerHint": "לחץ ESC ליציאה או השתמש בפקדים למעלה"
   },
   "eventsPage": {
     "title": "כל האירועים",
@@ -537,7 +542,7 @@
     "login": "התחברות",
     "logout": "התנתקות",
     "menu": "תפריט",
-    "brandName": "אבשלום ס. אליצור",
+    "brandName": "אבשלום אליצור",
     "brandAriaLabel": "אבשלום אליצור - דף הבית",
     "mainNavigation": "ניווט ראשי",
     "closeNavigationMenu": "סגירת תפריט הניווט",

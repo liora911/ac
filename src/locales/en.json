@@ -140,7 +140,12 @@
     "categoryLabel": "Category",
     "createdAtLabel": "Created at",
     "image": "Image",
-    "fullViewAlt": "Full view"
+    "fullViewAlt": "Full view",
+    "watchInPlayer": "Watch in Player",
+    "openInGoogleSlides": "Open in Google Slides",
+    "enterFullscreen": "Enter fullscreen",
+    "exitFullscreen": "Exit fullscreen",
+    "playerHint": "Press ESC to exit or use the controls above"
   },
   "eventsPage": {
     "title": "All events",

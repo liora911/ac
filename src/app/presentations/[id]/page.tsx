@@ -10,8 +10,9 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Play } from "lucide-react";
 import { track } from "@vercel/analytics";
+import SlidesPlayer from "@/components/Presentations/SlidesPlayer";
 
 // Dynamic import for DocumentViewer to avoid SSR issues with react-pdf
 const DocumentViewer = dynamic(() => import("@/components/DocumentViewer/DocumentViewer"), {
@@ -65,6 +66,7 @@ export default function PresentationDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const hasTracked = useRef(false);
 
   const isAuthorized =
@@ -201,18 +203,25 @@ export default function PresentationDetailPage() {
         </h1>
 
         <PremiumGate isPremium={presentation.isPremium}>
-        {hasGoogleSlidesUrl && (
+        {hasGoogleSlidesUrl && embedUrl && (
           <div className="mb-8 flex flex-col items-center gap-4">
-            {embedUrl && (
-              <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md">
-                <iframe
-                  src={embedUrl}
-                  title={presentation.title}
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                />
-              </div>
-            )}
+            {/* Watch in Player Button */}
+            <button
+              onClick={() => setIsPlayerOpen(true)}
+              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white rounded-xl shadow-md hover:bg-indigo-700 hover:shadow-lg transition-all cursor-pointer font-medium"
+            >
+              <Play className="w-5 h-5" />
+              {t("presentationDetail.watchInPlayer")}
+            </button>
+
+            <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md">
+              <iframe
+                src={embedUrl}
+                title={presentation.title}
+                className="w-full h-full border-0"
+                allowFullScreen
+              />
+            </div>
           </div>
         )}
 
@@ -377,6 +386,17 @@ export default function PresentationDetailPage() {
               </button>
             </div>
           </div>
+        )}
+
+        {/* Slides Player */}
+        {embedUrl && (
+          <SlidesPlayer
+            isOpen={isPlayerOpen}
+            onClose={() => setIsPlayerOpen(false)}
+            embedUrl={embedUrl}
+            title={presentation.title}
+            googleSlidesUrl={presentation.googleSlidesUrl || undefined}
+          />
         )}
       </div>
     </div>
