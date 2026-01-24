@@ -233,8 +233,6 @@ model Event {
   description    String
   eventType      String
   location       String?
-  latitude       Float?
-  longitude      Float?
   onlineUrl      String?
   eventDate      DateTime
   eventTime      String?
