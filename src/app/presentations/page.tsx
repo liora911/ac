@@ -58,12 +58,12 @@ export default function PresentationsPage() {
           sizes="100vw"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent" />
-        <div className="absolute inset-0 flex items-end">
-          <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pb-6 md:pb-8">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center px-4">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
               {t("nav.presentations")}
             </h1>
-            <p className="mt-2 text-base md:text-lg text-gray-200 max-w-2xl">
+            <p className="mt-2 text-base md:text-lg text-gray-200">
               {t("presentationsPage.subtitle")}
             </p>
           </div>

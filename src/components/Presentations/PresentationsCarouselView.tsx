@@ -180,7 +180,7 @@ function CategoryCarousel({ category, hasAccess }: CategoryCarouselProps) {
     <section className="relative">
       {/* Category Header */}
       <div className="mb-4 px-1">
-        <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
           {category.name}
         </h2>
       </div>
@@ -262,7 +262,7 @@ function PresentationCard({ presentation, hasAccess, categoryName }: Presentatio
   };
 
   return (
-    <div className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]">
+    <div className="flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px]">
       <Link
         href={`/presentations/${presentation.id}`}
         className="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
