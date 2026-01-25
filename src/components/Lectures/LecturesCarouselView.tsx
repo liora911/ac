@@ -129,6 +129,7 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
                   hasAccess={hasAccess(lecture)}
                   onPlay={handlePlayLecture}
                   categoryName={lecture.categoryName}
+                  inGrid={true}
                 />
               ))}
             </div>
@@ -260,9 +261,10 @@ interface LectureCardProps {
   hasAccess: boolean;
   onPlay: (lecture: Lecture) => void;
   categoryName?: string;
+  inGrid?: boolean;
 }
 
-function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardProps) {
+function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false }: LectureCardProps) {
   const { t } = useTranslation();
   const { showSuccess, showError } = useNotification();
 
@@ -291,7 +293,7 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardPr
   };
 
   return (
-    <div className="flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px]">
+    <div className={inGrid ? "" : "flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px]"}>
       <Link
         href={`/lectures/${lecture.id}`}
         className="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
