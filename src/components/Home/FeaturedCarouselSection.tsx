@@ -8,7 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  Sparkles,
+  Flame,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
@@ -207,8 +207,8 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
       {/* Header with special styling */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
-            <Sparkles className="w-5 h-5 text-white" />
+          <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 shadow-lg shadow-orange-500/25">
+            <Flame className="w-5 h-5 text-white" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">

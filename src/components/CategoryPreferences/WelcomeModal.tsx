@@ -137,7 +137,7 @@ export default function WelcomeModal() {
           {step === 1 ? (
             <>
               {/* Step 1: Header with gradient - compact */}
-              <div className="bg-gradient-to-r from-blue-600 to-purple-600 px-4 pt-10 pb-4 text-white text-center shrink-0">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-4 pt-10 pb-4 text-white text-center shrink-0">
                 <div className="flex justify-center mb-2">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                     <User className="w-5 h-5" />
@@ -208,14 +208,14 @@ export default function WelcomeModal() {
                             onClick={() => toggleCategory(category.id)}
                             className={`flex items-center gap-2.5 p-2 rounded-lg border-2 transition-all ${
                               isSelected
-                                ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30"
+                                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
                                 : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
                             }`}
                           >
                             <div
                               className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
                                 isSelected
-                                  ? "border-purple-500 bg-purple-500"
+                                  ? "border-blue-500 bg-blue-500"
                                   : "border-gray-300 dark:border-gray-500"
                               }`}
                             >
@@ -224,7 +224,7 @@ export default function WelcomeModal() {
                             <span
                               className={`font-medium text-xs ${
                                 isSelected
-                                  ? "text-purple-700 dark:text-purple-300"
+                                  ? "text-blue-700 dark:text-blue-300"
                                   : "text-gray-700 dark:text-gray-300"
                               }`}
                             >
@@ -243,7 +243,7 @@ export default function WelcomeModal() {
                 <button
                   onClick={handleContinue}
                   disabled={!showAll && selectedIds.length === 0}
-                  className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold text-sm hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+                  className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm hover:from-blue-700 hover:to-blue-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
                 >
                   {t("categoryPreferences.continue") || "Continue"}
                 </button>
@@ -258,7 +258,7 @@ export default function WelcomeModal() {
           ) : (
             <>
               {/* Step 2: Header */}
-              <div className="bg-gradient-to-r from-purple-600 to-blue-600 px-4 pt-10 pb-4 text-white text-center shrink-0">
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-4 pt-10 pb-4 text-white text-center shrink-0">
                 <div className="flex justify-center mb-2">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                     <Crown className="w-5 h-5" />
@@ -330,7 +330,7 @@ export default function WelcomeModal() {
               <div className="px-4 pb-4 space-y-2 shrink-0">
                 <button
                   onClick={handleRegister}
-                  className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold text-sm hover:from-purple-700 hover:to-blue-700 transition-all shadow-lg hover:shadow-xl"
+                  className="w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold text-sm hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-xl"
                 >
                   {t("categoryPreferences.register") || "Register"}
                 </button>
