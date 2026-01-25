@@ -203,22 +203,22 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
   }
 
   return (
-    <div className="mb-12 -mx-6 px-6 py-8 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 dark:from-amber-950/30 dark:via-orange-950/20 dark:to-amber-950/30 border-y border-amber-200/50 dark:border-amber-800/30">
+    <div className="mb-12 -mx-6 px-6 py-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900/50 dark:via-blue-950/20 dark:to-slate-900/50 border-y border-slate-200/80 dark:border-slate-700/50 shadow-inner">
       {/* Header with special styling */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
-          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-lg shadow-amber-500/25">
+          <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 shadow-lg shadow-blue-500/25">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               {title}
             </h2>
           </div>
         </div>
         <Link
           href={href}
-          className="text-sm font-medium text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition-colors flex items-center gap-1"
+          className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30"
         >
           {t("home.sections.viewAll")}
           <ChevronRight className="w-4 h-4" />
@@ -231,10 +231,10 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           <button
             onClick={handleLeft}
             disabled={isLoading}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-amber-200 dark:border-amber-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-amber-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
-            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-amber-700 dark:text-amber-400" />
+            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
           </button>
         )}
 
@@ -242,13 +242,13 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           <button
             onClick={handleRight}
             disabled={isLoading}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-amber-200 dark:border-amber-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-amber-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
             {isLoading ? (
-              <Loader2 className="w-6 h-6 md:w-7 md:h-7 text-amber-700 dark:text-amber-400 animate-spin" />
+              <Loader2 className="w-6 h-6 md:w-7 md:h-7 text-blue-600 dark:text-blue-400 animate-spin" />
             ) : (
-              <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-amber-700 dark:text-amber-400" />
+              <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
             )}
           </button>
         )}
@@ -271,7 +271,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                   href={itemLink}
                   className="block group/card flex-shrink-0 w-80"
                 >
-                  <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-amber-300/50 dark:ring-amber-600/30">
+                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30">
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
@@ -281,7 +281,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                         sizes="320px"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-800 dark:to-orange-900" />
+                      <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
                     )}
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -340,7 +340,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                   >
-                    <div className="relative aspect-[16/10] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-amber-300/50 dark:ring-amber-600/30 hover:ring-amber-400 dark:hover:ring-amber-500 hover:shadow-2xl hover:shadow-amber-500/20 transition-all duration-300">
+                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30 hover:ring-blue-400 dark:hover:ring-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
@@ -350,7 +350,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                           sizes="(max-width: 1024px) 50vw, 33vw"
                         />
                       ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-amber-200 to-orange-300 dark:from-amber-800 dark:to-orange-900" />
+                        <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
                       )}
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
@@ -381,15 +381,15 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
 
         {/* Desktop pagination dots */}
         {totalPages > 1 && (
-          <div className="hidden sm:flex justify-center gap-2 mt-5">
+          <div className="hidden sm:flex justify-center gap-2 mt-6">
             {Array.from({ length: totalPages }).map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => goToPage(idx)}
                 className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   idx === page
-                    ? "bg-gradient-to-r from-amber-500 to-orange-500 w-8"
-                    : "bg-amber-300 dark:bg-amber-700 w-2 hover:bg-amber-400 dark:hover:bg-amber-600"
+                    ? "bg-gradient-to-r from-blue-500 to-indigo-600 w-8"
+                    : "bg-blue-300 dark:bg-blue-700 w-2 hover:bg-blue-400 dark:hover:bg-blue-600"
                 }`}
                 aria-label={`${t("common.page")} ${idx + 1}`}
               />
