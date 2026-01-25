@@ -177,36 +177,16 @@ export default function Footer() {
       dir={isHebrew ? "rtl" : "ltr"}
     >
       <div className="max-w-6xl mx-auto">
-        {/* Categories Sitemap - Collapsible */}
-        {sitemapData && sitemapData.categories.length > 0 && (
-          <div className="mb-8">
-            <button
-              onClick={() => setIsSitemapExpanded(!isSitemapExpanded)}
-              className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors cursor-pointer"
-            >
-              <FolderOpen className="w-4 h-4" />
-              <span>{t("footer.siteMap")}</span>
-              {isSitemapExpanded ? (
-                <ChevronUp className="w-4 h-4" />
-              ) : (
-                <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
-
-            {isSitemapExpanded && (
-              <div className="mt-4">
-                <h4 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3">
-                  {t("footer.browseByCategory")}
-                </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {sitemapData.categories.map((category) => (
-                    <CategoryItem key={category.id} category={category} />
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
+        {/* Browse Categories Link */}
+        <div className="mb-8 text-center">
+          <Link
+            href="/browse"
+            className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
+          >
+            <FolderOpen className="w-5 h-5" />
+            <span>{t("footer.browseAllCategories")}</span>
+          </Link>
+        </div>
 
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">

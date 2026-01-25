@@ -52,7 +52,6 @@ export default function ArticlesList({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
   const [currentPage, setCurrentPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
@@ -90,7 +89,6 @@ export default function ArticlesList({
         page: currentPage,
         limit: initialLimit,
         categoryId: selectedCategory || undefined,
-        status: statusFilter || undefined,
         sortBy,
         sortOrder,
       })
@@ -98,7 +96,6 @@ export default function ArticlesList({
         page: currentPage,
         limit: initialLimit,
         categoryId: selectedCategory || undefined,
-        status: statusFilter || undefined,
         featured: featuredOnly || undefined,
         sortBy,
         sortOrder,
@@ -143,11 +140,6 @@ export default function ArticlesList({
 
   const handleCategoryChange = (categoryId: string) => {
     setSelectedCategory(categoryId);
-    setCurrentPage(1);
-  };
-
-  const handleStatusChange = (status: StatusFilter) => {
-    setStatusFilter(status);
     setCurrentPage(1);
   };
 
@@ -206,9 +198,9 @@ export default function ArticlesList({
             >
               <Filter className="w-4 h-4" />
               <span className="font-medium">{t("articlesPage.filters")}</span>
-              {(selectedCategory || searchQuery || statusFilter) && (
+              {(selectedCategory || searchQuery) && (
                 <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {[selectedCategory, searchQuery, statusFilter].filter(Boolean).length}
+                  {[selectedCategory, searchQuery].filter(Boolean).length}
                 </span>
               )}
             </button>
@@ -256,23 +248,6 @@ export default function ArticlesList({
                       </option>
                     ))
                   )}
-                </select>
-              </div>
-
-              {/* Status Filter */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  {t("articleForm.statusLabel")}
-                </label>
-                <select
-                  value={statusFilter}
-                  onChange={(e) => handleStatusChange(e.target.value as StatusFilter)}
-                  className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                >
-                  <option value="">{t("articleForm.allStatus")}</option>
-                  <option value="PUBLISHED">{t("articleForm.statusPublished")}</option>
-                  <option value="DRAFT">{t("articleForm.statusDraft")}</option>
-                  <option value="ARCHIVED">{t("articleForm.statusArchived")}</option>
                 </select>
               </div>
 
@@ -337,29 +312,6 @@ export default function ArticlesList({
                     </option>
                   ))
                 )}
-              </select>
-            </div>
-
-            {/* Status Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("articleForm.statusLabel")}
-              </label>
-              <select
-                value={statusFilter}
-                onChange={(e) =>
-                  handleStatusChange(e.target.value as StatusFilter)
-                }
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              >
-                <option value="">{t("articleForm.allStatus")}</option>
-                <option value="PUBLISHED">
-                  {t("articleForm.statusPublished")}
-                </option>
-                <option value="DRAFT">{t("articleForm.statusDraft")}</option>
-                <option value="ARCHIVED">
-                  {t("articleForm.statusArchived")}
-                </option>
               </select>
             </div>
           </div>
@@ -427,7 +379,7 @@ export default function ArticlesList({
           </div>
 
           {/* Active Filters Display */}
-          {(selectedCategory || searchQuery || statusFilter) && (
+          {(selectedCategory || searchQuery) && (
             <div className="mt-3 flex items-center gap-2 flex-wrap">
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {t("articlesPage.activeFilters") || "Active filters:"}
@@ -454,22 +406,10 @@ export default function ArticlesList({
                   </button>
                 </span>
               )}
-              {statusFilter && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">
-                  {statusFilter}
-                  <button
-                    onClick={() => handleStatusChange("")}
-                    className="hover:bg-yellow-200 rounded-full p-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
               <button
                 onClick={() => {
                   handleSearch("");
                   handleCategoryChange("");
-                  handleStatusChange("");
                 }}
                 className="text-xs text-gray-500 hover:text-gray-700 underline"
               >
