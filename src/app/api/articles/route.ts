@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
+import type { Prisma } from "@prisma/client";
 import type {
   ArticlesListResponse,
   ArticlesQueryParams,

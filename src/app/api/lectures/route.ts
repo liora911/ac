@@ -1,5 +1,5 @@
 import { Category } from "@/types/Lectures/lectures";
-import type { LectureLectureTreeCategory, FormattedLecture } from "@/types/Lectures/lectures-api";
+import type { LectureTreeCategory, FormattedLecture } from "@/types/Lectures/lectures-api";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
@@ -50,7 +50,7 @@ export async function GET() {
       },
     });
 
-    const byId = new Map<string, LectureLectureTreeCategory>();
+    const byId = new Map<string, LectureTreeCategory>();
 
     prismaCategories.forEach((cat) => {
       byId.set(cat.id, {

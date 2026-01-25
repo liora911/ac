@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import type { UpdateUpdateHomeContentPayload } from "@/types/Home/home-content";
+import type { UpdateHomeContentPayload } from "@/types/Home/home-content";
 
 export async function GET() {
   try {

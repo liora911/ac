@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import type { PresentationPresentationTreeCategory } from "@/types/Presentations/presentations-api";
+import type { PresentationTreeCategory } from "@/types/Presentations/presentations-api";
 
 export async function GET() {
   try {
@@ -33,7 +33,7 @@ export async function GET() {
       },
     });
 
-    const byId = new Map<string, PresentationPresentationTreeCategory>();
+    const byId = new Map<string, PresentationTreeCategory>();
 
     prismaCategories.forEach((cat) => {
       byId.set(cat.id, {

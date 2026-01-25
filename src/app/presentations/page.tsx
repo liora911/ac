@@ -1,12 +1,48 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
-import { PresentationCategory } from "@/types/Presentations/presentations";
+import dynamic from "next/dynamic";
+import type { PresentationCategory } from "@/types/Presentations/presentations";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import PresentationsCarouselView from "@/components/Presentations/PresentationsCarouselView";
 
-export default function PresentationsPage() {
+// Dynamic import for code splitting - loads only when needed
+const PresentationsCarouselView = dynamic(
+  () => import("@/components/Presentations/PresentationsCarouselView"),
+  {
+    loading: () => <PresentationsLoadingSkeleton />,
+  }
+);
+
+// Loading skeleton component - extracted for reusability
+function PresentationsLoadingSkeleton() {
+  return (
+    <div className="space-y-8">
+      {[...Array(3)].map((_, i) => (
+        <div key={i} className="space-y-4">
+          <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+          <div className="flex gap-4 overflow-hidden">
+            {[...Array(4)].map((_, j) => (
+              <div
+                key={j}
+                className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
+              >
+                <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                <div className="p-4 space-y-2">
+                  <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                  <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Main content component - separated for clean Suspense boundary
+function PresentationsPageContent() {
   const { t, locale } = useTranslation();
   const [categories, setCategories] = useState<PresentationCategory[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -73,29 +109,7 @@ export default function PresentationsPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Loading State */}
-        {isLoading && (
-          <div className="space-y-8">
-            {[...Array(3)].map((_, i) => (
-              <div key={i} className="space-y-4">
-                <div className="h-8 w-48 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
-                <div className="flex gap-4 overflow-hidden">
-                  {[...Array(4)].map((_, j) => (
-                    <div
-                      key={j}
-                      className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px] bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
-                    >
-                      <div className="aspect-[4/3] bg-gray-200 dark:bg-gray-700 animate-pulse" />
-                      <div className="p-4 space-y-2">
-                        <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                        <div className="h-4 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {isLoading && <PresentationsLoadingSkeleton />}
 
         {/* Error State */}
         {error && (
@@ -121,5 +135,20 @@ export default function PresentationsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Default export with Suspense boundary for better hydration
+export default function PresentationsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      }
+    >
+      <PresentationsPageContent />
+    </Suspense>
   );
 }
