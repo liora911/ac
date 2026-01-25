@@ -93,8 +93,11 @@ export default function Breadcrumbs() {
   const { data: presentation, isLoading: isPresentationLoading } =
     usePresentation(presentationId);
 
-  // Hide breadcrumbs on home page and auth pages
-  if (!pathname || pathname === "/" || pathname.startsWith("/auth")) {
+  // Hide breadcrumbs on home page, auth pages, and list pages with hero banners
+  const listPagesWithHero = ["/articles", "/lectures", "/presentations", "/events", "/browse"];
+  const isListPage = listPagesWithHero.includes(pathname);
+
+  if (!pathname || pathname === "/" || pathname.startsWith("/auth") || isListPage) {
     return null;
   }
 
