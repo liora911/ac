@@ -20,6 +20,10 @@ const Modal: React.FC<ModalProps> = ({
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
+  // Store onClose in a ref to avoid re-running effect when it changes
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
+
   // Handle escape key and focus management
   useEffect(() => {
     if (!isOpen) return;
@@ -27,12 +31,12 @@ const Modal: React.FC<ModalProps> = ({
     // Store the previously focused element
     previousFocusRef.current = document.activeElement as HTMLElement;
 
-    // Focus the modal
+    // Focus the modal only on initial open
     modalRef.current?.focus();
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        onClose();
+        onCloseRef.current();
       }
     };
 
@@ -43,7 +47,7 @@ const Modal: React.FC<ModalProps> = ({
       // Return focus to the previously focused element
       previousFocusRef.current?.focus();
     };
-  }, [isOpen, onClose]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
