@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-import type { PresentationCategory } from "@/types/Presentations/presentations";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { usePresentations } from "@/hooks/usePresentations";
 
 // Dynamic import for code splitting - loads only when needed
 const PresentationsCarouselView = dynamic(
@@ -44,39 +44,16 @@ function PresentationsLoadingSkeleton() {
 // Main content component - separated for clean Suspense boundary
 function PresentationsPageContent() {
   const { t, locale } = useTranslation();
-  const [categories, setCategories] = useState<PresentationCategory[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch("/api/presentations");
-        if (!response.ok) {
-          throw new Error(`Failed to fetch presentations: ${response.statusText}`);
-        }
-        const data: PresentationCategory[] = await response.json();
-        setCategories(data);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "An unknown error occurred";
-        setError(msg);
-        setCategories([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
+  const { data: categories, isLoading, error } = usePresentations();
 
   // Check if there are any presentations across all categories
-  const hasPresentations = categories?.some(
-    (cat) =>
-      cat.presentations.length > 0 ||
-      cat.subcategories?.some((sub) => sub.presentations.length > 0)
-  );
+  const hasPresentations = useMemo(() => {
+    return categories?.some(
+      (cat) =>
+        cat.presentations.length > 0 ||
+        cat.subcategories?.some((sub) => sub.presentations.length > 0)
+    );
+  }, [categories]);
 
   return (
     <div
@@ -115,7 +92,7 @@ function PresentationsPageContent() {
         {error && (
           <div className="text-center py-12">
             <p className="text-xl text-red-500">
-              {t("presentationsPage.errorPrefix")}: {error}
+              {t("presentationsPage.errorPrefix")}: {error.message}
             </p>
           </div>
         )}

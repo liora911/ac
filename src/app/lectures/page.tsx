@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { Suspense, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import type { CategoryDef } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { useLectures } from "@/hooks/useLectures";
 
 // Dynamic import for code splitting
 const LecturesCarouselView = dynamic(
@@ -63,38 +63,13 @@ function LoadingSpinner() {
 // Main content component
 function LecturesPageContent() {
   const { t, locale } = useTranslation();
-  const [categories, setCategories] = useState<CategoryDef[] | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchLectures = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const response = await fetch("/api/lectures");
-        if (!response.ok) {
-          throw new Error(`Failed to fetch lectures: ${response.statusText}`);
-        }
-        const data: CategoryDef[] = await response.json();
-        setCategories(data);
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : "An unknown error occurred";
-        setError(msg);
-        setCategories([]);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLectures();
-  }, []);
+  const { data: categories, isLoading, error } = useLectures();
 
   // Get a random banner image from categories
-  const bannerImage = React.useMemo(() => {
+  const bannerImage = useMemo(() => {
     if (!categories || categories.length === 0) return null;
     const allImages: string[] = [];
-    const collectImages = (cats: CategoryDef[]) => {
+    const collectImages = (cats: typeof categories) => {
       cats.forEach((cat) => {
         if (cat.bannerImageUrl) allImages.push(cat.bannerImageUrl);
         cat.lectures.forEach((lecture) => {
@@ -145,7 +120,7 @@ function LecturesPageContent() {
         {error && (
           <div className="text-center py-12">
             <p className="text-red-500 dark:text-red-400 text-lg">
-              {t("lecturesPage.errorPrefix")}: {error}
+              {t("lecturesPage.errorPrefix")}: {error.message}
             </p>
             <button
               onClick={() => window.location.reload()}
