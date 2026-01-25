@@ -1500,7 +1500,14 @@
     "typeArticle": "מאמר",
     "typeEvent": "אירוע",
     "typeLecture": "הרצאה",
-    "typePresentation": "מצגת"
+    "typePresentation": "מצגת",
+    "filters": "סינון",
+    "startDate": "תאריך התחלה",
+    "endDate": "תאריך סיום",
+    "itemsToShow": "פריטים להצגה",
+    "clearFilters": "נקה סינון",
+    "showing": "מציג",
+    "items": "פריטים"
   },
   "premiumBadge": {
     "title": "תוכן פרימיום",

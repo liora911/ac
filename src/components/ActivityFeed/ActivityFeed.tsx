@@ -12,6 +12,8 @@ import {
   Pencil,
   Trash2,
   AlertTriangle,
+  Filter,
+  X,
 } from "lucide-react";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -31,6 +33,12 @@ const ActivityFeed: React.FC = () => {
   const [activityToDelete, setActivityToDelete] = useState<ActivityItem | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Date range filtering
+  const [showFilters, setShowFilters] = useState(false);
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [limit, setLimit] = useState(10);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -45,9 +53,10 @@ const ActivityFeed: React.FC = () => {
   useEffect(() => {
     const fetchRecentActivities = async () => {
       try {
+        setLoading(true);
         const [articlesRes, eventsRes, lecturesRes, presentationsRes] =
           await Promise.all([
-            fetch("/api/articles?limit=5"),
+            fetch("/api/articles?limit=20"),
             fetch("/api/events"),
             fetch("/api/lectures"),
             fetch("/api/presentations"),
@@ -162,11 +171,32 @@ const ActivityFeed: React.FC = () => {
           });
         }
 
+        // Sort by timestamp (newest first)
         activities.sort(
           (a, b) =>
             new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
         );
-        setActivities(activities.slice(0, 8));
+
+        // Apply date range filter if specified
+        let filteredActivities = activities;
+        if (startDate || endDate) {
+          filteredActivities = activities.filter((activity) => {
+            const activityDate = new Date(activity.timestamp);
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+
+            // Set end date to end of day (23:59:59)
+            if (end) {
+              end.setHours(23, 59, 59, 999);
+            }
+
+            if (start && activityDate < start) return false;
+            if (end && activityDate > end) return false;
+            return true;
+          });
+        }
+
+        setActivities(filteredActivities.slice(0, limit));
       } catch (error) {
         console.error("Failed to fetch activities:", error);
       } finally {
@@ -175,7 +205,7 @@ const ActivityFeed: React.FC = () => {
     };
 
     fetchRecentActivities();
-  }, []);
+  }, [startDate, endDate, limit]);
 
   const getActivityIcon = (type: string) => {
     switch (type) {
@@ -317,16 +347,171 @@ const ActivityFeed: React.FC = () => {
     );
   }
 
+  const clearFilters = () => {
+    setStartDate("");
+    setEndDate("");
+    setLimit(10);
+  };
+
+  const hasActiveFilters = startDate || endDate || limit !== 10;
+
   if (activities.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-500">
-        {t("activity.noActivity")}
+      <div className="space-y-4">
+        {/* Filter Button */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            <Filter className="w-4 h-4" />
+            <span>{t("activity.filters")}</span>
+            {hasActiveFilters && (
+              <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+            )}
+          </button>
+        </div>
+
+        {/* Filters Panel */}
+        {showFilters && (
+          <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t("activity.startDate")}
+                </label>
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  {t("activity.endDate")}
+                </label>
+                <input
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("activity.itemsToShow")}
+              </label>
+              <select
+                value={limit}
+                onChange={(e) => setLimit(Number(e.target.value))}
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={20}>20</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+              >
+                <X className="w-4 h-4" />
+                <span>{t("activity.clearFilters")}</span>
+              </button>
+            )}
+          </div>
+        )}
+
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+          {t("activity.noActivity")}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-1" ref={menuRef}>
+    <div className="space-y-4">
+      {/* Filter Button */}
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => setShowFilters(!showFilters)}
+          className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        >
+          <Filter className="w-4 h-4" />
+          <span>{t("activity.filters")}</span>
+          {hasActiveFilters && (
+            <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
+          )}
+        </button>
+        {hasActiveFilters && (
+          <span className="text-xs text-gray-500 dark:text-gray-400">
+            {t("activity.showing")} {activities.length} {t("activity.items")}
+          </span>
+        )}
+      </div>
+
+      {/* Filters Panel */}
+      {showFilters && (
+        <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("activity.startDate")}
+              </label>
+              <input
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                {t("activity.endDate")}
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {t("activity.itemsToShow")}
+            </label>
+            <select
+              value={limit}
+              onChange={(e) => setLimit(Number(e.target.value))}
+              className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20}>20</option>
+              <option value={50}>50</option>
+            </select>
+          </div>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              <X className="w-4 h-4" />
+              <span>{t("activity.clearFilters")}</span>
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* Activities List */}
+      <div className="space-y-1" ref={menuRef}>
       {activities.map((activity) => {
         const { icon: IconComponent, bg, color } = getActivityIcon(activity.type);
         const isMenuOpen = openMenuId === activity.id;
@@ -413,6 +598,7 @@ const ActivityFeed: React.FC = () => {
           </div>
         );
       })}
+      </div>
 
       {/* Delete Confirmation Modal */}
       <Modal

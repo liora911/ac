@@ -189,7 +189,7 @@ export default function ElitzurDashboard() {
                   onChange={(e) => setAiInput(e.target.value)}
                   onFocus={() => aiMessages.length > 0 && setShowAiChat(true)}
                   placeholder={placeholderText}
-                  className="w-full py-2 ps-10 pe-10 text-sm rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full py-2 ps-10 pe-10 text-sm rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
                 <button
                   type="submit"
