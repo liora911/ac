@@ -3,60 +3,107 @@
 import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
-import { Event } from "@/types/Events/events";
+import type { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import EventModal from "@/components/Events/EventModal";
 import { List, CalendarDays } from "lucide-react";
 
+// Dynamic imports for code splitting
 const Events = dynamic(() => import("@/components/Events/Events"), {
-  loading: () => (
-    <div className="flex justify-center items-center py-12">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-    </div>
-  ),
+  loading: () => <LoadingSpinner />,
 });
 
 const FeaturedEvent = dynamic(
   () => import("@/components/Events/FeaturedEvent"),
   {
-    loading: () => (
-      <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
-    ),
-  },
+    loading: () => <FeaturedEventSkeleton />,
+  }
 );
 
 const CreateEventForm = dynamic(
   () => import("@/components/CreateEvent/create_event"),
   {
-    loading: () => (
-      <div className="flex justify-center items-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-      </div>
-    ),
-  },
+    loading: () => <LoadingSpinner />,
+  }
 );
 
 const EventsCalendar = dynamic(
   () => import("@/components/Events/EventsCalendar"),
   {
-    loading: () => (
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
-        <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
-        <div className="grid grid-cols-7 gap-1">
-          {[...Array(35)].map((_, i) => (
-            <div
-              key={i}
-              className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg"
-            />
-          ))}
-        </div>
-      </div>
-    ),
-  },
+    loading: () => <CalendarSkeleton />,
+  }
 );
 
-const EventsPage = () => {
+// Loading spinner component
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+    </div>
+  );
+}
+
+// Featured event skeleton
+function FeaturedEventSkeleton() {
+  return (
+    <div className="animate-pulse bg-gradient-to-br from-blue-600 to-indigo-800 rounded-2xl h-64 mb-8" />
+  );
+}
+
+// Calendar skeleton
+function CalendarSkeleton() {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 animate-pulse">
+      <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mx-auto mb-6" />
+      <div className="grid grid-cols-7 gap-1">
+        {[...Array(35)].map((_, i) => (
+          <div
+            key={i}
+            className="aspect-square bg-gray-100 dark:bg-gray-700 rounded-lg"
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Events list skeleton
+function EventsListSkeleton() {
+  return (
+    <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-400px)] rounded-lg">
+      <aside className="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
+        <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
+        <div className="space-y-2">
+          <div className="h-8 bg-gray-200 rounded" />
+          <div className="h-8 bg-gray-200 rounded w-5/6" />
+          <div className="h-8 bg-gray-200 rounded w-4/5" />
+        </div>
+      </aside>
+      <main className="w-full md:w-3/4 lg:w-4/5">
+        <div className="h-8 bg-gray-200 rounded w-1/2 mb-6 animate-pulse" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-lg shadow-sm border border-gray-200 h-64 animate-pulse"
+            >
+              <div className="h-32 bg-gray-200 rounded-t-lg" />
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-full mb-2" />
+                <div className="h-3 bg-gray-200 rounded w-2/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+// Main content component
+function EventsPageContent() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [eventsData, setEventsData] = useState<Event[] | null>(null);
@@ -247,36 +294,7 @@ const EventsPage = () => {
         )}
 
         {/* Loading Skeleton */}
-        {isLoading && (
-          <div className="flex flex-col md:flex-row gap-8 p-4 md:p-6 bg-white text-gray-900 min-h-[calc(100vh-400px)] rounded-lg">
-            <aside className="w-full md:w-1/4 lg:w-1/5 bg-white p-4 rounded-lg shadow-sm border border-gray-200 animate-pulse">
-              <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
-              <div className="space-y-2">
-                <div className="h-8 bg-gray-200 rounded"></div>
-                <div className="h-8 bg-gray-200 rounded w-5/6"></div>
-                <div className="h-8 bg-gray-200 rounded w-4/5"></div>
-              </div>
-            </aside>
-            <main className="w-full md:w-3/4 lg:w-4/5">
-              <div className="h-8 bg-gray-200 rounded w-1/2 mb-6 animate-pulse"></div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(3)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="bg-white rounded-lg shadow-sm border border-gray-200 h-64 animate-pulse"
-                  >
-                    <div className="h-32 bg-gray-200 rounded-t-lg"></div>
-                    <div className="p-4">
-                      <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-full mb-2"></div>
-                      <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </main>
-          </div>
-        )}
+        {isLoading && <EventsListSkeleton />}
 
         {error && (
           <p className="text-center text-xl text-red-500">
@@ -341,6 +359,13 @@ const EventsPage = () => {
       />
     </div>
   );
-};
+}
 
-export default EventsPage;
+// Main page component with Suspense boundary
+export default function EventsPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <EventsPageContent />
+    </Suspense>
+  );
+}

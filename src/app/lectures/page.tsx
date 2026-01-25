@@ -1,12 +1,67 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { CategoryDef } from "@/types/Lectures/lectures";
+import type { CategoryDef } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import LecturesCarouselView from "@/components/Lectures/LecturesCarouselView";
 
-export default function LecturesPage() {
+// Dynamic import for code splitting
+const LecturesCarouselView = dynamic(
+  () => import("@/components/Lectures/LecturesCarouselView"),
+  {
+    loading: () => <LecturesLoadingSkeleton />,
+  }
+);
+
+// Loading skeleton component
+function LecturesLoadingSkeleton() {
+  return (
+    <div className="space-y-8">
+      {/* Search skeleton */}
+      <div className="max-w-xl mx-auto">
+        <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-full animate-pulse" />
+      </div>
+      {/* Carousel skeletons */}
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="h-7 w-48 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
+            <div className="h-6 w-16 bg-gray-200 dark:bg-gray-800 rounded-full animate-pulse" />
+          </div>
+          <div className="flex gap-4 overflow-hidden">
+            {[1, 2, 3, 4].map((j) => (
+              <div
+                key={j}
+                className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]"
+              >
+                <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+                  <div className="aspect-video bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                  <div className="p-4 space-y-2">
+                    <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                    <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Loading spinner for Suspense fallback
+function LoadingSpinner() {
+  return (
+    <div className="flex justify-center items-center py-12">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600" />
+    </div>
+  );
+}
+
+// Main content component
+function LecturesPageContent() {
   const { t, locale } = useTranslation();
   const [categories, setCategories] = useState<CategoryDef[] | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -84,39 +139,7 @@ export default function LecturesPage() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Loading State */}
-        {isLoading && (
-          <div className="space-y-8">
-            {/* Search skeleton */}
-            <div className="max-w-xl mx-auto">
-              <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded-full animate-pulse" />
-            </div>
-            {/* Carousel skeletons */}
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className="h-7 w-48 bg-gray-200 dark:bg-gray-800 rounded animate-pulse" />
-                  <div className="h-6 w-16 bg-gray-200 dark:bg-gray-800 rounded-full animate-pulse" />
-                </div>
-                <div className="flex gap-4 overflow-hidden">
-                  {[1, 2, 3, 4].map((j) => (
-                    <div
-                      key={j}
-                      className="flex-shrink-0 w-[280px] sm:w-[300px] md:w-[320px]"
-                    >
-                      <div className="bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                        <div className="aspect-video bg-gray-200 dark:bg-gray-700 animate-pulse" />
-                        <div className="p-4 space-y-2">
-                          <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 animate-pulse" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        {isLoading && <LecturesLoadingSkeleton />}
 
         {/* Error State */}
         {error && (
@@ -148,5 +171,14 @@ export default function LecturesPage() {
         )}
       </div>
     </div>
+  );
+}
+
+// Main page component with Suspense boundary
+export default function LecturesPage() {
+  return (
+    <Suspense fallback={<LoadingSpinner />}>
+      <LecturesPageContent />
+    </Suspense>
   );
 }
