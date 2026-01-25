@@ -237,7 +237,7 @@ export default function ElitzurDashboard() {
                           className={`max-w-[80%] px-3 py-2 rounded-lg text-sm ${
                             message.role === "user"
                               ? "bg-blue-500 text-white"
-                              : "bg-white dark:bg-gray-800 text-gray-900 dark:text-white border border-gray-200 dark:border-gray-700"
+                              : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-50 font-medium border border-gray-200 dark:border-gray-700"
                           }`}
                         >
                           <p className="whitespace-pre-wrap">
