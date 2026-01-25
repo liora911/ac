@@ -1,54 +1,8 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import type { FavoriteType, FavoriteIds, FavoritesFull } from "@/types/Favorites/favorites";
 
-export type FavoriteType = "ARTICLE" | "LECTURE" | "PRESENTATION";
-
-interface FavoriteIds {
-  articles: string[];
-  lectures: string[];
-  presentations: string[];
-}
-
-interface FavoritesFull {
-  articles: Array<{
-    id: string;
-    slug?: string | null;
-    title: string;
-    articleImage?: string | null;
-    publisherName: string;
-    readDuration: number;
-    isPremium: boolean;
-    createdAt: string;
-    category?: { id: string; name: string } | null;
-    authors?: Array<{ id: string; name: string; imageUrl?: string | null }>;
-  }>;
-  lectures: Array<{
-    id: string;
-    title: string;
-    description: string;
-    bannerImageUrl?: string | null;
-    videoUrl?: string | null;
-    duration: string;
-    isPremium: boolean;
-    createdAt: string;
-    category: { id: string; name: string };
-  }>;
-  presentations: Array<{
-    id: string;
-    title: string;
-    description: string;
-    imageUrls: string[];
-    isPremium: boolean;
-    createdAt: string;
-    category: { id: string; name: string };
-  }>;
-  counts: {
-    articles: number;
-    lectures: number;
-    presentations: number;
-    total: number;
-  };
-}
+export type { FavoriteType };
 
 export const favoritesKeys = {
   all: ["favorites"] as const,

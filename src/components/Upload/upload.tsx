@@ -4,14 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import { Loader2 } from "lucide-react";
 import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
-
-interface DragDropImageUploadProps {
-  onImageSelect: (url: string | null) => void;
-  currentImage?: string | null;
-  label?: string;
-  placeholder?: string;
-  onError?: (message: string) => void;
-}
+import type { DragDropImageUploadProps } from "@/types/Upload/upload";
 
 export default function DragDropImageUpload({
   onImageSelect,

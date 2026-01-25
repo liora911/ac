@@ -63,20 +63,26 @@ function SearchPageContent() {
     setError(null);
     try {
       const response = await fetch(
-        `/api/search?q=${encodeURIComponent(searchQuery)}`
+        `/api/search?q=${encodeURIComponent(searchQuery)}`,
       );
       if (response.ok) {
         const data = await response.json();
         setResults(data);
       } else if (response.status === 429) {
-        const data = await response.json();
-        setError(t("searchPage.rateLimited") || "Too many requests. Please wait a moment.");
+        setError(
+          t("searchPage.rateLimited") ||
+            "Too many requests. Please wait a moment.",
+        );
       } else {
-        setError(t("searchPage.searchError") || "Search failed. Please try again.");
+        setError(
+          t("searchPage.searchError") || "Search failed. Please try again.",
+        );
       }
     } catch (err) {
       console.error("Search error:", err);
-      setError(t("searchPage.searchError") || "Search failed. Please try again.");
+      setError(
+        t("searchPage.searchError") || "Search failed. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -233,7 +239,10 @@ function SearchPageContent() {
 
         {isLoading && (
           <div className="text-center py-12" role="status" aria-live="polite">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4" aria-hidden="true"></div>
+            <div
+              className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"
+              aria-hidden="true"
+            ></div>
             <p className="text-gray-600">{t("searchPage.searching")}</p>
           </div>
         )}
@@ -306,7 +315,7 @@ function SearchPageContent() {
                                 : result.content
                                   ? stripHtml(result.content).substring(
                                       0,
-                                      200
+                                      200,
                                     ) + "..."
                                   : t("searchPage.noDescription")}
                             </p>
@@ -319,9 +328,9 @@ function SearchPageContent() {
                               {(result.eventDate || result.date) && (
                                 <span className="bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
                                   {new Date(
-                                    result.eventDate || result.date!
+                                    result.eventDate || result.date!,
                                   ).toLocaleDateString(
-                                    isHebrew ? "he-IL" : "en-US"
+                                    isHebrew ? "he-IL" : "en-US",
                                   )}
                                 </span>
                               )}

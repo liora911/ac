@@ -3,19 +3,7 @@
 import React, { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-type ModalProps = {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  message?: string;
-  confirmText?: string;
-  onConfirm?: () => void;
-  showCancel?: boolean;
-  cancelText?: string;
-  children?: React.ReactNode;
-  hideFooter?: boolean;
-};
+import type { ModalProps } from "@/types/Modal/modal";
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,

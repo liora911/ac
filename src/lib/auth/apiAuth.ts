@@ -3,21 +3,9 @@ import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
+import type { AuthResult, AuthError } from "@/types/Auth/api-auth";
 
-export interface AuthResult {
-  session: NonNullable<Awaited<ReturnType<typeof getServerSession>>>;
-  user: {
-    id: string;
-    email: string | null;
-    name: string | null;
-    role: string;
-  };
-}
-
-export interface AuthError {
-  error: string;
-  status: 401 | 403 | 404 | 500;
-}
+export type { AuthResult, AuthError };
 
 /**
  * Require authentication for an API route.

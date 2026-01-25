@@ -13,8 +13,7 @@ import FeaturedCarouselSection from "./FeaturedCarouselSection";
 import RichContent from "@/components/RichContent";
 import type { ContentItem } from "@/types/Home/home";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
-
-const FETCH_BATCH_SIZE = 9; // v2 - two-column hero
+import { FETCH_BATCH_SIZE } from "@/constants/pagination";
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),

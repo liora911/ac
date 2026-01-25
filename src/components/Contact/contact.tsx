@@ -13,15 +13,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { track } from "@vercel/analytics";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
-
-const SUBJECT_OPTIONS = [
-  { value: "general", labelKey: "contact.subjects.general" },
-  { value: "article", labelKey: "contact.subjects.article" },
-  { value: "collaboration", labelKey: "contact.subjects.collaboration" },
-  { value: "event", labelKey: "contact.subjects.event" },
-  { value: "technical", labelKey: "contact.subjects.technical" },
-  { value: "other", labelKey: "contact.subjects.other" },
-];
+import { SUBJECT_OPTIONS } from "@/constants/contact";
 
 const Contact = () => {
   const { t, locale } = useTranslation();

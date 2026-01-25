@@ -1,24 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import type { HomeContent, UpdateHomeContentPayload } from "@/types/Home/home-content";
 
-export type HomeContent = {
-  id: string;
-  heroHtml: string | null;
-  heroHtmlLeft: string | null;
-  heroHtmlRight: string | null;
-  imageUrl: string | null;
-  photoCredit: string | null;
-  bioHtml: string;
-  updatedAt: string | null;
-};
-
-export type UpdateHomeContentPayload = {
-  heroHtml?: string | null;
-  heroHtmlLeft?: string | null;
-  heroHtmlRight?: string | null;
-  imageUrl?: string | null;
-  photoCredit?: string | null;
-  bioHtml?: string;
-};
+export type { HomeContent, UpdateHomeContentPayload };
 
 export const homeContentKeys = {
   all: ["homeContent"] as const,

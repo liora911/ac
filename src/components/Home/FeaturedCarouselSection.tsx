@@ -15,11 +15,8 @@ import PremiumBadge from "@/components/PremiumBadge";
 import ContentPreviewPopover from "./ContentPreviewPopover";
 import type { ContentItem } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
-
-const ITEMS_PER_PAGE = 3;
-const COOLDOWN_MS = 500;
-const BATCH_SIZE = 9;
-const HOVER_DELAY_MS = 500;
+import { ITEMS_PER_PAGE, BATCH_SIZE } from "@/constants/pagination";
+import { COOLDOWN_MS, HOVER_DELAY_MS } from "@/constants/timing";
 
 interface FeaturedCarouselSectionProps {
   title: string;

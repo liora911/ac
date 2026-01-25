@@ -6,15 +6,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ArrowLeft, ChevronLeft, ChevronRight, Loader2 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { ContentItem, ContentCardProps } from "@/types/Home/home";
+import type { ExtendedContentCardProps } from "@/types/Home/content-card";
+import { ITEMS_PER_PAGE } from "@/constants/pagination";
 
 export type { ContentItem, ContentCardProps };
-
-const ITEMS_PER_PAGE = 3;
-
-interface ExtendedContentCardProps extends ContentCardProps {
-  contentType?: string;
-  onLoadMore?: (type: string, skip: number) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
-}
 
 const ContentCard: React.FC<ExtendedContentCardProps> = React.memo(({
   title,

@@ -1,22 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, useCallback } from "react";
-
-interface CategoryPreferences {
-  selectedCategoryIds: string[];
-  hasSeenWelcome: boolean;
-}
-
-interface CategoryPreferencesContextType {
-  selectedCategoryIds: string[];
-  hasSeenWelcome: boolean;
-  shouldShowWelcome: boolean;
-  shouldFilterContent: boolean;
-  setSelectedCategories: (ids: string[]) => void;
-  markWelcomeSeen: () => void;
-  resetPreferences: () => void;
-  isCategorySelected: (categoryId: string) => boolean;
-}
+import type { CategoryPreferences, CategoryPreferencesContextType } from "@/types/Context/category-preferences";
 
 const STORAGE_KEY = "categoryPreferences";
 

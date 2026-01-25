@@ -10,12 +10,9 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import EventModal from "./EventModal";
+import type { EventsProps } from "@/types/Events/events-component";
 
-export interface EventsProps {
-  onBannerUpdate: (imageUrl: string | null, altText: string) => void;
-  eventsData: Event[];
-  featuredEventId?: string;
-}
+export type { EventsProps };
 
 const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
   const { t, locale } = useTranslation();

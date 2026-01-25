@@ -5,22 +5,8 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText } from "lucide-react";
-
-interface ArticlePreview {
-  id: string;
-  title: string;
-  slug: string;
-}
-
-interface CategoryWithArticles {
-  id: string;
-  name: string;
-  articles: ArticlePreview[];
-}
-
-interface FooterSitemapData {
-  categories: CategoryWithArticles[];
-}
+import type { ArticlePreview, CategoryWithArticles, FooterSitemapData } from "@/types/Sitemap/footer-sitemap";
+import { SITEMAP_CACHE_KEY, SITEMAP_CACHE_DURATION } from "@/constants/cache";
 
 function BlackHoleIcon({ className }: { className?: string }) {
   return (
@@ -117,10 +103,6 @@ function CategoryItem({ category }: { category: CategoryWithArticles }) {
     </div>
   );
 }
-
-// Client-side cache key and duration
-const SITEMAP_CACHE_KEY = "footer-sitemap-cache";
-const SITEMAP_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 interface CachedSitemapData {
   data: FooterSitemapData;

@@ -1,26 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
+import type { ArticlePreview, CategoryWithArticles, FooterSitemapData } from "@/types/Sitemap/footer-sitemap";
 
 // Cache for 24 hours (aggressive caching for footer sitemap)
 let cachedData: FooterSitemapData | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
-
-interface ArticlePreview {
-  id: string;
-  title: string;
-  slug: string;
-}
-
-interface CategoryWithArticles {
-  id: string;
-  name: string;
-  articles: ArticlePreview[];
-}
-
-interface FooterSitemapData {
-  categories: CategoryWithArticles[];
-}
 
 export async function GET() {
   try {

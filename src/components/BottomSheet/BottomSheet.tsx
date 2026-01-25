@@ -4,13 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-interface BottomSheetProps {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  children: React.ReactNode;
-}
+import type { BottomSheetProps } from "@/types/BottomSheet/bottom-sheet";
 
 export default function BottomSheet({
   isOpen,

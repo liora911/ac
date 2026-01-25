@@ -2,21 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import type { VercelAnalyticsResponse } from "@/types/Analytics/vercel-analytics";
 
 // Vercel Analytics API endpoint
 const VERCEL_API_BASE = "https://api.vercel.com";
-
-interface VercelAnalyticsResponse {
-  data?: {
-    pageViews?: number;
-    visitors?: number;
-    uniqueVisitors?: number;
-  };
-  series?: Array<{
-    key: string;
-    total: number;
-  }>;
-}
 
 export async function GET(request: NextRequest) {
   try {

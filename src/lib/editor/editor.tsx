@@ -64,8 +64,10 @@ import {
   MicOff,
 } from "lucide-react";
 
+import type { TooltipProps, DropdownProps } from "@/types/Editor/tiptap-editor";
+
 // Tooltip Component
-const Tooltip = ({ children, text }: { children: React.ReactNode; text: string }) => {
+const Tooltip = ({ children, text }: TooltipProps) => {
   return (
     <div className="relative group/tooltip">
       {children}
@@ -83,12 +85,7 @@ const Dropdown = ({
   children,
   isOpen,
   onToggle,
-}: {
-  trigger: React.ReactNode;
-  children: React.ReactNode;
-  isOpen: boolean;
-  onToggle: () => void;
-}) => {
+}: DropdownProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

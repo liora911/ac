@@ -1,7 +1,4 @@
-type RateLimitRecord = {
-  count: number;
-  resetTime: number;
-};
+import type { RateLimitRecord, RateLimitConfig, RateLimitResult } from "@/types/RateLimit/rate-limit";
 
 const rateLimitMap = new Map<string, RateLimitRecord>();
 
@@ -14,17 +11,6 @@ setInterval(() => {
     }
   }
 }, 5 * 60 * 1000);
-
-type RateLimitConfig = {
-  maxRequests: number;
-  windowMs: number;
-};
-
-type RateLimitResult = {
-  success: boolean;
-  remaining: number;
-  resetIn: number;
-};
 
 export function rateLimit(
   identifier: string,
