@@ -64,7 +64,16 @@ import {
   MicOff,
 } from "lucide-react";
 
-import type { TooltipProps, DropdownProps } from "@/types/Editor/tiptap-editor";
+import type {
+  TooltipProps,
+  DropdownProps,
+  ToolbarButtonProps,
+  DropdownItemProps,
+} from "@/types/Editor/tiptap-editor";
+import type {
+  SpeechRecognition,
+  SpeechRecognitionEvent,
+} from "@/types/Editor/speech-recognition";
 
 // Tooltip Component
 const Tooltip = ({ children, text }: TooltipProps) => {
@@ -111,50 +120,6 @@ const Dropdown = ({
     </div>
   );
 };
-
-// TypeScript declaration for Web Speech API
-interface SpeechRecognitionEvent extends Event {
-  results: SpeechRecognitionResultList;
-  resultIndex: number;
-}
-
-interface SpeechRecognitionResultList {
-  length: number;
-  item(index: number): SpeechRecognitionResult;
-  [index: number]: SpeechRecognitionResult;
-}
-
-interface SpeechRecognitionResult {
-  isFinal: boolean;
-  length: number;
-  item(index: number): SpeechRecognitionAlternative;
-  [index: number]: SpeechRecognitionAlternative;
-}
-
-interface SpeechRecognitionAlternative {
-  transcript: string;
-  confidence: number;
-}
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  start(): void;
-  stop(): void;
-  abort(): void;
-  onresult: ((event: SpeechRecognitionEvent) => void) | null;
-  onerror: ((event: Event & { error: string }) => void) | null;
-  onend: (() => void) | null;
-  onstart: (() => void) | null;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-    webkitSpeechRecognition: new () => SpeechRecognition;
-  }
-}
 
 export default function TiptapEditor({
   value,
@@ -316,13 +281,7 @@ export default function TiptapEditor({
     children,
     title,
     disabled = false,
-  }: {
-    onClick: () => void;
-    isActive?: boolean;
-    children: React.ReactNode;
-    title: string;
-    disabled?: boolean;
-  }) => (
+  }: ToolbarButtonProps) => (
     <Tooltip text={title}>
       <button
         type="button"
@@ -344,12 +303,7 @@ export default function TiptapEditor({
     isActive,
     icon: Icon,
     label,
-  }: {
-    onClick: () => void;
-    isActive?: boolean;
-    icon?: any;
-    label: string;
-  }) => (
+  }: DropdownItemProps) => (
     <button
       type="button"
       onClick={() => {

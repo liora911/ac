@@ -15,10 +15,7 @@ import DownloadPDFButton from "@/components/Article/DownloadPDFButton";
 import ShareButton from "@/components/Article/ShareButton";
 import en from "@/locales/en.json";
 import he from "@/locales/he.json";
-
-interface ArticlePageProps {
-  params: Promise<{ id: string }>;
-}
+import type { ArticlePageProps } from "@/types/Articles/articles";
 
 // Server-side function to fetch article by ID or slug
 async function getArticle(idOrSlug: string) {

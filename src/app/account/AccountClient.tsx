@@ -26,32 +26,11 @@ import {
   X,
 } from "lucide-react";
 import { Suspense } from "react";
-import { UserRole } from "@prisma/client";
 import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
-
-interface AccountClientProps {
-  user: {
-    id: string;
-    name?: string | null;
-    email?: string | null;
-    role: UserRole;
-    createdAt?: string;
-  };
-  subscription: {
-    status: string;
-    currentPeriodEnd: string;
-    cancelAtPeriodEnd: boolean;
-  } | null;
-  ticketCount: number;
-  stats?: {
-    articlesRead?: number;
-    lecturesWatched?: number;
-    eventsAttended?: number;
-  };
-}
+import type { AccountClientProps } from "@/types/Account/account";
 
 // Extract username from email
 function getUsernameFromEmail(email: string | null | undefined): string {

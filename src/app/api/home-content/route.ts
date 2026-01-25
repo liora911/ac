@@ -3,15 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-
-type HomeContentPayload = {
-  heroHtml?: string | null;
-  heroHtmlLeft?: string | null;
-  heroHtmlRight?: string | null;
-  imageUrl?: string | null;
-  photoCredit?: string | null;
-  bioHtml?: string;
-};
+import type { UpdateUpdateHomeContentPayload } from "@/types/Home/home-content";
 
 export async function GET() {
   try {
@@ -71,7 +63,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = (await request.json()) as HomeContentPayload;
+    const body = (await request.json()) as UpdateHomeContentPayload;
     const { heroHtml = null, heroHtmlLeft = null, heroHtmlRight = null, imageUrl = null, photoCredit = null, bioHtml = "" } = body;
 
     const updated = await prisma.homeContent.upsert({

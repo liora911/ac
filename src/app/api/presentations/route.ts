@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import type { PresentationPresentationTreeCategory } from "@/types/Presentations/presentations-api";
 
 export async function GET() {
   try {
@@ -32,18 +33,7 @@ export async function GET() {
       },
     });
 
-    type TreeCategory = {
-      id: string;
-      name: string;
-      bannerImageUrl: string | null;
-      parentId: string | null;
-      createdAt: Date;
-      updatedAt: Date;
-      presentations: (typeof prismaCategories)[number]["presentations"];
-      subcategories: TreeCategory[];
-    };
-
-    const byId = new Map<string, TreeCategory>();
+    const byId = new Map<string, PresentationPresentationTreeCategory>();
 
     prismaCategories.forEach((cat) => {
       byId.set(cat.id, {
@@ -58,7 +48,7 @@ export async function GET() {
       });
     });
 
-    const roots: TreeCategory[] = [];
+    const roots: PresentationTreeCategory[] = [];
 
     byId.forEach((cat) => {
       if (cat.parentId && byId.has(cat.parentId)) {
@@ -70,7 +60,7 @@ export async function GET() {
     });
 
     // Filter out categories with 0 presentations (including subcategories)
-    function filterEmptyCategories(categories: TreeCategory[]): TreeCategory[] {
+    function filterEmptyCategories(categories: PresentationTreeCategory[]): PresentationTreeCategory[] {
       return categories
         .map((cat) => ({
           ...cat,

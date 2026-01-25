@@ -1,14 +1,4 @@
-interface PaymentConfirmationEmailProps {
-  holderName: string;
-  eventTitle: string;
-  eventDate: string;
-  eventTime?: string;
-  eventLocation?: string;
-  numberOfSeats: number;
-  ticketUrl: string;
-  amountPaid: string;
-  locale?: "he" | "en";
-}
+import type { PaymentConfirmationEmailProps } from "@/types/Email/email";
 
 export function generatePaymentConfirmationEmail({
   holderName,

@@ -1,4 +1,45 @@
-// Component Props
+import type { Prisma } from "@prisma/client";
+
+// ============================================
+// API TYPES
+// ============================================
+
+/**
+ * Article with all relations included (for API routes).
+ * Used when fetching articles from the database with full relations.
+ */
+export type ArticleWithRelations = Prisma.ArticleGetPayload<{
+  select: {
+    id: true;
+    title: true;
+    subtitle: true;
+    slug: true;
+    content: true;
+    articleImage: true;
+    publisherName: true;
+    publisherImage: true;
+    readDuration: true;
+    published: true;
+    isPremium: true;
+    isFeatured: true;
+    order: true;
+    createdAt: true;
+    updatedAt: true;
+    direction: true;
+    authorId: true;
+    categoryId: true;
+    author: { select: { id: true; name: true; email: true; image: true } };
+    category: { select: { id: true; name: true; bannerImageUrl: true } };
+    categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
+    tags: { include: { tag: { select: { id: true; name: true; slug: true; color: true } } } };
+    authors: { select: { id: true; name: true; imageUrl: true; order: true } };
+  };
+}>;
+
+// ============================================
+// COMPONENT PROPS
+// ============================================
+
 export interface ArticleModalProps {
   article: Article | null;
   onClose: () => void;
@@ -274,4 +315,12 @@ export interface ArticleClientProps {
     editButton: string;
     downloadPDF: string;
   };
+}
+
+/**
+ * Props for the Article page component.
+ * Next.js page props with dynamic route parameter.
+ */
+export interface ArticlePageProps {
+  params: Promise<{ id: string }>;
 }

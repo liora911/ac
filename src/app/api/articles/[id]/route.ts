@@ -3,40 +3,15 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import prisma from "@/lib/prisma/prisma";
-import type { Prisma } from "@prisma/client";
-import type { Article, UpdateArticleRequest, ArticleAuthorInput } from "@/types/Articles/articles";
+import type {
+  Article,
+  UpdateArticleRequest,
+  ArticleAuthorInput,
+  ArticleWithRelations,
+} from "@/types/Articles/articles";
 import { deleteBlobs } from "@/actions/upload";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { findOrCreateTags } from "@/lib/prisma/tags";
-
-// Type for article with included relations
-type ArticleWithRelations = Prisma.ArticleGetPayload<{
-  select: {
-    id: true;
-    title: true;
-    subtitle: true;
-    slug: true;
-    content: true;
-    articleImage: true;
-    publisherName: true;
-    publisherImage: true;
-    readDuration: true;
-    published: true;
-    isPremium: true;
-    isFeatured: true;
-    order: true;
-    createdAt: true;
-    updatedAt: true;
-    direction: true;
-    authorId: true;
-    categoryId: true;
-    author: { select: { id: true; name: true; email: true; image: true } };
-    category: { select: { id: true; name: true; bannerImageUrl: true } };
-    categories: { include: { category: { select: { id: true; name: true; bannerImageUrl: true } } } };
-    tags: { include: { tag: { select: { id: true; name: true; slug: true; color: true } } } };
-    authors: { select: { id: true; name: true; imageUrl: true; order: true } };
-  };
-}>;
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {

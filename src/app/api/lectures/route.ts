@@ -1,14 +1,13 @@
 import { Category } from "@/types/Lectures/lectures";
+import type { LectureLectureTreeCategory, FormattedLecture } from "@/types/Lectures/lectures-api";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 
 type LectureWithAuthor = any;
-type SubcategoryWithLectures = any;
-type CategoryWithLectures = any;
 
-function formatLecture(lec: LectureWithAuthor) {
+function formatLecture(lec: LectureWithAuthor): FormattedLecture {
   return {
     id: lec.id,
     title: lec.title,
@@ -51,16 +50,7 @@ export async function GET() {
       },
     });
 
-    type TreeCategory = {
-      id: string;
-      name: string;
-      bannerImageUrl?: string;
-      parentId: string | null;
-      lectures: ReturnType<typeof formatLecture>[];
-      subcategories: TreeCategory[];
-    };
-
-    const byId = new Map<string, TreeCategory>();
+    const byId = new Map<string, LectureLectureTreeCategory>();
 
     prismaCategories.forEach((cat) => {
       byId.set(cat.id, {
@@ -73,7 +63,7 @@ export async function GET() {
       });
     });
 
-    const roots: TreeCategory[] = [];
+    const roots: LectureTreeCategory[] = [];
 
     byId.forEach((cat) => {
       if (cat.parentId && byId.has(cat.parentId)) {
@@ -85,7 +75,7 @@ export async function GET() {
     });
 
     // Helper to count total lectures in a category (including subcategories)
-    function getTotalLectureCount(cat: TreeCategory): number {
+    function getTotalLectureCount(cat: LectureTreeCategory): number {
       let count = cat.lectures.length;
       for (const sub of cat.subcategories) {
         count += getTotalLectureCount(sub);
@@ -94,7 +84,7 @@ export async function GET() {
     }
 
     // Filter out categories with 0 lectures (including subcategories)
-    function filterEmptyCategories(categories: TreeCategory[]): TreeCategory[] {
+    function filterEmptyCategories(categories: LectureTreeCategory[]): LectureTreeCategory[] {
       return categories
         .map((cat) => ({
           ...cat,

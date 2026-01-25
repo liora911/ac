@@ -1,8 +1,7 @@
 import { upload } from "@vercel/blob/client";
+import type { ClientUploadResult } from "@/types/Upload/upload";
 
-export type ClientUploadResult =
-  | { success: true; url: string; filename: string }
-  | { success: false; error: string };
+export type { ClientUploadResult };
 
 // Allowed file types (must match server-side validation)
 const imageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];

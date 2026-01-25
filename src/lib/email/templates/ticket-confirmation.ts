@@ -1,13 +1,4 @@
-interface TicketConfirmationEmailProps {
-  holderName: string;
-  eventTitle: string;
-  eventDate: string;
-  eventTime?: string;
-  eventLocation?: string;
-  numberOfSeats: number;
-  ticketUrl: string;
-  locale?: "he" | "en";
-}
+import type { TicketConfirmationEmailProps } from "@/types/Email/email";
 
 export function generateTicketConfirmationEmail({
   holderName,
