@@ -562,7 +562,8 @@
     "search": "Search",
     "reserveTicket": "Reserve Ticket",
     "ticketSummary": "Ticket",
-    "favorites": "My Favorites"
+    "favorites": "My Favorites",
+    "browse": "Sitemap"
   },
   "editEventPage": {
     "title": "Edit Event"
@@ -576,7 +577,17 @@
   "footer": {
     "contact": "Contact: avshalom@iyar.org.il",
     "siteMap": "Site Map - מפת האתר",
-    "browseByCategory": "Browse Articles by Category"
+    "browseByCategory": "Browse Articles by Category",
+    "browseAllCategories": "Sitemap"
+  },
+  "browse": {
+    "title": "Browse All Categories",
+    "subtitle": "Explore all categories and their content",
+    "articles": "articles",
+    "lectures": "lectures",
+    "presentations": "presentations",
+    "events": "events",
+    "noCategories": "No categories available"
   },
   "contact": {
     "title": "Contact Form",
@@ -769,7 +780,8 @@
     "noResults": "No events found",
     "featuredEvent": "Featured Event",
     "viewDetails": "View Details",
-    "tryDifferentSearch": "Try adjusting your search or filter criteria"
+    "tryDifferentSearch": "Try adjusting your search or filter criteria",
+    "free": "Free"
   },
   "tickets": {
     "reserveSpot": "Reserve a Spot",

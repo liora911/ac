@@ -579,7 +579,8 @@
     "tickets": "כרטיסים",
     "myTickets": "הכרטיסים שלי",
     "account": "החשבון שלי",
-    "favorites": "המועדפים שלי"
+    "favorites": "המועדפים שלי",
+    "browse": "מפת האתר"
   },
   "editEventPage": {
     "title": "עריכת אירוע"
@@ -593,7 +594,17 @@
   "footer": {
     "contact": "להזמנות: avshalom@iyar.org.il",
     "siteMap": "מפת האתר - Site Map",
-    "browseByCategory": "עיון במאמרים לפי קטגוריה"
+    "browseByCategory": "עיון במאמרים לפי קטגוריה",
+    "browseAllCategories": "מפת האתר"
+  },
+  "browse": {
+    "title": "עיון בכל הקטגוריות",
+    "subtitle": "גלה את כל הקטגוריות והתוכן שלהן",
+    "articles": "מאמרים",
+    "lectures": "הרצאות",
+    "presentations": "מצגות",
+    "events": "אירועים",
+    "noCategories": "אין קטגוריות זמינות"
   },
   "contact": {
     "title": "טופס יצירת קשר",
@@ -788,7 +799,8 @@
     "noResults": "לא נמצאו אירועים",
     "featuredEvent": "אירוע מומלץ",
     "viewDetails": "לפרטים נוספים",
-    "tryDifferentSearch": "נסה לשנות את החיפוש או הסינון"
+    "tryDifferentSearch": "נסה לשנות את החיפוש או הסינון",
+    "free": "חינם"
   },
   "tickets": {
     "reserveSpot": "שריין מקום",

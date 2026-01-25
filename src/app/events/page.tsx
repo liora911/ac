@@ -114,6 +114,7 @@ function EventsPageContent() {
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<"list" | "calendar">("list");
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -222,6 +223,14 @@ function EventsPageContent() {
     setSelectedEvent(null);
   };
 
+  const handleViewModeChange = (mode: "list" | "calendar") => {
+    setViewMode(mode);
+    // Scroll to content area after a short delay to allow state update
+    setTimeout(() => {
+      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+  };
+
   return (
     <div
       className="min-h-screen bg-gray-50 dark:bg-gray-950"
@@ -254,7 +263,7 @@ function EventsPageContent() {
           {/* View Toggle */}
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
-              onClick={() => setViewMode("list")}
+              onClick={() => handleViewModeChange("list")}
               className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
                 viewMode === "list"
                   ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
@@ -268,7 +277,7 @@ function EventsPageContent() {
               </span>
             </button>
             <button
-              onClick={() => setViewMode("calendar")}
+              onClick={() => handleViewModeChange("calendar")}
               className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-all cursor-pointer ${
                 viewMode === "calendar"
                   ? "bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm"
@@ -327,7 +336,7 @@ function EventsPageContent() {
 
         {/* Events List or Calendar */}
         {!isLoading && !error && eventsData && eventsData.length > 0 && (
-          <div>
+          <div ref={contentRef}>
             {viewMode === "list" ? (
               <Suspense
                 fallback={
