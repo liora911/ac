@@ -4,15 +4,14 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { BrowseData, BrowseCategoryItem } from "@/types/Browse/browse";
-import { FolderOpen, FileText, Video, Presentation, Calendar, ChevronRight } from "lucide-react";
+import { FolderOpen, FileText, Video, Presentation, Calendar } from "lucide-react";
 
 function CategoryCard({ category }: { category: BrowseCategoryItem }) {
   const { locale, t } = useTranslation();
-  const hasContent = category.counts.total > 0;
   const hasSubcategories = category.subcategories.length > 0;
 
-  // Use URL-encoded category name for cleaner URLs
-  const categoryParam = encodeURIComponent(category.name);
+  // Use category ID for URL
+  const categoryParam = category.id;
 
   return (
     <div className="space-y-4">

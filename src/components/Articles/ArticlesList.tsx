@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
+import React, { useState, Suspense } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -81,12 +81,11 @@ function ArticlesListContent({
   } = useCategoryPreferences();
 
   // Read URL params for initial state
-  const urlCategoryName = searchParams.get("c");
+  const urlCategoryId = searchParams.get("c");
   const urlPage = searchParams.get("page");
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
-  const [selectedCategoryName, setSelectedCategoryName] = useState(urlCategoryName || "");
+  const [selectedCategory, setSelectedCategory] = useState(categoryId || urlCategoryId || "");
   const [currentPage, setCurrentPage] = useState(urlPage ? parseInt(urlPage, 10) : 1);
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
@@ -139,23 +138,12 @@ function ArticlesListContent({
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
-  // Sync URL category name to category ID when categories are loaded
-  useEffect(() => {
-    if (urlCategoryName && categories && categories.length > 0 && !selectedCategory) {
-      const decodedName = decodeURIComponent(urlCategoryName);
-      const category = categories.find((c) => c.name === decodedName);
-      if (category) {
-        setSelectedCategory(category.id);
-        setSelectedCategoryName(decodedName);
-      }
-    }
-  }, [urlCategoryName, categories, selectedCategory]);
 
   // Update URL when filters change
-  const updateURL = (categoryName: string | null, page: number) => {
+  const updateURL = (categoryId: string | null, page: number) => {
     const params = new URLSearchParams();
-    if (categoryName) {
-      params.set("c", categoryName);
+    if (categoryId) {
+      params.set("c", categoryId);
     }
     if (page > 1) {
       params.set("page", page.toString());
@@ -202,12 +190,7 @@ function ArticlesListContent({
   const handleCategoryChange = (newCategoryId: string) => {
     setSelectedCategory(newCategoryId);
     setCurrentPage(1);
-
-    // Find category name for URL
-    const category = categories?.find((c) => c.id === newCategoryId);
-    const categoryName = category?.name || null;
-    setSelectedCategoryName(categoryName || "");
-    updateURL(categoryName, 1);
+    updateURL(newCategoryId || null, 1);
   };
 
   const handleSortChange = (sort: SortOption) => {
@@ -217,7 +200,7 @@ function ArticlesListContent({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    updateURL(selectedCategoryName || null, page);
+    updateURL(selectedCategory || null, page);
   };
 
   if (error) {
