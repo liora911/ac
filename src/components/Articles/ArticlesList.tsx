@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, Suspense, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,11 +9,9 @@ import {
   useSearchArticles,
   useCategories,
 } from "../../hooks/useArticles";
-import type { Article, ArticlesListProps, ArticleCardProps, StatusFilter, SortOption } from "../../types/Articles/articles";
+import type { Article, ArticlesListProps, SortOption } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
-import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import Modal from "@/components/Modal/Modal";
 import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
@@ -26,6 +24,24 @@ import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import MobileArticleCard from "./MobileArticleCard";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
+import { copyToClipboard } from "@/lib/utils/clipboard";
+import { stripHtml } from "@/lib/utils/stripHtml";
+
+// Pure function - defined outside component to avoid recreation on every render
+const getSortParams = (option: SortOption) => {
+  switch (option) {
+    case "newest":
+      return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
+    case "oldest":
+      return { sortBy: "createdAt" as const, sortOrder: "asc" as const };
+    case "title-asc":
+      return { sortBy: "title" as const, sortOrder: "asc" as const };
+    case "title-desc":
+      return { sortBy: "title" as const, sortOrder: "desc" as const };
+    default:
+      return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
+  }
+};
 
 // Wrapper component to handle Suspense for useSearchParams
 export default function ArticlesList(props: ArticlesListProps) {
@@ -64,10 +80,6 @@ function ArticlesListContent({
   featuredOnly = false,
   viewMode: initialViewMode = "grid",
 }: ArticlesListProps) {
-  const { data: session } = useSession();
-  const isAuthorized =
-    session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
   const router = useRouter();
@@ -92,22 +104,6 @@ function ArticlesListContent({
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   const [sortOption, setSortOption] = useState<SortOption>("newest");
-
-  // Map sort option to sortBy and sortOrder params
-  const getSortParams = (option: SortOption) => {
-    switch (option) {
-      case "newest":
-        return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
-      case "oldest":
-        return { sortBy: "createdAt" as const, sortOrder: "asc" as const };
-      case "title-asc":
-        return { sortBy: "title" as const, sortOrder: "asc" as const };
-      case "title-desc":
-        return { sortBy: "title" as const, sortOrder: "desc" as const };
-      default:
-        return { sortBy: "createdAt" as const, sortOrder: "desc" as const };
-    }
-  };
 
   // Debounce search query to prevent API call on every keystroke
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 350);
@@ -140,7 +136,7 @@ function ArticlesListContent({
 
 
   // Update URL when filters change
-  const updateURL = (categoryId: string | null, page: number) => {
+  const updateURL = useCallback((categoryId: string | null, page: number) => {
     const params = new URLSearchParams();
     if (categoryId) {
       params.set("c", categoryId);
@@ -150,58 +146,64 @@ function ArticlesListContent({
     }
     const queryString = params.toString();
     router.push(queryString ? `/articles?${queryString}` : "/articles", { scroll: false });
-  };
+  }, [router]);
+
+  // Memoize selected category data to avoid duplicate lookups
+  const selectedCategoryData = useMemo(() => {
+    return categories?.find((c) => c.id === selectedCategory);
+  }, [categories, selectedCategory]);
 
   // Get raw articles from API
   const rawArticles = articlesData?.articles || [];
 
   // Filter articles by user's category preferences (client-side filtering)
-  const articles = shouldFilterContent
-    ? rawArticles.filter((article: Article) => {
-        // Check if article has any category that matches user's preferences
-        const articleCategoryIds = [
-          ...(article.categories?.map((c: { id: string }) => c.id) || []),
-          article.category?.id,
-        ].filter(Boolean) as string[];
+  const articles = useMemo(() => {
+    if (!shouldFilterContent) return rawArticles;
+    return rawArticles.filter((article: Article) => {
+      // Check if article has any category that matches user's preferences
+      const articleCategoryIds = [
+        ...(article.categories?.map((c: { id: string }) => c.id) || []),
+        article.category?.id,
+      ].filter(Boolean) as string[];
 
-        // If article has no categories, include it by default
-        if (articleCategoryIds.length === 0) return true;
+      // If article has no categories, include it by default
+      if (articleCategoryIds.length === 0) return true;
 
-        // Check if any of the article's categories match user preferences
-        return articleCategoryIds.some((catId) =>
-          preferredCategories.includes(catId)
-        );
-      })
-    : rawArticles;
+      // Check if any of the article's categories match user preferences
+      return articleCategoryIds.some((catId) =>
+        preferredCategories.includes(catId)
+      );
+    });
+  }, [rawArticles, shouldFilterContent, preferredCategories]);
 
   const totalPages = articlesData?.totalPages || 1;
   const total = shouldFilterContent ? articles.length : (articlesData?.total || 0);
 
-  const handleSearch = (query: string) => {
+  const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleClearSearch = () => {
+  const handleClearSearch = useCallback(() => {
     setSearchQuery("");
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handleCategoryChange = (newCategoryId: string) => {
+  const handleCategoryChange = useCallback((newCategoryId: string) => {
     setSelectedCategory(newCategoryId);
     setCurrentPage(1);
     updateURL(newCategoryId || null, 1);
-  };
+  }, [updateURL]);
 
-  const handleSortChange = (sort: SortOption) => {
+  const handleSortChange = useCallback((sort: SortOption) => {
     setSortOption(sort);
     setCurrentPage(1);
-  };
+  }, []);
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = useCallback((page: number) => {
     setCurrentPage(page);
     updateURL(selectedCategory || null, page);
-  };
+  }, [selectedCategory, updateURL]);
 
   if (error) {
     return (
@@ -446,9 +448,9 @@ function ArticlesListContent({
                   </button>
                 </span>
               )}
-              {selectedCategory && (
+              {selectedCategoryData && (
                 <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                  {categories?.find((c) => c.id === selectedCategory)?.name}
+                  {selectedCategoryData.name}
                   <button
                     onClick={() => handleCategoryChange("")}
                     className="hover:bg-green-200 rounded-full p-0.5"
@@ -472,16 +474,13 @@ function ArticlesListContent({
       )}
 
       {/* Category Description */}
-      {selectedCategory && categories && (() => {
-        const category = categories.find((c) => c.id === selectedCategory);
-        return category?.description ? (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-2">
-            <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-              {category.description}
-            </p>
-          </div>
-        ) : null;
-      })()}
+      {selectedCategoryData?.description && (
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-2">
+          <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
+            {selectedCategoryData.description}
+          </p>
+        </div>
+      )}
 
       {/* Loading State */}
       {isLoading && (
@@ -510,13 +509,13 @@ function ArticlesListContent({
             {Array.from({ length: initialLimit }).map((_, index) => (
               <div
                 key={index}
-                className="bg-white rounded-lg shadow-sm border overflow-hidden animate-pulse"
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden animate-pulse"
               >
-                <div className="h-48 bg-gray-200"></div>
+                <div className="h-48 bg-gray-200 dark:bg-gray-700"></div>
                 <div className="p-6">
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+                  <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
                 </div>
               </div>
             ))}
@@ -540,14 +539,7 @@ function ArticlesListContent({
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {articles.map((article) => (
-                  <ArticleCard
-                    key={article.id}
-                    article={article}
-                    isAuthorized={!!isAuthorized}
-                    onDeleteSuccess={() => {
-                      console.log("update interface then delete");
-                    }}
-                  />
+                  <ArticleCard key={article.id} article={article} />
                 ))}
               </div>
             ) : (
@@ -597,7 +589,7 @@ function ArticlesListContent({
                             )}
 
                             <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
-                              {article.excerpt?.replace(/<[^>]*>?/gm, "") || ""}
+                              {stripHtml(article.excerpt || "")}
                             </p>
                           </div>
 
@@ -641,7 +633,7 @@ function ArticlesListContent({
           </div>
         )}
 
-      {}
+      {/* Empty State */}
       {!isLoading && articles.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">📝</div>
@@ -659,7 +651,7 @@ function ArticlesListContent({
         </div>
       )}
 
-      {}
+      {/* Pagination */}
       {showPagination && totalPages > 1 && (
         <div className="flex justify-center">
           <nav className="flex items-center space-x-2">
@@ -704,33 +696,18 @@ function ArticlesListContent({
   );
 }
 
-function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
-  const router = useRouter();
+const ArticleCard = React.memo(function ArticleCard({ article }: { article: Article }) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const { showSuccess } = useNotification();
-  const [errorModalOpen, setErrorModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>("");
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      showSuccess(t("articleDetail.linkCopied"));
-    } catch {
-      const textArea = document.createElement("textarea");
-      textArea.value = url;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      showSuccess(t("articleDetail.linkCopied"));
-    }
+    await copyToClipboard(url);
+    showSuccess(t("articleDetail.linkCopied"));
   };
 
   // Check if user has premium access
@@ -800,7 +777,7 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
         {/* Excerpt if available */}
         {article.excerpt && (
           <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-            {article.excerpt.replace(/<[^>]*>?/gm, "")}
+            {stripHtml(article.excerpt)}
           </p>
         )}
 
@@ -868,15 +845,8 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
           {article.isPremium && <PremiumBadge size="sm" />}
         </div>
       </div>
-      {errorModalOpen && (
-        <Modal
-          isOpen={errorModalOpen}
-          onClose={() => setErrorModalOpen(false)}
-          title="שגיאה"
-          message={errorMessage}
-          confirmText="סגור"
-        />
-      )}
     </article>
   );
-}
+});
+
+ArticleCard.displayName = "ArticleCard";

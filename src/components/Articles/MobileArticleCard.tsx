@@ -12,6 +12,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import AuthorAvatars from "./AuthorAvatars";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
+import { copyToClipboard } from "@/lib/utils/clipboard";
 
 export default function MobileArticleCard({ article }: MobileArticleCardProps) {
   const { data: session } = useSession();
@@ -31,20 +32,8 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      showSuccess(t("articleDetail.linkCopied"));
-    } catch {
-      const textArea = document.createElement("textarea");
-      textArea.value = url;
-      textArea.style.position = "fixed";
-      textArea.style.opacity = "0";
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand("copy");
-      document.body.removeChild(textArea);
-      showSuccess(t("articleDetail.linkCopied"));
-    }
+    await copyToClipboard(url);
+    showSuccess(t("articleDetail.linkCopied"));
   };
 
   const formatDate = (dateString: string) => {
