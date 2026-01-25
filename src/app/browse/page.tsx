@@ -48,7 +48,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Lectures */}
               <Link
-                href={`/lectures?c=${categoryParam}`}
+                href="/lectures"
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.lectures > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -67,7 +67,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Presentations */}
               <Link
-                href={`/presentations?c=${categoryParam}`}
+                href="/presentations"
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.presentations > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -86,7 +86,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Events */}
               <Link
-                href={`/events?c=${categoryParam}`}
+                href="/events"
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.events > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
