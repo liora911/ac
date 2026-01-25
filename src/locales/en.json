@@ -1169,6 +1169,13 @@
       "recentActivity": "Recent Activity",
       "devMetrics": "Developer Metrics"
     },
+    "quickActions": {
+      "title": "Quick Actions",
+      "addArticle": "Add Article",
+      "addLecture": "Add Lecture",
+      "addPresentation": "Add Presentation",
+      "addEvent": "Add Event"
+    },
     "categories": {
       "addNew": "Add new category",
       "addDescription": "Give it a clear, descriptive name.",

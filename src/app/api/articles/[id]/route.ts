@@ -74,7 +74,6 @@ function transformArticle(article: ArticleWithRelations): Article {
       slug: at.tag.slug,
       color: at.tag.color ?? undefined,
     })) || [],
-    keywords: [],
     authors: article.authors.map((a) => ({
       id: a.id,
       name: a.name,
@@ -235,9 +234,6 @@ export async function PUT(
       status,
       isFeatured,
       isPremium,
-      metaTitle,
-      metaDescription,
-      keywords,
       direction,
       publisherName,
       publisherImage,

@@ -1240,6 +1240,13 @@
       "recentActivity": "פעילות אחרונה",
       "devMetrics": "מדדי מפתחים"
     },
+    "quickActions": {
+      "title": "פעולות מהירות",
+      "addArticle": "הוסף מאמר",
+      "addLecture": "הוסף הרצאה",
+      "addPresentation": "הוסף מצגת",
+      "addEvent": "הוסף אירוע"
+    },
     "categories": {
       "addNew": "הוסף קטגוריה חדשה",
       "addDescription": "תן לקטגוריה שם ברור ותיאורי.",

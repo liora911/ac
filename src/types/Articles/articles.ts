@@ -60,9 +60,6 @@ export interface Article {
   viewCount: number;
   readTime: number;
   direction?: "ltr" | "rtl";
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords: string[];
   createdAt: string;
   updatedAt: string;
   authorId: string;
@@ -132,9 +129,6 @@ export interface CreateArticleRequest {
   isFeatured?: boolean;
   isPremium?: boolean;
   direction?: "ltr" | "rtl";
-  metaTitle?: string;
-  metaDescription?: string;
-  keywords?: string[];
   publisherName?: string;
   publisherImage?: string;
   authors?: ArticleAuthorInput[]; // Multiple authors
@@ -177,9 +171,6 @@ export interface ArticleFormData {
   isFeatured: boolean;
   isPremium: boolean;
   direction: "ltr" | "rtl";
-  metaTitle: string;
-  metaDescription: string;
-  keywords: string[];
   publisherName: string;
   publisherImage?: string;
   authors: ArticleAuthorInput[]; // Multiple authors - required at least 1

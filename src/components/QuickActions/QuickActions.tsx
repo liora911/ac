@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import {
   FileText,
   Video,
@@ -12,32 +13,29 @@ import {
 
 const QuickActions: React.FC = () => {
   const router = useRouter();
+  const { t } = useTranslation();
 
   const actions = [
     {
-      label: "Add Article",
-      labelHe: "הוסף מאמר",
+      labelKey: "quickActions.addArticle",
       icon: FileText,
       path: "/articles/create",
       gradient: "from-blue-500 to-indigo-600",
     },
     {
-      label: "Add Lecture",
-      labelHe: "הוסף הרצאה",
+      labelKey: "quickActions.addLecture",
       icon: Video,
       path: "/create-lecture",
       gradient: "from-purple-500 to-pink-600",
     },
     {
-      label: "Add Presentation",
-      labelHe: "הוסף מצגת",
+      labelKey: "quickActions.addPresentation",
       icon: Presentation,
       path: "/create-presentation",
       gradient: "from-orange-500 to-amber-600",
     },
     {
-      label: "Add Event",
-      labelHe: "הוסף אירוע",
+      labelKey: "quickActions.addEvent",
       icon: CalendarPlus,
       path: "/create-event",
       gradient: "from-green-500 to-emerald-600",
@@ -50,7 +48,7 @@ const QuickActions: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900">Quick Actions</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("quickActions.title")}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {actions.map((action, index) => {
           const IconComponent = action.icon;
@@ -78,7 +76,7 @@ const QuickActions: React.FC = () => {
 
                 {/* Label */}
                 <span className="text-xs font-medium text-center leading-tight">
-                  {action.labelHe}
+                  {t(action.labelKey)}
                 </span>
               </div>
 

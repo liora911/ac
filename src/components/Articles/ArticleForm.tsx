@@ -44,9 +44,6 @@ export default function ArticleForm({
     isFeatured: article?.isFeatured || false,
     isPremium: article?.isPremium || false,
     direction: article?.direction || (locale === "en" ? "ltr" : "rtl"),
-    metaTitle: article?.metaTitle || "",
-    metaDescription: article?.metaDescription || "",
-    keywords: article?.keywords || [],
     publisherName:
       article?.publisherName ||
       article?.author?.name ||
@@ -84,7 +81,6 @@ export default function ArticleForm({
   const [authorsError, setAuthorsError] = useState<string>("");
 
   const [tagInput, setTagInput] = useState("");
-  const [keywordInput, setKeywordInput] = useState("");
   const [categories, setCategories] = useState<ArticleCategory[]>([]);
 
   const createMutation = useCreateArticle();
@@ -231,26 +227,6 @@ export default function ArticleForm({
     setFormData((prev) => ({
       ...prev,
       tags: prev.tags.filter((tag) => tag !== tagToRemove),
-    }));
-  };
-
-  const addKeyword = () => {
-    if (
-      keywordInput.trim() &&
-      !formData.keywords.includes(keywordInput.trim())
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        keywords: [...prev.keywords, keywordInput.trim()],
-      }));
-      setKeywordInput("");
-    }
-  };
-
-  const removeKeyword = (keywordToRemove: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      keywords: prev.keywords.filter((keyword) => keyword !== keywordToRemove),
     }));
   };
 
@@ -604,88 +580,6 @@ export default function ArticleForm({
                   >
                     {t("premiumGate.subscriberOnlyLabel")}
                   </label>
-                </div>
-              </div>
-
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  {t("articleForm.seoSettingsTitle")}
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("articleForm.metaTitleLabel")}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.metaTitle}
-                      onChange={(e) =>
-                        handleInputChange("metaTitle", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={t("articleForm.metaTitlePlaceholder") as string}
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      {t("articleForm.metaDescriptionLabel")}
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.metaDescription}
-                      onChange={(e) =>
-                        handleInputChange("metaDescription", e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={
-                        t("articleForm.metaDescriptionPlaceholder") as string
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="mt-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t("articleForm.keywordsLabel")}
-                  </label>
-                  <div className="flex gap-2 mb-2">
-                    <input
-                      type="text"
-                      value={keywordInput}
-                      onChange={(e) => setKeywordInput(e.target.value)}
-                      onKeyPress={(e) =>
-                        e.key === "Enter" && (e.preventDefault(), addKeyword())
-                      }
-                      className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder={t("articleForm.addKeywordPlaceholder") as string}
-                    />
-                    <button
-                      type="button"
-                      onClick={addKeyword}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors cursor-pointer"
-                    >
-                      {t("articleForm.addButton")}
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {formData.keywords.map((keyword) => (
-                      <span
-                        key={keyword}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
-                      >
-                        {keyword}
-                        <button
-                          type="button"
-                          onClick={() => removeKeyword(keyword)}
-                          className="ml-1 text-green-600 hover:text-green-800 cursor-pointer"
-                        >
-                          ×
-                        </button>
-                      </span>
-                    ))}
-                  </div>
                 </div>
               </div>
             </>
