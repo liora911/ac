@@ -3,6 +3,7 @@
 import React, { useState, useEffect, Suspense, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import type { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -223,10 +224,35 @@ function EventsPageContent() {
 
   return (
     <div
-      className="min-h-screen bg-gray-50 text-gray-900 py-8 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-7xl mx-auto">
+      {/* Hero Banner */}
+      <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
+        <Image
+          src="/events.jpg"
+          alt={t("nav.events")}
+          fill
+          className="object-cover"
+          priority
+          sizes="100vw"
+          quality={85}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-black/40 to-black/20" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+              {t("nav.events")}
+            </h1>
+            <p className="mt-2 text-white/80 text-sm sm:text-base max-w-xl mx-auto px-4">
+              {t("eventsPage.subtitle")}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex justify-between items-center mb-6">
           {/* View Toggle */}
           <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">

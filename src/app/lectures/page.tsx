@@ -90,7 +90,7 @@ function LecturesPageContent() {
       {/* Hero Banner */}
       <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
         <Image
-          src={bannerImage || "/lecture.jpg"}
+          src={bannerImage || "/gstudioLectures.jpg"}
           alt={t("lecturesPage.title")}
           fill
           className="object-cover"

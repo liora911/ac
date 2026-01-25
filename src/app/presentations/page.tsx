@@ -61,22 +61,23 @@ function PresentationsPageContent() {
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       {/* Hero Banner */}
-      <div className="relative h-48 md:h-64 lg:h-72 overflow-hidden">
+      <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
         <Image
-          src="/presentations.jpeg"
+          src="/gstudioPresentations.jpg"
           alt={t("presentationsPage.title")}
           fill
           className="object-cover"
           priority
           sizes="100vw"
+          quality={85}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-gray-900/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-black/40 to-black/20" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center px-4">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white drop-shadow-lg">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
               {t("nav.presentations")}
             </h1>
-            <p className="mt-2 text-base md:text-lg text-gray-200">
+            <p className="mt-2 text-white/80 text-sm sm:text-base max-w-xl mx-auto px-4">
               {t("presentationsPage.subtitle")}
             </p>
           </div>
