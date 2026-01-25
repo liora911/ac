@@ -232,6 +232,21 @@ See `.env.example` for required configuration.
 - Maintain responsive design principles
 - Ensure accessibility compliance
 
+## Security & Dependencies
+
+For detailed information about security vulnerabilities, outdated packages, and recommended updates, see [SECURITY.md](./SECURITY.md).
+
+**Quick Check:**
+```bash
+npm audit              # Check for vulnerabilities
+npm outdated           # Check for updates
+```
+
+**Current Status** (as of 2026-01-25):
+- 8 vulnerabilities detected (1 critical, 2 high, 5 moderate)
+- Immediate action required for: `next-auth`, `jspdf`
+- See [SECURITY.md](./SECURITY.md) for full details and action plan
+
 ## License
 
 This project is private and proprietary. All rights reserved.
