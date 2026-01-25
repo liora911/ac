@@ -31,6 +31,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
 import type { AccountClientProps } from "@/types/Account/account";
+import NotificationsSection from "@/components/Notifications/NotificationsSection";
 
 // Extract username from email
 function getUsernameFromEmail(email: string | null | undefined): string {
@@ -390,6 +391,9 @@ function AccountContent({
             </div>
           </div>
         </div>
+
+        {/* Notifications Section */}
+        <NotificationsSection />
 
         {/* Content Preferences Card */}
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">

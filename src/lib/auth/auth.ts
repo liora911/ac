@@ -69,6 +69,44 @@ export const authOptions: NextAuthOptions = {
           data: { role: UserRole.ADMIN },
         });
       }
+
+      // Create welcome notification for new user
+      try {
+        // Get professor image from HomeContent
+        const homeContent = await prisma.homeContent.findUnique({
+          where: { id: "home" },
+          select: { imageUrl: true },
+        });
+
+        // Find or create the welcome notification
+        const welcomeTitle = "Welcome to Professor Elitzur's Website";
+        let welcomeNotification = await prisma.notification.findFirst({
+          where: { title: welcomeTitle },
+        });
+
+        if (!welcomeNotification) {
+          welcomeNotification = await prisma.notification.create({
+            data: {
+              title: welcomeTitle,
+              message:
+                "Welcome! I'm delighted to have you here. Explore my articles, lectures, and presentations on quantum mechanics, the philosophy of physics, and the nature of time. Feel free to reach out through the contact page if you have any questions.",
+              imageUrl: homeContent?.imageUrl || null,
+              published: true,
+            },
+          });
+        }
+
+        // Link welcome notification to new user
+        await prisma.userNotification.create({
+          data: {
+            userId: user.id,
+            notificationId: welcomeNotification.id,
+          },
+        });
+      } catch (error) {
+        // Log error but don't prevent user creation
+        console.error("Failed to create welcome notification:", error);
+      }
     },
   },
   pages: {

@@ -55,8 +55,9 @@ model User {
   lectures         Lecture[]
   presentations    Presentation[]
   tickets          Ticket[]
-  subscription     Subscription?
-  favorites        Favorite[]
+  subscription      Subscription?
+  favorites         Favorite[]
+  userNotifications UserNotification[]
 }
 
 model VerificationToken {
@@ -357,4 +358,34 @@ model Favorite {
   @@unique([userId, itemId, itemType]) // Prevent duplicate favorites
   @@index([userId, itemType])          // Fast lookup by user and type
   @@map("favorites")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  imageUrl  String?
+  published Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userNotifications UserNotification[]
+
+  @@map("notifications")
+}
+
+model UserNotification {
+  id             String       @id @default(cuid())
+  userId         String
+  notificationId String
+  isRead         Boolean      @default(false)
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, notificationId])
+  @@index([userId, isRead])
+  @@map("user_notifications")
 }
