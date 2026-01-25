@@ -360,7 +360,7 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName }: LectureCardPr
         </div>
 
         {/* Content */}
-        <div className="p-4">
+        <div className="p-4 min-h-[120px] flex flex-col">
           <h3
             className={`font-semibold line-clamp-2 mb-1 transition-colors ${
               hasAccess
