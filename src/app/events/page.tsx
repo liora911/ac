@@ -244,9 +244,6 @@ function EventsPageContent() {
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
               {t("nav.events")}
             </h1>
-            <p className="mt-2 text-white/80 text-sm sm:text-base max-w-xl mx-auto px-4">
-              {t("eventsPage.subtitle")}
-            </p>
           </div>
         </div>
       </div>
