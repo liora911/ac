@@ -16,17 +16,7 @@ import {
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface ActivityItem {
-  id: string;
-  rawId: string;
-  slug?: string; // For article view URLs (SEO-friendly)
-  type: "article" | "event" | "lecture" | "presentation";
-  title: string;
-  action: "created" | "updated";
-  timestamp: string;
-  author: string;
-}
+import type { ActivityItem } from "@/types/Activity/activity";
 
 const ActivityFeed: React.FC = () => {
   const router = useRouter();

@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-interface WeatherData {
-  temperature: number;
-  condition: string;
-  location: string;
-}
+import type { WeatherData } from "@/types/Dashboard/dashboard";
 
 const Weather: React.FC = () => {
   const [weather, setWeather] = useState<WeatherData | null>(null);

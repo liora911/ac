@@ -8,8 +8,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Shield, Mail, ArrowRight } from "lucide-react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-
-type Notice = { kind: "success" | "error" | "info"; text: string } | null;
+import type { Notice } from "@/types/Auth/auth";
 
 function AdminLoginContent() {
   const { data: session, status } = useSession();

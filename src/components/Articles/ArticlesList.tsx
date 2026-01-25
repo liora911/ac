@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -24,23 +24,8 @@ import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { Settings2 } from "lucide-react";
 import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import MobileArticleCard from "./MobileArticleCard";
-
-// Custom hook for debouncing values
-function useDebouncedValue<T>(value: T, delay: number): T {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-}
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
 
 interface ArticlesListProps {
   initialLimit?: number;
@@ -778,7 +763,6 @@ function ArticleCard({ article, isAuthorized }: ArticleCardProps) {
   const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
 
   // Default fallback image for articles without a featured image
-  const DEFAULT_ARTICLE_IMAGE = "/articleCard.avif";
   const displayImage = article.featuredImage || DEFAULT_ARTICLE_IMAGE;
 
   const formatDate = (dateString: string) => {

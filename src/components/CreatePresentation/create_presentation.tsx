@@ -7,12 +7,7 @@ import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import MultiImageUpload from "@/components/Upload/MultiImageUpload";
 import PdfUpload from "@/components/Upload/PdfUpload";
-
-type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+import type { CategoryNode } from "@/types/Category/category";
 
 interface CreatePresentationFormProps {
   onSuccess?: () => void;

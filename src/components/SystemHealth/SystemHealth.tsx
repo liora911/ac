@@ -1,12 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-interface HealthStatus {
-  database: "healthy" | "warning" | "error";
-  api: "healthy" | "warning" | "error";
-  storage: "healthy" | "warning" | "error";
-}
+import type { HealthStatus } from "@/types/Dashboard/dashboard";
 
 const SystemHealth: React.FC = () => {
   const [health, setHealth] = useState<HealthStatus>({

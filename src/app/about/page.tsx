@@ -5,17 +5,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import Image from "next/image";
 import { Loader2, AlertCircle } from "lucide-react";
 import RichContent from "@/components/RichContent";
-
-interface AboutPageData {
-  id: string;
-  titleEn: string;
-  titleHe: string;
-  contentEn: string | null;
-  contentHe: string | null;
-  imageUrl: string | null;
-  published: boolean;
-  updatedAt: string;
-}
+import type { AboutPageData } from "@/types/About/about";
 
 export default function AboutPage() {
   const { t, locale } = useTranslation();

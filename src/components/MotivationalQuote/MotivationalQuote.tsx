@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
-interface Quote {
-  text: string;
-  author: string;
-}
+import type { Quote } from "@/types/Quote/quote";
 
 const MotivationalQuote: React.FC = () => {
   const [quote, setQuote] = useState<Quote | null>(null);

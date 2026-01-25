@@ -17,12 +17,12 @@ import MainContent from "@/components/MainContent/MainContent";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
+import { BASE_URL } from "@/constants/app";
+
 const poppins = Poppins({
   weight: ["400", "700"],
   subsets: ["latin"],
 });
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://elitzur.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),

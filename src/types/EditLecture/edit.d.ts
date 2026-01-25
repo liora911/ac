@@ -1,10 +1,8 @@
+import type { CategoryNode } from "@/types/Category/category";
+
 export interface EditLectureFormProps {
   lectureId: string;
   onSuccess?: () => void;
 }
 
-export type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+export type { CategoryNode };

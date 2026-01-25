@@ -17,52 +17,8 @@ import {
 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
-
-type TicketStatus = "PENDING" | "CONFIRMED" | "CANCELLED" | "ATTENDED";
-
-interface Ticket {
-  id: string;
-  holderName: string;
-  holderEmail: string;
-  holderPhone: string | null;
-  numberOfSeats: number;
-  status: TicketStatus;
-  notes: string | null;
-  accessToken: string;
-  createdAt: string;
-  event: {
-    id: string;
-    title: string;
-    eventDate: string;
-    eventTime: string | null;
-    category: {
-      id: string;
-      name: string;
-    };
-  };
-}
-
-interface EventData {
-  id: string;
-  title: string;
-  eventDate: string;
-  eventTime: string | null;
-  maxSeats: number | null;
-  seatsInfo: {
-    maxSeats: number;
-    reservedSeats: number;
-    availableSeats: number;
-  } | null;
-}
-
-function useDebouncedValue<T>(value: T, delay = 350) {
-  const [debounced, setDebounced] = useState(value);
-  useEffect(() => {
-    const id = setTimeout(() => setDebounced(value), delay);
-    return () => clearTimeout(id);
-  }, [value, delay]);
-  return debounced;
-}
+import type { Ticket, EventData, TicketStatus } from "@/types/Tickets/tickets";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 
 export default function EventTicketsPage({
   params,

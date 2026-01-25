@@ -9,18 +9,7 @@ import {
   TrendingUp,
   Minus,
 } from "lucide-react";
-
-interface StatItem {
-  total: number;
-  thisMonth: number;
-}
-
-interface Stats {
-  articles: StatItem;
-  events: StatItem;
-  lectures: StatItem;
-  presentations: StatItem;
-}
+import type { StatItem, Stats } from "@/types/Stats/stats";
 
 const QuickStats: React.FC = () => {
   const [stats, setStats] = useState<Stats | null>(null);

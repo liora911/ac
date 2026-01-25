@@ -12,32 +12,7 @@ import {
 } from "react-icons/md";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { stripHtml } from "@/lib/utils/stripHtml";
-
-interface SearchResult {
-  id: string;
-  slug?: string;
-  title: string;
-  description?: string;
-  content?: string;
-  eventDate?: string;
-  date?: string;
-  location?: string;
-  category?: {
-    id: string;
-    name: string;
-  };
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface SearchResults {
-  articles: SearchResult[];
-  presentations: SearchResult[];
-  events: SearchResult[];
-  lectures: SearchResult[];
-  total: number;
-  query: string;
-}
+import type { SearchResult, SearchResults } from "@/types/GlobalSearch/globalsearch";
 
 function SearchPageContent() {
   const { t, locale } = useTranslation();

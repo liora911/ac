@@ -22,33 +22,7 @@ import {
   Download,
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface TicketData {
-  id: string;
-  holderName: string;
-  holderEmail: string;
-  holderPhone: string | null;
-  numberOfSeats: number;
-  status: string;
-  notes: string | null;
-  accessToken: string;
-  createdAt: string;
-  event: {
-    id: string;
-    title: string;
-    description: string;
-    eventType: string;
-    location: string | null;
-    onlineUrl: string | null;
-    eventDate: string;
-    eventTime: string | null;
-    bannerImageUrl: string | null;
-    category: {
-      id: string;
-      name: string;
-    };
-  };
-}
+import type { TicketData } from "@/types/Tickets/tickets";
 
 export default function TicketSummaryPage() {
   const params = useParams();

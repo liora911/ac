@@ -1,8 +1,6 @@
-export type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+import type { CategoryNode } from "@/types/Category/category";
+
+export type { CategoryNode };
 
 export interface EditEventFormProps {
   eventId: string;

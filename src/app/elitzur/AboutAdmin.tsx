@@ -10,17 +10,7 @@ import DragDropImageUpload from "@/components/Upload/upload";
 import LoginForm from "@/components/Login/login";
 import { Loader2, Eye, EyeOff } from "lucide-react";
 import Link from "next/link";
-
-interface AboutPageData {
-  id: string;
-  titleEn: string;
-  titleHe: string;
-  contentEn: string | null;
-  contentHe: string | null;
-  imageUrl: string | null;
-  published: boolean;
-  updatedAt: string;
-}
+import type { AboutPageData } from "@/types/About/about";
 
 export default function AboutAdmin() {
   const { t, locale } = useTranslation();

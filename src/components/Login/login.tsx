@@ -5,8 +5,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-type Notice = { kind: "success" | "error" | "info"; text: string } | null;
+import type { Notice } from "@/types/Auth/auth";
 
 export default function LoginForm() {
   const { data: session, status } = useSession();

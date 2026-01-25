@@ -2,13 +2,12 @@ export interface Quote {
   en: string;
   he: string;
   author: string;
-}
+} //yarin maybe change from quotes to hints of webapp usage
 
 export const physicsQuotes: Quote[] = [
-  // Richard Feynman
   {
     en: "The first principle is that you must not fool yourself — and you are the easiest person to fool.",
-    he: "העיקרון הראשון הוא שאסור לך לרמות את עצמך — ואתה האדם הכי קל לרמות.",
+    he: "העיקרון הראשון הוא שאסור לך לרמות את עצמך — ואתה האדם שהכי קל לרמות.",
     author: "Richard Feynman",
   },
   {
@@ -31,8 +30,6 @@ export const physicsQuotes: Quote[] = [
     he: "למד בחריצות את מה שמעניין אותך הכי הרבה, בצורה הכי לא ממושמעת, לא קונבנציונלית ומקורית שאפשר.",
     author: "Richard Feynman",
   },
-
-  // Albert Einstein
   {
     en: "Imagination is more important than knowledge. Knowledge is limited. Imagination encircles the world.",
     he: "דמיון חשוב יותר מידע. ידע מוגבל. הדמיון מקיף את העולם.",
@@ -63,8 +60,6 @@ export const physicsQuotes: Quote[] = [
     he: "אלוהים לא משחק בקוביות עם היקום.",
     author: "Albert Einstein",
   },
-
-  // Paul Dirac
   {
     en: "The laws of nature should be expressed in beautiful equations.",
     he: "חוקי הטבע צריכים להיות מבוטאים במשוואות יפות.",
@@ -85,8 +80,6 @@ export const physicsQuotes: Quote[] = [
     he: "תיאוריה עם יופי מתמטי סבירה יותר להיות נכונה מאשר תיאוריה מכוערת.",
     author: "Paul Dirac",
   },
-
-  // Roger Penrose
   {
     en: "Intelligence cannot be present without understanding. No computer has any awareness of what it does.",
     he: "אינטליגנציה לא יכולה להתקיים ללא הבנה. לאף מחשב אין מודעות למה שהוא עושה.",
@@ -102,8 +95,6 @@ export const physicsQuotes: Quote[] = [
     he: "התודעה היא הדבר היחיד שלא יכול להיות אשליה.",
     author: "Roger Penrose",
   },
-
-  // Niels Bohr
   {
     en: "If quantum mechanics hasn't profoundly shocked you, you haven't understood it yet.",
     he: "אם מכניקת הקוונטים לא זעזעה אותך עמוקות, עדיין לא הבנת אותה.",
@@ -119,8 +110,6 @@ export const physicsQuotes: Quote[] = [
     he: "כל מה שאנו קוראים לו אמיתי עשוי מדברים שלא ניתן להתייחס אליהם כאמיתיים.",
     author: "Niels Bohr",
   },
-
-  // Werner Heisenberg
   {
     en: "What we observe is not nature itself, but nature exposed to our method of questioning.",
     he: "מה שאנו צופים בו אינו הטבע עצמו, אלא הטבע כפי שהוא נחשף לשיטת החקירה שלנו.",
@@ -131,8 +120,6 @@ export const physicsQuotes: Quote[] = [
     he: "היקום לא רק מוזר יותר ממה שאנו חושבים, הוא מוזר יותר ממה שאנו יכולים לחשוב.",
     author: "Werner Heisenberg",
   },
-
-  // Erwin Schrödinger
   {
     en: "The task is not so much to see what no one has yet seen, but to think what nobody has yet thought about that which everybody sees.",
     he: "המשימה היא לא כל כך לראות מה שאף אחד עדיין לא ראה, אלא לחשוב מה שאף אחד עדיין לא חשב על מה שכולם רואים.",
@@ -143,8 +130,6 @@ export const physicsQuotes: Quote[] = [
     he: "תודעה לא ניתנת להסבר במונחים פיזיקליים. כי התודעה היא יסודית לחלוטין.",
     author: "Erwin Schrödinger",
   },
-
-  // Max Planck
   {
     en: "Science cannot solve the ultimate mystery of nature. And that is because, in the last analysis, we ourselves are a part of the mystery.",
     he: "המדע לא יכול לפתור את המסתורין האולטימטיבי של הטבע. וזה בגלל שבסופו של דבר, אנחנו עצמנו חלק מהמסתורין.",
@@ -155,8 +140,6 @@ export const physicsQuotes: Quote[] = [
     he: "אמת מדעית חדשה לא מנצחת על ידי שכנוע מתנגדיה, אלא בגלל שמתנגדיה בסופו של דבר מתים.",
     author: "Max Planck",
   },
-
-  // Stephen Hawking
   {
     en: "Look up at the stars and not down at your feet. Try to make sense of what you see.",
     he: "הסתכל למעלה אל הכוכבים ולא למטה אל הרגליים שלך. נסה להבין את מה שאתה רואה.",
@@ -174,13 +157,8 @@ export const physicsQuotes: Quote[] = [
   },
 ];
 
-/**
- * Get a deterministic "quote of the day" based on the current date
- * This ensures all users see the same quote on the same day
- */
 export function getQuoteOfTheDay(): Quote {
   const today = new Date();
-  // Use year + day of year as seed for consistency
   const startOfYear = new Date(today.getFullYear(), 0, 0);
   const diff = today.getTime() - startOfYear.getTime();
   const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));

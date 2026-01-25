@@ -8,16 +8,7 @@ import Modal from "@/components/Modal/Modal";
 import { Mail, User, MessageSquare, Calendar, Trash2, AlertTriangle } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
-
-interface Message {
-  id: string;
-  name: string;
-  email: string;
-  subject: string;
-  message: string;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Message } from "@/types/Contact/contact";
 
 export default function MessagesAdmin() {
   const { t } = useTranslation();

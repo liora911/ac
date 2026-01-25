@@ -6,12 +6,7 @@ import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+import type { CategoryNode } from "@/types/Category/category";
 
 interface CreateLectureFormProps {
   onSuccess?: () => void;

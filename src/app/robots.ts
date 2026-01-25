@@ -1,6 +1,5 @@
 import { MetadataRoute } from "next";
-
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://elitzur.com";
+import { BASE_URL } from "@/constants/app";
 
 export default function robots(): MetadataRoute.Robots {
   return {

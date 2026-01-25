@@ -14,11 +14,7 @@ const TiptapEditor = dynamic(() => import("@/lib/editor/editor"), {
   ssr: false,
 });
 
-type CategoryNode = {
-  id: string;
-  name: string;
-  parentId?: string | null;
-};
+import type { CategoryNode } from "@/types/Category/category";
 
 interface EditArticleFormProps {
   articleId: string;

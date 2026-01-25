@@ -16,20 +16,7 @@ import {
   XCircle,
   AlertCircle,
 } from "lucide-react";
-
-interface UserWithSubscription {
-  id: string;
-  email: string;
-  name: string | null;
-  role: string;
-  subscription: {
-    id: string;
-    status: string;
-    currentPeriodEnd: string;
-    stripePriceId: string;
-    stripeSubscriptionId: string;
-  } | null;
-}
+import type { UserWithSubscription } from "@/types/User/user";
 
 export default function SubscriptionsAdmin() {
   const { t } = useTranslation();

@@ -11,6 +11,7 @@ import { Article } from "@/types/Articles/articles";
 import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import AuthorAvatars from "./AuthorAvatars";
+import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
 
 interface MobileArticleCardProps {
   article: Article;
@@ -28,8 +29,6 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
     session?.user?.role === "ADMIN" ||
     session?.user?.hasActiveSubscription;
 
-  // Default fallback image
-  const DEFAULT_ARTICLE_IMAGE = "/articleCard.avif";
   const displayImage = article.featuredImage || DEFAULT_ARTICLE_IMAGE;
 
   const handleShare = async (e: React.MouseEvent) => {
