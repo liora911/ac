@@ -230,7 +230,7 @@ function EventsPageContent() {
       {/* Hero Banner */}
       <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
         <Image
-          src="/events.jpg"
+          src="/gstudioEvents.jpg"
           alt={t("nav.events")}
           fill
           className="object-cover"
