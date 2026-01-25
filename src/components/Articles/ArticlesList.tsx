@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   useArticles,
   useSearchArticles,
@@ -41,6 +41,8 @@ export default function ArticlesList({
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
   const { t, locale } = useTranslation();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   // Category preferences for filtering
   const {
@@ -49,9 +51,14 @@ export default function ArticlesList({
     resetPreferences,
   } = useCategoryPreferences();
 
+  // Read URL params for initial state
+  const urlCategoryName = searchParams.get("c");
+  const urlPage = searchParams.get("page");
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedCategoryName, setSelectedCategoryName] = useState(urlCategoryName || "");
+  const [currentPage, setCurrentPage] = useState(urlPage ? parseInt(urlPage, 10) : 1);
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
@@ -103,6 +110,31 @@ export default function ArticlesList({
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
+  // Sync URL category name to category ID when categories are loaded
+  useEffect(() => {
+    if (urlCategoryName && categories && categories.length > 0 && !selectedCategory) {
+      const decodedName = decodeURIComponent(urlCategoryName);
+      const category = categories.find((c) => c.name === decodedName);
+      if (category) {
+        setSelectedCategory(category.id);
+        setSelectedCategoryName(decodedName);
+      }
+    }
+  }, [urlCategoryName, categories, selectedCategory]);
+
+  // Update URL when filters change
+  const updateURL = (categoryName: string | null, page: number) => {
+    const params = new URLSearchParams();
+    if (categoryName) {
+      params.set("c", categoryName);
+    }
+    if (page > 1) {
+      params.set("page", page.toString());
+    }
+    const queryString = params.toString();
+    router.push(queryString ? `/articles?${queryString}` : "/articles", { scroll: false });
+  };
+
   // Get raw articles from API
   const rawArticles = articlesData?.articles || [];
 
@@ -138,9 +170,15 @@ export default function ArticlesList({
     setCurrentPage(1);
   };
 
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategory(categoryId);
+  const handleCategoryChange = (newCategoryId: string) => {
+    setSelectedCategory(newCategoryId);
     setCurrentPage(1);
+
+    // Find category name for URL
+    const category = categories?.find((c) => c.id === newCategoryId);
+    const categoryName = category?.name || null;
+    setSelectedCategoryName(categoryName || "");
+    updateURL(categoryName, 1);
   };
 
   const handleSortChange = (sort: SortOption) => {
@@ -150,6 +188,7 @@ export default function ArticlesList({
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
+    updateURL(selectedCategoryName || null, page);
   };
 
   if (error) {

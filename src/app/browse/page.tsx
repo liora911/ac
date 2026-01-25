@@ -11,6 +11,9 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
   const hasContent = category.counts.total > 0;
   const hasSubcategories = category.subcategories.length > 0;
 
+  // Use URL-encoded category name for cleaner URLs
+  const categoryParam = encodeURIComponent(category.name);
+
   return (
     <div className="space-y-4">
       {/* Main Category */}
@@ -26,7 +29,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {/* Articles */}
               <Link
-                href={`/articles?categoryId=${category.id}`}
+                href={`/articles?c=${categoryParam}`}
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.articles > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -45,7 +48,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Lectures */}
               <Link
-                href={`/lectures?categoryId=${category.id}`}
+                href={`/lectures?c=${categoryParam}`}
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.lectures > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -64,7 +67,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Presentations */}
               <Link
-                href={`/presentations?categoryId=${category.id}`}
+                href={`/presentations?c=${categoryParam}`}
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.presentations > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
@@ -83,7 +86,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
 
               {/* Events */}
               <Link
-                href={`/events?categoryId=${category.id}`}
+                href={`/events?c=${categoryParam}`}
                 className={`flex items-center gap-2 p-2 rounded-lg border transition-colors ${
                   category.counts.events > 0
                     ? "border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"

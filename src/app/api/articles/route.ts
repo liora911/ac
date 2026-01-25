@@ -98,7 +98,22 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = Number.parseInt(searchParams.get("page") || "1");
     const limit = Number.parseInt(searchParams.get("limit") || "10");
-    const categoryId = searchParams.get("categoryId") || undefined;
+
+    // Support both categoryId (legacy) and c (category name) parameters
+    let categoryId = searchParams.get("categoryId") || undefined;
+    const categoryName = searchParams.get("c");
+
+    // If category name provided, look up the category ID
+    if (categoryName && !categoryId) {
+      const category = await prisma.category.findFirst({
+        where: { name: decodeURIComponent(categoryName) },
+        select: { id: true },
+      });
+      if (category) {
+        categoryId = category.id;
+      }
+    }
+
     const statusParam = searchParams.get("status");
     const status: ArticlesQueryParams["status"] =
       statusParam === "PUBLISHED" ||
