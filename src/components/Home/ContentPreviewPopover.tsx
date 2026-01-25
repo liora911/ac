@@ -5,16 +5,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
 import PremiumBadge from "@/components/PremiumBadge";
-import type { ContentItem } from "@/types/Home/home";
-
-interface ContentPreviewPopoverProps {
-  item: ContentItem;
-  imageUrl: string | null;
-  subtitle: string | null;
-  position: { x: number; y: number };
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-}
+import type { ContentPreviewPopoverProps } from "@/types/Home/home";
 
 const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
   item,

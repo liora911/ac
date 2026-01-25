@@ -1,11 +1,7 @@
 "use client";
 
 import React from "react";
-
-interface RichContentProps {
-  content: string;
-  className?: string;
-}
+import type { RichContentProps } from "@/types/Components/components";
 
 export default function RichContent({
   content,

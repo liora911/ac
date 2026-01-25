@@ -3,17 +3,8 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Event } from "@/types/Events/events";
+import type { Event, EventsCalendarProps, DayEvents } from "@/types/Events/events";
 import { ChevronLeft, ChevronRight, MapPin, Video, Calendar } from "lucide-react";
-
-interface EventsCalendarProps {
-  events: Event[];
-}
-
-interface DayEvents {
-  date: Date;
-  events: Event[];
-}
 
 export default function EventsCalendar({ events }: EventsCalendarProps) {
   const { t, locale } = useTranslation();

@@ -10,11 +10,7 @@ import LanguageToggle from "./LanguageToggle";
 import ThemeToggleSection from "./ThemeToggleSection";
 import FontSizeToggle from "./FontSizeToggle";
 import ReduceMotionToggle from "./ReduceMotionToggle";
-
-type SettingsPanelProps = {
-  isOpen: boolean;
-  onClose: () => void;
-};
+import type { SettingsPanelProps } from "@/types/Components/components";
 
 export default function SettingsPanel({ isOpen, onClose }: SettingsPanelProps) {
   const { t } = useTranslation();

@@ -7,15 +7,11 @@ import { Star, Share2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
-import { Article } from "@/types/Articles/articles";
+import type { MobileArticleCardProps } from "@/types/Articles/articles";
 import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import AuthorAvatars from "./AuthorAvatars";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
-
-interface MobileArticleCardProps {
-  article: Article;
-}
 
 export default function MobileArticleCard({ article }: MobileArticleCardProps) {
   const { data: session } = useSession();

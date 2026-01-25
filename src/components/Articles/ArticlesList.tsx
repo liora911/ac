@@ -9,7 +9,7 @@ import {
   useSearchArticles,
   useCategories,
 } from "../../hooks/useArticles";
-import { Article } from "../../types/Articles/articles";
+import type { Article, ArticlesListProps, ArticleCardProps, StatusFilter, SortOption } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "../../constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -26,15 +26,6 @@ import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import MobileArticleCard from "./MobileArticleCard";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
-
-interface ArticlesListProps {
-  initialLimit?: number;
-  showFilters?: boolean;
-  showPagination?: boolean;
-  categoryId?: string;
-  featuredOnly?: boolean;
-  viewMode?: "grid" | "list";
-}
 
 export default function ArticlesList({
   initialLimit = 12,
@@ -61,13 +52,11 @@ export default function ArticlesList({
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
   const [currentPage, setCurrentPage] = useState(1);
-  type StatusFilter = "" | "PUBLISHED" | "DRAFT" | "ARCHIVED";
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("");
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
-  type SortOption = "newest" | "oldest" | "title-asc" | "title-desc";
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
   // Map sort option to sortBy and sortOrder params
@@ -722,12 +711,6 @@ export default function ArticlesList({
       )}
     </div>
   );
-}
-
-interface ArticleCardProps {
-  article: Article;
-  isAuthorized: boolean;
-  onDeleteSuccess: () => void;
 }
 
 function ArticleCard({ article, isAuthorized }: ArticleCardProps) {

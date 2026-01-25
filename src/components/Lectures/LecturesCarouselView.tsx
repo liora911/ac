@@ -4,7 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Category, Lecture } from "@/types/Lectures/lectures";
+import type { Category, Lecture, LecturesCarouselViewProps, CategoryCarouselProps, LectureCardProps } from "@/types/Lectures/lectures";
 import { Clock, Play, Lock, ChevronLeft, ChevronRight, Search, X, Share2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
@@ -13,10 +13,6 @@ import { LecturePlaceholder } from "@/components/Placeholders";
 import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 import LectureModal from "./LectureModal";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-
-interface LecturesCarouselViewProps {
-  categories: Category[];
-}
 
 /**
  * Lectures page with horizontal carousels per category.
@@ -156,12 +152,6 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
   );
 }
 
-interface CategoryCarouselProps {
-  category: Category;
-  hasAccess: (lecture: Lecture) => boolean;
-  onPlayLecture: (lecture: Lecture) => void;
-}
-
 function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarouselProps) {
   const { t, locale } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -254,14 +244,6 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
       </div>
     </section>
   );
-}
-
-interface LectureCardProps {
-  lecture: Lecture;
-  hasAccess: boolean;
-  onPlay: (lecture: Lecture) => void;
-  categoryName?: string;
-  inGrid?: boolean;
 }
 
 function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false }: LectureCardProps) {

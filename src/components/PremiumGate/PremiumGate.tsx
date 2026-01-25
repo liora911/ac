@@ -5,12 +5,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { BookOpen, GraduationCap, Users, ArrowRight } from "lucide-react";
-
-interface PremiumGateProps {
-  isPremium: boolean;
-  children: React.ReactNode;
-  previewContent?: React.ReactNode;
-}
+import type { PremiumGateProps } from "@/types/Components/components";
 
 export default function PremiumGate({
   isPremium,

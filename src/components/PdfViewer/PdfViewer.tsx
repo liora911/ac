@@ -12,16 +12,12 @@ import {
   Download,
   Loader2,
 } from "lucide-react";
+import type { PdfViewerProps } from "@/types/Components/components";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 // Set up the worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
-
-interface PdfViewerProps {
-  url: string;
-  title?: string;
-}
 
 export default function PdfViewer({ url, title }: PdfViewerProps) {
   const [numPages, setNumPages] = useState<number>(0);

@@ -2,14 +2,9 @@
 
 import React from "react";
 import Image from "next/image";
-import { Article } from "@/types/Articles/articles";
+import type { ArticleModalProps } from "@/types/Articles/articles";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
-
-interface ArticleModalProps {
-  article: Article | null;
-  onClose: () => void;
-}
 
 const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
   const { t, locale } = useTranslation();

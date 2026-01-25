@@ -1,11 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
-
-interface LecturePlaceholderProps {
-  id: string;
-  className?: string;
-}
+import type { LecturePlaceholderProps } from "@/types/Lectures/lectures";
 
 // Simple hash function to generate consistent numbers from a string
 function hashString(str: string): number {

@@ -3,11 +3,7 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface ArticleSearchProps {
-  onSearch: (query: string) => void;
-  onClear: () => void;
-}
+import type { ArticleSearchProps } from "@/types/Articles/articles";
 
 export default function SemanticSearch({ onSearch, onClear }: ArticleSearchProps) {
   const { t, locale } = useTranslation();

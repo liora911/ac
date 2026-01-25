@@ -4,15 +4,10 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Calendar, MapPin, Clock, Globe, X } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { Event } from "@/types/Events/events";
+import type { EventModalProps } from "@/types/Events/events";
 import RichContent from "@/components/RichContent";
 
-export interface EventModalProps {
-  event: Event | null;
-  isOpen: boolean;
-  onClose: () => void;
-  locale: string;
-}
+export type { EventModalProps };
 
 const EventModal: React.FC<EventModalProps> = ({
   event,

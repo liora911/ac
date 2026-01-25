@@ -3,6 +3,7 @@
 import React from "react";
 import { FileText, Download, ExternalLink } from "lucide-react";
 import dynamic from "next/dynamic";
+import type { DocumentViewerProps } from "@/types/Components/components";
 
 // Dynamically import PdfViewer to avoid SSR issues
 const PdfViewer = dynamic(() => import("@/components/PdfViewer/PdfViewer"), {
@@ -13,12 +14,6 @@ const PdfViewer = dynamic(() => import("@/components/PdfViewer/PdfViewer"), {
     </div>
   ),
 });
-
-interface DocumentViewerProps {
-  url: string;
-  title?: string;
-  filename?: string;
-}
 
 // Get file extension from URL or filename
 function getFileExtension(url: string, filename?: string): string {

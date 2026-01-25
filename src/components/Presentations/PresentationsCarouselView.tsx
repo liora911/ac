@@ -5,17 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { PresentationCategory, Presentation } from "@/types/Presentations/presentations";
+import type { PresentationCategory, Presentation, PresentationsCarouselViewProps, PresentationCategoryCarouselProps, PresentationCardProps } from "@/types/Presentations/presentations";
 import { ChevronLeft, ChevronRight, Search, X, Share2, Lock, Images } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { PresentationPlaceholder } from "@/components/Placeholders";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
-
-interface PresentationsCarouselViewProps {
-  categories: PresentationCategory[];
-}
 
 /**
  * Presentations page with horizontal carousels per category.
@@ -139,12 +135,7 @@ export default function PresentationsCarouselView({ categories }: PresentationsC
   );
 }
 
-interface CategoryCarouselProps {
-  category: PresentationCategory;
-  hasAccess: (presentation: Presentation) => boolean;
-}
-
-function CategoryCarousel({ category, hasAccess }: CategoryCarouselProps) {
+function CategoryCarousel({ category, hasAccess }: PresentationCategoryCarouselProps) {
   const { locale } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -235,12 +226,6 @@ function CategoryCarousel({ category, hasAccess }: CategoryCarouselProps) {
       </div>
     </section>
   );
-}
-
-interface PresentationCardProps {
-  presentation: Presentation;
-  hasAccess: boolean;
-  categoryName?: string;
 }
 
 function PresentationCard({ presentation, hasAccess, categoryName }: PresentationCardProps) {

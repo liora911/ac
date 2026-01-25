@@ -13,25 +13,10 @@ import {
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import ContentPreviewPopover from "./ContentPreviewPopover";
-import type { ContentItem } from "@/types/Home/home";
+import type { ContentItem, FeaturedCarouselSectionProps } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE, BATCH_SIZE } from "@/constants/pagination";
 import { COOLDOWN_MS, HOVER_DELAY_MS } from "@/constants/timing";
-
-interface FeaturedCarouselSectionProps {
-  title: string;
-  items: ContentItem[];
-  href: string;
-  linkPrefix: string;
-  useSlug?: boolean;
-  contentType: string;
-  onLoadMore: (
-    type: string,
-    skip: number,
-  ) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
-  getImageUrl: (item: ContentItem) => string | null;
-  getSubtitle?: (item: ContentItem) => string | null;
-}
 
 const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
   title,

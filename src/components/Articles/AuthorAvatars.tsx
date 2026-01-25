@@ -3,15 +3,7 @@
 import React, { useState } from "react";
 import { User, Plus, X } from "lucide-react";
 import Image from "next/image";
-import { ArticleAuthor } from "@/types/Articles/articles";
-
-interface AuthorAvatarsProps {
-  authors: ArticleAuthor[];
-  size?: "sm" | "md" | "lg";
-  showNames?: boolean;
-  maxDisplay?: number;
-  clickable?: boolean;
-}
+import type { AuthorAvatarsProps, ArticleAuthor } from "@/types/Articles/articles";
 
 const sizeClasses = {
   sm: "w-6 h-6",

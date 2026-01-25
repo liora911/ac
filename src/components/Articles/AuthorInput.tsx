@@ -3,13 +3,7 @@
 import React, { useState } from "react";
 import { Plus, X, User, Upload } from "lucide-react";
 import Image from "next/image";
-import { ArticleAuthorInput } from "@/types/Articles/articles";
-
-interface AuthorInputProps {
-  authors: ArticleAuthorInput[];
-  onChange: (authors: ArticleAuthorInput[]) => void;
-  error?: string;
-}
+import type { ArticleAuthorInput, AuthorInputProps } from "@/types/Articles/articles";
 
 // Use index as key - stable across re-renders when typing
 

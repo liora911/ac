@@ -2,10 +2,7 @@
 
 import { MotionConfig } from "framer-motion";
 import { useSettings } from "@/contexts/SettingsContext";
-
-interface MotionProviderProps {
-  children: React.ReactNode;
-}
+import type { MotionProviderProps } from "@/types/Components/components";
 
 export default function MotionProvider({ children }: MotionProviderProps) {
   const { reduceMotion } = useSettings();

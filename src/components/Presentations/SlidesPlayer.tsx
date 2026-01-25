@@ -5,14 +5,7 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Maximize2, Minimize2, ExternalLink } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface SlidesPlayerProps {
-  isOpen: boolean;
-  onClose: () => void;
-  embedUrl: string;
-  title: string;
-  googleSlidesUrl?: string;
-}
+import type { SlidesPlayerProps } from "@/types/Presentations/presentations";
 
 export default function SlidesPlayer({
   isOpen,

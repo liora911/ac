@@ -3,16 +3,9 @@
 import React from "react";
 import { Heart } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useFavorite, FavoriteType } from "@/hooks/useFavorites";
+import { useFavorite } from "@/hooks/useFavorites";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface FavoriteButtonProps {
-  itemId: string;
-  itemType: FavoriteType;
-  size?: "sm" | "md" | "lg";
-  className?: string;
-  showTooltip?: boolean;
-}
+import type { FavoriteButtonProps } from "@/types/Components/components";
 
 const sizeMap = {
   sm: { button: "w-7 h-7", icon: 14 },

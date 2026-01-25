@@ -58,3 +58,55 @@ export interface CreatePresentationData {
   imageUrls: string[];
   categoryId: string;
 }
+
+// ============================================
+// PRESENTATION COMPONENT PROPS
+// ============================================
+
+/**
+ * Props for the PresentationsCarouselView component.
+ * Displays presentations in horizontal carousels grouped by category.
+ */
+export interface PresentationsCarouselViewProps {
+  categories: PresentationCategory[];
+}
+
+/**
+ * Props for the CategoryCarousel component (internal).
+ * Single category carousel section for presentations.
+ */
+export interface PresentationCategoryCarouselProps {
+  category: PresentationCategory;
+  hasAccess: (presentation: Presentation) => boolean;
+}
+
+/**
+ * Props for the PresentationCard component.
+ * Individual presentation card in carousel or grid.
+ */
+export interface PresentationCardProps {
+  presentation: Presentation;
+  hasAccess: boolean;
+  categoryName?: string;
+}
+
+/**
+ * Props for the SlidesPlayer component.
+ * Full-screen Google Slides player modal.
+ */
+export interface SlidesPlayerProps {
+  isOpen: boolean;
+  onClose: () => void;
+  embedUrl: string;
+  title: string;
+  googleSlidesUrl?: string;
+}
+
+/**
+ * Props for the PresentationPlaceholder component.
+ * Generative placeholder for presentations without thumbnail.
+ */
+export interface PresentationPlaceholderProps {
+  id: string;
+  className?: string;
+}

@@ -2,10 +2,7 @@
 
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { getQuoteOfTheDay } from "@/data/quotes";
-
-interface QuoteOfTheDayProps {
-  className?: string;
-}
+import type { QuoteOfTheDayProps } from "@/types/Components/components";
 
 export default function QuoteOfTheDay({ className = "" }: QuoteOfTheDayProps) {
   const { locale } = useTranslation();

@@ -1,10 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-
-interface MainContentProps {
-  children: React.ReactNode;
-}
+import type { MainContentProps } from "@/types/Components/components";
 
 export default function MainContent({ children }: MainContentProps) {
   const pathname = usePathname();

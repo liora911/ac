@@ -3,22 +3,7 @@
 import React, { useState, useRef, useCallback } from "react";
 import { Upload, X, FileText, Loader2 } from "lucide-react";
 import { clientUpload, isDocumentFile, formatFileSize } from "@/lib/upload/client-upload";
-
-interface PdfUploadProps {
-  pdfUrl: string | null;
-  onChange: (url: string | null) => void;
-  labels?: {
-    title?: string;
-    dragDropText?: string;
-    orClickToUpload?: string;
-    maxFileSize?: string;
-    uploadError?: string;
-    invalidFileType?: string;
-    removeButton?: string;
-    viewPdf?: string;
-  };
-  onError?: (message: string) => void;
-}
+import type { PdfUploadProps } from "@/types/Components/components";
 
 export default function PdfUpload({
   pdfUrl,

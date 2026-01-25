@@ -6,11 +6,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useAIChat } from "@/hooks/useAIChat";
 import { Send, Bot, User, Loader2, X } from "lucide-react";
 import Link from "next/link";
-
-interface AIAssistantPanelProps {
-  isOpen: boolean;
-  onClose: () => void;
-}
+import type { AIAssistantPanelProps } from "@/types/Components/components";
 
 export default function AIAssistantPanel({ isOpen, onClose }: AIAssistantPanelProps) {
   const { data: session } = useSession();

@@ -24,3 +24,52 @@ export interface ContentCardProps {
   iconColor: string;
   itemVariants: Variants;
 }
+
+// ============================================
+// HOME PAGE COMPONENT PROPS
+// ============================================
+
+/**
+ * Props for the FeaturedCarouselSection component.
+ * Enhanced featured content carousel with hover preview.
+ */
+export interface FeaturedCarouselSectionProps {
+  title: string;
+  items: ContentItem[];
+  href: string;
+  linkPrefix: string;
+  useSlug?: boolean;
+  contentType: string;
+  onLoadMore: (type: string, skip: number) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
+  getImageUrl: (item: ContentItem) => string | null;
+  getSubtitle?: (item: ContentItem) => string | null;
+}
+
+/**
+ * Props for the CarouselSection component.
+ * Standard content carousel with pagination.
+ */
+export interface CarouselSectionProps {
+  title: string;
+  items: ContentItem[];
+  href: string;
+  linkPrefix: string;
+  useSlug?: boolean;
+  contentType: string;
+  onLoadMore: (type: string, skip: number) => Promise<{ items: ContentItem[]; hasMore: boolean }>;
+  getImageUrl: (item: ContentItem) => string | null;
+  getSubtitle?: (item: ContentItem) => string | null;
+}
+
+/**
+ * Props for the ContentPreviewPopover component.
+ * Hover preview popup for content items.
+ */
+export interface ContentPreviewPopoverProps {
+  item: ContentItem;
+  imageUrl: string | null;
+  subtitle: string | null;
+  position: { x: number; y: number };
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+}

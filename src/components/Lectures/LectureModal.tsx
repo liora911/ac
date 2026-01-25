@@ -3,16 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { X, Clock, Calendar, Maximize2, Minimize2, ChevronDown, ChevronUp, Lock, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Lecture } from "@/types/Lectures/lectures";
+import type { LectureModalProps } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import RichContent from "@/components/RichContent";
-
-interface LectureModalProps {
-  lecture: Lecture | null;
-  onClose: () => void;
-}
 
 const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
   const { t } = useTranslation();

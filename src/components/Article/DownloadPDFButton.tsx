@@ -2,16 +2,7 @@
 
 import { Download } from "lucide-react";
 import { track } from "@vercel/analytics";
-
-interface DownloadPDFButtonProps {
-  articleId: string;
-  articleTitle: string;
-  locale: string;
-  dateLocale: string;
-  createdAt: string;
-  publisherName?: string;
-  downloadText: string;
-}
+import type { DownloadPDFButtonProps } from "@/types/Articles/articles";
 
 export default function DownloadPDFButton({
   articleId,

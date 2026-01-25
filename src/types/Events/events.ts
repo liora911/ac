@@ -1,3 +1,11 @@
+// Component Props
+export interface EventModalProps {
+  event: Event | null;
+  isOpen: boolean;
+  onClose: () => void;
+  locale: string;
+}
+
 export interface SeatsInfo {
   maxSeats: number;
   reservedSeats: number;
@@ -69,4 +77,33 @@ export interface CreateEventData {
   eventTime?: string;
   bannerImageUrl?: string;
   categoryId: string;
+}
+
+// ============================================
+// EVENT COMPONENT PROPS
+// ============================================
+
+/**
+ * Props for the FeaturedEvent component.
+ * Displays a featured event with enhanced styling.
+ */
+export interface FeaturedEventProps {
+  event: Event;
+  onEventClick?: (event: Event) => void;
+}
+
+/**
+ * Props for the EventsCalendar component.
+ * Calendar view with event indicators and popover details.
+ */
+export interface EventsCalendarProps {
+  events: Event[];
+}
+
+/**
+ * Internal type for EventsCalendar - day with its events.
+ */
+export interface DayEvents {
+  date: Date;
+  events: Event[];
 }

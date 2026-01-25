@@ -6,14 +6,7 @@ import { useSession } from "next-auth/react";
 import { Star, Crown, Sparkles } from "lucide-react";
 import Tooltip from "@/components/Tooltip";
 import { useTranslation } from "@/hooks/useTranslation";
-
-interface PremiumBadgeProps {
-  size?: "sm" | "md" | "lg";
-  variant?: "star" | "badge" | "crown";
-  showTooltip?: boolean;
-  onClick?: () => void;
-  className?: string;
-}
+import type { PremiumBadgeProps, PremiumTagProps } from "@/types/Components/components";
 
 export default function PremiumBadge({
   size = "md",
@@ -131,7 +124,7 @@ export default function PremiumBadge({
 }
 
 // Compact inline badge for cards/lists
-export function PremiumTag({ className = "" }: { className?: string }) {
+export function PremiumTag({ className = "" }: PremiumTagProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const { t } = useTranslation();

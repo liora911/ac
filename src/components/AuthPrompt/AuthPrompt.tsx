@@ -2,21 +2,7 @@
 
 import React from "react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-
-interface AuthPromptProps {
-  /** Title text or translation key result */
-  title?: string;
-  /** Message text or translation key result */
-  message?: string;
-  /** Button text or translation key result */
-  buttonText?: string;
-  /** URL to redirect to on button click */
-  redirectUrl?: string;
-  /** Whether to show in a card container */
-  withCard?: boolean;
-  /** Additional CSS classes */
-  className?: string;
-}
+import type { AuthPromptProps, UnauthorizedPromptProps } from "@/types/Components/components";
 
 /**
  * Reusable component for showing unauthenticated/unauthorized prompts.
@@ -88,10 +74,7 @@ export default function AuthPrompt({
 export function UnauthorizedPrompt({
   message,
   className = "",
-}: {
-  message?: string;
-  className?: string;
-}) {
+}: UnauthorizedPromptProps) {
   const { locale } = useTranslation();
 
   const displayMessage =

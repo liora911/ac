@@ -2,11 +2,7 @@
 
 import { Share2 } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
-
-interface ShareButtonProps {
-  shareText: string;
-  copiedText: string;
-}
+import type { ShareButtonProps } from "@/types/Articles/articles";
 
 export default function ShareButton({ shareText, copiedText }: ShareButtonProps) {
   const { showSuccess } = useNotification();

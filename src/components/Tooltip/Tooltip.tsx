@@ -1,15 +1,8 @@
 "use client";
 
-import React, { useState, useRef, useEffect, ReactNode } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-
-interface TooltipProps {
-  children: ReactNode;
-  content: ReactNode;
-  position?: "top" | "bottom" | "left" | "right";
-  delay?: number;
-  className?: string;
-}
+import type { TooltipProps } from "@/types/Components/components";
 
 export default function Tooltip({
   children,

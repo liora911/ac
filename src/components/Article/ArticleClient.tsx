@@ -4,22 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { track } from "@vercel/analytics";
 import { Pencil, Download } from "lucide-react";
-
-interface ArticleClientProps {
-  articleId: string;
-  articleTitle: string;
-  isPremium: boolean;
-  categoryName?: string;
-  isAuthorized: boolean;
-  locale: string;
-  dateLocale: string;
-  createdAt: string;
-  publisherName?: string;
-  translations: {
-    editButton: string;
-    downloadPDF: string;
-  };
-}
+import type { ArticleClientProps } from "@/types/Articles/articles";
 
 export default function ArticleClient({
   articleId,

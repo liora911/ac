@@ -5,14 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Calendar, Clock, MapPin, Globe, Sparkles, ArrowRight, Ticket, Users } from "lucide-react";
-import { Event } from "@/types/Events/events";
+import type { FeaturedEventProps } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import DOMPurify from "dompurify";
-
-interface FeaturedEventProps {
-  event: Event;
-  onEventClick?: (event: Event) => void;
-}
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) => {
   const { t, locale } = useTranslation();

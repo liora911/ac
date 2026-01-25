@@ -1,17 +1,7 @@
 "use client";
 
 import React from "react";
-
-interface LoadingSpinnerProps {
-  /** Size of the spinner */
-  size?: "sm" | "md" | "lg";
-  /** Optional loading message */
-  message?: string;
-  /** Whether to show in a card container */
-  withCard?: boolean;
-  /** Additional CSS classes */
-  className?: string;
-}
+import type { LoadingSpinnerProps, PageLoadingSpinnerProps, InlineSpinnerProps } from "@/types/Components/components";
 
 const sizeClasses = {
   sm: "h-4 w-4 border-2",
@@ -70,7 +60,7 @@ export default function LoadingSpinner({
 /**
  * Full-page centered loading spinner
  */
-export function PageLoadingSpinner({ message }: { message?: string }) {
+export function PageLoadingSpinner({ message }: PageLoadingSpinnerProps) {
   return (
     <div className="flex items-center justify-center py-12">
       <LoadingSpinner size="lg" message={message} />
@@ -81,7 +71,7 @@ export function PageLoadingSpinner({ message }: { message?: string }) {
 /**
  * Inline loading spinner for buttons or small areas
  */
-export function InlineSpinner({ className = "" }: { className?: string }) {
+export function InlineSpinner({ className = "" }: InlineSpinnerProps) {
   return (
     <div
       className={`animate-spin rounded-full h-4 w-4 border-2 border-current border-t-transparent ${className}`}

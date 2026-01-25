@@ -4,25 +4,7 @@ import React, { useState, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Upload, X, Link as LinkIcon, Loader2 } from "lucide-react";
 import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
-
-interface MultiImageUploadProps {
-  imageUrls: string[];
-  onChange: (urls: string[]) => void;
-  labels?: {
-    title?: string;
-    uploadMode?: string;
-    urlMode?: string;
-    dragDropText?: string;
-    orClickToUpload?: string;
-    maxFileSize?: string;
-    noImagesYet?: string;
-    addImageButton?: string;
-    removeImageButton?: string;
-    uploadError?: string;
-    invalidFileType?: string;
-  };
-  onError?: (message: string) => void;
-}
+import type { MultiImageUploadProps } from "@/types/Components/components";
 
 export default function MultiImageUpload({
   imageUrls,
