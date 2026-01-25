@@ -13,6 +13,7 @@ export const STATIC_SEGMENT_KEYS: Record<string, string> = {
   contact: "nav.contact",
   about: "breadcrumbs.about",
   search: "breadcrumbs.search",
+  browse: "breadcrumbs.browse",
   // Admin
   elitzur: "breadcrumbs.adminDashboard",
   // Edit pages (root level pattern)

@@ -7,7 +7,7 @@ import type { BrowseData, BrowseCategoryItem } from "@/types/Browse/browse";
 import { FolderOpen, FileText, Video, Presentation, Calendar, ChevronRight } from "lucide-react";
 
 function CategoryCard({ category }: { category: BrowseCategoryItem }) {
-  const { locale } = useTranslation();
+  const { locale, t } = useTranslation();
   const hasContent = category.counts.total > 0;
   const hasSubcategories = category.subcategories.length > 0;
 
@@ -36,7 +36,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
               >
                 <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Articles</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t("nav.articles")}</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     {category.counts.articles}
                   </span>
@@ -55,7 +55,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
               >
                 <Video className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Lectures</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t("nav.lectures")}</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     {category.counts.lectures}
                   </span>
@@ -74,7 +74,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
               >
                 <Presentation className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Presentations</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t("nav.presentations")}</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     {category.counts.presentations}
                   </span>
@@ -93,7 +93,7 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
               >
                 <Calendar className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                 <div className="flex flex-col">
-                  <span className="text-xs text-gray-500 dark:text-gray-400">Events</span>
+                  <span className="text-xs text-gray-500 dark:text-gray-400">{t("nav.events")}</span>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     {category.counts.events}
                   </span>
