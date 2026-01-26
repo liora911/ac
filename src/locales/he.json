@@ -1350,6 +1350,10 @@
       "lectures": "הרצאות",
       "events": "אירועים"
     },
+    "favorites": {
+      "subtitle": "מאמרים, הרצאות ועוד ששמרת",
+      "view": "צפה במועדפים"
+    },
     "notifications": {
       "title": "התראות",
       "loading": "טוען התראות...",

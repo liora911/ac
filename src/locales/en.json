@@ -1300,6 +1300,10 @@
       "lectures": "Lectures",
       "events": "Events"
     },
+    "favorites": {
+      "subtitle": "Saved articles, lectures & more",
+      "view": "View Favorites"
+    },
     "notifications": {
       "title": "Notifications",
       "loading": "Loading notifications...",

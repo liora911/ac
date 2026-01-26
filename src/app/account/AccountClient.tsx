@@ -11,15 +11,11 @@ import {
   LogOut,
   ExternalLink,
   Sparkles,
-  Calendar,
   AlertCircle,
   Shield,
   Clock,
   ChevronRight,
   Settings,
-  Bell,
-  FileText,
-  Video,
   Heart,
   Filter,
   Check,
@@ -335,60 +331,25 @@ function AccountContent({
             )}
           </div>
 
-          {/* Quick Links Card */}
+          {/* Favorites Card */}
           <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                <Bell className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
+                <Heart className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.quickLinks.title")}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.quickLinks.subtitle")}</p>
+                <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.quickLinks.favorites")}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.favorites.subtitle")}</p>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Link
-                href="/favorites"
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <Heart className="w-5 h-5 text-gray-400 group-hover:text-red-500" />
-                <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
-                  {t("account.quickLinks.favorites")}
-                </span>
-                <ChevronRight className="w-4 h-4 text-gray-400 ms-auto rtl:rotate-180" />
-              </Link>
-              <Link
-                href="/articles"
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <FileText className="w-5 h-5 text-gray-400 group-hover:text-blue-500" />
-                <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
-                  {t("account.quickLinks.articles")}
-                </span>
-                <ChevronRight className="w-4 h-4 text-gray-400 ms-auto rtl:rotate-180" />
-              </Link>
-              <Link
-                href="/lectures"
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <Video className="w-5 h-5 text-gray-400 group-hover:text-red-500" />
-                <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
-                  {t("account.quickLinks.lectures")}
-                </span>
-                <ChevronRight className="w-4 h-4 text-gray-400 ms-auto rtl:rotate-180" />
-              </Link>
-              <Link
-                href="/events"
-                className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors group"
-              >
-                <Calendar className="w-5 h-5 text-gray-400 group-hover:text-green-500" />
-                <span className="text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">
-                  {t("account.quickLinks.events")}
-                </span>
-                <ChevronRight className="w-4 h-4 text-gray-400 ms-auto rtl:rotate-180" />
-              </Link>
-            </div>
+            <Link
+              href="/favorites"
+              className="w-full py-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-2"
+            >
+              {t("account.favorites.view")}
+              <ChevronRight className="w-4 h-4 rtl:rotate-180" />
+            </Link>
           </div>
         </div>
 
