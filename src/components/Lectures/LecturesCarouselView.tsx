@@ -163,9 +163,18 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     if (!el) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    setCanGoPrev(scrollLeft > 5);
-    setCanGoNext(scrollLeft < scrollWidth - clientWidth - 5);
-  }, []);
+    const maxScroll = scrollWidth - clientWidth;
+    const isRTL = locale === "he";
+
+    if (isRTL) {
+      // In RTL, prev/next meanings are swapped
+      setCanGoPrev(scrollLeft < maxScroll - 5);
+      setCanGoNext(scrollLeft > 5);
+    } else {
+      setCanGoPrev(scrollLeft > 5);
+      setCanGoNext(scrollLeft < maxScroll - 5);
+    }
+  }, [locale]);
 
   React.useEffect(() => {
     const el = scrollRef.current;
@@ -187,8 +196,14 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     if (!el) return;
 
     const amount = el.clientWidth * 0.75;
+    const isRTL = locale === "he";
+
+    // In RTL, the scroll direction is inverted
+    const scrollAmount = dir === "next" ? amount : -amount;
+    const finalAmount = isRTL ? -scrollAmount : scrollAmount;
+
     el.scrollTo({
-      left: el.scrollLeft + (dir === "next" ? amount : -amount),
+      left: el.scrollLeft + finalAmount,
       behavior: "smooth",
     });
   };
