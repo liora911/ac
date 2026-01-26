@@ -173,15 +173,29 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
   }, [checkScrollability]);
 
   const scroll = (direction: "left" | "right") => {
-    console.log("scroll called", { direction, container: scrollRef.current });
     const container = scrollRef.current;
     if (!container) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = container;
+    console.log("Before scroll:", { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
+
     const scrollAmount = container.clientWidth * 0.75;
-    console.log("scrolling by", scrollAmount);
-    container.scrollBy({
-      left: direction === "left" ? -scrollAmount : scrollAmount,
+    const newPosition = direction === "left"
+      ? scrollLeft - scrollAmount
+      : scrollLeft + scrollAmount;
+
+    console.log("Scrolling to:", newPosition);
+
+    container.scrollTo({
+      left: newPosition,
       behavior: "smooth",
     });
+
+    // Force check after scroll
+    setTimeout(() => {
+      console.log("After scroll:", container.scrollLeft);
+      checkScrollability();
+    }, 350);
   };
 
   if (category.lectures.length === 0) return null;
