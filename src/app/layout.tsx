@@ -19,8 +19,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
 const WelcomeModal = dynamic(
-  () => import("@/components/CategoryPreferences/WelcomeModal"),
-  { ssr: false }
+  () => import("@/components/CategoryPreferences/WelcomeModal")
 );
 
 import { BASE_URL } from "@/constants/app";
