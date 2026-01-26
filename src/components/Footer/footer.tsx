@@ -77,7 +77,7 @@ function CategoryItem({ category }: { category: CategoryWithArticles }) {
       >
         <FolderOpen className="w-4 h-4 flex-shrink-0" />
         <span className="truncate">{category.name}</span>
-        <span className="text-xs text-gray-400">({category.articles.length})</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">({category.articles.length})</span>
         {isExpanded ? (
           <ChevronUp className="w-4 h-4 ms-auto flex-shrink-0" />
         ) : (
@@ -191,7 +191,7 @@ export default function Footer() {
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
           <p>{t("footer.contact")}</p>
-          <div className="mt-3 flex items-center justify-center gap-1.5 text-[10px] text-gray-400">
+          <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <BlackHoleIcon className="w-4 h-4" />
             <span>
               {isHebrew ? "פותח באהבה על ידי: Singularity" : "Developed By: Y.M"}
