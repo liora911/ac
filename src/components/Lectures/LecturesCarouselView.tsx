@@ -155,26 +155,17 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
 function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarouselProps) {
   const { locale } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canGoPrev, setCanGoPrev] = useState(false);
-  const [canGoNext, setCanGoNext] = useState(false);
+  const [canGoLeft, setCanGoLeft] = useState(false);
+  const [canGoRight, setCanGoRight] = useState(false);
 
   const updateButtons = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    const maxScroll = scrollWidth - clientWidth;
-    const isRTL = locale === "he";
-
-    if (isRTL) {
-      // In RTL, prev/next meanings are swapped
-      setCanGoPrev(scrollLeft < maxScroll - 5);
-      setCanGoNext(scrollLeft > 5);
-    } else {
-      setCanGoPrev(scrollLeft > 5);
-      setCanGoNext(scrollLeft < maxScroll - 5);
-    }
-  }, [locale]);
+    setCanGoLeft(scrollLeft > 5);
+    setCanGoRight(scrollLeft < scrollWidth - clientWidth - 5);
+  }, []);
 
   React.useEffect(() => {
     const el = scrollRef.current;
@@ -191,26 +182,18 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     };
   }, [updateButtons]);
 
-  const scroll = (dir: "prev" | "next") => {
+  const scroll = (dir: "left" | "right") => {
     const el = scrollRef.current;
     if (!el) return;
 
     const amount = el.clientWidth * 0.75;
-    const isRTL = locale === "he";
-
-    // In RTL, the scroll direction is inverted
-    const scrollAmount = dir === "next" ? amount : -amount;
-    const finalAmount = isRTL ? -scrollAmount : scrollAmount;
-
     el.scrollTo({
-      left: el.scrollLeft + finalAmount,
+      left: el.scrollLeft + (dir === "right" ? amount : -amount),
       behavior: "smooth",
     });
   };
 
   if (category.lectures.length === 0) return null;
-
-  const isRTL = locale === "he";
 
   return (
     <section>
@@ -220,30 +203,31 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
           {category.name}
         </h2>
 
-        {/* Navigation arrows in header */}
-        <div className="flex gap-2">
+        {/* Navigation arrows - always left/right, no RTL inversion */}
+        <div className="flex gap-2" dir="ltr">
           <button
-            onClick={() => scroll("prev")}
-            disabled={!canGoPrev}
+            onClick={() => scroll("left")}
+            disabled={!canGoLeft}
             className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-            aria-label={isRTL ? "הבא" : "Previous"}
+            aria-label={locale === "he" ? "הקודם" : "Previous"}
           >
-            <ChevronLeft className="w-5 h-5 rtl:rotate-180" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
-            onClick={() => scroll("next")}
-            disabled={!canGoNext}
+            onClick={() => scroll("right")}
+            disabled={!canGoRight}
             className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
-            aria-label={isRTL ? "הקודם" : "Next"}
+            aria-label={locale === "he" ? "הבא" : "Next"}
           >
-            <ChevronRight className="w-5 h-5 rtl:rotate-180" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
       </div>
 
-      {/* Scrollable Row */}
+      {/* Scrollable Row - always LTR */}
       <div
         ref={scrollRef}
+        dir="ltr"
         className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >
