@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
-import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export async function GET() {
   try {
@@ -45,13 +43,9 @@ export async function PUT(request: NextRequest) {
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (
-      !session?.user?.email ||
-      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
-    ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
 
     const body = await request.json();

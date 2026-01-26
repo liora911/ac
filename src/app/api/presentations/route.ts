@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
-import { ALLOWED_EMAILS } from "@/constants/auth";
 import type { PresentationTreeCategory } from "@/types/Presentations/presentations-api";
 
 export async function GET() {
@@ -86,14 +84,11 @@ export async function POST(request: NextRequest) {
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (
-      !session?.user?.email ||
-      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
-    ) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
+    const { user } = auth;
 
     const body = await request.json();
     const {
@@ -123,14 +118,6 @@ export async function POST(request: NextRequest) {
         { error: "Category not found" },
         { status: 400 }
       );
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 400 });
     }
 
     const presentation = await prisma.presentation.create({

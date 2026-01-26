@@ -7,6 +7,7 @@ export interface AuthResult {
     email: string | null;
     name: string | null;
     role: string;
+    image: string | null;
   };
 }
 

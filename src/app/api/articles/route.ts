@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 import type {
@@ -280,29 +281,11 @@ export async function POST(request: NextRequest) {
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
-
-    const isAuthorized =
-      session.user.email &&
-      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized to create articles" },
-        { status: 403 }
-      );
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email ?? undefined },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { user } = auth;
 
     const body: CreateArticleRequest = await request.json();
     const {

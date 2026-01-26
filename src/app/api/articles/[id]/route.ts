@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 import type {
@@ -194,20 +195,9 @@ export async function PUT(
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAuthorized =
-      session.user.email &&
-      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized to edit articles" },
-        { status: 403 }
-      );
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
 
     const { id } = await params;
@@ -452,20 +442,9 @@ export async function DELETE(
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAuthorized =
-      session.user.email &&
-      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized to delete articles" },
-        { status: 403 }
-      );
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
 
     const { id } = await params;

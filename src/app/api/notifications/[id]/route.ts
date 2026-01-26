@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
-import { ALLOWED_EMAILS } from "@/constants/auth";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { NotificationUpdateInput } from "@/types/Notifications/notifications";
 
@@ -12,18 +10,12 @@ interface RouteParams {
 // GET - Get single notification (admin only)
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
     const { id } = await params;
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAdmin = ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const notification = await prisma.notification.findUnique({
       where: { id },
     });
@@ -53,18 +45,12 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 // PUT - Update notification (admin only)
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
     const { id } = await params;
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAdmin = ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const existing = await prisma.notification.findUnique({
       where: { id },
     });
@@ -122,18 +108,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
 // DELETE - Delete notification (admin only)
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
     const { id } = await params;
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAdmin = ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
-
     const notification = await prisma.notification.findUnique({
       where: { id },
     });

@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
-import { ALLOWED_EMAILS } from "@/constants/auth";
-import { deleteBlob, deleteBlobs } from "@/actions/upload";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import { deleteBlobs } from "@/actions/upload";
 
 export async function GET(
   request: Request,
@@ -56,10 +54,9 @@ export async function PUT(
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
 
     const { id } = await params;
@@ -73,16 +70,6 @@ export async function PUT(
       return NextResponse.json(
         { error: "Presentation not found" },
         { status: 404 }
-      );
-    }
-
-    const isAuthorized =
-      session.user.email &&
-      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized to edit presentations" },
-        { status: 403 }
       );
     }
 
@@ -161,20 +148,9 @@ export async function DELETE(
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const isAuthorized =
-      session.user.email &&
-      ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-    if (!isAuthorized) {
-      return NextResponse.json(
-        { error: "Unauthorized to delete presentations" },
-        { status: 403 }
-      );
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
     }
 
     const { id } = await params;

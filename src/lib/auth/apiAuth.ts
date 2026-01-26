@@ -30,7 +30,7 @@ export async function requireAuth(): Promise<AuthResult | AuthError> {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, email: true, name: true, role: true },
+    select: { id: true, email: true, name: true, role: true, image: true },
   });
 
   if (!user) {
