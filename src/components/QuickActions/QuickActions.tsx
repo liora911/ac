@@ -17,25 +17,25 @@ const QuickActions: React.FC = () => {
 
   const actions = [
     {
-      labelKey: "quickActions.addArticle",
+      labelKey: "admin.quickActions.addArticle",
       icon: FileText,
       path: "/articles/create",
       gradient: "from-blue-500 to-indigo-600",
     },
     {
-      labelKey: "quickActions.addLecture",
+      labelKey: "admin.quickActions.addLecture",
       icon: Video,
       path: "/create-lecture",
       gradient: "from-purple-500 to-pink-600",
     },
     {
-      labelKey: "quickActions.addPresentation",
+      labelKey: "admin.quickActions.addPresentation",
       icon: Presentation,
       path: "/create-presentation",
       gradient: "from-orange-500 to-amber-600",
     },
     {
-      labelKey: "quickActions.addEvent",
+      labelKey: "admin.quickActions.addEvent",
       icon: CalendarPlus,
       path: "/create-event",
       gradient: "from-green-500 to-emerald-600",
@@ -48,7 +48,7 @@ const QuickActions: React.FC = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("quickActions.title")}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{t("admin.quickActions.title")}</h2>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {actions.map((action, index) => {
           const IconComponent = action.icon;
