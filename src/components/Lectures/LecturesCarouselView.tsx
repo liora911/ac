@@ -19,7 +19,7 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue";
  * Each category is displayed as a section with a horizontally scrollable row of lecture cards.
  */
 export default function LecturesCarouselView({ categories }: LecturesCarouselViewProps) {
-  const { t, locale } = useTranslation();
+  const { t } = useTranslation();
   const { data: session } = useSession();
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -153,68 +153,62 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
 }
 
 function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarouselProps) {
-  const { t, locale } = useTranslation();
+  const { locale } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
+  const [showPrevArrow, setShowPrevArrow] = useState(false);
+  const [showNextArrow, setShowNextArrow] = useState(false);
 
-  const checkScrollability = useCallback(() => {
-    const container = scrollRef.current;
-    if (!container) return;
+  // Check if we can scroll in each direction
+  const updateArrows = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
 
-    const { scrollLeft, scrollWidth, clientWidth } = container;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
     const maxScroll = scrollWidth - clientWidth;
-    const isRTL = locale === "he";
 
-    if (isRTL) {
-      // In RTL, scrollLeft can be negative (Chrome) or positive (Firefox)
-      // Use absolute value for cross-browser compatibility
-      const absScroll = Math.abs(scrollLeft);
-      // Left arrow (visually on right in RTL) = towards more content
-      // Right arrow (visually on left in RTL) = towards start
-      setCanScrollLeft(absScroll < maxScroll - 1);
-      setCanScrollRight(absScroll > 1);
-    } else {
-      setCanScrollLeft(scrollLeft > 1);
-      setCanScrollRight(scrollLeft < maxScroll - 1);
-    }
-  }, [locale]);
+    // Simple check: can we scroll towards the beginning or end?
+    setShowPrevArrow(scrollLeft > 5);
+    setShowNextArrow(scrollLeft < maxScroll - 5);
+  }, []);
 
+  // Set up scroll and resize listeners
   React.useEffect(() => {
-    checkScrollability();
-    window.addEventListener("resize", checkScrollability);
-    return () => window.removeEventListener("resize", checkScrollability);
-  }, [checkScrollability]);
+    const el = scrollRef.current;
+    if (!el) return;
 
-  const scroll = (direction: "left" | "right") => {
-    const container = scrollRef.current;
-    if (!container) return;
+    // Initial check after a brief delay for layout to settle
+    const timer = setTimeout(updateArrows, 100);
 
-    const scrollAmount = container.clientWidth * 0.75;
-    const isRTL = locale === "he";
+    // Listen for scroll events
+    el.addEventListener("scroll", updateArrows);
+    window.addEventListener("resize", updateArrows);
 
-    // In RTL, scroll direction is inverted
-    const actualDirection = isRTL
-      ? (direction === "left" ? "right" : "left")
-      : direction;
+    return () => {
+      clearTimeout(timer);
+      el.removeEventListener("scroll", updateArrows);
+      window.removeEventListener("resize", updateArrows);
+    };
+  }, [updateArrows]);
 
-    const currentScroll = container.scrollLeft;
-    const newPosition = actualDirection === "left"
-      ? currentScroll - scrollAmount
-      : currentScroll + scrollAmount;
+  // Handle arrow click - scroll by 75% of visible width
+  const handleScroll = (direction: "prev" | "next") => {
+    const el = scrollRef.current;
+    if (!el) return;
 
-    container.scrollTo({
-      left: newPosition,
-      behavior: "smooth",
-    });
+    const amount = el.clientWidth * 0.75;
+    const newPos = direction === "prev"
+      ? el.scrollLeft - amount
+      : el.scrollLeft + amount;
 
-    setTimeout(checkScrollability, 350);
+    el.scrollTo({ left: newPos, behavior: "smooth" });
   };
 
   if (category.lectures.length === 0) return null;
 
+  const isRTL = locale === "he";
+
   return (
-    <section className="relative">
+    <section className="relative px-6">
       {/* Category Header */}
       <div className="mb-4 px-1">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
@@ -224,12 +218,12 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
 
       {/* Carousel Container */}
       <div className="relative group">
-        {/* Left Arrow */}
-        {canScrollLeft && (
+        {/* Previous Arrow */}
+        {showPrevArrow && (
           <button
-            onClick={() => scroll("left")}
-            className="absolute start-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 -translate-x-1/2 cursor-pointer"
-            aria-label={locale === "he" ? "הבא" : "Previous"}
+            onClick={() => handleScroll("prev")}
+            className="absolute -left-3 md:-left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+            aria-label={isRTL ? "הבא" : "Previous"}
           >
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
           </button>
@@ -238,8 +232,7 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
         {/* Scrollable Row */}
         <div
           ref={scrollRef}
-          onScroll={checkScrollability}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {category.lectures.map((lecture) => (
@@ -252,23 +245,23 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
           ))}
         </div>
 
-        {/* Right Arrow */}
-        {canScrollRight && (
+        {/* Next Arrow */}
+        {showNextArrow && (
           <button
-            onClick={() => scroll("right")}
-            className="absolute end-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 translate-x-1/2 cursor-pointer"
-            aria-label={locale === "he" ? "הקודם" : "Next"}
+            onClick={() => handleScroll("next")}
+            className="absolute -right-3 md:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+            aria-label={isRTL ? "הקודם" : "Next"}
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
           </button>
         )}
 
         {/* Gradient Fades */}
-        {canScrollLeft && (
-          <div className="absolute start-0 top-0 bottom-2 w-8 bg-gradient-to-e from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
+        {showPrevArrow && (
+          <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
         )}
-        {canScrollRight && (
-          <div className="absolute end-0 top-0 bottom-2 w-8 bg-gradient-to-s from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
+        {showNextArrow && (
+          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
         )}
       </div>
     </section>
