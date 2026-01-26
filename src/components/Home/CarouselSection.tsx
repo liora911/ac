@@ -350,18 +350,22 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 
         {/* Desktop pagination dots - hidden on mobile */}
         {totalPages > 1 && (
-          <div className="hidden sm:flex justify-center gap-2 mt-4">
+          <div className="hidden sm:flex justify-center gap-1 mt-4">
             {Array.from({ length: totalPages }).map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => goToPage(idx)}
-                className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  idx === page
-                    ? "bg-blue-500 w-6"
-                    : "bg-gray-300 dark:bg-gray-600 w-1.5 hover:bg-gray-400 dark:hover:bg-gray-500"
-                }`}
+                className="p-2 cursor-pointer group"
                 aria-label={`${t("common.page")} ${idx + 1}`}
-              />
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-all duration-300 ${
+                    idx === page
+                      ? "bg-blue-500 w-6"
+                      : "bg-gray-300 dark:bg-gray-600 w-1.5 group-hover:bg-gray-400 dark:group-hover:bg-gray-500"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         )}
