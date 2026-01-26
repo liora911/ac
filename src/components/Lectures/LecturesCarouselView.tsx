@@ -173,9 +173,11 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
   }, [checkScrollability]);
 
   const scroll = (direction: "left" | "right") => {
+    console.log("scroll called", { direction, container: scrollRef.current });
     const container = scrollRef.current;
     if (!container) return;
     const scrollAmount = container.clientWidth * 0.75;
+    console.log("scrolling by", scrollAmount);
     container.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
       behavior: "smooth",
