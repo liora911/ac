@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSession } from "next-auth/react";
+import { queryCache } from "@/constants/query-cache";
 import type {
   Notification,
   NotificationWithReadCount,
@@ -30,8 +31,8 @@ export function useNotifications() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.notifications.staleTime,
+    gcTime: queryCache.notifications.gcTime,
   });
 }
 
@@ -47,8 +48,8 @@ export function useNotification(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.notifications.staleTime,
+    gcTime: queryCache.notifications.gcTime,
   });
 }
 
@@ -140,8 +141,8 @@ export function useUserNotifications() {
       return response.json();
     },
     enabled: !!session?.user,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.userNotifications.staleTime,
+    gcTime: queryCache.userNotifications.gcTime,
   });
 }
 
@@ -159,8 +160,8 @@ export function useUnreadNotificationCount() {
       return response.json();
     },
     enabled: !!session?.user,
-    staleTime: 1000 * 60 * 2, // 2 minutes for fresher count
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.unreadCount.staleTime,
+    gcTime: queryCache.unreadCount.gcTime,
   });
 }
 

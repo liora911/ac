@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryCache } from "@/constants/query-cache";
 import type { Lecture, Category } from "../types/Lectures/lectures";
 
 export const lecturesKeys = {
@@ -19,8 +20,8 @@ export function useLectures() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.lectures.staleTime,
+    gcTime: queryCache.lectures.gcTime,
   });
 }
 
@@ -40,8 +41,8 @@ export function useLecture(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.lecture.staleTime,
+    gcTime: queryCache.lecture.gcTime,
   });
 }
 

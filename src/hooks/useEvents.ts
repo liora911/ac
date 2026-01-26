@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryCache } from "@/constants/query-cache";
 import type { Event } from "../types/Events/events";
 
 export const eventsKeys = {
@@ -19,8 +20,8 @@ export function useEvents() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.events.staleTime,
+    gcTime: queryCache.events.gcTime,
   });
 }
 
@@ -40,8 +41,8 @@ export function useEvent(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.event.staleTime,
+    gcTime: queryCache.event.gcTime,
   });
 }
 

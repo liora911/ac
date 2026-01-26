@@ -4,6 +4,7 @@ import {
   useQueryClient,
   useInfiniteQuery,
 } from "@tanstack/react-query";
+import { queryCache } from "@/constants/query-cache";
 import type {
   Article,
   ArticlesListResponse,
@@ -28,8 +29,8 @@ export function useCategories() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 60,
-    gcTime: 1000 * 60 * 60 * 6,
+    staleTime: queryCache.categories.staleTime,
+    gcTime: queryCache.categories.gcTime,
   });
 }
 
@@ -60,8 +61,8 @@ export function useArticles(params: ArticlesQueryParams = {}) {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.articles.staleTime,
+    gcTime: queryCache.articles.gcTime,
   });
 }
 
@@ -81,8 +82,8 @@ export function useArticle(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.article.staleTime,
+    gcTime: queryCache.article.gcTime,
   });
 }
 
@@ -203,8 +204,8 @@ export function useSearchArticles(
       return response.json();
     },
     enabled: !!searchQuery.trim(),
-    staleTime: 1000 * 60 * 2,
-    gcTime: 1000 * 60 * 10,
+    staleTime: queryCache.articleSearch.staleTime,
+    gcTime: queryCache.articleSearch.gcTime,
   });
 }
 
@@ -252,7 +253,7 @@ export function useArticlesByCategory(
       return response.json();
     },
     enabled: !!categoryId,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.articles.staleTime,
+    gcTime: queryCache.articles.gcTime,
   });
 }

@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryCache } from "@/constants/query-cache";
 import type {
   Presentation,
   PresentationCategory,
@@ -24,8 +25,8 @@ export function usePresentations() {
       }
       return response.json();
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.presentations.staleTime,
+    gcTime: queryCache.presentations.gcTime,
   });
 }
 
@@ -45,8 +46,8 @@ export function usePresentation(id: string | undefined) {
       return response.json();
     },
     enabled: !!id,
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.presentation.staleTime,
+    gcTime: queryCache.presentation.gcTime,
   });
 }
 

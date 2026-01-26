@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryCache } from "@/constants/query-cache";
 import type { HomeContent, UpdateHomeContentPayload } from "@/types/Home/home-content";
 
 export type { HomeContent, UpdateHomeContentPayload };
@@ -28,8 +29,8 @@ export function useHomeContent() {
         updatedAt: data.updatedAt ?? null,
       } as HomeContent;
     },
-    staleTime: 1000 * 60 * 5,
-    gcTime: 1000 * 60 * 30,
+    staleTime: queryCache.homeContent.staleTime,
+    gcTime: queryCache.homeContent.gcTime,
   });
 }
 
