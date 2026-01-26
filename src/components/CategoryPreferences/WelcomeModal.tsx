@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { User, Check, Sun, Moon, Ticket, Heart, Crown } from "lucide-react";
+import { User, Check, Sun, Moon, Ticket, Heart, Crown, Globe } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
@@ -19,16 +19,21 @@ export default function WelcomeModal() {
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [showAll, setShowAll] = useState(true);
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<0 | 1 | 2>(0);
 
   // Reset selection when modal opens
   useEffect(() => {
     if (shouldShowWelcome) {
       setSelectedIds([]);
       setShowAll(true);
-      setStep(1);
+      setStep(0);
     }
   }, [shouldShowWelcome]);
+
+  const handleLanguageSelect = (lang: "en" | "he") => {
+    setLocale(lang);
+    setStep(1);
+  };
 
   const toggleCategory = (categoryId: string) => {
     setShowAll(false);
@@ -92,49 +97,56 @@ export default function WelcomeModal() {
           transition={{ type: "spring", duration: 0.5 }}
           className="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden flex flex-col"
         >
-          {/* Settings Bar - Language & Theme (Universal Icons) */}
-          <div className="absolute top-2 right-3 left-3 flex justify-between items-center z-10">
-            {/* Language Toggle */}
-            <div className="flex gap-0.5 bg-white/20 backdrop-blur-sm rounded-md p-0.5">
+          {/* Theme Toggle - only show after language selection */}
+          {step > 0 && (
+            <div className="absolute top-2 right-3 z-10">
               <button
-                onClick={() => setLocale("en")}
-                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                  locale === "en"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-                title="English"
+                onClick={toggleTheme}
+                className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white/30 transition-all"
+                title={theme === "dark" ? "Light mode" : "Dark mode"}
               >
-                EN
-              </button>
-              <button
-                onClick={() => setLocale("he")}
-                className={`px-2 py-1 rounded text-xs font-medium transition-all ${
-                  locale === "he"
-                    ? "bg-white text-blue-600 shadow-sm"
-                    : "text-white/80 hover:text-white hover:bg-white/10"
-                }`}
-                title="עברית"
-              >
-                עב
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-white" />
+                ) : (
+                  <Moon className="w-4 h-4 text-white" />
+                )}
               </button>
             </div>
+          )}
 
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className="w-8 h-8 bg-white/20 backdrop-blur-sm rounded-md flex items-center justify-center hover:bg-white/30 transition-all"
-              title={theme === "dark" ? "Light mode" : "Dark mode"}
-            >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-white" />
-              ) : (
-                <Moon className="w-4 h-4 text-white" />
-              )}
-            </button>
-          </div>
+          {step === 0 ? (
+            <>
+              {/* Step 0: Language Selection */}
+              <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-6 py-12 text-white text-center flex-1 flex flex-col items-center justify-center">
+                <div className="flex justify-center mb-4">
+                  <div className="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
+                    <Globe className="w-7 h-7" />
+                  </div>
+                </div>
+                <h2 className="text-xl font-bold mb-2">
+                  Choose Your Language
+                </h2>
+                <p className="text-white/80 text-sm mb-8">
+                  בחר את השפה שלך
+                </p>
 
-          {step === 1 ? (
+                <div className="flex gap-4 w-full max-w-xs">
+                  <button
+                    onClick={() => handleLanguageSelect("he")}
+                    className="flex-1 py-4 px-6 rounded-xl bg-white text-blue-700 font-bold text-lg hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    עברית
+                  </button>
+                  <button
+                    onClick={() => handleLanguageSelect("en")}
+                    className="flex-1 py-4 px-6 rounded-xl bg-white text-blue-700 font-bold text-lg hover:bg-blue-50 transition-all shadow-lg hover:shadow-xl"
+                  >
+                    English
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : step === 1 ? (
             <>
               {/* Step 1: Header with gradient - compact */}
               <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-4 pt-10 pb-4 text-white text-center shrink-0">
