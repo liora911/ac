@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
+import dynamic from "next/dynamic";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 import { TranslationProvider } from "@/contexts/Translation/translation.context";
@@ -11,11 +12,16 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import { CategoryPreferencesProvider } from "@/contexts/CategoryPreferencesContext";
 import MotionProvider from "@/components/Motion/MotionProvider";
-import WelcomeModal from "@/components/CategoryPreferences/WelcomeModal";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+
+// Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
+const WelcomeModal = dynamic(
+  () => import("@/components/CategoryPreferences/WelcomeModal"),
+  { ssr: false }
+);
 
 import { BASE_URL } from "@/constants/app";
 

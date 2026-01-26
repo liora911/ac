@@ -8,12 +8,34 @@ import React, { useState, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import CarouselSection from "./CarouselSection";
-import FeaturedCarouselSection from "./FeaturedCarouselSection";
 import RichContent from "@/components/RichContent";
 import type { ContentItem } from "@/types/Home/home";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
 import { FETCH_BATCH_SIZE } from "@/constants/pagination";
+
+// Skeleton loader for carousels
+const CarouselSkeleton = () => (
+  <div className="mb-10">
+    <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {[...Array(3)].map((_, i) => (
+        <div
+          key={i}
+          className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
+        />
+      ))}
+    </div>
+  </div>
+);
+
+// Lazy load carousel components - they're below the fold and include framer-motion
+const CarouselSection = dynamic(() => import("./CarouselSection"), {
+  loading: () => <CarouselSkeleton />,
+});
+
+const FeaturedCarouselSection = dynamic(() => import("./FeaturedCarouselSection"), {
+  loading: () => <CarouselSkeleton />,
+});
 
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
