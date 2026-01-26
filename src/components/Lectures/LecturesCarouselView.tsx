@@ -155,52 +155,42 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
 function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarouselProps) {
   const { locale } = useTranslation();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [showPrevArrow, setShowPrevArrow] = useState(false);
-  const [showNextArrow, setShowNextArrow] = useState(false);
+  const [canGoPrev, setCanGoPrev] = useState(false);
+  const [canGoNext, setCanGoNext] = useState(false);
 
-  // Check if we can scroll in each direction
-  const updateArrows = useCallback(() => {
+  const updateButtons = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = el;
-    const maxScroll = scrollWidth - clientWidth;
-
-    // Simple check: can we scroll towards the beginning or end?
-    setShowPrevArrow(scrollLeft > 5);
-    setShowNextArrow(scrollLeft < maxScroll - 5);
+    setCanGoPrev(scrollLeft > 5);
+    setCanGoNext(scrollLeft < scrollWidth - clientWidth - 5);
   }, []);
 
-  // Set up scroll and resize listeners
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
 
-    // Initial check after a brief delay for layout to settle
-    const timer = setTimeout(updateArrows, 100);
-
-    // Listen for scroll events
-    el.addEventListener("scroll", updateArrows);
-    window.addEventListener("resize", updateArrows);
+    const timer = setTimeout(updateButtons, 100);
+    el.addEventListener("scroll", updateButtons);
+    window.addEventListener("resize", updateButtons);
 
     return () => {
       clearTimeout(timer);
-      el.removeEventListener("scroll", updateArrows);
-      window.removeEventListener("resize", updateArrows);
+      el.removeEventListener("scroll", updateButtons);
+      window.removeEventListener("resize", updateButtons);
     };
-  }, [updateArrows]);
+  }, [updateButtons]);
 
-  // Handle arrow click - scroll by 75% of visible width
-  const handleScroll = (direction: "prev" | "next") => {
+  const scroll = (dir: "prev" | "next") => {
     const el = scrollRef.current;
     if (!el) return;
 
     const amount = el.clientWidth * 0.75;
-    const newPos = direction === "prev"
-      ? el.scrollLeft - amount
-      : el.scrollLeft + amount;
-
-    el.scrollTo({ left: newPos, behavior: "smooth" });
+    el.scrollTo({
+      left: el.scrollLeft + (dir === "next" ? amount : -amount),
+      behavior: "smooth",
+    });
   };
 
   if (category.lectures.length === 0) return null;
@@ -208,61 +198,48 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
   const isRTL = locale === "he";
 
   return (
-    <section className="relative px-6">
-      {/* Category Header */}
-      <div className="mb-4 px-1">
+    <section>
+      {/* Header with navigation buttons */}
+      <div className="flex items-center justify-between mb-4">
         <h2 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
           {category.name}
         </h2>
-      </div>
 
-      {/* Carousel Container */}
-      <div className="relative group">
-        {/* Previous Arrow */}
-        {showPrevArrow && (
+        {/* Navigation arrows in header */}
+        <div className="flex gap-2">
           <button
-            onClick={() => handleScroll("prev")}
-            className="absolute -left-3 md:-left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+            onClick={() => scroll("prev")}
+            disabled={!canGoPrev}
+            className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
             aria-label={isRTL ? "הבא" : "Previous"}
           >
-            <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
-        )}
-
-        {/* Scrollable Row */}
-        <div
-          ref={scrollRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
-          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-        >
-          {category.lectures.map((lecture) => (
-            <LectureCard
-              key={lecture.id}
-              lecture={lecture}
-              hasAccess={hasAccess(lecture)}
-              onPlay={onPlayLecture}
-            />
-          ))}
-        </div>
-
-        {/* Next Arrow */}
-        {showNextArrow && (
           <button
-            onClick={() => handleScroll("next")}
-            className="absolute -right-3 md:-right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
+            onClick={() => scroll("next")}
+            disabled={!canGoNext}
+            className="w-9 h-9 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer"
             aria-label={isRTL ? "הקודם" : "Next"}
           >
-            <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
+            <ChevronRight className="w-5 h-5" />
           </button>
-        )}
+        </div>
+      </div>
 
-        {/* Gradient Fades */}
-        {showPrevArrow && (
-          <div className="absolute left-0 top-0 bottom-2 w-8 bg-gradient-to-r from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
-        )}
-        {showNextArrow && (
-          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-gray-50 dark:from-gray-950 to-transparent pointer-events-none z-[5]" />
-        )}
+      {/* Scrollable Row */}
+      <div
+        ref={scrollRef}
+        className="flex gap-4 overflow-x-auto scrollbar-hide pb-2"
+        style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+      >
+        {category.lectures.map((lecture) => (
+          <LectureCard
+            key={lecture.id}
+            lecture={lecture}
+            hasAccess={hasAccess(lecture)}
+            onPlay={onPlayLecture}
+          />
+        ))}
       </div>
     </section>
   );
