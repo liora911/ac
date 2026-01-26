@@ -83,7 +83,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   }, [onLoadMore, contentType, items.length, isLoading, hasMore]);
 
   const goNext = useCallback(async () => {
-    console.log("goNext called", { page, totalPages, hasMore, isLoading, cooldown: cooldownRef.current });
     if (cooldownRef.current || isLoading) return;
 
     if (page < totalPages - 1) {

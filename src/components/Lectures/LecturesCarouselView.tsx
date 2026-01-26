@@ -161,10 +161,24 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
   const checkScrollability = useCallback(() => {
     const container = scrollRef.current;
     if (!container) return;
+
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    setCanScrollLeft(scrollLeft > 1);
-    setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 1);
-  }, []);
+    const maxScroll = scrollWidth - clientWidth;
+    const isRTL = locale === "he";
+
+    if (isRTL) {
+      // In RTL, scrollLeft can be negative (Chrome) or positive (Firefox)
+      // Use absolute value for cross-browser compatibility
+      const absScroll = Math.abs(scrollLeft);
+      // Left arrow (visually on right in RTL) = towards more content
+      // Right arrow (visually on left in RTL) = towards start
+      setCanScrollLeft(absScroll < maxScroll - 1);
+      setCanScrollRight(absScroll > 1);
+    } else {
+      setCanScrollLeft(scrollLeft > 1);
+      setCanScrollRight(scrollLeft < maxScroll - 1);
+    }
+  }, [locale]);
 
   React.useEffect(() => {
     checkScrollability();
