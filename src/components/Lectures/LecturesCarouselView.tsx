@@ -176,26 +176,25 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     const container = scrollRef.current;
     if (!container) return;
 
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    console.log("Before scroll:", { scrollLeft, scrollWidth, clientWidth, canScroll: scrollWidth > clientWidth });
-
     const scrollAmount = container.clientWidth * 0.75;
-    const newPosition = direction === "left"
-      ? scrollLeft - scrollAmount
-      : scrollLeft + scrollAmount;
+    const isRTL = locale === "he";
 
-    console.log("Scrolling to:", newPosition);
+    // In RTL, scroll direction is inverted
+    const actualDirection = isRTL
+      ? (direction === "left" ? "right" : "left")
+      : direction;
+
+    const currentScroll = container.scrollLeft;
+    const newPosition = actualDirection === "left"
+      ? currentScroll - scrollAmount
+      : currentScroll + scrollAmount;
 
     container.scrollTo({
       left: newPosition,
       behavior: "smooth",
     });
 
-    // Force check after scroll
-    setTimeout(() => {
-      console.log("After scroll:", container.scrollLeft);
-      checkScrollability();
-    }, 350);
+    setTimeout(checkScrollability, 350);
   };
 
   if (category.lectures.length === 0) return null;
