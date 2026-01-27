@@ -133,7 +133,7 @@ const Home = () => {
         variants={containerVariants}
       >
         <div className="max-w-4xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center gap-10 md:gap-14">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-10 md:gap-14">
             {/* Profile Image */}
             <motion.div className="shrink-0" variants={itemVariants}>
               <div className="relative">
