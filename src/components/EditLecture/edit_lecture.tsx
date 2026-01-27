@@ -244,12 +244,12 @@ export default function EditLectureForm({
   };
 
   return (
-    <div className="p-6 bg-white rounded-xl border border-gray-200">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 rtl">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white rtl">
           {t("editLectureForm.title")}
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {t("editLectureForm.loggedInAs")} {session?.user?.email}
         </p>
       </div>
@@ -267,7 +267,7 @@ export default function EditLectureForm({
       )}
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
         <nav className="flex gap-1" aria-label="Tabs">
           {([1, 2, 3] as const).map((tab) => (
             <button
@@ -277,7 +277,7 @@ export default function EditLectureForm({
               className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
                 activeTab === tab
                   ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300"
               }`}
             >
               {tabLabels[tab]}
@@ -296,7 +296,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.titleLabel")}
               </label>
@@ -306,8 +306,8 @@ export default function EditLectureForm({
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
-                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
+                  formData.title.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                 }`}
                 placeholder={t("editLectureForm.titlePlaceholder")}
               />
@@ -316,7 +316,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="categoryId"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.categoryLabel")}
               </label>
@@ -326,8 +326,8 @@ export default function EditLectureForm({
                 value={formData.categoryId}
                 onChange={handleChange}
                 disabled={categoriesLoading}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl ${
-                  formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl ${
+                  formData.categoryId === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                 }`}
               >
                 <option value="">
@@ -342,7 +342,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="duration"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.durationLabel")}
               </label>
@@ -352,8 +352,8 @@ export default function EditLectureForm({
                 name="duration"
                 value={formData.duration}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  formData.duration.trim() === "" ? "border-gray-300" : "border-green-300"
+                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                  formData.duration.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                 }`}
                 placeholder={t("editLectureForm.durationPlaceholder")}
               />
@@ -367,7 +367,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.descriptionLabel")}
               </label>
@@ -383,7 +383,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="videoUrl"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.videoUrlLabel")}
               </label>
@@ -393,7 +393,7 @@ export default function EditLectureForm({
                 name="videoUrl"
                 value={formData.videoUrl}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
@@ -401,7 +401,7 @@ export default function EditLectureForm({
             <div>
               <label
                 htmlFor="date"
-                className="block text-sm font-medium text-gray-700 mb-2 rtl"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("editLectureForm.dateLabel")}
               </label>
@@ -411,7 +411,7 @@ export default function EditLectureForm({
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </>
@@ -421,7 +421,7 @@ export default function EditLectureForm({
         {activeTab === 3 && (
           <>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl">
                 {t("editLectureForm.imageSummary")}
               </label>
               <UploadImage
@@ -434,7 +434,7 @@ export default function EditLectureForm({
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2 rtl">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl">
                 {t("editLectureForm.imageUrlLabel")}
               </label>
               <input
@@ -442,13 +442,13 @@ export default function EditLectureForm({
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="https://"
               />
             </div>
 
             {/* Premium Content Toggle */}
-            <div className="pt-4 border-t border-gray-200">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <label className="flex items-center gap-3 cursor-pointer">
                 <input
                   type="checkbox"
@@ -456,13 +456,13 @@ export default function EditLectureForm({
                   onChange={(e) =>
                     setFormData((prev) => ({ ...prev, isPremium: e.target.checked }))
                   }
-                  className="w-5 h-5 rounded border-gray-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                  className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500 cursor-pointer"
                 />
                 <div>
-                  <span className="text-sm font-medium text-gray-700">
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     {t("editLectureForm.isPremiumLabel") || "Premium Content"}
                   </span>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     {t("editLectureForm.isPremiumHint") || "Only accessible to subscribers with Researcher plan"}
                   </p>
                 </div>
@@ -473,9 +473,9 @@ export default function EditLectureForm({
 
         {/* Submit Button - only visible on last tab */}
         {activeTab === 3 && (
-          <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {!isTab1Complete && (
                   <span className="text-red-600">
                     {t("editLectureForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
