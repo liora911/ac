@@ -62,9 +62,32 @@ export default function PresentationsAdmin() {
     );
   }
 
+  // Recursively collect all presentations from categories and subcategories
   const allPresentations = useMemo(() => {
     if (!data) return [];
-    return data.flatMap((category) => category.presentations);
+
+    const collectPresentations = (categories: PresentationCategory[]): Presentation[] => {
+      return categories.flatMap((category) => [
+        ...category.presentations,
+        ...collectPresentations(category.subcategories || []),
+      ]);
+    };
+
+    return collectPresentations(data);
+  }, [data]);
+
+  // Recursively collect all categories (flat list) for dropdowns
+  const allCategories = useMemo(() => {
+    if (!data) return [];
+
+    const collectCategories = (categories: PresentationCategory[], depth = 0): Array<PresentationCategory & { depth: number }> => {
+      return categories.flatMap((category) => [
+        { ...category, depth },
+        ...collectCategories(category.subcategories || [], depth + 1),
+      ]);
+    };
+
+    return collectCategories(data);
   }, [data]);
 
   const filteredPresentations = useMemo(() => {
@@ -246,9 +269,9 @@ export default function PresentationsAdmin() {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">{t("admin.common.allCategories")}</option>
-              {data?.map((c) => (
+              {allCategories.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.name}
+                  {"—".repeat(c.depth)} {c.name}
                 </option>
               ))}
             </select>
@@ -441,9 +464,9 @@ export default function PresentationsAdmin() {
                         className="px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-2 focus:outline-blue-500 focus:outline-offset-2"
                         aria-label={`Change category for presentation "${p.title}"`}
                       >
-                        {data?.map((c) => (
+                        {allCategories.map((c) => (
                           <option key={c.id} value={c.id}>
-                            {c.name}
+                            {"—".repeat(c.depth)} {c.name}
                           </option>
                         ))}
                       </select>
