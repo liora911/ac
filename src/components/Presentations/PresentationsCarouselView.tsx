@@ -6,12 +6,13 @@ import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { PresentationCategory, Presentation, PresentationsCarouselViewProps, PresentationCategoryCarouselProps, PresentationCardProps } from "@/types/Presentations/presentations";
-import { ChevronLeft, ChevronRight, Search, X, Share2, Lock, Images } from "lucide-react";
+import { ChevronLeft, ChevronRight, Search, X, Share2, Lock, Images, Mic } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { PresentationPlaceholder } from "@/components/Placeholders";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useSpeechToText } from "@/hooks/useSpeechToText";
 
 /**
  * Presentations page with horizontal carousels per category.
@@ -22,6 +23,14 @@ export default function PresentationsCarouselView({ categories }: PresentationsC
   const { data: session } = useSession();
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
+
+  // Speech-to-text for search
+  const { isListening, isSupported, toggleListening } = useSpeechToText({
+    lang: locale === "he" ? "he-IL" : "en-US",
+    onFinalResult: (transcript) => {
+      setSearchQuery((prev) => (prev ? prev + " " + transcript : transcript));
+    },
+  });
 
   // Flatten all presentations for search
   const allPresentations = React.useMemo(() => {
@@ -85,16 +94,31 @@ export default function PresentationsCarouselView({ categories }: PresentationsC
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("presentationsPage.searchPlaceholder")}
-            className="w-full ps-12 pe-12 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
+            className="w-full ps-12 pe-20 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent shadow-sm"
           />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute end-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4 text-gray-400" />
-            </button>
-          )}
+          <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {isSupported && (
+              <button
+                onClick={toggleListening}
+                className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+                  isListening
+                    ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"
+                }`}
+                title={isListening ? t("common.stopListening") : t("common.startListening")}
+              >
+                <Mic className={`w-4 h-4 ${isListening ? "animate-pulse" : ""}`} />
+              </button>
+            )}
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4 text-gray-400" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

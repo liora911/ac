@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { Category, Lecture, LecturesCarouselViewProps, CategoryCarouselProps, LectureCardProps } from "@/types/Lectures/lectures";
-import { Clock, Play, Lock, ChevronLeft, ChevronRight, Search, X, Share2 } from "lucide-react";
+import { Clock, Play, Lock, ChevronLeft, ChevronRight, Search, X, Share2, Mic } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -13,17 +13,26 @@ import { LecturePlaceholder } from "@/components/Placeholders";
 import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 import LectureModal from "./LectureModal";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { useSpeechToText } from "@/hooks/useSpeechToText";
 
 /**
  * Lectures page with horizontal carousels per category.
  * Each category is displayed as a section with a horizontally scrollable row of lecture cards.
  */
 export default function LecturesCarouselView({ categories }: LecturesCarouselViewProps) {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: session } = useSession();
   const [selectedLecture, setSelectedLecture] = useState<Lecture | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const debouncedSearch = useDebouncedValue(searchQuery, 300);
+
+  // Speech-to-text for search
+  const { isListening, isSupported, toggleListening } = useSpeechToText({
+    lang: locale === "he" ? "he-IL" : "en-US",
+    onFinalResult: (transcript) => {
+      setSearchQuery((prev) => (prev ? prev + " " + transcript : transcript));
+    },
+  });
 
   // Flatten all lectures for search
   const allLectures = React.useMemo(() => {
@@ -93,16 +102,31 @@ export default function LecturesCarouselView({ categories }: LecturesCarouselVie
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t("lecturesPage.searchPlaceholder")}
-            className="w-full ps-12 pe-12 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+            className="w-full ps-12 pe-20 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
           />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute end-4 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
-            >
-              <X className="w-4 h-4 text-gray-400" />
-            </button>
-          )}
+          <div className="absolute end-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {isSupported && (
+              <button
+                onClick={toggleListening}
+                className={`p-1.5 rounded-full transition-colors cursor-pointer ${
+                  isListening
+                    ? "bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400"
+                }`}
+                title={isListening ? t("common.stopListening") : t("common.startListening")}
+              >
+                <Mic className={`w-4 h-4 ${isListening ? "animate-pulse" : ""}`} />
+              </button>
+            )}
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4 text-gray-400" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
 

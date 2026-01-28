@@ -1471,7 +1471,9 @@
     "previous": "Previous",
     "next": "Next",
     "page": "Page",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "startListening": "Start voice search",
+    "stopListening": "Stop voice search"
   },
   "about": {
     "notAvailable": "This page is not available yet.",
