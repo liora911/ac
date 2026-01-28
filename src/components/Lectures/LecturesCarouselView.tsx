@@ -171,6 +171,9 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     const el = scrollRef.current;
     if (!el) return;
 
+    // Start scrolled to the right (end), so users scroll left to see more
+    el.scrollLeft = el.scrollWidth - el.clientWidth;
+
     const timer = setTimeout(updateButtons, 100);
     el.addEventListener("scroll", updateButtons);
     window.addEventListener("resize", updateButtons);
