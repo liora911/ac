@@ -389,3 +389,22 @@ model UserNotification {
   @@index([userId, isRead])
   @@map("user_notifications")
 }
+
+enum ArchiveMediaType {
+  NONE
+  IMAGE
+  VIDEO
+}
+
+model Archive {
+  id        String           @id @default(cuid())
+  title     String
+  content   String           // HTML content from TipTap editor
+  mediaUrl  String?          // Vercel Blob image URL or YouTube URL
+  mediaType ArchiveMediaType @default(NONE)
+  order     Int              @default(0)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@map("archives")
+}
