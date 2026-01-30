@@ -202,9 +202,9 @@ export default function PresentationDetailPage() {
 
       {/* All content scrolls over the fixed background */}
       <div className={`relative z-10 ${!hasMainContent || !thumbnailUrl ? "bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100" : ""}`}>
-        {/* Hero title section - takes full viewport height */}
+        {/* Hero title section - compact header */}
         {hasMainContent && thumbnailUrl && (
-          <div className="h-screen flex flex-col items-center justify-center px-4">
+          <div className="flex flex-col items-center justify-center px-4 pt-16 pb-8">
             {presentation.isPremium && (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-500/90 text-white mb-4">
                 <Sparkles className="w-4 h-4" />
@@ -233,14 +233,6 @@ export default function PresentationDetailPage() {
                 size="lg"
                 className="!bg-white/10 hover:!bg-white/20 !border-white/20 backdrop-blur-sm [&_svg]:!text-white [&_svg]:hover:!text-red-400"
               />
-            </div>
-            {/* Scroll indicator */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-                </svg>
-              </div>
             </div>
           </div>
         )}
