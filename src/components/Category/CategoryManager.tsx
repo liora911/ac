@@ -237,7 +237,6 @@ export default function CategoryManager() {
                         placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
                         direction="rtl"
                         theme="light"
-                        minHeight="80px"
                       />
                     </div>
                     <p className="mt-1 text-xs text-gray-400">
@@ -331,7 +330,6 @@ export default function CategoryManager() {
                                   placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
                                   direction="rtl"
                                   theme="light"
-                                  minHeight="60px"
                                 />
                               </div>
                               <select
