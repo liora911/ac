@@ -1319,6 +1319,16 @@
     },
     "errors": {
       "subscriptionPortal": "Could not open subscription portal"
+    },
+    "deleteAccount": {
+      "button": "Delete Account",
+      "title": "Delete Account",
+      "warning": "This action is permanent and cannot be undone. All your data including comments, favorites, tickets, and notifications will be permanently deleted.",
+      "confirmInstruction": "Type \"delete\" to confirm:",
+      "confirmPlaceholder": "delete",
+      "confirm": "Delete My Account",
+      "deleting": "Deleting...",
+      "error": "Failed to delete account. Please try again."
     }
   },
   "categoryPreferences": {
@@ -1591,7 +1601,7 @@
     "loginRequired": "Please log in to comment",
     "loginButton": "Log In",
     "rateLimited": "You can comment again tomorrow",
-    "noComments": "No comments yet. Be the first!",
+    "noComments": "No Comments Yet",
     "deleteConfirm": "Delete this comment?",
     "delete": "Delete comment",
     "deleted": "Comment deleted",

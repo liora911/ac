@@ -1369,6 +1369,16 @@
     },
     "errors": {
       "subscriptionPortal": "שגיאה בפתיחת ניהול המנוי"
+    },
+    "deleteAccount": {
+      "button": "מחיקת חשבון",
+      "title": "מחיקת חשבון",
+      "warning": "פעולה זו היא סופית ולא ניתנת לביטול. כל הנתונים שלך כולל תגובות, מועדפים, כרטיסים והתראות יימחקו לצמיתות.",
+      "confirmInstruction": "הקלידו \"מחק\" או \"delete\" לאישור:",
+      "confirmPlaceholder": "מחק",
+      "confirm": "מחקו את החשבון",
+      "deleting": "מוחק...",
+      "error": "שגיאה במחיקת החשבון. נסו שוב."
     }
   },
   "categoryPreferences": {

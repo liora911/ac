@@ -81,9 +81,15 @@ function AccountContent({
 }: AccountClientProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditingPreferences, setIsEditingPreferences] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteConfirmation, setDeleteConfirmation] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const searchParams = useSearchParams();
   const { t, locale } = useTranslation();
   const isRTL = locale === "he";
+
+  // Valid confirmation words
+  const validConfirmations = ["delete", "מחק"];
 
   // Category preferences
   const {
@@ -116,6 +122,31 @@ function AccountContent({
       alert(t("account.errors.subscriptionPortal"));
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!validConfirmations.includes(deleteConfirmation.toLowerCase().trim())) {
+      return;
+    }
+
+    setIsDeleting(true);
+    try {
+      const response = await fetch("/api/account", {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        // Sign out and redirect to home
+        signOut({ callbackUrl: "/" });
+      } else {
+        const data = await response.json();
+        alert(data.error || t("account.deleteAccount.error"));
+      }
+    } catch {
+      alert(t("account.deleteAccount.error"));
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -532,11 +563,75 @@ function AccountContent({
         {/* Logout Button */}
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="w-full py-3 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+          className="w-full py-3 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 font-medium hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-center gap-2 cursor-pointer"
         >
           <LogOut className="w-4 h-4" />
           {t("account.logout")}
         </button>
+
+        {/* Delete Account */}
+        <button
+          onClick={() => setShowDeleteModal(true)}
+          className="w-full py-3 px-4 rounded-xl border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 font-medium hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2 cursor-pointer"
+        >
+          <X className="w-4 h-4" />
+          {t("account.deleteAccount.button")}
+        </button>
+
+        {/* Delete Account Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <div
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6"
+              dir={isRTL ? "rtl" : "ltr"}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                </div>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                  {t("account.deleteAccount.title")}
+                </h3>
+              </div>
+
+              <p className="text-gray-600 dark:text-gray-400 mb-4">
+                {t("account.deleteAccount.warning")}
+              </p>
+
+              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                {t("account.deleteAccount.confirmInstruction")}
+              </p>
+
+              <input
+                type="text"
+                value={deleteConfirmation}
+                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                placeholder={t("account.deleteAccount.confirmPlaceholder")}
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-2 focus:ring-red-500 focus:border-transparent mb-4"
+                dir="ltr"
+              />
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowDeleteModal(false);
+                    setDeleteConfirmation("");
+                  }}
+                  className="flex-1 py-2.5 px-4 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                  {t("admin.common.cancel")}
+                </button>
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={!validConfirmations.includes(deleteConfirmation.toLowerCase().trim()) || isDeleting}
+                  className="flex-1 py-2.5 px-4 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isDeleting ? t("account.deleteAccount.deleting") : t("account.deleteAccount.confirm")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Back to home */}
         <div className="text-center pb-4">
