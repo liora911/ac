@@ -20,6 +20,7 @@ import {
   Filter,
   Check,
   X,
+  Crown,
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -244,7 +245,7 @@ function AccountContent({
                   )}
                   {subscription?.status === "ACTIVE" && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm font-medium">
-                      <Sparkles className="w-4 h-4" />
+                      <Crown className="w-4 h-4" />
                       {t("account.role.premium")}
                     </span>
                   )}

@@ -1322,7 +1322,7 @@
     },
     "subscription": {
       "title": "מנוי",
-      "researcher": "תוכנית חוקר",
+      "researcher": "מנוי חוקר",
       "free": "תוכנית חינמית",
       "status": "סטטוס",
       "renewDate": "תאריך חידוש",
@@ -1331,9 +1331,9 @@
       "canceled": "מבוטל",
       "cancelPending": "יבוטל בסוף התקופה",
       "cancelWarning": "המנוי שלך יבוטל ב-{date}. ניתן לחדש דרך ניהול המנוי.",
-      "manage": "נהל מנוי",
+      "manage": "נהלו מנוי",
       "opening": "פותח...",
-      "upgrade": "שדרג לתוכנית חוקר",
+      "upgrade": "שדרגו למנוי חוקר",
       "upgradeText": "קבל גישה לתוכן פרימיום בלעדי"
     },
     "tickets": {
