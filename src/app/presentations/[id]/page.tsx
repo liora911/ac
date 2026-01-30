@@ -10,8 +10,10 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles, Play } from "lucide-react";
+import { Sparkles, Play, Share2 } from "lucide-react";
 import { track } from "@vercel/analytics";
+import { useNotification } from "@/contexts/NotificationContext";
+import FavoriteButton from "@/components/FavoriteButton";
 import SlidesPlayer from "@/components/Presentations/SlidesPlayer";
 
 // Dynamic import for DocumentViewer to avoid SSR issues with react-pdf
@@ -59,6 +61,7 @@ export default function PresentationDetailPage() {
   const { data: session } = useSession();
   const id = params.id as string;
   const { t, locale } = useTranslation();
+  const { showSuccess, showError } = useNotification();
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [presentation, setPresentation] = useState<Presentation | null>(null);
@@ -85,6 +88,16 @@ export default function PresentationDetailPage() {
 
   const next = () => setCurrentImageIndex((i) => (i + 1) % total);
   const prev = () => setCurrentImageIndex((i) => (i - 1 + total) % total);
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/presentations/${id}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      showSuccess(t("presentations.linkCopied"));
+    } catch {
+      showError(t("presentations.copyError"));
+    }
+  };
 
   useEffect(() => {
     const fetchPresentation = async () => {
@@ -167,23 +180,31 @@ export default function PresentationDetailPage() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 text-slate-900"
+      className="min-h-screen text-slate-900"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      {/* Hero Section with blurred background when thumbnail exists and has main content */}
+      {/* Fixed full-page blurred background when thumbnail exists and has main content */}
       {hasMainContent && thumbnailUrl && (
-        <div className="relative h-screen overflow-hidden">
-          <Image
-            src={thumbnailUrl}
-            alt=""
-            fill
-            className="object-cover blur-sm scale-105"
-            sizes="100vw"
-            priority
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/70" />
-          {/* Title on hero */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+        <>
+          <div className="fixed inset-0 z-0">
+            <Image
+              src={thumbnailUrl}
+              alt=""
+              fill
+              className="object-cover blur-sm scale-105"
+              sizes="100vw"
+              priority
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/50 to-slate-900/70" />
+          </div>
+        </>
+      )}
+
+      {/* All content scrolls over the fixed background */}
+      <div className={`relative z-10 ${!hasMainContent || !thumbnailUrl ? "bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100" : ""}`}>
+        {/* Hero title section - takes full viewport height */}
+        {hasMainContent && thumbnailUrl && (
+          <div className="h-screen flex flex-col items-center justify-center px-4">
             {presentation.isPremium && (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-500/90 text-white mb-4">
                 <Sparkles className="w-4 h-4" />
@@ -197,19 +218,36 @@ export default function PresentationDetailPage() {
             <p className="text-white/70 mt-4 text-sm">
               {presentation.category.name}
             </p>
-          </div>
-          {/* Scroll indicator */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
-              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-              </svg>
+            {/* Action buttons */}
+            <div className="flex items-center gap-3 mt-6">
+              <button
+                onClick={handleShare}
+                className="p-3 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm transition-colors cursor-pointer border border-white/20"
+                title={t("common.share")}
+              >
+                <Share2 className="w-5 h-5 text-white" />
+              </button>
+              <FavoriteButton
+                itemId={presentation.id}
+                itemType="PRESENTATION"
+                size="lg"
+                className="!bg-white/10 hover:!bg-white/20 !border-white/20 backdrop-blur-sm [&_svg]:!text-white [&_svg]:hover:!text-red-400"
+              />
+            </div>
+            {/* Scroll indicator */}
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "pt-6" : "py-10"}`}>
+        {/* Content section with glass morphism background when over blurred image */}
+        <div className={`${hasMainContent && thumbnailUrl ? "bg-slate-900/40 backdrop-blur-md" : ""}`}>
+        <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "pt-6 pb-10" : "py-10"}`}>
         {/* Back button */}
         <div className="mb-6 flex justify-between items-center">
           <button
@@ -362,9 +400,9 @@ export default function PresentationDetailPage() {
         )}
         </PremiumGate>
 
-        {}
-        <div className="mt-8 text-center text-slate-500">
-          <p className="text-xs mt-1 text-slate-400">
+        {/* Footer info */}
+        <div className={`mt-8 text-center ${hasMainContent && thumbnailUrl ? "text-white/60" : "text-slate-500"}`}>
+          <p className={`text-xs mt-1 ${hasMainContent && thumbnailUrl ? "text-white/50" : "text-slate-400"}`}>
             {t("presentationDetail.categoryLabel")}:{" "}
             {presentation.category.name} •{" "}
             {t("presentationDetail.createdAtLabel")}:{" "}
@@ -432,6 +470,8 @@ export default function PresentationDetailPage() {
             googleSlidesUrl={presentation.googleSlidesUrl || undefined}
           />
         )}
+        </div>
+        </div>
       </div>
     </div>
   );
