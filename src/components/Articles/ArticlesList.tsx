@@ -477,7 +477,7 @@ function ArticlesListContent({
       {selectedCategoryData?.description && (
         <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-2">
           <p className="text-gray-700 dark:text-gray-300 text-sm leading-relaxed">
-            {selectedCategoryData.description}
+            {stripHtml(selectedCategoryData.description)}
           </p>
         </div>
       )}
