@@ -33,6 +33,11 @@ export default async function AccountPage() {
     where: { userId: session.user.id },
   });
 
+  // Get favorites count
+  const favoritesCount = await prisma.favorite.count({
+    where: { userId: session.user.id },
+  });
+
   return (
     <AccountClient
       user={{
@@ -52,6 +57,7 @@ export default async function AccountPage() {
           : null
       }
       ticketCount={ticketCount}
+      favoritesCount={favoritesCount}
     />
   );
 }

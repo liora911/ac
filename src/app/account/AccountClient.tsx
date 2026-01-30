@@ -77,6 +77,7 @@ function AccountContent({
   user,
   subscription,
   ticketCount,
+  favoritesCount,
   stats,
 }: AccountClientProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -364,7 +365,7 @@ function AccountContent({
 
           {/* Favorites Card */}
           <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm sm:col-span-2 lg:col-span-1">
-            <div className="flex items-center gap-3 mb-4">
+            <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
                 <Heart className="w-5 h-5 text-rose-600 dark:text-rose-400" />
               </div>
@@ -372,6 +373,11 @@ function AccountContent({
                 <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.quickLinks.favorites")}</h3>
                 <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.favorites.subtitle")}</p>
               </div>
+            </div>
+
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-3xl font-bold text-gray-900 dark:text-white">{favoritesCount}</span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{t("account.favorites.total")}</span>
             </div>
 
             <Link

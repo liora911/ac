@@ -186,7 +186,7 @@ export default function Footer() {
     >
       <div className="max-w-6xl mx-auto">
         {/* Bottom section */}
-        <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
+        <div className="text-center text-sm text-gray-600 dark:text-gray-400">
           <p>{t("footer.contact")}</p>
           <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <BlackHoleIcon className="w-4 h-4" />

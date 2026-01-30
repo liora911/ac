@@ -1303,7 +1303,8 @@
     },
     "favorites": {
       "subtitle": "Saved articles, lectures & more",
-      "view": "View Favorites"
+      "view": "View Favorites",
+      "total": "Total favorites"
     },
     "notifications": {
       "title": "Notifications",

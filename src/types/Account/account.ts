@@ -18,6 +18,7 @@ export interface AccountClientProps {
     cancelAtPeriodEnd: boolean;
   } | null;
   ticketCount: number;
+  favoritesCount: number;
   stats?: {
     articlesRead?: number;
     lecturesWatched?: number;
