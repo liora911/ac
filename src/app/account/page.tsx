@@ -33,10 +33,29 @@ export default async function AccountPage() {
     where: { userId: session.user.id },
   });
 
-  // Get favorites count
-  const favoritesCount = await prisma.favorite.count({
+  // Get favorites count - only count favorites where content actually exists
+  const favorites = await prisma.favorite.findMany({
     where: { userId: session.user.id },
+    select: { itemId: true, itemType: true },
   });
+
+  const articleIds = favorites.filter(f => f.itemType === "ARTICLE").map(f => f.itemId);
+  const lectureIds = favorites.filter(f => f.itemType === "LECTURE").map(f => f.itemId);
+  const presentationIds = favorites.filter(f => f.itemType === "PRESENTATION").map(f => f.itemId);
+
+  const [articlesCount, lecturesCount, presentationsCount] = await Promise.all([
+    articleIds.length > 0
+      ? prisma.article.count({ where: { id: { in: articleIds }, published: true } })
+      : 0,
+    lectureIds.length > 0
+      ? prisma.lecture.count({ where: { id: { in: lectureIds } } })
+      : 0,
+    presentationIds.length > 0
+      ? prisma.presentation.count({ where: { id: { in: presentationIds }, published: true } })
+      : 0,
+  ]);
+
+  const favoritesCount = articlesCount + lecturesCount + presentationsCount;
 
   return (
     <AccountClient

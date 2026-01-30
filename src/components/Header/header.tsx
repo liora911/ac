@@ -200,9 +200,11 @@ export default function Header() {
                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {session.user?.name || session.user?.email}
                       </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {session.user?.email}
-                      </p>
+                      {session.user?.name && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                          {session.user?.email}
+                        </p>
+                      )}
                     </div>
                   )}
 
