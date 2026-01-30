@@ -1,6 +1,7 @@
 import { NavItem } from "@/types/Nav/nav";
 
 export const navItems: NavItem[] = [
+  { label: "nav.topics", href: "/browse", icon: "FolderIcon" },
   { label: "nav.articles", href: "/articles", icon: "ArticleIcon" },
   {
     label: "nav.presentations",

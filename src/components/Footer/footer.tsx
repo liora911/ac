@@ -177,17 +177,6 @@ export default function Footer() {
       dir={isHebrew ? "rtl" : "ltr"}
     >
       <div className="max-w-6xl mx-auto">
-        {/* Browse Categories Link */}
-        <div className="mb-8 text-center">
-          <Link
-            href="/browse"
-            className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-900 dark:text-white bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
-          >
-            <FolderOpen className="w-5 h-5" />
-            <span>{t("footer.browseAllCategories")}</span>
-          </Link>
-        </div>
-
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400 pt-4 border-t border-gray-200 dark:border-gray-800">
           <p>{t("footer.contact")}</p>
