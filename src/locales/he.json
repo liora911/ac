@@ -1661,15 +1661,15 @@
   },
   "comments": {
     "title": "תגובות",
-    "placeholder": "כתבו תגובה",
+    "placeholder": "כתבו תגובה...",
     "submit": "פרסמו תגובה",
-    "submitting": "מפרסם...",
+    "submitting": "מפרסמים...",
     "loginRequired": "יש להתחבר כדי להגיב",
     "loginButton": "התחברות",
-    "rateLimited": "תוכלו להגיב במועד מאוחר יותר",
-    "noComments": "אין תגובות למאמר זה",
+    "rateLimited": "תוכלו להגיב שוב מחר",
+    "noComments": "אין תגובות עדיין. היו הראשונים!",
     "deleteConfirm": "למחוק תגובה זו?",
-    "delete": "מחק תגובה",
+    "delete": "מחקו תגובה",
     "deleted": "התגובה נמחקה",
     "posted": "התגובה פורסמה"
   }
