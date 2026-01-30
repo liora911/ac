@@ -13,6 +13,7 @@ import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import ArticleClient from "@/components/Article/ArticleClient";
 import DownloadPDFButton from "@/components/Article/DownloadPDFButton";
 import ShareButton from "@/components/Article/ShareButton";
+import CommentSection from "@/components/Comments/CommentSection";
 import en from "@/locales/en.json";
 import he from "@/locales/he.json";
 import type { ArticlePageProps } from "@/types/Articles/articles";
@@ -491,6 +492,9 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             />
           </div>
         </footer>
+
+        {/* Comments Section */}
+        <CommentSection articleId={article.id} />
 
         {/* Related Articles Section */}
         {relatedArticles.length > 0 && (

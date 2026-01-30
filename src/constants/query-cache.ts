@@ -129,6 +129,12 @@ export const queryCache = {
     gcTime: minutes(30),
   },
 
+  /** Article comments - shorter cache for real-time feel */
+  comments: {
+    staleTime: minutes(1),
+    gcTime: minutes(10),
+  },
+
   /** Default for any unspecified resource */
   default: {
     staleTime: minutes(5),

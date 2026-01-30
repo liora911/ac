@@ -58,6 +58,7 @@ model User {
   subscription      Subscription?
   favorites         Favorite[]
   userNotifications UserNotification[]
+  comments         Comment[]
 }
 
 model VerificationToken {
@@ -115,6 +116,7 @@ model Article {
   authors        ArticleAuthor[]
   categories     ArticleCategory[]
   tags           ArticleTag[]
+  comments       Comment[]
   author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category       Category?         @relation(fields: [categoryId], references: [id])
 
@@ -407,4 +409,20 @@ model Archive {
   updatedAt DateTime         @updatedAt
 
   @@map("archives")
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  articleId String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([articleId, createdAt])
+  @@index([userId])
+  @@map("comments")
 }

@@ -1582,5 +1582,19 @@
   },
   "upload": {
     "placeholder": "PNG, JPG, GIF, WebP (max 5MB)"
+  },
+  "comments": {
+    "title": "Comments",
+    "placeholder": "Write a comment...",
+    "submit": "Post Comment",
+    "submitting": "Posting...",
+    "loginRequired": "Please log in to comment",
+    "loginButton": "Log In",
+    "rateLimited": "You can comment again tomorrow",
+    "noComments": "No comments yet. Be the first!",
+    "deleteConfirm": "Delete this comment?",
+    "delete": "Delete comment",
+    "deleted": "Comment deleted",
+    "posted": "Comment posted"
   }
 }

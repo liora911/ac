@@ -1658,5 +1658,19 @@
   },
   "upload": {
     "placeholder": "PNG, JPG, GIF, WebP (מקסימום 5MB)"
+  },
+  "comments": {
+    "title": "תגובות",
+    "placeholder": "כתוב תגובה...",
+    "submit": "פרסם תגובה",
+    "submitting": "מפרסם...",
+    "loginRequired": "יש להתחבר כדי להגיב",
+    "loginButton": "התחבר",
+    "rateLimited": "תוכל להגיב שוב מחר",
+    "noComments": "אין תגובות עדיין. היה הראשון!",
+    "deleteConfirm": "למחוק תגובה זו?",
+    "delete": "מחק תגובה",
+    "deleted": "התגובה נמחקה",
+    "posted": "התגובה פורסמה"
   }
 }
