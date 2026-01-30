@@ -5,7 +5,11 @@ import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText } from "lucide-react";
-import type { ArticlePreview, CategoryWithArticles, FooterSitemapData } from "@/types/Sitemap/footer-sitemap";
+import type {
+  ArticlePreview,
+  CategoryWithArticles,
+  FooterSitemapData,
+} from "@/types/Sitemap/footer-sitemap";
 import { SITEMAP_CACHE_KEY, SITEMAP_CACHE_DURATION } from "@/constants/cache";
 
 function BlackHoleIcon({ className }: { className?: string }) {
@@ -77,7 +81,9 @@ function CategoryItem({ category }: { category: CategoryWithArticles }) {
       >
         <FolderOpen className="w-4 h-4 flex-shrink-0" />
         <span className="truncate">{category.name}</span>
-        <span className="text-xs text-gray-500 dark:text-gray-400">({category.articles.length})</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">
+          ({category.articles.length})
+        </span>
         {isExpanded ? (
           <ChevronUp className="w-4 h-4 ms-auto flex-shrink-0" />
         ) : (
@@ -140,7 +146,9 @@ export default function Footer() {
   const { t, locale } = useTranslation();
   const pathname = usePathname();
   const isHebrew = locale === "he";
-  const [sitemapData, setSitemapData] = useState<FooterSitemapData | null>(null);
+  const [sitemapData, setSitemapData] = useState<FooterSitemapData | null>(
+    null,
+  );
   const [isSitemapExpanded, setIsSitemapExpanded] = useState(false);
 
   useEffect(() => {
@@ -183,7 +191,9 @@ export default function Footer() {
           <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <BlackHoleIcon className="w-4 h-4" />
             <span>
-              {isHebrew ? "פותח באהבה על ידי: Singularity" : "Developed By: Y.M"}
+              {isHebrew
+                ? "מערכת זו פותחה על ידי : ירין מימון"
+                : "Developed By: Yarin Maimon"}
             </span>
           </div>
         </div>
