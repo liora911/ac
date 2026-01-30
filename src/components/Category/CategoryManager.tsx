@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import TiptapEditor from "@/lib/editor/editor";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 interface Category {
   id: string;
@@ -379,7 +380,7 @@ export default function CategoryManager() {
                               </div>
                               {category.description && (
                                 <div className="mt-0.5 text-xs text-gray-600 line-clamp-2">
-                                  {category.description}
+                                  {stripHtml(category.description)}
                                 </div>
                               )}
                               <div className="mt-0.5 text-xs text-gray-400">
