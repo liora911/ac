@@ -35,6 +35,7 @@ export const STATIC_SEGMENT_KEYS: Record<string, string> = {
   "my-tickets": "breadcrumbs.myTickets",
   // Account
   account: "breadcrumbs.account",
+  favorites: "breadcrumbs.favorites",
 } as const;
 
 /** Segments that should NOT be clickable (no page exists at that path) */

@@ -172,7 +172,7 @@ export default function PresentationDetailPage() {
     >
       {/* Hero Section with blurred background when thumbnail exists and has main content */}
       {hasMainContent && thumbnailUrl && (
-        <div className="relative h-48 sm:h-64 overflow-hidden">
+        <div className="relative h-screen overflow-hidden">
           <Image
             src={thumbnailUrl}
             alt=""
@@ -181,13 +181,37 @@ export default function PresentationDetailPage() {
             sizes="100vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-900/70" />
+          {/* Title on hero */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center px-4">
+            {presentation.isPremium && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-500/90 text-white mb-4">
+                <Sparkles className="w-4 h-4" />
+                {t("presentationDetail.premium") || "Premium"}
+              </span>
+            )}
+            <h1 className="text-3xl sm:text-5xl font-bold text-white text-center tracking-tight drop-shadow-lg max-w-3xl px-4">
+              {presentation.title}
+            </h1>
+            {/* Category */}
+            <p className="text-white/70 mt-4 text-sm">
+              {presentation.category.name}
+            </p>
+          </div>
+          {/* Scroll indicator */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+              </svg>
+            </div>
+          </div>
         </div>
       )}
 
-      <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "-mt-20 relative z-10" : "py-10"}`}>
+      <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "pt-6" : "py-10"}`}>
         {/* Back button */}
-        <div className={`mb-6 flex justify-between items-center ${hasMainContent && thumbnailUrl ? "pt-0" : ""}`}>
+        <div className="mb-6 flex justify-between items-center">
           <button
             onClick={() => router.push("/presentations")}
             className="bg-white/90 text-slate-800 border border-slate-200 px-4 py-2 rounded-xl shadow-sm hover:bg-white hover:border-indigo-300 hover:text-indigo-700 transition-all flex items-center gap-2 cursor-pointer backdrop-blur-sm"
@@ -196,8 +220,8 @@ export default function PresentationDetailPage() {
           </button>
         </div>
 
-        {/* Premium Badge */}
-        {presentation.isPremium && (
+        {/* Premium Badge - only show when no hero */}
+        {!hasMainContent && presentation.isPremium && (
           <div className="flex justify-center mb-4">
             <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium bg-amber-100 text-amber-800">
               <Sparkles className="w-4 h-4" />
@@ -206,10 +230,12 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {/* Title */}
-        <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
-          {presentation.title}
-        </h1>
+        {/* Title - only show when no hero */}
+        {!(hasMainContent && thumbnailUrl) && (
+          <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
+            {presentation.title}
+          </h1>
+        )}
 
         <PremiumGate isPremium={presentation.isPremium}>
         {hasGoogleSlidesUrl && embedUrl && (
