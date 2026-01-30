@@ -77,6 +77,8 @@ export default function PresentationDetailPage() {
   const total = presentation?.imageUrls.length ?? 0;
   const hasGoogleSlidesUrl = Boolean(presentation?.googleSlidesUrl);
   const hasPdfUrl = Boolean(presentation?.pdfUrl);
+  const hasMainContent = hasGoogleSlidesUrl || hasPdfUrl;
+  const thumbnailUrl = presentation?.imageUrls[0] || null;
   const { embedUrl } = getGoogleSlidesEmbedAndPdfUrls(
     hasGoogleSlidesUrl ? (presentation!.googleSlidesUrl as string) : undefined
   );
@@ -165,26 +167,33 @@ export default function PresentationDetailPage() {
 
   return (
     <div
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 text-slate-900 py-10 px-4 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-slate-100 text-slate-900"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-4xl mx-auto">
-        {}
-        <div className="mb-6 flex justify-between items-center">
+      {/* Hero Section with blurred background when thumbnail exists and has main content */}
+      {hasMainContent && thumbnailUrl && (
+        <div className="relative h-48 sm:h-64 overflow-hidden">
+          <Image
+            src={thumbnailUrl}
+            alt=""
+            fill
+            className="object-cover blur-sm scale-105"
+            sizes="100vw"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-50" />
+        </div>
+      )}
+
+      <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "-mt-20 relative z-10" : "py-10"}`}>
+        {/* Back button */}
+        <div className={`mb-6 flex justify-between items-center ${hasMainContent && thumbnailUrl ? "pt-0" : ""}`}>
           <button
             onClick={() => router.push("/presentations")}
-            className="bg-white/80 text-slate-800 border border-slate-200 px-4 py-2 rounded-xl shadow-sm hover:bg-white hover:border-indigo-300 hover:text-indigo-700 transition-all flex items-center gap-2 cursor-pointer"
+            className="bg-white/90 text-slate-800 border border-slate-200 px-4 py-2 rounded-xl shadow-sm hover:bg-white hover:border-indigo-300 hover:text-indigo-700 transition-all flex items-center gap-2 cursor-pointer backdrop-blur-sm"
           >
             ← {t("presentationDetail.backToPresentations")}
           </button>
-          {/* {isAuthorized && isAuthor && (
-            <button
-              onClick={() => router.push(`/edit-presentation/${id}`)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 cursor-pointer"
-            >
-              ✏️ {t("presentationDetail.editButton")}
-            </button>
-          )} */}
         </div>
 
         {/* Premium Badge */}
@@ -197,7 +206,7 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {}
+        {/* Title */}
         <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
           {presentation.title}
         </h1>
@@ -234,7 +243,8 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {presentation.imageUrls.length > 0 && (
+        {/* Image carousel - only show when there's no main content (no Google Slides, no PDF) */}
+        {!hasMainContent && presentation.imageUrls.length > 0 && (
           <div
             className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden bg-white/90 border border-slate-200 cursor-zoom-in shadow-md hover:shadow-lg transition-shadow"
             onClick={() => setIsModalOpen(true)}
@@ -272,7 +282,6 @@ export default function PresentationDetailPage() {
                   &#8594;
                 </button>
 
-                {}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-slate-900/80 text-white px-3 py-1 rounded-full text-xs font-medium">
                   {currentImageIndex + 1} / {total}
                 </div>
@@ -281,8 +290,8 @@ export default function PresentationDetailPage() {
           </div>
         )}
 
-        {}
-        {total > 1 && (
+        {/* Thumbnail strip - only show when there's no main content and multiple images */}
+        {!hasMainContent && total > 1 && (
           <div className="flex justify-center gap-2 mb-8 overflow-x-auto pb-3">
             {presentation.imageUrls.map((url, index) => (
               <button
@@ -337,8 +346,8 @@ export default function PresentationDetailPage() {
           </p>
         </div>
 
-        {}
-        {isModalOpen && (
+        {/* Full-screen image modal - only when no main content */}
+        {!hasMainContent && isModalOpen && (
           <div
             className="fixed inset-0 bg-slate-900/90 backdrop-blur-sm flex items-center justify-center z-50 cursor-zoom-out"
             onClick={() => setIsModalOpen(false)}
@@ -377,7 +386,6 @@ export default function PresentationDetailPage() {
                 </>
               )}
 
-              {}
               <button
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-4 right-4 bg-white/90 hover:bg-white text-slate-900 rounded-full p-2 shadow-md z-10 cursor-pointer transition-colors border border-slate-200"

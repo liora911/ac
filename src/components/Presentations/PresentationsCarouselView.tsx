@@ -334,8 +334,8 @@ function PresentationCard({ presentation, hasAccess, categoryName }: Presentatio
           )}
         </div>
 
-        {/* Content */}
-        <div className="p-4">
+        {/* Content - fixed height for consistency */}
+        <div className="p-4 h-[120px] flex flex-col">
           <h3
             className={`font-semibold line-clamp-2 mb-1 transition-colors ${
               hasAccess
@@ -350,17 +350,15 @@ function PresentationCard({ presentation, hasAccess, categoryName }: Presentatio
               {categoryName}
             </p>
           )}
-          {presentation.description && (
-            <p
-              className={`text-sm line-clamp-2 ${
-                hasAccess
-                  ? "text-gray-600 dark:text-gray-400"
-                  : "text-gray-400 dark:text-gray-500"
-              }`}
-            >
-              {presentation.description.replace(/<[^>]*>?/gm, "")}
-            </p>
-          )}
+          <p
+            className={`text-sm line-clamp-2 mt-auto ${
+              hasAccess
+                ? "text-gray-600 dark:text-gray-400"
+                : "text-gray-400 dark:text-gray-500"
+            }`}
+          >
+            {presentation.description ? presentation.description.replace(/<[^>]*>?/gm, "") : ""}
+          </p>
         </div>
       </Link>
     </div>
