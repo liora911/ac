@@ -11,6 +11,7 @@ export interface ContentCounts {
 export interface BrowseCategoryItem {
   id: string;
   name: string;
+  description: string | null;
   bannerImageUrl: string | null;
   parentId: string | null;
   counts: ContentCounts;

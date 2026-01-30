@@ -20,9 +20,15 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
         <div className="flex items-start gap-3">
           <FolderOpen className="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-1" />
           <div className="flex-1 min-w-0">
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               {category.name}
             </h3>
+            {category.description && (
+              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 mb-3">
+                {category.description}
+              </p>
+            )}
+            {!category.description && <div className="mb-3" />}
 
             {/* Content Type Links */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

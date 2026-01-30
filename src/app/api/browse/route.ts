@@ -63,6 +63,7 @@ async function buildCategoryTree(categories: any[]): Promise<BrowseCategoryItem[
     return {
       id: category.id,
       name: category.name,
+      description: category.description,
       bannerImageUrl: category.bannerImageUrl,
       parentId: category.parentId,
       counts,
@@ -92,6 +93,7 @@ export async function GET() {
       select: {
         id: true,
         name: true,
+        description: true,
         bannerImageUrl: true,
         parentId: true,
       },
