@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
+import TiptapEditor from "@/lib/editor/editor";
 
 interface Category {
   id: string;
@@ -225,18 +226,20 @@ export default function CategoryManager() {
                   <div>
                     <label
                       htmlFor="newCategoryDescription"
-                      className="block text-xs font-medium text-gray-700"
+                      className="block text-xs font-medium text-gray-700 mb-1"
                     >
                       {t("admin.categories.categoryDescription")}
                     </label>
-                    <textarea
-                      id="newCategoryDescription"
-                      value={newCategoryDescription}
-                      onChange={(e) => setNewCategoryDescription(e.target.value)}
-                      placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
-                      rows={3}
-                      className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
-                    />
+                    <div className="border border-gray-300 rounded-md overflow-hidden">
+                      <TiptapEditor
+                        value={newCategoryDescription}
+                        onChange={setNewCategoryDescription}
+                        placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
+                        direction="rtl"
+                        theme="light"
+                        minHeight="80px"
+                      />
+                    </div>
                     <p className="mt-1 text-xs text-gray-400">
                       {t("admin.categories.categoryDescriptionHelp")}
                     </p>
@@ -321,15 +324,16 @@ export default function CategoryManager() {
                                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                                 autoFocus
                               />
-                              <textarea
-                                value={editedCategoryDescription}
-                                onChange={(e) =>
-                                  setEditedCategoryDescription(e.target.value)
-                                }
-                                placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
-                                rows={2}
-                                className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 resize-none"
-                              />
+                              <div className="border border-gray-300 rounded-md overflow-hidden">
+                                <TiptapEditor
+                                  value={editedCategoryDescription}
+                                  onChange={setEditedCategoryDescription}
+                                  placeholder={t("admin.categories.categoryDescriptionPlaceholder")}
+                                  direction="rtl"
+                                  theme="light"
+                                  minHeight="60px"
+                                />
+                              </div>
                               <select
                                 value={editedCategoryParentId}
                                 onChange={(e) =>

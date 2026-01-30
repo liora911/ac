@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { BrowseData, BrowseCategoryItem } from "@/types/Browse/browse";
 import { FolderOpen, FileText, Video, Presentation, Calendar } from "lucide-react";
+import RichContent from "@/components/RichContent";
 
 function CategoryCard({ category }: { category: BrowseCategoryItem }) {
   const { locale, t } = useTranslation();
@@ -24,9 +25,9 @@ function CategoryCard({ category }: { category: BrowseCategoryItem }) {
               {category.name}
             </h3>
             {category.description && (
-              <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 mb-3">
-                {category.description}
-              </p>
+              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 mb-3 prose prose-sm dark:prose-invert max-w-none">
+                <RichContent content={category.description} />
+              </div>
             )}
             {!category.description && <div className="mb-3" />}
 
