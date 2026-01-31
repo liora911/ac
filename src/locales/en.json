@@ -857,6 +857,8 @@
     "seatsAvailable": "seats available",
     "eventFull": "Event is full",
     "soldOut": "Sold Out",
+    "registrationClosed": "Registration Closed",
+    "registrationClosedMessage": "Registration for this event is currently closed",
     "total": "Total",
     "price": "Price",
     "free": "Free",

@@ -896,6 +896,8 @@
     "seatsAvailable": "מקומות זמינים",
     "eventFull": "האירוע מלא",
     "soldOut": "אזל",
+    "registrationClosed": "ההרשמה סגורה",
+    "registrationClosedMessage": "לא ניתן להירשם לאירוע זה כרגע",
     "total": "סה\"כ",
     "price": "מחיר",
     "free": "חינם",

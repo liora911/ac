@@ -4,7 +4,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, Clock, MapPin, Globe, Sparkles, ArrowRight, Ticket, Users } from "lucide-react";
+import { Calendar, Clock, MapPin, Globe, ArrowRight, Ticket, Users } from "lucide-react";
 import type { FeaturedEventProps } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import DOMPurify from "dompurify";
@@ -72,25 +72,16 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
 
           {/* Featured Badge - Positioned on image */}
           <div className="absolute top-4 left-4 rtl:left-auto rtl:right-4">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-white text-sm font-semibold shadow-md backdrop-blur-sm">
-              <Sparkles size={14} className="text-amber-500" />
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/95 dark:bg-gray-800/95 text-gray-900 dark:text-white text-sm font-semibold shadow-md backdrop-blur-sm">
               {t("events.featuredEvent")}
             </span>
           </div>
 
           {/* Price Badge - Positioned on image */}
-          {isUpcoming && !event.isClosed && (
+          {isUpcoming && (
             <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4">
               <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-bold shadow-md">
                 {formatPrice()}
-              </span>
-            </div>
-          )}
-          {/* Closed Badge - Positioned on image */}
-          {isUpcoming && event.isClosed && (
-            <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4">
-              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-500 text-white text-sm font-bold shadow-md">
-                {t("tickets.registrationClosed") || "ההרשמה סגורה"}
               </span>
             </div>
           )}
@@ -138,14 +129,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
               </div>
             )}
 
-            {event.isClosed ? (
-              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
-                <Users size={18} />
-                <span className="text-sm font-medium">
-                  {t("tickets.registrationClosed") || "ההרשמה סגורה"}
-                </span>
-              </div>
-            ) : event.seatsInfo && (
+            {event.seatsInfo && !event.isClosed && (
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Users size={18} className="text-orange-500" />
                 <span className="text-sm font-medium">
