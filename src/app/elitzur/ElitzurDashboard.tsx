@@ -37,8 +37,6 @@ import {
   Settings,
   BarChart3,
   LucideIcon,
-  ChevronLeft,
-  ChevronRight,
   LogOut,
   Sparkles,
   Send,
@@ -85,26 +83,6 @@ export default function ElitzurDashboard() {
   } = useAIChat({ isAdmin: true, locale });
 
   const aiChatRef = useRef<HTMLDivElement>(null);
-  const tabsContainerRef = useRef<HTMLDivElement>(null);
-  const [showLeftArrow, setShowLeftArrow] = useState(false);
-  const [showRightArrow, setShowRightArrow] = useState(false);
-
-  const checkScrollArrows = () => {
-    const container = tabsContainerRef.current;
-    if (!container) return;
-
-    const { scrollLeft, scrollWidth, clientWidth } = container;
-    // Show left arrow when we've scrolled right (can go back left)
-    setShowLeftArrow(scrollLeft > 0);
-    // Show right arrow when there's more content to the right
-    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
-  };
-
-  useEffect(() => {
-    checkScrollArrows();
-    window.addEventListener("resize", checkScrollArrows);
-    return () => window.removeEventListener("resize", checkScrollArrows);
-  }, []);
 
   // Close AI chat on click outside
   useEffect(() => {
@@ -127,16 +105,6 @@ export default function ElitzurDashboard() {
       setShowAiChat(true);
     }
   }, [aiMessages.length]);
-
-  const scroll = (direction: "left" | "right") => {
-    const container = tabsContainerRef.current;
-    if (!container) return;
-    const scrollAmount = 150;
-    container.scrollBy({
-      left: direction === "right" ? scrollAmount : -scrollAmount,
-      behavior: "smooth",
-    });
-  };
 
   const handleLogout = () => {
     signOut({ callbackUrl: "/" });
@@ -298,65 +266,37 @@ export default function ElitzurDashboard() {
         </div>
 
         {/* Tabs Navigation */}
-        <div className="relative border-t border-gray-100 dark:border-gray-700">
+        <div className="border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="relative flex items-center">
-              {/* Right scroll arrow */}
-              {showRightArrow && (
-                <button
-                  onClick={() => scroll("right")}
-                  className="absolute right-0 z-10 flex items-center justify-center w-8 h-8 my-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  aria-label="Scroll right"
-                >
-                  <ChevronRight className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                </button>
-              )}
-
-              {/* Tabs container */}
-              <div
-                ref={tabsContainerRef}
-                onScroll={checkScrollArrows}
-                className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2 scroll-smooth px-10"
-                role="tablist"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
-                {tabs.map((tab) => {
-                  const isActive = active === tab.key;
-                  const IconComponent = iconMap[tab.icon];
-                  return (
-                    <button
-                      key={tab.key}
-                      type="button"
-                      onClick={() => setActive(tab.key)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
-                        isActive
-                          ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
-                          : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                      }`}
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`panel-${tab.key}`}
-                      id={`tab-${tab.key}`}
-                    >
-                      {IconComponent && (
-                        <IconComponent className="w-4 h-4 flex-shrink-0" />
-                      )}
-                      <span>{t(`admin.nav.${tab.key}`)}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Left scroll arrow */}
-              {showLeftArrow && (
-                <button
-                  onClick={() => scroll("left")}
-                  className="absolute left-0 z-10 flex items-center justify-center w-8 h-8 my-1 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  aria-label="Scroll left"
-                >
-                  <ChevronLeft className="w-4 h-4 text-gray-700 dark:text-gray-300" />
-                </button>
-              )}
+            <div
+              className="flex flex-wrap gap-1 py-2"
+              role="tablist"
+            >
+              {tabs.map((tab) => {
+                const isActive = active === tab.key;
+                const IconComponent = iconMap[tab.icon];
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => setActive(tab.key)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`panel-${tab.key}`}
+                    id={`tab-${tab.key}`}
+                  >
+                    {IconComponent && (
+                      <IconComponent className="w-4 h-4 flex-shrink-0" />
+                    )}
+                    <span className="hidden sm:inline">{t(`admin.nav.${tab.key}`)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
