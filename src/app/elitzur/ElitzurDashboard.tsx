@@ -91,8 +91,10 @@ export default function ElitzurDashboard() {
     if (!container) return;
 
     const { scrollLeft, scrollWidth, clientWidth } = container;
-    setShowRightArrow(scrollLeft > 0);
-    setShowLeftArrow(scrollLeft < scrollWidth - clientWidth - 1);
+    // Show left arrow when we've scrolled right (can go back left)
+    setShowLeftArrow(scrollLeft > 0);
+    // Show right arrow when there's more content to the right
+    setShowRightArrow(scrollLeft < scrollWidth - clientWidth - 1);
   };
 
   useEffect(() => {
@@ -128,7 +130,7 @@ export default function ElitzurDashboard() {
     if (!container) return;
     const scrollAmount = 150;
     container.scrollBy({
-      left: direction === "left" ? scrollAmount : -scrollAmount,
+      left: direction === "right" ? scrollAmount : -scrollAmount,
       behavior: "smooth",
     });
   };
