@@ -173,7 +173,8 @@
     "previousMonth": "חודש קודם",
     "nextMonth": "חודש הבא",
     "today": "היום",
-    "eventIndicator": "אירוע"
+    "eventIndicator": "אירוע",
+    "closedIndicator": "הרשמה סגורה"
   },
   "editLecturePage": {
     "title": "עריכת הרצאה"

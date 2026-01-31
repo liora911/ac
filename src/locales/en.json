@@ -171,7 +171,8 @@
     "previousMonth": "Previous month",
     "nextMonth": "Next month",
     "today": "Today",
-    "eventIndicator": "Event"
+    "eventIndicator": "Event",
+    "closedIndicator": "Registration closed"
   },
   "articleDetail": {
     "loading": "Loading article...",

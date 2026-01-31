@@ -247,10 +247,12 @@ export default function EventsCalendar({ events }: EventsCalendarProps) {
                 {/* Event dots */}
                 {day.events.length > 0 && (
                   <div className="flex items-center gap-0.5 mt-1">
-                    {day.events.slice(0, 3).map((_, i) => (
+                    {day.events.slice(0, 3).map((event, i) => (
                       <div
                         key={i}
-                        className="w-1.5 h-1.5 rounded-full bg-blue-500"
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          event.isClosed ? "bg-red-500" : "bg-blue-500"
+                        }`}
                       />
                     ))}
                     {day.events.length > 3 && (
@@ -302,7 +304,9 @@ export default function EventsCalendar({ events }: EventsCalendarProps) {
                 className="block p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors group"
               >
                 <div className="flex items-start gap-2">
-                  <div className="w-1 h-full min-h-[2.5rem] rounded-full bg-blue-500 flex-shrink-0" />
+                  <div className={`w-1 h-full min-h-[2.5rem] rounded-full flex-shrink-0 ${
+                    event.isClosed ? "bg-red-500" : "bg-blue-500"
+                  }`} />
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-900 dark:text-white text-sm line-clamp-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                       {event.title}
@@ -328,6 +332,10 @@ export default function EventsCalendar({ events }: EventsCalendarProps) {
         <div className="flex items-center gap-1.5">
           <div className="w-2 h-2 rounded-full bg-blue-500" />
           <span>{t("eventsCalendar.eventIndicator")}</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <div className="w-2 h-2 rounded-full bg-red-500" />
+          <span>{t("eventsCalendar.closedIndicator")}</span>
         </div>
         <div className="flex items-center gap-1.5">
           <div className="w-4 h-4 rounded bg-blue-100 dark:bg-blue-900/30 ring-1 ring-blue-500" />
