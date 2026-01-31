@@ -37,3 +37,4 @@ export const TABS: Tab[] = [
   { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
   { key: "devMetrics", label: "מדדי מפתחים", icon: "BarChart3" },
 ];
+console.log("deploy");
