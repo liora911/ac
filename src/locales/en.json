@@ -432,7 +432,13 @@
     "maxSeatsPlaceholder": "Leave empty for unlimited",
     "maxSeatsHelp": "Limit the number of available seats for this event",
     "isFeaturedLabel": "Featured Event",
-    "isFeaturedHelp": "This event will be displayed prominently on the events page. Only one event can be featured at a time."
+    "isFeaturedHelp": "This event will be displayed prominently on the events page. Only one event can be featured at a time.",
+    "priceLabel": "Ticket Price (ILS)",
+    "priceHelp": "Leave empty or 0 for free events",
+    "requiresRegistrationLabel": "Requires Registration/Tickets",
+    "requiresRegistrationHelp": "Uncheck for announcement-only events with no registration",
+    "isClosedLabel": "Close Event Registration",
+    "isClosedHelp": "No tickets can be purchased when closed"
   },
   "editLectureForm": {
     "loginRequiredTitle": "Sign in required",
@@ -860,6 +866,8 @@
     "soldOut": "Sold Out",
     "registrationClosed": "Registration Closed",
     "registrationClosedMessage": "Registration for this event is currently closed",
+    "announcementOnly": "This event does not require registration",
+    "announcementOnlyMessage": "This is an informational event only, no registration or tickets required",
     "total": "Total",
     "price": "Price",
     "free": "Free",

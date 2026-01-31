@@ -46,13 +46,12 @@ const EventModal: React.FC<EventModalProps> = ({
             onClick={(e: React.MouseEvent) => e.stopPropagation()}
           >
             {event.bannerImageUrl && (
-              <div className="relative h-48 md:h-56">
+              <div className="relative h-48 md:h-56 bg-gray-100 dark:bg-gray-900">
                 <img
                   src={event.bannerImageUrl}
                   alt={event.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
               </div>
             )}
 

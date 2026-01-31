@@ -88,12 +88,12 @@ export default function EventDetailPage() {
         </button>
 
         {event.bannerImageUrl && (
-          <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden bg-white shadow-md border border-gray-200 relative">
+          <div className="w-full aspect-video mb-8 rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-900 shadow-md border border-gray-200 dark:border-gray-700 relative">
             <Image
               src={event.bannerImageUrl}
               alt={event.title}
               fill
-              className="object-cover"
+              className="object-contain"
               sizes="(max-width: 768px) 100vw, 800px"
               priority
             />

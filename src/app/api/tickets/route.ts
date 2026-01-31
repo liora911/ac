@@ -81,6 +81,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if event requires registration (not just an announcement)
+    if (event.requiresRegistration === false) {
+      return NextResponse.json(
+        { error: "This event does not require registration" },
+        { status: 400 }
+      );
+    }
+
     // Check if event registration is manually closed
     if (event.isClosed) {
       return NextResponse.json(

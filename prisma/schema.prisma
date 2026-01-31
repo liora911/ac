@@ -243,9 +243,10 @@ model Event {
   maxSeats       Int?
   price          Int?     // Price in agorot (cents), null = free event
   currency       String   @default("ILS")
-  published      Boolean  @default(false)
-  isFeatured     Boolean  @default(false)
-  isClosed       Boolean  @default(false) // Manually close registration
+  published            Boolean  @default(false)
+  isFeatured           Boolean  @default(false)
+  isClosed             Boolean  @default(false) // Manually close registration
+  requiresRegistration Boolean  @default(true)  // False = announcement only, no tickets
   categoryId     String
   authorId       String
   createdAt      DateTime @default(now())

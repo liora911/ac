@@ -447,7 +447,11 @@
     "isFeaturedLabel": "אירוע מומלץ",
     "isFeaturedHelp": "רק אירוע אחד יכול להיות מומלץ בכל פעם",
     "priceLabel": "מחיר כרטיס (₪)",
-    "priceHelp": "השאר ריק או 0 לאירוע חינמי"
+    "priceHelp": "השאר ריק או 0 לאירוע חינמי",
+    "requiresRegistrationLabel": "דורש הרשמה/כרטיסים",
+    "requiresRegistrationHelp": "בטל סימון עבור הודעה/אירוע ללא הרשמה",
+    "isClosedLabel": "סגור הרשמה לאירוע",
+    "isClosedHelp": "לא יהיה ניתן לרכוש כרטיסים"
   },
   "editLectureForm": {
     "loginRequiredTitle": "נדרשת התחברות",
@@ -899,6 +903,8 @@
     "soldOut": "אזל",
     "registrationClosed": "ההרשמה סגורה",
     "registrationClosedMessage": "לא ניתן להירשם לאירוע זה כרגע",
+    "announcementOnly": "אירוע זה אינו דורש הרשמה",
+    "announcementOnlyMessage": "זהו אירוע מידע בלבד, ללא צורך בהרשמה או כרטיסים",
     "total": "סה\"כ",
     "price": "מחיר",
     "free": "חינם",

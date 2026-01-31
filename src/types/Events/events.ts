@@ -25,6 +25,7 @@ export interface Event {
   published: boolean;
   isFeatured: boolean;
   isClosed: boolean; // Manually close registration
+  requiresRegistration: boolean; // False = announcement only, no tickets
   categoryId: string;
   authorId: string;
   maxSeats: number | null;

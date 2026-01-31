@@ -32,8 +32,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
   // Check if event is upcoming (can reserve tickets)
   const isUpcoming = new Date(event.eventDate) >= new Date();
 
-  // Check if registration is available (upcoming and not closed and seats available)
-  const canRegister = isUpcoming && !event.isClosed && (!event.seatsInfo || event.seatsInfo.availableSeats > 0);
+  // Check if this event requires registration (not just an announcement)
+  const requiresRegistration = event.requiresRegistration !== false;
+
+  // Check if registration is available (upcoming, requires registration, not closed, and seats available)
+  const canRegister = isUpcoming && requiresRegistration && !event.isClosed && (!event.seatsInfo || event.seatsInfo.availableSeats > 0);
 
   // Format price
   const formatPrice = () => {
@@ -58,11 +61,11 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
                 src={event.bannerImageUrl}
                 alt={event.title}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 priority
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </>
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
@@ -151,7 +154,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
 
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
-            {/* Reserve a Spot Button - Primary CTA for upcoming events */}
+            {/* Reserve a Spot Button - Primary CTA for upcoming events that require registration */}
             {canRegister ? (
               <Link
                 href={`/ticket-acquire?eventId=${event.id}`}
@@ -160,7 +163,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
                 <Ticket size={18} />
                 {t("tickets.reserveSpot")}
               </Link>
-            ) : isUpcoming && (event.isClosed || (event.seatsInfo && event.seatsInfo.availableSeats <= 0)) ? (
+            ) : isUpcoming && requiresRegistration && (event.isClosed || (event.seatsInfo && event.seatsInfo.availableSeats <= 0)) ? (
               <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-semibold">
                 <Ticket size={18} />
                 {event.isClosed ? (t("tickets.registrationClosed") || "ההרשמה סגורה") : (t("tickets.soldOut") || "אזל")}

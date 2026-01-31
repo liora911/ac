@@ -292,12 +292,12 @@ function TicketAcquireContent() {
           {event && (
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
               {event.bannerImageUrl && (
-                <div className="relative h-48">
+                <div className="relative h-48 bg-gray-100">
                   <Image
                     src={event.bannerImageUrl}
                     alt={event.title}
                     fill
-                    className="object-cover"
+                    className="object-contain"
                   />
                 </div>
               )}
@@ -421,8 +421,26 @@ function TicketAcquireContent() {
               </div>
             </div>
 
-            {/* Show closed/sold out message if registration is closed or no seats available */}
-            {event?.isClosed || (event?.seatsInfo && event.seatsInfo.availableSeats <= 0) ? (
+            {/* Show message if event doesn't require registration (announcement only) */}
+            {event?.requiresRegistration === false ? (
+              <div className="text-center py-8">
+                <div className="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mx-auto mb-4">
+                  <Calendar size={32} className="text-blue-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                  {t("tickets.announcementOnly") || "אירוע זה אינו דורש הרשמה"}
+                </h3>
+                <p className="text-gray-600 mb-4">
+                  {t("tickets.announcementOnlyMessage") || "זהו אירוע מידע בלבד, ללא צורך בהרשמה או כרטיסים"}
+                </p>
+                <Link
+                  href="/events"
+                  className="inline-flex items-center gap-2 bg-gray-100 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors font-semibold"
+                >
+                  {t("tickets.backToEvents")}
+                </Link>
+              </div>
+            ) : event?.isClosed || (event?.seatsInfo && event.seatsInfo.availableSeats <= 0) ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
                   <AlertCircle size={32} className="text-red-600" />

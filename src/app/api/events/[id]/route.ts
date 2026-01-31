@@ -105,6 +105,7 @@ export async function PUT(
       maxSeats,
       isFeatured = false,
       isClosed = false,
+      requiresRegistration = true,
       published = true,
       price,
     } = body;
@@ -171,6 +172,7 @@ export async function PUT(
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
         isClosed: Boolean(isClosed),
+        requiresRegistration: Boolean(requiresRegistration),
         published: Boolean(published),
         price: price && price > 0 ? price : null,
       },
