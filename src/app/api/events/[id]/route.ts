@@ -53,7 +53,16 @@ export async function GET(
       seatsInfo = {
         maxSeats: event.maxSeats,
         reservedSeats: totalReserved,
-        availableSeats: Math.max(0, availableSeats),
+        availableSeats: event.isClosed ? 0 : Math.max(0, availableSeats),
+      };
+    }
+
+    // If event is manually closed, ensure seatsInfo reflects that
+    if (event.isClosed && !seatsInfo) {
+      seatsInfo = {
+        maxSeats: null,
+        reservedSeats: 0,
+        availableSeats: 0,
       };
     }
 
@@ -95,6 +104,7 @@ export async function PUT(
       categoryId,
       maxSeats,
       isFeatured = false,
+      isClosed = false,
       published = true,
       price,
     } = body;
@@ -160,6 +170,7 @@ export async function PUT(
         categoryId,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
+        isClosed: Boolean(isClosed),
         published: Boolean(published),
         price: price && price > 0 ? price : null,
       },

@@ -81,6 +81,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Check if event registration is manually closed
+    if (event.isClosed) {
+      return NextResponse.json(
+        { error: "Registration for this event is closed" },
+        { status: 400 }
+      );
+    }
+
     // Check seat availability if event has maxSeats limit
     if (event.maxSeats !== null) {
       // Count total reserved seats (only confirmed and pending tickets)

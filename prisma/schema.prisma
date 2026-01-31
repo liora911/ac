@@ -245,6 +245,7 @@ model Event {
   currency       String   @default("ILS")
   published      Boolean  @default(false)
   isFeatured     Boolean  @default(false)
+  isClosed       Boolean  @default(false) // Manually close registration
   categoryId     String
   authorId       String
   createdAt      DateTime @default(now())

@@ -24,6 +24,7 @@ export interface Event {
   bannerImageUrl: string | null;
   published: boolean;
   isFeatured: boolean;
+  isClosed: boolean; // Manually close registration
   categoryId: string;
   authorId: string;
   maxSeats: number | null;

@@ -421,17 +421,21 @@ function TicketAcquireContent() {
               </div>
             </div>
 
-            {/* Show sold out message if no seats available */}
-            {event?.seatsInfo && event.seatsInfo.availableSeats <= 0 ? (
+            {/* Show closed/sold out message if registration is closed or no seats available */}
+            {event?.isClosed || (event?.seatsInfo && event.seatsInfo.availableSeats <= 0) ? (
               <div className="text-center py-8">
                 <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
                   <AlertCircle size={32} className="text-red-600" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900 mb-2">
-                  {t("tickets.eventFull")}
+                  {event?.isClosed
+                    ? (t("tickets.registrationClosed") || "ההרשמה לאירוע זה סגורה")
+                    : t("tickets.eventFull")}
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  {t("tickets.noSeatsAvailable")}
+                  {event?.isClosed
+                    ? (t("tickets.registrationClosedMessage") || "לא ניתן להירשם לאירוע זה כרגע")
+                    : t("tickets.noSeatsAvailable")}
                 </p>
                 <Link
                   href="/events"

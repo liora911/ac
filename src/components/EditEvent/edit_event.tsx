@@ -35,6 +35,7 @@ export default function EditEventForm({
     categoryId: "",
     maxSeats: "",
     isFeatured: false,
+    isClosed: false,
     price: "", // Price in ILS (empty = free)
   });
 
@@ -101,6 +102,7 @@ export default function EditEventForm({
             categoryId: event.categoryId || "",
             maxSeats: event.maxSeats ? String(event.maxSeats) : "",
             isFeatured: event.isFeatured || false,
+            isClosed: event.isClosed || false,
             price: event.price ? String(event.price / 100) : "", // Convert from agorot to ILS
           });
         } else {
@@ -636,6 +638,26 @@ export default function EditEventForm({
                 {t("editEventForm.isFeaturedLabel")}
                 <span className="text-xs text-gray-500 mr-1">
                   ({t("editEventForm.isFeaturedHelp")})
+                </span>
+              </label>
+            </div>
+
+            {/* Close Registration Toggle */}
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg">
+              <input
+                type="checkbox"
+                id="isClosed"
+                name="isClosed"
+                checked={formData.isClosed}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isClosed: e.target.checked }))
+                }
+                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500 cursor-pointer"
+              />
+              <label htmlFor="isClosed" className="cursor-pointer text-sm text-gray-700 rtl">
+                {t("editEventForm.isClosedLabel") || "סגור הרשמה לאירוע"}
+                <span className="text-xs text-gray-500 mr-1 block">
+                  {t("editEventForm.isClosedHelp") || "(לא יהיה ניתן לרכוש כרטיסים)"}
                 </span>
               </label>
             </div>
