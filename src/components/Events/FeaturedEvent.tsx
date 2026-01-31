@@ -32,6 +32,9 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
   // Check if event is upcoming (can reserve tickets)
   const isUpcoming = new Date(event.eventDate) >= new Date();
 
+  // Check if registration is available (upcoming and not closed and seats available)
+  const canRegister = isUpcoming && !event.isClosed && (!event.seatsInfo || event.seatsInfo.availableSeats > 0);
+
   // Format price
   const formatPrice = () => {
     if (!event.price) return t("events.free");
@@ -76,10 +79,18 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           </div>
 
           {/* Price Badge - Positioned on image */}
-          {isUpcoming && (
+          {isUpcoming && !event.isClosed && (
             <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4">
               <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-bold shadow-md">
                 {formatPrice()}
+              </span>
+            </div>
+          )}
+          {/* Closed Badge - Positioned on image */}
+          {isUpcoming && event.isClosed && (
+            <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4">
+              <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-red-500 text-white text-sm font-bold shadow-md">
+                {t("tickets.registrationClosed") || "ההרשמה סגורה"}
               </span>
             </div>
           )}
@@ -127,11 +138,20 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
               </div>
             )}
 
-            {event.seatsInfo && (
+            {event.isClosed ? (
+              <div className="flex items-center gap-2 text-red-600 dark:text-red-400">
+                <Users size={18} />
+                <span className="text-sm font-medium">
+                  {t("tickets.registrationClosed") || "ההרשמה סגורה"}
+                </span>
+              </div>
+            ) : event.seatsInfo && (
               <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                 <Users size={18} className="text-orange-500" />
                 <span className="text-sm font-medium">
-                  {event.seatsInfo.availableSeats} {t("events.seatsAvailable")}
+                  {event.seatsInfo.availableSeats > 0
+                    ? `${event.seatsInfo.availableSeats} ${t("events.seatsAvailable")}`
+                    : (t("tickets.soldOut") || "אזל")}
                 </span>
               </div>
             )}
@@ -148,7 +168,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           {/* Action Buttons */}
           <div className="flex flex-wrap gap-3">
             {/* Reserve a Spot Button - Primary CTA for upcoming events */}
-            {isUpcoming && (
+            {canRegister ? (
               <Link
                 href={`/ticket-acquire?eventId=${event.id}`}
                 className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors cursor-pointer shadow-sm"
@@ -156,7 +176,12 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
                 <Ticket size={18} />
                 {t("tickets.reserveSpot")}
               </Link>
-            )}
+            ) : isUpcoming && (event.isClosed || (event.seatsInfo && event.seatsInfo.availableSeats <= 0)) ? (
+              <span className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg font-semibold">
+                <Ticket size={18} />
+                {event.isClosed ? (t("tickets.registrationClosed") || "ההרשמה סגורה") : (t("tickets.soldOut") || "אזל")}
+              </span>
+            ) : null}
 
             <button
               onClick={handleClick}
