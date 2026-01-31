@@ -33,6 +33,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
     categoryId: "",
     maxSeats: "",
     isFeatured: false,
+    isClosed: false,
+    requiresRegistration: true, // True = tickets/registration, false = announcement only
     price: "", // Price in ILS (empty = free)
   });
 
@@ -66,10 +68,10 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {status === "loading"
               ? t("createEvent.loading")
               : t("createEvent.loadingCategories")}
@@ -81,11 +83,11 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (status === "unauthenticated") {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("createEvent.loginRequiredTitle")}
         </h2>
-        <p className="text-gray-600">{t("createEvent.loginRequiredMessage")}</p>
+        <p className="text-gray-600 dark:text-gray-400 rtl">{t("createEvent.loginRequiredMessage")}</p>
         <button
           onClick={() => (window.location.href = "/elitzur")}
           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
@@ -98,12 +100,12 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
   if (!isAuthorized) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("createEvent.notAuthorizedTitle")}
         </h2>
-        <p className="text-gray-600">{t("createEvent.notAuthorizedMessage")}</p>
-        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+        <p className="text-gray-600 dark:text-gray-400 rtl">{t("createEvent.notAuthorizedMessage")}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
@@ -129,6 +131,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         ...formData,
         maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
         isFeatured: formData.isFeatured,
+        isClosed: formData.isClosed,
+        requiresRegistration: formData.requiresRegistration,
         price: formData.price ? Math.round(parseFloat(formData.price) * 100) : null, // Convert to agorot
       };
 
@@ -160,6 +164,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         categoryId: "",
         maxSeats: "",
         isFeatured: false,
+        isClosed: false,
+        requiresRegistration: true,
         price: "",
       });
 
@@ -199,7 +205,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
     topLevelCategories.forEach((category) => {
       options.push(
-        <option key={category.id} value={category.id}>
+        <option key={category.id} value={category.id} className="bg-white dark:bg-gray-700">
           ▶ {category.name}
         </option>
       );
@@ -210,7 +216,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
       subcategories.forEach((sub) => {
         options.push(
-          <option key={sub.id} value={sub.id}>
+          <option key={sub.id} value={sub.id} className="bg-white dark:bg-gray-700">
             &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
           </option>
         );
@@ -246,12 +252,12 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
   };
 
   return (
-    <div className="p-6 bg-white rounded-xl border border-gray-200">
+    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white rtl">
           {t("createEvent.title")}
         </h2>
-        <p className="text-sm text-gray-500 mt-1">
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
           {t("createEvent.loggedInAs")} {session?.user?.email}
         </p>
       </div>
@@ -260,8 +266,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         <div
           className={`mb-6 p-4 rounded-lg ${
             message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
+              ? "bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300 border border-green-200 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-800"
           }`}
         >
           {message.text}
@@ -269,7 +275,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
       )}
 
       {/* Tab Navigation */}
-      <div className="border-b border-gray-200 mb-6">
+      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
         <nav className="flex gap-1" aria-label="Tabs">
           {([1, 2, 3] as const).map((tab) => {
             const isAccessible = canAccessTab(tab);
@@ -282,10 +288,10 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 disabled={!isAccessible}
                 className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
                   !isAccessible
-                    ? "border-transparent text-gray-300 cursor-not-allowed"
+                    ? "border-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed"
                     : activeTab === tab
-                      ? "border-blue-600 text-blue-600 cursor-pointer"
-                      : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 cursor-pointer"
+                      ? "border-blue-600 text-blue-600 dark:text-blue-400 cursor-pointer"
+                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:border-gray-300 dark:hover:border-gray-600 cursor-pointer"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -312,7 +318,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             <div>
               <label
                 htmlFor="title"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("createEvent.titleLabel")}
               </label>
@@ -322,8 +328,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  formData.title.trim() === "" ? "border-gray-300" : "border-green-300"
+                className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl ${
+                  formData.title.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                 }`}
                 placeholder={t("createEvent.titlePlaceholder")}
               />
@@ -333,7 +339,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               <div>
                 <label
                   htmlFor="eventType"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.eventTypeLabel")}
                 </label>
@@ -342,22 +348,22 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   name="eventType"
                   value={formData.eventType}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    formData.eventType === "" ? "border-gray-300" : "border-green-300"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl ${
+                    formData.eventType === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                   }`}
                 >
-                  <option value="">{t("createEvent.eventTypePlaceholder")}</option>
-                  <option value="in-person">
+                  <option value="" className="bg-white dark:bg-gray-700">{t("createEvent.eventTypePlaceholder")}</option>
+                  <option value="in-person" className="bg-white dark:bg-gray-700">
                     {t("createEvent.eventTypeInPerson")}
                   </option>
-                  <option value="online">{t("createEvent.eventTypeOnline")}</option>
+                  <option value="online" className="bg-white dark:bg-gray-700">{t("createEvent.eventTypeOnline")}</option>
                 </select>
               </div>
 
               <div>
                 <label
                   htmlFor="categoryId"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.categoryLabel")}
                 </label>
@@ -367,11 +373,11 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   value={formData.categoryId}
                   onChange={handleChange}
                   disabled={categoriesLoading}
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 ${
-                    formData.categoryId === "" ? "border-gray-300" : "border-green-300"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl ${
+                    formData.categoryId === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                   }`}
                 >
-                  <option value="">
+                  <option value="" className="bg-white dark:bg-gray-700">
                     {categoriesLoading
                       ? t("createEvent.loadingCategories")
                       : t("createEvent.selectCategory")}
@@ -385,7 +391,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               <div>
                 <label
                   htmlFor="eventDate"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.eventDateLabel")}
                 </label>
@@ -395,8 +401,8 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   name="eventDate"
                   value={formData.eventDate}
                   onChange={handleChange}
-                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                    formData.eventDate === "" ? "border-gray-300" : "border-green-300"
+                  className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl ${
+                    formData.eventDate === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
                   }`}
                 />
               </div>
@@ -404,7 +410,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               <div>
                 <label
                   htmlFor="eventTime"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.eventTimeLabel")}
                 </label>
@@ -414,13 +420,13 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   name="eventTime"
                   value={formData.eventTime}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl"
                 />
               </div>
             </div>
 
             {/* Confirm Tab 1 Button */}
-            <div className="pt-4 border-t border-gray-200 mt-6">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
               <button
                 type="button"
                 onClick={() => confirmTab(1)}
@@ -433,7 +439,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 </svg>
               </button>
               {!isTab1Complete && (
-                <p className="text-sm text-red-600 mt-2">
+                <p className="text-sm text-red-600 dark:text-red-400 mt-2">
                   {t("createEvent.requiredFieldsHint") || "* יש למלא את כל השדות הנדרשים"}
                 </p>
               )}
@@ -447,7 +453,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             <div>
               <label
                 htmlFor="description"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("createEvent.descriptionLabel")}
               </label>
@@ -464,7 +470,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               <div>
                 <label
                   htmlFor="location"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.locationLabel")}
                 </label>
@@ -474,7 +480,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   name="location"
                   value={formData.location}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl"
                   placeholder={t("createEvent.locationPlaceholder")}
                 />
               </div>
@@ -484,7 +490,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
               <div>
                 <label
                   htmlFor="onlineUrl"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
                 >
                   {t("createEvent.onlineUrlLabel")}
                 </label>
@@ -494,7 +500,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   name="onlineUrl"
                   value={formData.onlineUrl}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl"
                   placeholder="https://"
                 />
               </div>
@@ -503,7 +509,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             <div>
               <label
                 htmlFor="maxSeats"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("createEvent.maxSeatsLabel")}
               </label>
@@ -514,16 +520,16 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 value={formData.maxSeats}
                 onChange={handleChange}
                 min={1}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl"
                 placeholder={t("createEvent.maxSeatsPlaceholder")}
               />
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 rtl">
                 {t("createEvent.maxSeatsHelp")}
               </p>
             </div>
 
             {/* Confirm Tab 2 Button */}
-            <div className="pt-4 border-t border-gray-200 mt-6">
+            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
               <button
                 type="button"
                 onClick={() => confirmTab(2)}
@@ -544,7 +550,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             <div>
               <label
                 htmlFor="bannerImageUrl"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("createEvent.bannerImageUrlLabel")}
               </label>
@@ -554,7 +560,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 name="bannerImageUrl"
                 value={formData.bannerImageUrl}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rtl"
                 placeholder="https://"
               />
             </div>
@@ -563,12 +569,12 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
             <div>
               <label
                 htmlFor="price"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
               >
                 {t("createEvent.priceLabel") || "Ticket Price (ILS)"}
               </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">₪</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">₪</span>
                 <input
                   type="number"
                   id="price"
@@ -577,13 +583,33 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                   onChange={handleChange}
                   min={0}
                   step="0.01"
-                  className="w-full p-3 pl-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full p-3 pl-8 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="0"
                 />
               </div>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 rtl">
                 {t("createEvent.priceHelp") || "Leave empty or 0 for free events"}
               </p>
+            </div>
+
+            {/* Requires Registration Toggle */}
+            <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+              <input
+                type="checkbox"
+                id="requiresRegistration"
+                name="requiresRegistration"
+                checked={formData.requiresRegistration}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, requiresRegistration: e.target.checked }))
+                }
+                className="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500 cursor-pointer"
+              />
+              <label htmlFor="requiresRegistration" className="cursor-pointer text-sm text-gray-700 dark:text-gray-300 rtl">
+                {t("createEvent.requiresRegistrationLabel") || "דורש הרשמה/כרטיסים"}
+                <span className="text-xs text-gray-500 dark:text-gray-400 mr-1 block">
+                  {t("createEvent.requiresRegistrationHelp") || "(בטל סימון עבור הודעה/אירוע ללא הרשמה)"}
+                </span>
+              </label>
             </div>
 
             <div className="flex items-center gap-2">
@@ -595,12 +621,32 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, isFeatured: e.target.checked }))
                 }
-                className="w-4 h-4 text-yellow-600 border-gray-300 rounded focus:ring-yellow-500 cursor-pointer"
+                className="w-4 h-4 text-yellow-600 border-gray-300 dark:border-gray-600 rounded focus:ring-yellow-500 cursor-pointer"
               />
-              <label htmlFor="isFeatured" className="cursor-pointer text-sm text-gray-700 rtl">
+              <label htmlFor="isFeatured" className="cursor-pointer text-sm text-gray-700 dark:text-gray-300 rtl">
                 {t("createEvent.isFeaturedLabel")}
-                <span className="text-xs text-gray-500 mr-1">
+                <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">
                   ({t("createEvent.isFeaturedHelp")})
+                </span>
+              </label>
+            </div>
+
+            {/* Close Registration Toggle */}
+            <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <input
+                type="checkbox"
+                id="isClosed"
+                name="isClosed"
+                checked={formData.isClosed}
+                onChange={(e) =>
+                  setFormData((prev) => ({ ...prev, isClosed: e.target.checked }))
+                }
+                className="w-4 h-4 text-red-600 border-gray-300 dark:border-gray-600 rounded focus:ring-red-500 cursor-pointer"
+              />
+              <label htmlFor="isClosed" className="cursor-pointer text-sm text-gray-700 dark:text-gray-300 rtl">
+                {t("createEvent.isClosedLabel") || "סגור הרשמה לאירוע"}
+                <span className="text-xs text-gray-500 dark:text-gray-400 mr-1 block">
+                  {t("createEvent.isClosedHelp") || "(לא יהיה ניתן לרכוש כרטיסים)"}
                 </span>
               </label>
             </div>
@@ -609,11 +655,11 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
 
         {/* Submit Button - only visible on last tab */}
         {activeTab === 3 && (
-          <div className="pt-4 border-t border-gray-200 mt-6">
+          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
             <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {!isTab1Complete && (
-                  <span className="text-red-600">
+                  <span className="text-red-600 dark:text-red-400">
                     {t("createEvent.requiredFieldsHint") || "* Required fields are missing in Basic Info tab"}
                   </span>
                 )}

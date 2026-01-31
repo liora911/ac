@@ -692,7 +692,11 @@
     "isFeaturedHelp": "רק אירוע אחד יכול להיות מומלץ בכל פעם",
     "priceLabel": "מחיר כרטיס (₪)",
     "priceHelp": "השאר ריק או 0 לאירוע חינמי",
-    "confirmAndContinue": "אישור והמשך"
+    "confirmAndContinue": "אישור והמשך",
+    "requiresRegistrationLabel": "דורש הרשמה/כרטיסים",
+    "requiresRegistrationHelp": "(בטל סימון עבור הודעה/אירוע ללא הרשמה)",
+    "isClosedLabel": "סגור הרשמה לאירוע",
+    "isClosedHelp": "(לא יהיה ניתן לרכוש כרטיסים)"
   },
   "createLecture": {
     "loading": "טוען...",

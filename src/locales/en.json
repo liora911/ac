@@ -675,7 +675,13 @@
     "maxSeatsHelp": "Limit the number of available seats for this event",
     "isFeaturedLabel": "Feature this event",
     "isFeaturedHelp": "Featured events are displayed prominently at the top of the events page",
-    "confirmAndContinue": "Confirm & Continue"
+    "confirmAndContinue": "Confirm & Continue",
+    "priceLabel": "Ticket Price (ILS)",
+    "priceHelp": "Leave empty or 0 for free events",
+    "requiresRegistrationLabel": "Requires registration/tickets",
+    "requiresRegistrationHelp": "(Uncheck for announcement-only events without registration)",
+    "isClosedLabel": "Close registration for event",
+    "isClosedHelp": "(No one will be able to purchase tickets)"
   },
   "createLecture": {
     "loading": "Loading...",

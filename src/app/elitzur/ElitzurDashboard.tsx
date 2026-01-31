@@ -311,7 +311,7 @@ export default function ElitzurDashboard() {
               <div
                 ref={tabsContainerRef}
                 onScroll={checkScrollArrows}
-                className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2 scroll-smooth px-1"
+                className="flex items-center gap-1 overflow-x-auto scrollbar-hide py-2 scroll-smooth px-10"
                 role="tablist"
                 style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
               >

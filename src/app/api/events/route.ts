@@ -65,6 +65,8 @@ export async function POST(request: NextRequest) {
       categoryId,
       maxSeats,
       isFeatured = false,
+      isClosed = false,
+      requiresRegistration = true,
       published = true, // Default to published when creating events
       price, // Price in agorot (null = free)
     } = body;
@@ -133,6 +135,8 @@ export async function POST(request: NextRequest) {
         authorId: user.id,
         maxSeats: maxSeats ? parseInt(maxSeats) : null,
         isFeatured: Boolean(isFeatured),
+        isClosed: Boolean(isClosed),
+        requiresRegistration: Boolean(requiresRegistration),
         published: Boolean(published),
         price: price && price > 0 ? price : null,
         currency: "ILS",
