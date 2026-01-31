@@ -7,6 +7,7 @@ export type TabKey =
   | "events"
   | "lectures"
   | "presentations"
+  | "comments"
   | "messages"
   | "notifications"
   | "subscriptions"
@@ -21,7 +22,7 @@ export interface Tab {
 }
 
 export const TABS: Tab[] = [
-  { key: "user", label: "משתמש פעיל", icon: "User" },
+  { key: "user", label: "פעולות מהירות", icon: "User" },
   { key: "home", label: "דף הבית", icon: "Home" },
   { key: "about", label: "אודות", icon: "UserCircle" },
   { key: "categories", label: "קטגוריות", icon: "FolderTree" },
@@ -29,9 +30,10 @@ export const TABS: Tab[] = [
   { key: "events", label: "אירועים", icon: "CalendarDays" },
   { key: "lectures", label: "הרצאות", icon: "Video" },
   { key: "presentations", label: "מצגות", icon: "Presentation" },
+  { key: "comments", label: "תגובות", icon: "MessageCircle" },
   { key: "messages", label: "הודעות", icon: "MessageSquare" },
   { key: "notifications", label: "התראות", icon: "Bell" },
-  { key: "subscriptions", label: "מנויים", icon: "CreditCard" },
+  { key: "subscriptions", label: "רשומים ומנויים", icon: "CreditCard" },
   { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
   { key: "devMetrics", label: "מדדי מפתחים", icon: "BarChart3" },
 ];

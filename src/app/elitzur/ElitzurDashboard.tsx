@@ -14,6 +14,7 @@ import EventsAdmin from "./EventsAdmin";
 import LecturesAdmin from "./LecturesAdmin";
 import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
+import CommentsAdmin from "./CommentsAdmin";
 import NotificationsAdmin from "./NotificationsAdmin";
 import SubscriptionsAdmin from "./SubscriptionsAdmin";
 import SettingsAdmin from "./SettingsAdmin";
@@ -30,6 +31,7 @@ import {
   Video,
   Presentation,
   MessageSquare,
+  MessageCircle,
   Bell,
   CreditCard,
   Settings,
@@ -57,6 +59,7 @@ const iconMap: Record<string, LucideIcon> = {
   Video,
   Presentation,
   MessageSquare,
+  MessageCircle,
   Bell,
   CreditCard,
   Settings,
@@ -392,6 +395,8 @@ export default function ElitzurDashboard() {
           {active === "lectures" && <LecturesAdmin />}
 
           {active === "presentations" && <PresentationsAdmin />}
+
+          {active === "comments" && <CommentsAdmin />}
 
           {active === "messages" && <MessagesAdmin />}
 

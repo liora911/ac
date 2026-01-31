@@ -1,7 +1,48 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAuth, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import { requireAuth, requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { CreateCommentRequest, Comment } from "@/types/Comments/comments";
+
+// GET - Fetch all comments (admin only)
+export async function GET() {
+  try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
+    const comments = await prisma.comment.findMany({
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            image: true,
+          },
+        },
+        article: {
+          select: {
+            id: true,
+            title: true,
+            slug: true,
+          },
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return NextResponse.json(comments);
+  } catch (error) {
+    console.error("Failed to fetch comments:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch comments" },
+      { status: 500 }
+    );
+  }
+}
 
 // POST - Create a new comment
 export async function POST(request: NextRequest) {
