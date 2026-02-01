@@ -110,7 +110,7 @@ export default function Tooltip({
         className={`
           animate-in fade-in-0 zoom-in-95 duration-150
           px-3 py-2 text-sm rounded-lg shadow-lg
-          bg-gray-900 text-white dark:bg-gray-100 dark:text-gray-900
+          bg-gray-900 text-white dark:bg-gray-800 dark:text-gray-100
           max-w-xs
           ${className}
         `}
@@ -119,7 +119,7 @@ export default function Tooltip({
         {/* Arrow */}
         <div
           className={`
-            absolute w-2 h-2 bg-gray-900 dark:bg-gray-100 rotate-45
+            absolute w-2 h-2 bg-gray-900 dark:bg-gray-800 rotate-45
             ${position === "top" ? "bottom-[-4px] left-1/2 -translate-x-1/2" : ""}
             ${position === "bottom" ? "top-[-4px] left-1/2 -translate-x-1/2" : ""}
             ${position === "left" ? "right-[-4px] top-1/2 -translate-y-1/2" : ""}

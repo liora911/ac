@@ -75,10 +75,10 @@ export default function LoginForm() {
   if (status === "loading") {
     return (
       <div className="mx-auto max-w-md px-4">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <div className="h-6 w-40 animate-pulse rounded bg-gray-200" />
-          <div className="mt-4 h-10 w-full animate-pulse rounded bg-gray-100" />
-          <div className="mt-3 h-10 w-full animate-pulse rounded bg-gray-100" />
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+          <div className="h-6 w-40 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          <div className="mt-4 h-10 w-full animate-pulse rounded bg-gray-100 dark:bg-gray-700" />
+          <div className="mt-3 h-10 w-full animate-pulse rounded bg-gray-100 dark:bg-gray-700" />
         </div>
       </div>
     );
@@ -87,11 +87,11 @@ export default function LoginForm() {
   if (session) {
     return (
       <div className="mx-auto max-w-md px-4">
-        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-          <h2 className="text-2xl font-semibold text-gray-900">{t("auth.welcome")}</h2>
-          <p className="mt-2 text-sm text-gray-600">
+        <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+          <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{t("auth.welcome")}</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
             {t("auth.userLoggedIn")}{" "}
-            <strong className="font-semibold text-gray-900">
+            <strong className="font-semibold text-gray-900 dark:text-white">
               {session.user?.email}
             </strong>
           </p>
@@ -111,9 +111,9 @@ export default function LoginForm() {
 
   return (
     <div className="mx-auto max-w-md px-4">
-      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold text-gray-900">{t("auth.signIn")}</h2>
-        <p className="mt-1 text-sm text-gray-600">
+      <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">{t("auth.signIn")}</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
           {t("auth.emailLinkInfo")}
         </p>
 
@@ -122,10 +122,10 @@ export default function LoginForm() {
             role="alert"
             className={`mt-4 rounded-lg border px-3 py-2 text-sm ${
               notice.kind === "success"
-                ? "border-green-200 bg-green-50 text-green-700"
+                ? "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                 : notice.kind === "info"
-                ? "border-blue-200 bg-blue-50 text-blue-700"
-                : "border-red-200 bg-red-50 text-red-700"
+                ? "border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400"
+                : "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400"
             }`}
           >
             {notice.text}
@@ -140,7 +140,7 @@ export default function LoginForm() {
           <div>
             <label
               htmlFor="email"
-              className="block text-xs font-medium text-gray-700"
+              className="block text-xs font-medium text-gray-700 dark:text-gray-300"
             >
               {t("auth.emailLabel")}
             </label>
@@ -154,7 +154,7 @@ export default function LoginForm() {
               required
               aria-required="true"
               aria-describedby="email-error email-help"
-              className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+              className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-white shadow-sm placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
             />
             <div id="email-help" className="sr-only">
               Enter your email address to receive a magic login link
@@ -175,7 +175,7 @@ export default function LoginForm() {
           </div>
         </form>
 
-        <div className="mt-6 text-center text-xs text-gray-500">
+        <div className="mt-6 text-center text-xs text-gray-500 dark:text-gray-400">
           <p>{t("auth.noPasswordInfo")}</p>
         </div>
       </div>

@@ -219,7 +219,7 @@ export default function GlobalSearch() {
     <div ref={searchRef} className="relative w-full max-w-xs sm:max-w-sm p-0 m-0">
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
-          <MdSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
+          <MdSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" />
         </div>
         <input
           ref={inputRef}
@@ -228,7 +228,7 @@ export default function GlobalSearch() {
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
           placeholder={t("globalSearch.placeholder")}
-          className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+          className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"
@@ -240,7 +240,7 @@ export default function GlobalSearch() {
             className="absolute inset-y-0 right-0 pr-2 sm:pr-3 flex items-center"
             aria-label="Clear search"
           >
-            <MdClose className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 hover:text-gray-600" />
+            <MdClose className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300" />
           </button>
         )}
       </div>
