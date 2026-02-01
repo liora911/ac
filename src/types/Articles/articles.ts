@@ -315,3 +315,21 @@ export interface ArticleClientProps {
 export interface ArticlePageProps {
   params: Promise<{ id: string }>;
 }
+
+/**
+ * Simplified article data for the article view component.
+ * This matches the API response format from /api/articles/[id].
+ */
+export interface ArticleViewData {
+  id: string;
+  title: string;
+  content: string;
+  articleImage: string;
+  publisherName: string;
+  publisherImage: string;
+  readDuration: number;
+  createdAt: string;
+  author?: {
+    email: string;
+  };
+}

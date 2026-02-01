@@ -4,13 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import TiptapEditor from "@/lib/editor/editor";
 import { stripHtml } from "@/lib/utils/stripHtml";
-
-interface Category {
-  id: string;
-  name: string;
-  description?: string | null;
-  parentId?: string | null;
-}
+import type { Category } from "@/types/Category/category";
 
 export default function CategoryManager() {
   const { t } = useTranslation();

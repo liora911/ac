@@ -9,30 +9,7 @@ import { MessageCircle, User, Calendar, Trash2, AlertTriangle, FileText, Externa
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import Link from "next/link";
-
-interface CommentUser {
-  id: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
-}
-
-interface CommentArticle {
-  id: string;
-  title: string;
-  slug: string;
-}
-
-interface Comment {
-  id: string;
-  content: string;
-  articleId: string;
-  userId: string;
-  createdAt: string;
-  updatedAt: string;
-  user: CommentUser;
-  article: CommentArticle;
-}
+import type { AdminComment } from "@/types/Comments/comments";
 
 export default function CommentsAdmin() {
   const { t } = useTranslation();
@@ -43,12 +20,12 @@ export default function CommentsAdmin() {
   );
   const { showSuccess, showError } = useNotification();
 
-  const [comments, setComments] = useState<Comment[]>([]);
+  const [comments, setComments] = useState<AdminComment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedComment, setSelectedComment] = useState<Comment | null>(null);
+  const [selectedComment, setSelectedComment] = useState<AdminComment | null>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [commentToDelete, setCommentToDelete] = useState<Comment | null>(null);
+  const [commentToDelete, setCommentToDelete] = useState<AdminComment | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
@@ -73,7 +50,7 @@ export default function CommentsAdmin() {
     }
   };
 
-  const openDeleteModal = (comment: Comment) => {
+  const openDeleteModal = (comment: AdminComment) => {
     setCommentToDelete(comment);
     setDeleteModalOpen(true);
   };

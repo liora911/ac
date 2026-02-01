@@ -6,26 +6,13 @@ import Image from "next/image";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import DOMPurify from "dompurify";
-
-interface Article {
-  id: string;
-  publisherImage: string;
-  publisherName: string;
-  date: string;
-  readDuration: number;
-  title: string;
-  articleImage: string;
-  content: string;
-  author?: {
-    email: string;
-  };
-}
+import type { ArticleViewData } from "@/types/Articles/articles";
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
   const articleId = searchParams.get("id");
 
-  const [article, setArticle] = useState<Article | null>(null);
+  const [article, setArticle] = useState<ArticleViewData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -82,7 +69,7 @@ export default function ArticlePage() {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const foundArticle: Article = await response.json();
+        const foundArticle: ArticleViewData = await response.json();
         setArticle(foundArticle);
       } catch (err) {
         setError("שגיאה בטעינת המאמר");
@@ -134,7 +121,7 @@ export default function ArticlePage() {
             {article.title}
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-gray-200 font-light">
-            מאת {article.publisherName} · {article.date}
+            מאת {article.publisherName} · {new Date(article.createdAt).toLocaleDateString("he-IL")}
           </p>
         </div>
       </div>
@@ -154,7 +141,7 @@ export default function ArticlePage() {
             <div>
               <p className="font-semibold">{article.publisherName}</p>
               <p className="text-sm text-gray-600">
-                {article.date} · {article.readDuration} דקות קריאה
+                {new Date(article.createdAt).toLocaleDateString("he-IL")} · {article.readDuration} דקות קריאה
               </p>
             </div>
           </div>

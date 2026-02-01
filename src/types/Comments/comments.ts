@@ -17,6 +17,18 @@ export interface Comment {
   user: CommentAuthor;
 }
 
+// Article info for admin comment view
+export interface CommentArticle {
+  id: string;
+  title: string;
+  slug: string;
+}
+
+// Comment with article info (for admin view)
+export interface AdminComment extends Comment {
+  article: CommentArticle;
+}
+
 // Request body for creating a comment
 export interface CreateCommentRequest {
   articleId: string;
