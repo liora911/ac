@@ -2,8 +2,7 @@ import { Category } from "@/types/Lectures/lectures";
 import type { LectureTreeCategory, FormattedLecture } from "@/types/Lectures/lectures-api";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
+import { requireAdmin } from "@/lib/auth/apiAuth";
 
 type LectureWithAuthor = any;
 
@@ -110,19 +109,11 @@ export async function POST(request: Request) {
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await requireAdmin();
+    if ("error" in auth) {
+      return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email! },
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const { user } = auth;
 
     const body = await request.json();
     const {

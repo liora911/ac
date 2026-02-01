@@ -13,6 +13,11 @@ export interface Lecture {
   date?: string;
   bannerImageUrl?: string;
   isPremium?: boolean;
+  categoryId?: string;
+  category?: {
+    id: string;
+    name: string;
+  };
   author?: {
     name: string | null;
     email: string | null;
@@ -47,6 +52,11 @@ export interface LectureDef {
   date?: string;
   bannerImageUrl?: string;
   isPremium?: boolean;
+  categoryId?: string;
+  category?: {
+    id: string;
+    name: string;
+  };
 }
 
 export interface CategoryDef {

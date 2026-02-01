@@ -1,119 +1,90 @@
 "use client";
 
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { CategoryNode, EditLectureFormProps } from "@/types/EditLecture/edit";
+import { useCategories } from "@/hooks/useArticles";
+import { useLecture, useUpdateLecture } from "@/hooks/useLectures";
+import { LectureForm, initialLectureFormData } from "@/components/LectureForm";
+import type { LectureFormData } from "@/components/LectureForm";
 
-export default function EditLectureForm({
-  lectureId,
-  onSuccess,
-}: EditLectureFormProps) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
-  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    videoUrl: "",
-    duration: "",
-    date: "",
-    bannerImageUrl: "",
-    categoryId: "",
-    isPremium: false,
-  });
+interface EditLectureFormProps {
+  lectureId: string;
+  onSuccess?: () => void;
+}
 
-  const [categories, setCategories] = useState<CategoryNode[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
+export default function EditLectureForm({ lectureId, onSuccess }: EditLectureFormProps) {
   const { t } = useTranslation();
+  const router = useRouter();
+  const { data: session, status } = useSession();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: lecture, isLoading: lectureLoading, error: lectureError } = useLecture(lectureId);
+  const updateLectureMutation = useUpdateLecture();
 
-  // Validation for Tab 1 (required fields)
-  const isTab1Complete = formData.title.trim() !== "" && formData.categoryId !== "" && formData.duration.trim() !== "";
+  const [formData, setFormData] = useState<LectureFormData>(initialLectureFormData);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const isAuthorized = !!(
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
 
+  // Initialize form data when lecture is loaded
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (response.ok) {
-          const data: CategoryNode[] = await response.json();
-          setCategories(data);
-        }
-      } catch (error) {
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-
-    const fetchLecture = async () => {
-      try {
-        const response = await fetch(`/api/lectures/${lectureId}`);
-        if (response.ok) {
-          const lecture = await response.json();
-
-          setFormData({
-            title: lecture.title || "",
-            description: lecture.description || "",
-            videoUrl: lecture.videoUrl || "",
-            duration: lecture.duration || "",
-            date: lecture.date || "",
-            bannerImageUrl: lecture.bannerImageUrl || "",
-            categoryId: lecture.category?.id || "",
-            isPremium: lecture.isPremium || false,
-          });
-        } else {
-          setMessage({
-            type: "error",
-            text: t("loadingLectureData") as string,
-          });
-        }
-      } catch (error) {
-        setMessage({ type: "error", text: t("loadingLectureData") as string });
-      } finally {
-        setIsFetching(false);
-      }
-    };
-
-    if (lectureId) {
-      fetchCategories();
-      fetchLecture();
+    if (lecture && !isInitialized) {
+      setFormData({
+        title: lecture.title || "",
+        description: lecture.description || "",
+        videoUrl: lecture.videoUrl || "",
+        duration: lecture.duration || "",
+        date: lecture.date || "",
+        bannerImageUrl: lecture.bannerImageUrl || "",
+        categoryId: lecture.category?.id || "",
+        isPremium: lecture.isPremium || false,
+      });
+      setIsInitialized(true);
     }
-  }, [lectureId, session?.user?.email]);
+  }, [lecture, isInitialized]);
 
-  if (status === "loading" || isFetching || categoriesLoading) {
+  // Loading state
+  if (status === "loading" || lectureLoading || categoriesLoading) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
-          <p className="text-gray-600">
-            {status === "loading" ? t("loading") : t("loadingLectureData")}
+          <p className="text-gray-600 dark:text-gray-400">
+            {status === "loading"
+              ? t("editLectureForm.loadingGeneric")
+              : t("editLectureForm.loadingLectureData")}
           </p>
         </div>
       </div>
     );
   }
 
+  // Lecture load error
+  if (lectureError) {
+    return (
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
+          {t("editLectureForm.loadError")}
+        </h2>
+        <p className="text-gray-600 dark:text-gray-400">{lectureError.message}</p>
+      </div>
+    );
+  }
+
+  // Unauthenticated state
   if (status === "unauthenticated") {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("editLectureForm.loginRequiredTitle")}
         </h2>
-        <p className="text-gray-600 rtl">
+        <p className="text-gray-600 dark:text-gray-400 rtl">
           {t("editLectureForm.loginRequiredMessage")}
         </p>
         <button
@@ -126,55 +97,45 @@ export default function EditLectureForm({
     );
   }
 
+  // Unauthorized state
   if (!isAuthorized) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4 rtl">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("editLectureForm.notAuthorizedTitle")}
         </h2>
-        <p className="text-gray-600 rtl">
+        <p className="text-gray-600 dark:text-gray-400 rtl">
           {t("editLectureForm.notAuthorizedMessage")}
         </p>
-        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setMessage(null);
 
-    // Validate required fields before submission
+    // Validate required fields
+    const isTab1Complete =
+      formData.title.trim() !== "" &&
+      formData.categoryId !== "" &&
+      formData.duration.trim() !== "";
+
     if (!isTab1Complete) {
       setMessage({
         type: "error",
-        text: t("editLectureForm.requiredFieldsError") as string || "Please fill in all required fields (Title, Category, and Duration)",
+        text: t("editLectureForm.requiredFieldsError") || "Please fill in all required fields",
       });
-      setActiveTab(1);
-      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch(`/api/lectures/${lectureId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      await updateLectureMutation.mutateAsync({
+        id: lectureId,
+        ...formData,
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
-      }
-
-      setMessage({
-        type: "success",
-        text: t("editLectureForm.updateSuccess") as string,
-      });
+      setMessage({ type: "success", text: t("editLectureForm.updateSuccess") });
 
       if (onSuccess) {
         onSuccess();
@@ -182,69 +143,15 @@ export default function EditLectureForm({
         router.push(`/lectures/${lectureId}`);
       }
     } catch (error) {
-      const messageText =
-        error instanceof Error
-          ? error.message
-          : (t("editLectureForm.updateError") as string);
       setMessage({
         type: "error",
-        text: messageText,
+        text: error instanceof Error ? error.message : t("editLectureForm.updateError"),
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const renderCategoryOptions = () => {
-    const options: React.ReactElement[] = [];
-
-    const topLevelCategories = categories.filter(
-      (category) => !category.parentId
-    );
-
-    topLevelCategories.forEach((category) => {
-      options.push(
-        <option key={category.id} value={category.id}>
-          ▶ {category.name}
-        </option>
-      );
-
-      const subcategories = categories.filter(
-        (sub) => sub.parentId === category.id
-      );
-
-      subcategories.forEach((sub) => {
-        options.push(
-          <option key={sub.id} value={sub.id}>
-            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
-          </option>
-        );
-      });
-    });
-
-    return options;
-  };
-
-  const tabLabels = {
-    1: t("editLectureForm.tabs.basicInfo") as string || "Basic Info",
-    2: t("editLectureForm.tabs.content") as string || "Content",
-    3: t("editLectureForm.tabs.media") as string || "Media",
-  };
-
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+    <>
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white rtl">
           {t("editLectureForm.title")}
@@ -254,247 +161,19 @@ export default function EditLectureForm({
         </p>
       </div>
 
-      {message && (
-        <div
-          className={`mb-6 p-4 rounded-lg ${
-            message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav className="flex gap-1" aria-label="Tabs">
-          {([1, 2, 3] as const).map((tab) => (
-            <button
-              key={tab}
-              type="button"
-              onClick={() => setActiveTab(tab)}
-              className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors cursor-pointer ${
-                activeTab === tab
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300"
-              }`}
-            >
-              {tabLabels[tab]}
-              {tab === 1 && !isTab1Complete && (
-                <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
-              )}
-            </button>
-          ))}
-        </nav>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Tab 1: Basic Info */}
-        {activeTab === 1 && (
-          <>
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.titleLabel")}
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 rtl ${
-                  formData.title.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-                placeholder={t("editLectureForm.titlePlaceholder")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="categoryId"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.categoryLabel")}
-              </label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                disabled={categoriesLoading}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 rtl ${
-                  formData.categoryId === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-              >
-                <option value="">
-                  {categoriesLoading
-                    ? t("editLectureForm.loadingCategories")
-                    : t("editLectureForm.selectCategory")}
-                </option>
-                {renderCategoryOptions()}
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="duration"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.durationLabel")}
-              </label>
-              <input
-                type="text"
-                id="duration"
-                name="duration"
-                value={formData.duration}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  formData.duration.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-                placeholder={t("editLectureForm.durationPlaceholder")}
-              />
-            </div>
-          </>
-        )}
-
-        {/* Tab 2: Content */}
-        {activeTab === 2 && (
-          <>
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.descriptionLabel")}
-              </label>
-              <TiptapEditor
-                value={formData.description}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, description: value }))
-                }
-                placeholder={t("editLectureForm.descriptionPlaceholder")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="videoUrl"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.videoUrlLabel")}
-              </label>
-              <input
-                type="url"
-                id="videoUrl"
-                name="videoUrl"
-                value={formData.videoUrl}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="date"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl"
-              >
-                {t("editLectureForm.dateLabel")}
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </>
-        )}
-
-        {/* Tab 3: Media */}
-        {activeTab === 3 && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl">
-                {t("editLectureForm.imageSummary")}
-              </label>
-              <UploadImage
-                onImageSelect={(url) =>
-                  setFormData((prev) => ({ ...prev, bannerImageUrl: url || "" }))
-                }
-                currentImage={formData.bannerImageUrl || null}
-                placeholder={t("editLectureForm.imagePlaceholder")}
-                onError={(msg) => setMessage({ type: "error", text: msg })}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 rtl">
-                {t("editLectureForm.imageUrlLabel")}
-              </label>
-              <input
-                type="url"
-                name="bannerImageUrl"
-                value={formData.bannerImageUrl}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
-
-            {/* Premium Content Toggle */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isPremium}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, isPremium: e.target.checked }))
-                  }
-                  className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t("editLectureForm.isPremiumLabel") || "Premium Content"}
-                  </span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t("editLectureForm.isPremiumHint") || "Only accessible to subscribers with Researcher plan"}
-                  </p>
-                </div>
-              </label>
-            </div>
-          </>
-        )}
-
-        {/* Submit Button - only visible on last tab */}
-        {activeTab === 3 && (
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {!isTab1Complete && (
-                  <span className="text-red-600">
-                    {t("editLectureForm.requiredFieldsHint") as string || "* Required fields are missing in Basic Info tab"}
-                  </span>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-              >
-                {isLoading
-                  ? t("editLectureForm.submitUpdating")
-                  : t("editLectureForm.submit")}
-              </button>
-            </div>
-          </div>
-        )}
-      </form>
-    </div>
+      <LectureForm
+        formData={formData}
+        onChange={setFormData}
+        onSubmit={handleSubmit}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
+        isSubmitting={updateLectureMutation.isPending}
+        translationPrefix="editLectureForm"
+        submitLabel={t("editLectureForm.submit")}
+        submitLoadingLabel={t("editLectureForm.submitUpdating")}
+        message={message}
+        onError={(msg) => setMessage({ type: "error", text: msg })}
+      />
+    </>
   );
 }

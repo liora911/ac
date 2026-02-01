@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
-import { ALLOWED_EMAILS } from "@/constants/auth";
+import { isAdminEmail } from "@/lib/auth/apiAuth";
 import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 
 // Allowed file types
@@ -31,8 +31,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           throw new Error("Authentication required");
         }
 
-        // Authorize user
-        if (!ALLOWED_EMAILS.includes(session.user.email.toLowerCase())) {
+        // Authorize user (admin only)
+        if (!isAdminEmail(session.user.email)) {
           throw new Error("Not authorized to upload files");
         }
 

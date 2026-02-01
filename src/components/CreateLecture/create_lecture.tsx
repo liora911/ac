@@ -1,90 +1,54 @@
 "use client";
 
-import React, { useState, FormEvent, useEffect } from "react";
+import React, { useState } from "react";
 import { useSession } from "next-auth/react";
-import UploadImage from "@/components/Upload/upload";
 import { ALLOWED_EMAILS } from "@/constants/auth";
-import TiptapEditor from "@/lib/editor/editor";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import type { CategoryNode } from "@/types/Category/category";
+import { useCategories } from "@/hooks/useArticles";
+import { useCreateLecture } from "@/hooks/useLectures";
+import { LectureForm, initialLectureFormData } from "@/components/LectureForm";
+import type { LectureFormData } from "@/components/LectureForm";
 
 interface CreateLectureFormProps {
   onSuccess?: () => void;
 }
 
-export default function CreateLectureForm({
-  onSuccess,
-}: CreateLectureFormProps) {
+export default function CreateLectureForm({ onSuccess }: CreateLectureFormProps) {
   const { t } = useTranslation();
   const { data: session, status } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState<1 | 2 | 3>(1);
-  const [confirmedTabs, setConfirmedTabs] = useState<Set<1 | 2 | 3>>(new Set());
-  const [message, setMessage] = useState<{
-    type: "success" | "error";
-    text: string;
-  } | null>(null);
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    videoUrl: "",
-    duration: "",
-    date: "",
-    bannerImageUrl: "",
-    categoryId: "",
-    isPremium: false,
-  });
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const createLectureMutation = useCreateLecture();
 
-  const [categories, setCategories] = useState<CategoryNode[]>([]);
-  const [categoriesLoading, setCategoriesLoading] = useState<boolean>(true);
-
-  // Validation for Tab 1 (required fields)
-  const isTab1Complete = formData.title.trim() !== "" && formData.categoryId !== "" && formData.duration.trim() !== "";
+  const [formData, setFormData] = useState<LectureFormData>(initialLectureFormData);
+  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
   const isAuthorized = !!(
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch("/api/categories");
-        if (response.ok) {
-          const data: CategoryNode[] = await response.json();
-          setCategories(data);
-        }
-      } catch (error) {
-      } finally {
-        setCategoriesLoading(false);
-      }
-    };
-
-    fetchCategories();
-  }, []);
-
+  // Loading state
   if (status === "loading" || categoriesLoading) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
         <div className="flex items-center gap-3">
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent"></div>
-          <p className="text-gray-600">
-            {status === "loading"
-              ? t("createLecture.loading")
-              : t("createLecture.loadingCategories")}
+          <p className="text-gray-600 dark:text-gray-400">
+            {status === "loading" ? t("createLecture.loading") : t("createLecture.loadingCategories")}
           </p>
         </div>
       </div>
     );
   }
 
+  // Unauthenticated state
   if (status === "unauthenticated") {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("createLecture.loginRequiredTitle")}
         </h2>
-        <p className="text-gray-600">{t("createLecture.loginRequiredMessage")}</p>
+        <p className="text-gray-600 dark:text-gray-400 rtl">{t("createLecture.loginRequiredMessage")}</p>
         <button
           onClick={() => (window.location.href = "/elitzur")}
           className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 cursor-pointer"
@@ -95,147 +59,54 @@ export default function CreateLectureForm({
     );
   }
 
+  // Unauthorized state
   if (!isAuthorized) {
     return (
-      <div className="p-6 bg-white rounded-xl border border-gray-200">
-        <h2 className="text-xl font-bold text-red-600 mb-4">
+      <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-4 rtl">
           {t("createLecture.notAuthorizedTitle")}
         </h2>
-        <p className="text-gray-600">{t("createLecture.notAuthorizedMessage")}</p>
-        <p className="text-sm text-gray-500 mt-2">{session?.user?.email}</p>
+        <p className="text-gray-600 dark:text-gray-400 rtl">{t("createLecture.notAuthorizedMessage")}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">{session?.user?.email}</p>
       </div>
     );
   }
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setMessage(null);
 
-    // Validate required fields before submission
+    // Validate required fields
+    const isTab1Complete =
+      formData.title.trim() !== "" &&
+      formData.categoryId !== "" &&
+      formData.duration.trim() !== "";
+
     if (!isTab1Complete) {
       setMessage({
         type: "error",
-        text: t("createLecture.requiredFieldsError") || "Please fill in all required fields (Title, Category, and Duration)",
+        text: t("createLecture.requiredFieldsError") || "Please fill in all required fields",
       });
-      setActiveTab(1);
-      setIsLoading(false);
       return;
     }
 
     try {
-      const response = await fetch("/api/lectures", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || `HTTP error! status: ${response.status}`);
-      }
-
+      await createLectureMutation.mutateAsync(formData);
       setMessage({ type: "success", text: t("createLecture.successMessage") });
-
-      setFormData({
-        title: "",
-        description: "",
-        videoUrl: "",
-        duration: "",
-        date: "",
-        bannerImageUrl: "",
-        categoryId: "",
-        isPremium: false,
-      });
-
-      if (onSuccess) {
-        onSuccess();
-      }
+      setFormData(initialLectureFormData);
+      onSuccess?.();
     } catch (error) {
-      const messageText =
-        error instanceof Error ? error.message : t("createLecture.errorMessage");
       setMessage({
         type: "error",
-        text: messageText,
+        text: error instanceof Error ? error.message : t("createLecture.errorMessage"),
       });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const renderCategoryOptions = () => {
-    const options: React.ReactElement[] = [];
-
-    const topLevelCategories = categories.filter(
-      (category) => !category.parentId
-    );
-
-    topLevelCategories.forEach((category) => {
-      options.push(
-        <option key={category.id} value={category.id}>
-          ▶ {category.name}
-        </option>
-      );
-
-      const subcategories = categories.filter(
-        (sub) => sub.parentId === category.id
-      );
-
-      subcategories.forEach((sub) => {
-        options.push(
-          <option key={sub.id} value={sub.id}>
-            &nbsp;&nbsp;&nbsp;&nbsp;└─ {sub.name}
-          </option>
-        );
-      });
-    });
-
-    return options;
-  };
-
-  const tabLabels = {
-    1: t("createLecture.tabs.basicInfo") || "Basic Info",
-    2: t("createLecture.tabs.content") || "Content",
-    3: t("createLecture.tabs.media") || "Media",
-  };
-
-  const confirmTab = (tab: 1 | 2 | 3) => {
-    setConfirmedTabs((prev) => new Set([...prev, tab]));
-    if (tab < 3) {
-      setActiveTab((tab + 1) as 1 | 2 | 3);
-    }
-  };
-
-  const canAccessTab = (tab: 1 | 2 | 3): boolean => {
-    if (tab === 1) return true;
-    return confirmedTabs.has((tab - 1) as 1 | 2 | 3) || confirmedTabs.has(tab);
-  };
-
-  const handleTabClick = (tab: 1 | 2 | 3) => {
-    if (canAccessTab(tab)) {
-      setActiveTab(tab);
     }
   };
 
   return (
-    <div className="p-6 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+    <>
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white rtl">
           {t("createLecture.title")}
         </h2>
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -243,295 +114,19 @@ export default function CreateLectureForm({
         </p>
       </div>
 
-      {message && (
-        <div
-          className={`mb-6 p-4 rounded-lg ${
-            message.type === "success"
-              ? "bg-green-50 text-green-800 border border-green-200"
-              : "bg-red-50 text-red-800 border border-red-200"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-
-      {/* Tab Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700 mb-6">
-        <nav className="flex gap-1" aria-label="Tabs">
-          {([1, 2, 3] as const).map((tab) => {
-            const isAccessible = canAccessTab(tab);
-            const isConfirmed = confirmedTabs.has(tab);
-            return (
-              <button
-                key={tab}
-                type="button"
-                onClick={() => handleTabClick(tab)}
-                disabled={!isAccessible}
-                className={`relative px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
-                  !isAccessible
-                    ? "border-transparent text-gray-300 dark:text-gray-600 cursor-not-allowed"
-                    : activeTab === tab
-                      ? "border-blue-600 text-blue-600 cursor-pointer"
-                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 cursor-pointer"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  {isConfirmed && (
-                    <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                  {tabLabels[tab]}
-                </span>
-                {tab === 1 && !isTab1Complete && !isConfirmed && (
-                  <span className="absolute top-2 -right-0 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Tab 1: Basic Info */}
-        {activeTab === 1 && (
-          <>
-            <div>
-              <label
-                htmlFor="title"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.titleLabel")}
-              </label>
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  formData.title.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-                placeholder={t("createLecture.titlePlaceholder")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="categoryId"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.categoryLabel")}
-              </label>
-              <select
-                id="categoryId"
-                name="categoryId"
-                value={formData.categoryId}
-                onChange={handleChange}
-                disabled={categoriesLoading}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 ${
-                  formData.categoryId === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-              >
-                <option value="">
-                  {categoriesLoading
-                    ? t("createLecture.loadingCategories")
-                    : t("createLecture.selectCategory")}
-                </option>
-                {renderCategoryOptions()}
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="duration"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.durationLabel")}
-              </label>
-              <input
-                type="text"
-                id="duration"
-                name="duration"
-                value={formData.duration}
-                onChange={handleChange}
-                className={`w-full p-3 border rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                  formData.duration.trim() === "" ? "border-gray-300 dark:border-gray-600" : "border-green-300 dark:border-green-600"
-                }`}
-                placeholder={t("createLecture.durationPlaceholder")}
-              />
-            </div>
-
-            {/* Confirm Tab 1 Button */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
-              <button
-                type="button"
-                onClick={() => confirmTab(1)}
-                disabled={!isTab1Complete}
-                className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
-              >
-                {t("createLecture.confirmAndContinue") || "אישור והמשך"}
-                <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-              {!isTab1Complete && (
-                <p className="text-sm text-red-600 mt-2">
-                  {t("createLecture.requiredFieldsHint") || "* יש למלא את כל השדות הנדרשים"}
-                </p>
-              )}
-            </div>
-          </>
-        )}
-
-        {/* Tab 2: Content */}
-        {activeTab === 2 && (
-          <>
-            <div>
-              <label
-                htmlFor="description"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.descriptionLabel")}
-              </label>
-              <TiptapEditor
-                value={formData.description}
-                onChange={(value) =>
-                  setFormData((prev) => ({ ...prev, description: value }))
-                }
-                placeholder={t("createLecture.descriptionPlaceholder")}
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="videoUrl"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.videoUrlLabel")}
-              </label>
-              <input
-                type="url"
-                id="videoUrl"
-                name="videoUrl"
-                value={formData.videoUrl}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="date"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                {t("createLecture.dateLabel")}
-              </label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={formData.date}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-
-            {/* Confirm Tab 2 Button */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
-              <button
-                type="button"
-                onClick={() => confirmTab(2)}
-                className="w-full sm:w-auto bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer font-medium flex items-center justify-center gap-2"
-              >
-                {t("createLecture.confirmAndContinue") || "אישור והמשך"}
-                <svg className="w-4 h-4 rtl:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* Tab 3: Media */}
-        {activeTab === 3 && (
-          <>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t("createLecture.imageSummary")}
-              </label>
-              <UploadImage
-                onImageSelect={(url) =>
-                  setFormData((prev) => ({ ...prev, bannerImageUrl: url || "" }))
-                }
-                currentImage={formData.bannerImageUrl || null}
-                placeholder={t("createLecture.imagePlaceholder")}
-                onError={(msg) => setMessage({ type: "error", text: msg })}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t("createLecture.imageUrlLabel")}
-              </label>
-              <input
-                type="url"
-                name="bannerImageUrl"
-                value={formData.bannerImageUrl}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="https://"
-              />
-            </div>
-
-            {/* Premium Content Toggle */}
-            <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={formData.isPremium}
-                  onChange={(e) =>
-                    setFormData((prev) => ({ ...prev, isPremium: e.target.checked }))
-                  }
-                  className="w-5 h-5 rounded border-gray-300 dark:border-gray-600 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {t("createLecture.isPremiumLabel") || "Premium Content"}
-                  </span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {t("createLecture.isPremiumHint") || "Only accessible to subscribers with Researcher plan"}
-                  </p>
-                </div>
-              </label>
-            </div>
-          </>
-        )}
-
-        {/* Submit Button - only visible on last tab */}
-        {activeTab === 3 && (
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {!isTab1Complete && (
-                  <span className="text-red-600">
-                    {t("createLecture.requiredFieldsHint") || "* Required fields are missing in Basic Info tab"}
-                  </span>
-                )}
-              </div>
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer font-medium"
-              >
-                {isLoading
-                  ? t("createLecture.submitCreating")
-                  : t("createLecture.submit")}
-              </button>
-            </div>
-          </div>
-        )}
-      </form>
-    </div>
+      <LectureForm
+        formData={formData}
+        onChange={setFormData}
+        onSubmit={handleSubmit}
+        categories={categories}
+        categoriesLoading={categoriesLoading}
+        isSubmitting={createLectureMutation.isPending}
+        translationPrefix="createLecture"
+        submitLabel={t("createLecture.submit")}
+        submitLoadingLabel={t("createLecture.submitCreating")}
+        message={message}
+        onError={(msg) => setMessage({ type: "error", text: msg })}
+      />
+    </>
   );
 }
