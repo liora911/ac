@@ -57,30 +57,13 @@ export const authOptions: NextAuthOptions = {
     },
     async signIn({ user }) {
       // Allow all users with valid email to sign in
-      if (!user.email) return false;
-
-      // Auto-fix ADMIN role for allowed emails on every sign in
-      // This handles case where user was created before role assignment was added
-      if (ALLOWED_EMAILS.includes(user.email.toLowerCase())) {
-        const dbUser = await prisma.user.findUnique({
-          where: { email: user.email },
-          select: { role: true },
-        });
-        if (dbUser && dbUser.role !== UserRole.ADMIN) {
-          await prisma.user.update({
-            where: { email: user.email },
-            data: { role: UserRole.ADMIN },
-          });
-        }
-      }
-
-      return true;
+      return !!user.email;
     },
   },
   events: {
     async createUser({ user }) {
       // Auto-assign ADMIN role to whitelisted emails on first login
-      if (user.email && ALLOWED_EMAILS.includes(user.email.toLowerCase())) {
+      if (user.email && ALLOWED_EMAILS.includes(user.email)) {
         await prisma.user.update({
           where: { id: user.id },
           data: { role: UserRole.ADMIN },

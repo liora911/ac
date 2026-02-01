@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { requireAdmin } from "@/lib/auth/apiAuth";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/auth";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,9 +32,9 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const auth = await requireAdmin();
-  if ("error" in auth) {
-    return NextResponse.json({ error: auth.error }, { status: auth.status });
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email || !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
