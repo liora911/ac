@@ -8,7 +8,7 @@ export const APP_NAVIGATION_MAP = {
     tabs: [
       {
         key: "user",
-        label: "User / משתמש פעיל",
+        label: "User / פעולות מהירות",
         description: "View login status, quick stats, and recent activity",
       },
       {
@@ -25,7 +25,11 @@ export const APP_NAVIGATION_MAP = {
         key: "articles",
         label: "Articles / מאמרים",
         description: "Create, edit, and manage articles",
-        actions: ["Create new article", "Edit existing articles", "Delete articles"],
+        actions: [
+          "Create new article",
+          "Edit existing articles",
+          "Delete articles",
+        ],
       },
       {
         key: "events",
@@ -37,13 +41,21 @@ export const APP_NAVIGATION_MAP = {
         key: "lectures",
         label: "Lectures / הרצאות",
         description: "Create, edit, and manage video lectures",
-        actions: ["Create new lecture", "Edit existing lectures", "Delete lectures"],
+        actions: [
+          "Create new lecture",
+          "Edit existing lectures",
+          "Delete lectures",
+        ],
       },
       {
         key: "presentations",
         label: "Presentations / מצגות",
         description: "Create, edit, and manage presentations",
-        actions: ["Create new presentation", "Edit existing presentations", "Delete presentations"],
+        actions: [
+          "Create new presentation",
+          "Edit existing presentations",
+          "Delete presentations",
+        ],
       },
       {
         key: "messages",
@@ -59,11 +71,31 @@ export const APP_NAVIGATION_MAP = {
   },
   publicPages: [
     { path: "/", label: "Home", description: "Main landing page" },
-    { path: "/lectures", label: "Lectures", description: "Browse all video lectures" },
-    { path: "/presentations", label: "Presentations", description: "Browse all presentations" },
-    { path: "/events", label: "Events", description: "Browse upcoming and past events" },
-    { path: "/articles", label: "Articles", description: "Browse all articles" },
-    { path: "/search", label: "Search", description: "Search across all content" },
+    {
+      path: "/lectures",
+      label: "Lectures",
+      description: "Browse all video lectures",
+    },
+    {
+      path: "/presentations",
+      label: "Presentations",
+      description: "Browse all presentations",
+    },
+    {
+      path: "/events",
+      label: "Events",
+      description: "Browse upcoming and past events",
+    },
+    {
+      path: "/articles",
+      label: "Articles",
+      description: "Browse all articles",
+    },
+    {
+      path: "/search",
+      label: "Search",
+      description: "Search across all content",
+    },
     { path: "/contact", label: "Contact", description: "Contact form page" },
   ],
   quickActions: [

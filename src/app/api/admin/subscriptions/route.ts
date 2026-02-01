@@ -29,6 +29,7 @@ export async function GET() {
         email: true,
         name: true,
         role: true,
+        createdAt: true,
         subscription: {
           select: {
             id: true,
@@ -39,10 +40,9 @@ export async function GET() {
           },
         },
       },
-      orderBy: [
-        { subscription: { status: "asc" } },
-        { email: "asc" },
-      ],
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
     return NextResponse.json({ users });
