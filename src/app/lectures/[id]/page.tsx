@@ -10,7 +10,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles, Share2 } from "lucide-react";
+import { Sparkles, Share2, Pencil } from "lucide-react";
 import { track } from "@vercel/analytics";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -116,6 +116,20 @@ export default function LectureDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 relative">
+      {/* Admin Edit Button - Fixed position */}
+      {isAuthorized && (
+        <Link
+          href={`/edit-lecture/${lectureId}`}
+          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all hover:scale-105"
+          title={t("lectureDetail.editButton")}
+        >
+          <Pencil className="w-5 h-5" />
+          <span className="hidden sm:inline font-medium">
+            {t("lectureDetail.editButton")}
+          </span>
+        </Link>
+      )}
+
       {lecture.bannerImageUrl && (
         <div className="absolute inset-0 z-0">
           <Image

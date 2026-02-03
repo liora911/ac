@@ -4,13 +4,14 @@ import { useEffect, useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
+import Link from "next/link";
 import { Presentation } from "@/types/Presentations/presentations";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
-import { Sparkles, Play, Share2 } from "lucide-react";
+import { Sparkles, Play, Share2, Pencil } from "lucide-react";
 import { track } from "@vercel/analytics";
 import { useNotification } from "@/contexts/NotificationContext";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -183,6 +184,20 @@ export default function PresentationDetailPage() {
       className="min-h-screen text-slate-900"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
+      {/* Admin Edit Button - Fixed position */}
+      {isAuthorized && (
+        <Link
+          href={`/edit-presentation/${id}`}
+          className="fixed bottom-6 left-6 z-50 flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all hover:scale-105"
+          title={t("presentationDetail.editButton")}
+        >
+          <Pencil className="w-5 h-5" />
+          <span className="hidden sm:inline font-medium">
+            {t("presentationDetail.editButton")}
+          </span>
+        </Link>
+      )}
+
       {/* Fixed full-page blurred background when thumbnail exists and has main content */}
       {hasMainContent && thumbnailUrl && (
         <>
