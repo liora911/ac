@@ -521,7 +521,43 @@ Admin routes are under `/elitzur/*` and protected by middleware.
 
 ---
 
-## 14. COMMON MISTAKES TO AVOID
+## 14. DATABASE SCHEMA MANAGEMENT
+
+### CRITICAL: Always Sync Schema Changes
+
+**After modifying `prisma/schema.prisma`, you MUST sync the database:**
+
+```bash
+npx prisma db push
+```
+
+**Why this matters:**
+- If you add/modify fields in the schema but don't push, the database won't have those columns
+- All Prisma queries will fail with "column does not exist" errors
+- **This breaks authentication and the entire app**
+
+### Development Workflow
+1. Edit `prisma/schema.prisma`
+2. Run `npx prisma db push` (syncs database)
+3. Run `npx prisma generate` (updates Prisma Client - usually runs automatically)
+4. Restart dev server if needed
+
+### Production Deployment
+- Vercel automatically runs migrations during deployment
+- For manual deployments, ensure migrations run before starting the app
+
+### Checking Schema Status
+```bash
+# View current database schema
+npx prisma db pull --print
+
+# Open database GUI
+npx prisma studio
+```
+
+---
+
+## 15. COMMON MISTAKES TO AVOID
 
 1. **Creating new upload UI** - Always use `DragDropImageUpload`
 2. **Sorting by updatedAt** - Use `createdAt` for display
@@ -531,10 +567,11 @@ Admin routes are under `/elitzur/*` and protected by middleware.
 6. **Direct DB queries in components** - Use React Query hooks
 7. **Inline styles** - Use Tailwind classes
 8. **Missing error handling** - Always try-catch API operations
+9. **Forgetting `prisma db push`** - ALWAYS sync schema changes to database
 
 ---
 
-## 15. TESTING CHECKLIST
+## 16. TESTING CHECKLIST
 
 Before marking a feature complete:
 - [ ] Works in light mode
@@ -550,7 +587,7 @@ Before marking a feature complete:
 
 ---
 
-## 16. GIT CONVENTIONS
+## 17. GIT CONVENTIONS
 
 Commit messages should be clear and concise:
 ```
@@ -561,7 +598,51 @@ refactor: use DragDropImageUpload in editor
 
 ---
 
-## 17. QUICK REFERENCE
+## 18. TROUBLESHOOTING
+
+### Auth is Broken / Users Can't Login
+
+**Symptom:** "Column does not exist" errors, users can't log in, Prisma Studio won't open
+
+**Cause:** Database schema is out of sync with Prisma schema
+
+**Fix:**
+```bash
+npx prisma db push
+```
+
+Then restart your dev server. This is the #1 most common issue.
+
+### Admin Access Lost
+
+**Check in Prisma Studio:**
+1. Open `User` table
+2. Find your user by email
+3. Verify `role` is set to `ADMIN` (not `USER`)
+4. If not, manually change it to `ADMIN` and save
+
+**Check email whitelist:**
+Your email must be in `/src/constants/auth.ts` `ALLOWED_EMAILS` array (case insensitive).
+
+### Deployment Issues
+
+If production is broken but local works:
+1. Ensure environment variables are set in Vercel
+2. Check that database migrations ran during deployment
+3. Redeploy: `git push` or `npx vercel --prod`
+
+### Rate Limiting
+
+If getting rate limit errors:
+- Auth: 10 requests per 15 minutes
+- Contact: 5 requests per 15 minutes
+- AI Assistant: 10 requests per minute
+
+Wait for the window to expire or clear the in-memory rate limit map (restart server).
+
+---
+
+## 19. QUICK REFERENCE
 
 ### Run Development
 ```bash
@@ -573,7 +654,7 @@ npm run dev
 npx prisma generate
 ```
 
-### Push Schema Changes
+### Push Schema Changes (CRITICAL!)
 ```bash
 npx prisma db push
 ```
@@ -583,6 +664,11 @@ npx prisma db push
 npx prisma studio
 ```
 
+### Check Schema Status
+```bash
+npx prisma db pull --print
+```
+
 ---
 
-*Last updated: January 2026*
+*Last updated: February 2026*
