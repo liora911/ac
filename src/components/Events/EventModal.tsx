@@ -6,6 +6,7 @@ import { Calendar, MapPin, Clock, Globe, X } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { EventModalProps } from "@/types/Events/events";
 import RichContent from "@/components/RichContent";
+import { formatDateWithWeekday } from "@/lib/utils/date";
 
 export type { EventModalProps };
 
@@ -17,16 +18,6 @@ const EventModal: React.FC<EventModalProps> = ({
 }) => {
   const { t } = useTranslation();
   if (!event) return null;
-
-  const formatDate = (date: Date | string) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
     <AnimatePresence>
@@ -73,7 +64,7 @@ const EventModal: React.FC<EventModalProps> = ({
                     <Calendar size={16} className="text-blue-600" />
                   </div>
                   <span className="font-medium">
-                    {formatDate(event.eventDate)}
+                    {formatDateWithWeekday(event.eventDate, locale)}
                   </span>
                   {event.eventTime && (
                     <>

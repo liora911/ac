@@ -12,13 +12,13 @@ import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import AuthorAvatars from "./AuthorAvatars";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
-import { copyToClipboard } from "@/lib/utils/clipboard";
+import { shareUrl } from "@/lib/utils/share";
+import { formatMonthDay } from "@/lib/utils/date";
 
 export default function MobileArticleCard({ article }: MobileArticleCardProps) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const { showSuccess } = useNotification();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   // Check if user has premium access
   const hasAccess =
@@ -32,15 +32,8 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
-    await copyToClipboard(url);
+    await shareUrl(url);
     showSuccess(t("articleDetail.linkCopied"));
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(dateLocale, {
-      month: "short",
-      day: "numeric",
-    });
   };
 
   return (
@@ -112,7 +105,7 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
               )}
 
               <span>•</span>
-              <span>{formatDate(article.createdAt)}</span>
+              <span>{formatMonthDay(article.createdAt, locale)}</span>
               <span>•</span>
               <span>
                 {article.readTime} {t("articleCard.minRead")}

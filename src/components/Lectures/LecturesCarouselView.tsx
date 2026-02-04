@@ -11,6 +11,7 @@ import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
 import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
+import { shareItem } from "@/lib/utils/share";
 import LectureModal from "./LectureModal";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useSpeechToText } from "@/hooks/useSpeechToText";
@@ -290,11 +291,10 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/lectures/${lecture.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
+    const { success } = await shareItem("lecture", lecture.id);
+    if (success) {
       showSuccess(t("lectureDetail.linkCopied"));
-    } catch {
+    } else {
       showError(t("lectureDetail.copyError"));
     }
   };

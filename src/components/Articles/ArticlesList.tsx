@@ -24,7 +24,8 @@ import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import MobileArticleCard from "./MobileArticleCard";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
-import { copyToClipboard } from "@/lib/utils/clipboard";
+import { shareUrl } from "@/lib/utils/share";
+import { formatDate, formatDateShort } from "@/lib/utils/date";
 import { stripHtml } from "@/lib/utils/stripHtml";
 
 // Pure function - defined outside component to avoid recreation on every render
@@ -81,7 +82,6 @@ function ArticlesListContent({
   viewMode: initialViewMode = "grid",
 }: ArticlesListProps) {
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -608,11 +608,7 @@ function ArticlesListContent({
                             <span>{article.readTime} {t("articleCard.minRead")}</span>
                             <span>•</span>
                             <span>
-                              {new Date(article.createdAt).toLocaleDateString(dateLocale, {
-                                year: "numeric",
-                                month: "short",
-                                day: "numeric",
-                              })}
+                              {formatDateShort(article.createdAt, locale)}
                             </span>
                             {article.category && (
                               <>
@@ -700,13 +696,12 @@ const ArticleCard = React.memo(function ArticleCard({ article }: { article: Arti
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const { showSuccess } = useNotification();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
-    await copyToClipboard(url);
+    await shareUrl(url);
     showSuccess(t("articleDetail.linkCopied"));
   };
 
@@ -715,14 +710,6 @@ const ArticleCard = React.memo(function ArticleCard({ article }: { article: Arti
 
   // Default fallback image for articles without a featured image
   const displayImage = article.featuredImage || DEFAULT_ARTICLE_IMAGE;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(dateLocale, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   return (
     <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative flex flex-col ${
@@ -825,7 +812,7 @@ const ArticleCard = React.memo(function ArticleCard({ article }: { article: Arti
         {/* Date, Categories, and Premium indicator */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-            <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(article.createdAt)}</span>
+            <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(article.createdAt, locale)}</span>
             {(article.categories && article.categories.length > 0) ? (
               article.categories.slice(0, 1).map((cat) => (
                 <span

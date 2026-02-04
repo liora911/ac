@@ -11,6 +11,7 @@ import {
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import EventModal from "./EventModal";
 import type { EventsProps } from "@/types/Events/events-component";
+import { formatDateShort } from "@/lib/utils/date";
 
 export type { EventsProps };
 
@@ -23,15 +24,6 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
     setSelectedEvent(event);
     setIsModalOpen(true);
     onBannerUpdate(event.bannerImageUrl || null, event.title);
-  };
-
-  const formatDate = (date: Date | string) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
   };
 
   if (!eventsData) {
@@ -93,7 +85,7 @@ const Events: React.FC<EventsProps> = ({ onBannerUpdate, eventsData }) => {
                 <div className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
                   <div className="flex items-center gap-2">
                     <Calendar size={16} className="text-blue-500" />
-                    <span>{formatDate(event.eventDate)}</span>
+                    <span>{formatDateShort(event.eventDate, locale)}</span>
                   </div>
                   {event.eventTime && (
                     <div className="flex items-center gap-2">

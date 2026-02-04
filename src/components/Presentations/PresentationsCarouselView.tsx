@@ -11,6 +11,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { PresentationPlaceholder } from "@/components/Placeholders";
+import { shareItem } from "@/lib/utils/share";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { useSpeechToText } from "@/hooks/useSpeechToText";
 
@@ -261,11 +262,10 @@ function PresentationCard({ presentation, hasAccess, categoryName }: Presentatio
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const url = `${window.location.origin}/presentations/${presentation.id}`;
-    try {
-      await navigator.clipboard.writeText(url);
+    const { success } = await shareItem("presentation", presentation.id);
+    if (success) {
       showSuccess(t("presentations.linkCopied"));
-    } catch {
+    } else {
       showError(t("presentations.copyError"));
     }
   };

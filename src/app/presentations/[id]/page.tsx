@@ -16,6 +16,8 @@ import { track } from "@vercel/analytics";
 import { useNotification } from "@/contexts/NotificationContext";
 import FavoriteButton from "@/components/FavoriteButton";
 import SlidesPlayer from "@/components/Presentations/SlidesPlayer";
+import { shareItem } from "@/lib/utils/share";
+import { formatDate } from "@/lib/utils/date";
 
 // Dynamic import for DocumentViewer to avoid SSR issues with react-pdf
 const DocumentViewer = dynamic(() => import("@/components/DocumentViewer/DocumentViewer"), {
@@ -63,7 +65,6 @@ export default function PresentationDetailPage() {
   const id = params.id as string;
   const { t, locale } = useTranslation();
   const { showSuccess, showError } = useNotification();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [presentation, setPresentation] = useState<Presentation | null>(null);
   const [loading, setLoading] = useState(true);
@@ -91,11 +92,10 @@ export default function PresentationDetailPage() {
   const prev = () => setCurrentImageIndex((i) => (i - 1 + total) % total);
 
   const handleShare = async () => {
-    const url = `${window.location.origin}/presentations/${id}`;
-    try {
-      await navigator.clipboard.writeText(url);
+    const { success } = await shareItem("presentation", id);
+    if (success) {
       showSuccess(t("presentations.linkCopied"));
-    } catch {
+    } else {
       showError(t("presentations.copyError"));
     }
   };
@@ -413,7 +413,7 @@ export default function PresentationDetailPage() {
             {t("presentationDetail.categoryLabel")}:{" "}
             {presentation.category.name} •{" "}
             {t("presentationDetail.createdAtLabel")}:{" "}
-            {new Date(presentation.createdAt).toLocaleDateString(dateLocale)}
+            {formatDate(presentation.createdAt, locale)}
           </p>
         </div>
 

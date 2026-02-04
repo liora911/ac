@@ -1,23 +1,38 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { X, Clock, Calendar, Maximize2, Minimize2, ChevronDown, ChevronUp, Lock, ArrowRight } from "lucide-react";
+import { X, Clock, Calendar, Maximize2, Minimize2, ChevronDown, ChevronUp, Lock, ArrowRight, Share2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { LectureModalProps } from "@/types/Lectures/lectures";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useSession } from "next-auth/react";
+import { useNotification } from "@/contexts/NotificationContext";
 import Link from "next/link";
 import RichContent from "@/components/RichContent";
+import FavoriteButton from "@/components/FavoriteButton";
+import { formatDate } from "@/lib/utils/date";
+import { shareItem } from "@/lib/utils/share";
 
 const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
-  const { t } = useTranslation();
-  const { data: session, status } = useSession();
+  const { t, locale } = useTranslation();
+  const { data: session } = useSession();
+  const { showSuccess, showError } = useNotification();
   const [isTheaterMode, setIsTheaterMode] = useState(false);
   const [showDescription, setShowDescription] = useState(true);
 
   // Check if user has access to premium content
   const isPremium = lecture?.isPremium ?? false;
   const hasAccess = !isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
+
+  // Share lecture URL
+  const handleShare = async () => {
+    const { success } = await shareItem("lecture", lecture?.id || "");
+    if (success) {
+      showSuccess(t("lectureDetail.linkCopied"));
+    } else {
+      showError(t("lectureDetail.copyError"));
+    }
+  };
 
   // Close on escape key
   useEffect(() => {
@@ -82,12 +97,29 @@ const LectureModal: React.FC<LectureModalProps> = ({ lecture, onClose }) => {
                 {lecture.date && (
                   <div className="hidden sm:flex items-center gap-1.5">
                     <Calendar className="w-4 h-4 text-blue-400" />
-                    <span>{lecture.date}</span>
+                    <span>{formatDate(lecture.date, locale)}</span>
                   </div>
                 )}
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Share Button */}
+              <button
+                type="button"
+                onClick={handleShare}
+                className="w-10 h-10 rounded-full bg-gray-800 hover:bg-gray-700 flex items-center justify-center transition-colors cursor-pointer"
+                aria-label={t("common.share")}
+                title={t("common.share")}
+              >
+                <Share2 className="w-5 h-5 text-gray-300" />
+              </button>
+              {/* Favorite Button */}
+              <FavoriteButton
+                itemId={lecture.id}
+                itemType="LECTURE"
+                size="md"
+                className="!w-10 !h-10 !rounded-full !bg-gray-800 hover:!bg-gray-700"
+              />
               {/* Theater Mode Toggle */}
               <button
                 type="button"

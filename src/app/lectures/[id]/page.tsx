@@ -14,6 +14,8 @@ import { Sparkles, Share2, Pencil } from "lucide-react";
 import { track } from "@vercel/analytics";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useNotification } from "@/contexts/NotificationContext";
+import { formatDate } from "@/lib/utils/date";
+import { shareItem } from "@/lib/utils/share";
 
 export default function LectureDetailPage() {
   const params = useParams();
@@ -22,16 +24,14 @@ export default function LectureDetailPage() {
   const lectureId = params.id as string;
   const { t, locale } = useTranslation();
   const { showSuccess, showError } = useNotification();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const { data: lecture, isLoading, error } = useLecture(lectureId);
 
   const handleShare = async () => {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
+    const { success } = await shareItem("lecture", lectureId);
+    if (success) {
       showSuccess(t("lectureDetail.linkCopied"));
-    } catch {
+    } else {
       showError(t("lectureDetail.copyError"));
     }
   };
@@ -103,17 +103,6 @@ export default function LectureDetailPage() {
     );
   }
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(
-      dateLocale as Intl.LocalesArgument,
-      {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }
-    );
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 relative">
       {/* Admin Edit Button - Fixed position */}
@@ -174,7 +163,7 @@ export default function LectureDetailPage() {
                   </p>
                   {lecture.date && (
                     <p className="text-sm text-gray-900">
-                      {formatDate(lecture.date)}
+                      {formatDate(lecture.date, locale)}
                     </p>
                   )}
                 </div>

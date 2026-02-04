@@ -8,20 +8,10 @@ import { Calendar, Clock, MapPin, Globe, ArrowRight, Ticket, Users } from "lucid
 import type { FeaturedEventProps } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import DOMPurify from "dompurify";
+import { formatDateWithWeekday } from "@/lib/utils/date";
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) => {
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
-
-  const formatDate = (date: Date | string) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleDateString(dateLocale, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const handleClick = () => {
     if (onEventClick) {
@@ -108,7 +98,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           <div className="flex flex-wrap gap-4 mb-5">
             <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
               <Calendar size={18} className="text-blue-500" />
-              <span className="text-sm font-medium">{formatDate(event.eventDate)}</span>
+              <span className="text-sm font-medium">{formatDateWithWeekday(event.eventDate, locale)}</span>
             </div>
 
             {event.eventTime && (
