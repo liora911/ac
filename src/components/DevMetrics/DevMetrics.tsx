@@ -17,6 +17,7 @@ import {
   RefreshCw,
   ExternalLink,
   AlertCircle,
+  PieChart,
 } from "lucide-react";
 import { RATING_COLORS, RATING_LABELS, WEB_VITAL_THRESHOLDS } from "@/constants/dev-metrics";
 import type { RatingType } from "@/constants/dev-metrics";
@@ -137,6 +138,9 @@ export default function DevMetrics() {
           </p>
           <DemoMetrics />
         </div>
+
+        {/* StatCounter works independently */}
+        <StatCounterSection />
       </div>
     );
   }
@@ -293,6 +297,9 @@ export default function DevMetrics() {
               </div>
             </div>
           </div>
+
+          {/* StatCounter Section */}
+          <StatCounterSection />
         </>
       ) : null}
     </div>
@@ -435,6 +442,131 @@ function MetricsSkeleton() {
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mb-2" />
               <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
             </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function StatCounterSection() {
+  const STATCOUNTER_PROJECT = "13202600";
+  const STATCOUNTER_SECURITY = "ec5154da";
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <PieChart className="w-5 h-5 text-green-500" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+            StatCounter Analytics
+          </h3>
+        </div>
+        <a
+          href={`https://statcounter.com/p${STATCOUNTER_PROJECT}/summary/?guest=1`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        >
+          <span>Full Dashboard</span>
+          <ExternalLink className="w-4 h-4" />
+        </a>
+      </div>
+
+      {/* StatCounter Summary Stats Embeds */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Page Loads Today */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Page Loads Today</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/0/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="Page Loads Today"
+          />
+        </div>
+
+        {/* Unique Visitors Today */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Unique Visitors Today</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/1/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="Unique Visitors Today"
+          />
+        </div>
+
+        {/* First Time Visitors */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">First Time Visitors</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/2/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="First Time Visitors"
+          />
+        </div>
+
+        {/* Returning Visitors */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Returning Visitors</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/3/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="Returning Visitors"
+          />
+        </div>
+
+        {/* Total Page Loads */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Total Page Loads</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/4/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="Total Page Loads"
+          />
+        </div>
+
+        {/* Total Unique Visitors */}
+        <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Total Unique Visitors</p>
+          <iframe
+            src={`https://c.statcounter.com/${STATCOUNTER_PROJECT}/0/${STATCOUNTER_SECURITY}/5/`}
+            className="border-0 w-full"
+            style={{ height: "40px" }}
+            title="Total Unique Visitors"
+          />
+        </div>
+      </div>
+
+      {/* Quick Links to StatCounter Reports */}
+      <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Quick Reports</p>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Summary", path: "summary" },
+            { label: "Recent Visitors", path: "visitor" },
+            { label: "Popular Pages", path: "popular" },
+            { label: "Entry Pages", path: "entry" },
+            { label: "Exit Pages", path: "exit" },
+            { label: "Came From", path: "came_from" },
+            { label: "Countries", path: "country" },
+            { label: "Browsers", path: "browser" },
+            { label: "OS", path: "os" },
+            { label: "Screen Resolution", path: "resolution" },
+          ].map((report) => (
+            <a
+              key={report.path}
+              href={`https://statcounter.com/p${STATCOUNTER_PROJECT}/${report.path}/?guest=1`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              {report.label}
+            </a>
           ))}
         </div>
       </div>
