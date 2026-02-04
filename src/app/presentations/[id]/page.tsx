@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
@@ -12,7 +12,6 @@ import dynamic from "next/dynamic";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import { Sparkles, Play, Share2, Pencil } from "lucide-react";
-import { track } from "@vercel/analytics";
 import { useNotification } from "@/contexts/NotificationContext";
 import FavoriteButton from "@/components/FavoriteButton";
 import SlidesPlayer from "@/components/Presentations/SlidesPlayer";
@@ -72,7 +71,6 @@ export default function PresentationDetailPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
-  const hasTracked = useRef(false);
 
   const isAuthorized =
     session?.user?.email &&
@@ -123,19 +121,6 @@ export default function PresentationDetailPage() {
       fetchPresentation();
     }
   }, [id]);
-
-  // Track presentation view
-  useEffect(() => {
-    if (presentation && !hasTracked.current) {
-      hasTracked.current = true;
-      track("presentation_viewed", {
-        presentationId: presentation.id,
-        title: presentation.title,
-        isPremium: presentation.isPremium ?? false,
-        category: presentation.category?.name || "uncategorized",
-      });
-    }
-  }, [presentation]);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {

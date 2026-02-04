@@ -1,7 +1,6 @@
 "use client";
 
 import { Download } from "lucide-react";
-import { track } from "@vercel/analytics";
 import type { DownloadPDFButtonProps } from "@/types/Articles/articles";
 
 export default function DownloadPDFButton({
@@ -14,12 +13,6 @@ export default function DownloadPDFButton({
   downloadText,
 }: DownloadPDFButtonProps) {
   const downloadPDF = () => {
-    // Track PDF download
-    track("article_pdf_downloaded", {
-      articleId,
-      title: articleTitle,
-    });
-
     // Get the article content
     const contentElement = document.querySelector(".article-content");
     if (!contentElement) return;

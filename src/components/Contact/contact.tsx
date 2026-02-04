@@ -10,7 +10,6 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
-import { track } from "@vercel/analytics";
 import Modal from "@/components/Modal/Modal";
 import { useNotification } from "@/contexts/NotificationContext";
 import { SUBJECT_OPTIONS } from "@/constants/contact";
@@ -108,10 +107,6 @@ const Contact = () => {
       });
 
       if (response.ok) {
-        // Track successful contact form submission
-        track("contact_form_submitted", {
-          subject: formData.subject,
-        });
         setShowSuccessModal(true);
         setFormData({ name: "", email: "", subject: "", message: "" });
         setErrors({ name: "", email: "", subject: "", message: "" });

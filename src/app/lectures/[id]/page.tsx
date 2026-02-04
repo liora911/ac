@@ -11,7 +11,6 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
 import { Sparkles, Share2, Pencil } from "lucide-react";
-import { track } from "@vercel/analytics";
 import FavoriteButton from "@/components/FavoriteButton";
 import { useNotification } from "@/contexts/NotificationContext";
 import { formatDate } from "@/lib/utils/date";
@@ -38,17 +37,6 @@ export default function LectureDetailPage() {
   const isAuthorized =
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
-
-  // Track lecture view
-  useEffect(() => {
-    if (lecture) {
-      track("lecture_viewed", {
-        lectureId: lecture.id,
-        title: lecture.title,
-        isPremium: lecture.isPremium ?? false,
-      });
-    }
-  }, [lecture]);
 
   if (isLoading) {
     return (

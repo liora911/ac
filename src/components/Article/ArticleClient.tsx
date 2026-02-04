@@ -1,9 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
-import { track } from "@vercel/analytics";
-import { Pencil, Download } from "lucide-react";
+import { Pencil } from "lucide-react";
 import type { ArticleClientProps } from "@/types/Articles/articles";
 
 export default function ArticleClient({
@@ -18,24 +16,7 @@ export default function ArticleClient({
   publisherName,
   translations,
 }: ArticleClientProps) {
-
-  // Track article view
-  useEffect(() => {
-    track("article_viewed", {
-      articleId,
-      title: articleTitle,
-      isPremium,
-      category: categoryName || "uncategorized",
-    });
-  }, [articleId, articleTitle, isPremium, categoryName]);
-
   const downloadPDF = () => {
-    // Track PDF download
-    track("article_pdf_downloaded", {
-      articleId,
-      title: articleTitle,
-    });
-
     // Get the article content
     const contentElement = document.querySelector(".article-content");
     if (!contentElement) return;
