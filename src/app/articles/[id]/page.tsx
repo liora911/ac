@@ -17,6 +17,7 @@ import CommentSection from "@/components/Comments/CommentSection";
 import en from "@/locales/en.json";
 import he from "@/locales/he.json";
 import type { ArticlePageProps } from "@/types/Articles/articles";
+import { formatDate } from "@/lib/utils/date";
 
 // Server-side function to fetch article by ID or slug
 async function getArticle(idOrSlug: string) {
@@ -248,14 +249,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const locale = article.direction === "rtl" ? "he" : "en";
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
-  const formatDate = (dateString: Date) => {
-    return dateString.toLocaleDateString(dateLocale as Intl.LocalesArgument, {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   const getStatusColor = (published: boolean) => {
     return published
       ? "bg-green-100 text-green-800"
@@ -352,7 +345,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                             }`}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(article.createdAt)}
+                        {formatDate(article.createdAt, locale)}
                       </p>
                     </div>
                   </>
@@ -372,7 +365,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                         {article.publisherName || t("articleCard.authorAnonymous")}
                       </p>
                       <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {formatDate(article.createdAt)}
+                        {formatDate(article.createdAt, locale)}
                       </p>
                     </div>
                   </>

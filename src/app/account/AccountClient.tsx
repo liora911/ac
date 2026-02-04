@@ -29,6 +29,7 @@ import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
 import type { AccountClientProps } from "@/types/Account/account";
 import NotificationsSection from "@/components/Notifications/NotificationsSection";
+import { formatDate, formatMonthYear } from "@/lib/utils/date";
 
 // Extract username from email
 function getUsernameFromEmail(email: string | null | undefined): string {
@@ -152,22 +153,6 @@ function AccountContent({
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(isRTL ? "he-IL" : "en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatMemberSince = (dateString?: string) => {
-    if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString(isRTL ? "he-IL" : "en-US", {
-      year: "numeric",
-      month: "long",
-    });
-  };
-
   const getStatusBadge = (status: string, cancelAtPeriodEnd: boolean) => {
     if (cancelAtPeriodEnd) {
       return (
@@ -261,7 +246,7 @@ function AccountContent({
             {user.createdAt && (
               <div className="mt-4 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
                 <Clock className="w-4 h-4" />
-                {t("account.memberSince")} {formatMemberSince(user.createdAt)}
+                {t("account.memberSince")} {user.createdAt ? formatMonthYear(user.createdAt, locale) : null}
               </div>
             )}
           </div>
@@ -292,14 +277,14 @@ function AccountContent({
                 <div className="flex items-center justify-between text-sm">
                   <span className="text-gray-500 dark:text-gray-400">{t("account.subscription.renewDate")}</span>
                   <span className="text-gray-900 dark:text-white font-medium">
-                    {formatDate(subscription.currentPeriodEnd)}
+                    {formatDate(subscription.currentPeriodEnd, locale)}
                   </span>
                 </div>
                 {subscription.cancelAtPeriodEnd && (
                   <div className="rounded-lg bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 p-3 flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" />
                     <span className="text-xs text-amber-700 dark:text-amber-400">
-                      {t("account.subscription.cancelWarning").replace("{date}", formatDate(subscription.currentPeriodEnd))}
+                      {t("account.subscription.cancelWarning").replace("{date}", formatDate(subscription.currentPeriodEnd, locale))}
                     </span>
                   </div>
                 )}

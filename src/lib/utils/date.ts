@@ -51,6 +51,26 @@ export function formatDateTime(
 }
 
 /**
+ * Format date with time using short month (e.g., "4 בפבר׳ 2026, 14:30")
+ * Used in ticket timestamps
+ */
+export function formatDateTimeShort(
+  date: Date | string,
+  locale: LocaleCode | string = "he"
+): string {
+  const dateObj = typeof date === "string" ? new Date(date) : date;
+  const dateLocale = getDateLocale(locale);
+
+  return dateObj.toLocaleDateString(dateLocale, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+/**
  * Format date for short display (e.g., "4 בפבר׳ 2026" or "Feb 4, 2026")
  */
 export function formatDateShort(

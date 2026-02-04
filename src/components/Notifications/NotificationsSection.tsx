@@ -13,21 +13,13 @@ import {
   useUserNotifications,
   useMarkNotificationRead,
 } from "@/hooks/useNotifications";
+import { formatDateShort } from "@/lib/utils/date";
 
 export default function NotificationsSection() {
   const { t, locale } = useTranslation();
-  const isRTL = locale === "he";
   const { data, isLoading } = useUserNotifications();
   const markAsRead = useMarkNotificationRead();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(isRTL ? "he-IL" : "en-US", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
 
   const handleToggleExpand = (notificationId: string, isRead: boolean) => {
     if (expandedId === notificationId) {
@@ -151,7 +143,7 @@ export default function NotificationsSection() {
                     </div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1 mt-0.5">
                       <Calendar className="w-3 h-3" />
-                      {formatDate(notification.createdAt)}
+                      {formatDateShort(notification.createdAt, locale)}
                     </p>
                   </div>
 
@@ -173,7 +165,7 @@ export default function NotificationsSection() {
                       {userNotification.isRead && userNotification.readAt && (
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-2 flex items-center gap-1">
                           <Check className="w-3 h-3" />
-                          {t("account.notifications.readOn")} {formatDate(userNotification.readAt)}
+                          {t("account.notifications.readOn")} {formatDateShort(userNotification.readAt, locale)}
                         </p>
                       )}
                     </div>

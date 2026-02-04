@@ -13,6 +13,7 @@ import { AlertTriangle, Trash2, Ticket, RefreshCw } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { formatDateShort, formatDateTime } from "@/lib/utils/date";
 
 type EventStatus = "active" | "cancelled" | "completed";
 
@@ -384,7 +385,7 @@ export default function EventsAdmin() {
                         <time
                           dateTime={new Date(event.eventDate).toISOString()}
                         >
-                          {new Date(event.eventDate).toLocaleDateString()}
+                          {formatDateShort(event.eventDate, "he")}
                         </time>
                       </div>
                       {event.eventTime && (
@@ -435,9 +436,7 @@ export default function EventsAdmin() {
                           event.updatedAt || event.createdAt
                         ).toISOString()}
                       >
-                        {new Date(
-                          event.updatedAt || event.createdAt
-                        ).toLocaleString()}
+                        {formatDateTime(event.updatedAt || event.createdAt, "he")}
                       </time>
                     </td>
 

@@ -5,23 +5,12 @@ import Image from "next/image";
 import type { ArticleModalProps } from "@/types/Articles/articles";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
+import { formatDate } from "@/lib/utils/date";
 
 const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   if (!article) return null;
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString(
-      dateLocale as Intl.LocalesArgument,
-      {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      }
-    );
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -64,7 +53,7 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
                     {article.author.name || "Anonymous"}
                   </p>
                   <p className="text-sm text-gray-500">
-                    {formatDate(article.createdAt)}
+                    {formatDate(article.createdAt, locale)}
                   </p>
                 </div>
               </div>

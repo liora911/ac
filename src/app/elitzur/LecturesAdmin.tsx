@@ -17,6 +17,7 @@ import { AlertTriangle, Trash2, RefreshCw } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { formatDateShort } from "@/lib/utils/date";
 
 export default function LecturesAdmin() {
   const { t } = useTranslation();
@@ -382,7 +383,7 @@ export default function LecturesAdmin() {
                     <td className="px-4 py-3 text-sm text-gray-600" role="cell">
                       {lecture.date ? (
                         <time dateTime={new Date(lecture.date).toISOString()}>
-                          {new Date(lecture.date).toLocaleDateString()}
+                          {formatDateShort(lecture.date, "he")}
                         </time>
                       ) : (
                         t("admin.common.notAvailable")

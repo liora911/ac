@@ -26,6 +26,7 @@ import {
   useDeleteNotification,
 } from "@/hooks/useNotifications";
 import type { NotificationWithReadCount } from "@/types/Notifications/notifications";
+import { formatDateShort } from "@/lib/utils/date";
 
 export default function NotificationsAdmin() {
   const { t } = useTranslation();
@@ -269,7 +270,7 @@ export default function NotificationsAdmin() {
                     </span>
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
-                      {new Date(notification.createdAt).toLocaleDateString()}
+                      {formatDateShort(notification.createdAt, "he")}
                     </span>
                   </div>
                 </div>

@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import { Ticket, Calendar, MapPin, Users, ExternalLink } from "lucide-react";
+import { formatDateWithWeekday } from "@/lib/utils/date";
 
 export default async function MyTicketsPage() {
   const session = await getServerSession(authOptions);
@@ -54,15 +55,6 @@ export default async function MyTicketsPage() {
     }
   };
 
-  const formatDate = (date: Date) => {
-    return date.toLocaleDateString("he-IL", {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-3xl mx-auto">
@@ -105,7 +97,7 @@ export default async function MyTicketsPage() {
                     <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
                       <span className="flex items-center gap-1">
                         <Calendar className="w-4 h-4" />
-                        {formatDate(ticket.event.eventDate)}
+                        {formatDateWithWeekday(ticket.event.eventDate, "he")}
                       </span>
                       {ticket.event.location && (
                         <span className="flex items-center gap-1">

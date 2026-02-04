@@ -7,6 +7,7 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import DOMPurify from "dompurify";
 import type { ArticleViewData } from "@/types/Articles/articles";
+import { formatDate } from "@/lib/utils/date";
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
@@ -121,7 +122,7 @@ export default function ArticlePage() {
             {article.title}
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-gray-200 font-light">
-            מאת {article.publisherName} · {new Date(article.createdAt).toLocaleDateString("he-IL")}
+            מאת {article.publisherName} · {formatDate(article.createdAt, "he")}
           </p>
         </div>
       </div>
@@ -141,7 +142,7 @@ export default function ArticlePage() {
             <div>
               <p className="font-semibold">{article.publisherName}</p>
               <p className="text-sm text-gray-600">
-                {new Date(article.createdAt).toLocaleDateString("he-IL")} · {article.readDuration} דקות קריאה
+                {formatDate(article.createdAt, "he")} · {article.readDuration} דקות קריאה
               </p>
             </div>
           </div>

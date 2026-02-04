@@ -23,12 +23,13 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { TicketData } from "@/types/Tickets/tickets";
+import { formatDateWithWeekday, formatDateTimeShort } from "@/lib/utils/date";
+import { shareUrl } from "@/lib/utils/share";
 
 export default function TicketSummaryPage() {
   const params = useParams();
   const accessToken = params.id as string;
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [ticket, setTicket] = useState<TicketData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -59,25 +60,6 @@ export default function TicketSummaryPage() {
 
     fetchTicket();
   }, [accessToken, t]);
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString(dateLocale, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
-
-  const formatDateTime = (date: string) => {
-    return new Date(date).toLocaleDateString(dateLocale, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -257,7 +239,7 @@ export default function TicketSummaryPage() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-500">{t("tickets.date")}</p>
-                    <p className="font-medium">{formatDate(ticket.event.eventDate)}</p>
+                    <p className="font-medium">{formatDateWithWeekday(ticket.event.eventDate, locale)}</p>
                   </div>
                 </div>
 
@@ -374,7 +356,7 @@ export default function TicketSummaryPage() {
                     {t("tickets.ticketId")}: <span className="font-mono text-xs break-all">{ticket.id}</span>
                   </p>
                   <p>
-                    {t("tickets.reservedOn")}: {formatDateTime(ticket.createdAt)}
+                    {t("tickets.reservedOn")}: {formatDateTimeShort(ticket.createdAt, locale)}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">

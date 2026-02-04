@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import type { UserWithSubscription } from "@/types/User/user";
+import { formatDateShort } from "@/lib/utils/date";
 
 export default function SubscriptionsAdmin() {
   const { t } = useTranslation();
@@ -175,14 +176,6 @@ export default function SubscriptionsAdmin() {
     }
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString("he-IL", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  };
-
   const subscribedCount = users.filter((u) => u.subscription?.status === "ACTIVE").length;
 
   return (
@@ -274,7 +267,7 @@ export default function SubscriptionsAdmin() {
                       {user.subscription?.currentPeriodEnd ? (
                         <div className="flex items-center gap-1 text-sm text-gray-600">
                           <Calendar className="w-4 h-4" />
-                          {formatDate(user.subscription.currentPeriodEnd)}
+                          {formatDateShort(user.subscription.currentPeriodEnd, "he")}
                         </div>
                       ) : (
                         <span className="text-sm text-gray-400">-</span>

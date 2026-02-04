@@ -13,6 +13,7 @@ import {
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import type { SearchResult, SearchResults } from "@/types/GlobalSearch/globalsearch";
+import { formatDateShort } from "@/lib/utils/date";
 
 function SearchPageContent() {
   const { t, locale } = useTranslation();
@@ -302,11 +303,7 @@ function SearchPageContent() {
                               )}
                               {(result.eventDate || result.date) && (
                                 <span className="bg-gray-50 px-1.5 sm:px-2 py-0.5 sm:py-1 rounded">
-                                  {new Date(
-                                    result.eventDate || result.date!,
-                                  ).toLocaleDateString(
-                                    isHebrew ? "he-IL" : "en-US",
-                                  )}
+                                  {formatDateShort(result.eventDate || result.date!, locale)}
                                 </span>
                               )}
                               {result.location && (

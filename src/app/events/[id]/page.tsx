@@ -7,13 +7,13 @@ import { Calendar, Clock, MapPin, Globe, ArrowLeft } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import RichContent from "@/components/RichContent";
+import { formatDateWithWeekday, formatDateShort } from "@/lib/utils/date";
 
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,12 +118,7 @@ export default function EventDetailPage() {
                   {t("eventDetail.dateLabel")}
                 </p>
                 <p className="font-medium">
-                  {new Date(event.eventDate).toLocaleDateString(dateLocale, {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {formatDateWithWeekday(event.eventDate, locale)}
                 </p>
               </div>
             </div>
@@ -206,7 +201,7 @@ export default function EventDetailPage() {
           <p className="text-sm">
             {t("eventDetail.categoryLabel")}: {event.category.name} •{" "}
             {t("eventDetail.createdAtLabel")}:{" "}
-            {new Date(event.createdAt).toLocaleDateString(dateLocale)}
+            {formatDateShort(event.createdAt, locale)}
           </p>
         </div>
       </div>

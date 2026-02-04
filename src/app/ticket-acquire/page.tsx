@@ -21,13 +21,13 @@ import {
 } from "lucide-react";
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { formatDateWithWeekday } from "@/lib/utils/date";
 
 function TicketAcquireContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const eventId = searchParams.get("eventId");
   const { t, locale } = useTranslation();
-  const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,16 +72,6 @@ function TicketAcquireContent() {
 
     fetchEvent();
   }, [eventId, t]);
-
-  const formatDate = (date: Date | string) => {
-    const dateObj = date instanceof Date ? date : new Date(date);
-    return dateObj.toLocaleDateString(dateLocale, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  };
 
   const validateForm = (): boolean => {
     const errors: Record<string, string> = {};
@@ -313,7 +303,7 @@ function TicketAcquireContent() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">{t("tickets.date")}</p>
-                      <p className="font-medium">{formatDate(event.eventDate)}</p>
+                      <p className="font-medium">{formatDateWithWeekday(event.eventDate, locale)}</p>
                     </div>
                   </div>
 

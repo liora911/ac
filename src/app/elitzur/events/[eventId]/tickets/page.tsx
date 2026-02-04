@@ -19,6 +19,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import type { Ticket, EventData, TicketStatus } from "@/types/Tickets/tickets";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
+import { formatDateShort } from "@/lib/utils/date";
 
 export default function EventTicketsPage({
   params,
@@ -200,7 +201,7 @@ export default function EventTicketsPage({
       statusMap[ticket.status] || ticket.status,
       ticket.id,
       ticket.notes || "-",
-      new Date(ticket.createdAt).toLocaleDateString("he-IL"),
+      formatDateShort(ticket.createdAt, "he"),
     ]);
 
     // Use tab separator for better Excel compatibility
@@ -312,7 +313,7 @@ export default function EventTicketsPage({
           <p className="text-gray-600 mt-1">{event?.title}</p>
           {event?.eventDate && (
             <p className="text-sm text-gray-500">
-              {new Date(event.eventDate).toLocaleDateString()} {event.eventTime && `- ${event.eventTime}`}
+              {formatDateShort(event.eventDate, "he")} {event.eventTime && `- ${event.eventTime}`}
             </p>
           )}
         </div>
@@ -467,7 +468,7 @@ export default function EventTicketsPage({
                       </span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      {new Date(ticket.createdAt).toLocaleDateString()}
+                      {formatDateShort(ticket.createdAt, "he")}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-2">
