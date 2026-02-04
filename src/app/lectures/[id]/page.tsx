@@ -191,14 +191,15 @@ export default function LectureDetailPage() {
         <PremiumGate isPremium={lecture.isPremium ?? false}>
           {lecture.videoUrl && (
             <div className="mb-8">
-              <iframe
-                src={lecture.videoUrl}
-                title={lecture.title}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="rounded-lg w-full h-[600px] shadow-lg"
-              ></iframe>
+              <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-black">
+                <iframe
+                  src={lecture.videoUrl}
+                  title={lecture.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="absolute inset-0 w-full h-full border-0"
+                ></iframe>
+              </div>
             </div>
           )}
 
