@@ -14,8 +14,6 @@ import { CategoryPreferencesProvider } from "@/contexts/CategoryPreferencesConte
 import MotionProvider from "@/components/Motion/MotionProvider";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
-import { Analytics } from "@vercel/analytics/react";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 import StatCounter from "@/components/Analytics/StatCounter";
 
 // Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
@@ -145,8 +143,6 @@ export default function RootLayout({
             </TranslationProvider>
           </AuthSessionProvider>
         </QueryProvider>
-        <Analytics />
-        <SpeedInsights />
         <StatCounter />
       </body>
     </html>
