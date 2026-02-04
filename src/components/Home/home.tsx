@@ -240,7 +240,7 @@ const Home = () => {
                         href={siteSettings.facebookUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1877F2] hover:bg-[#166FE5] text-white transition-colors"
                         aria-label={t("home.social.facebook")}
                       >
                         <FaFacebook size={18} />
@@ -257,7 +257,7 @@ const Home = () => {
                         href={siteSettings.youtubeUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white transition-colors"
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-[#FF0000] hover:bg-[#CC0000] text-white transition-colors"
                         aria-label={t("home.social.youtube")}
                       >
                         <FaYoutube size={18} />
