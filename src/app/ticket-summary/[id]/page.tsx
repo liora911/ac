@@ -25,6 +25,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import type { TicketData } from "@/types/Tickets/tickets";
 import { formatDateWithWeekday, formatDateTimeShort } from "@/lib/utils/date";
 import { shareUrl } from "@/lib/utils/share";
+import { getTicketStatusColor, TICKET_STATUS_KEYS, type TicketStatus } from "@/lib/utils/status";
 
 export default function TicketSummaryPage() {
   const params = useParams();
@@ -61,34 +62,9 @@ export default function TicketSummaryPage() {
     fetchTicket();
   }, [accessToken, t]);
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "CONFIRMED":
-        return "bg-green-100 text-green-800 border-green-200";
-      case "PENDING":
-        return "bg-yellow-100 text-yellow-800 border-yellow-200";
-      case "CANCELLED":
-        return "bg-red-100 text-red-800 border-red-200";
-      case "ATTENDED":
-        return "bg-blue-100 text-blue-800 border-blue-200";
-      default:
-        return "bg-gray-100 text-gray-800 border-gray-200";
-    }
-  };
-
   const getStatusText = (status: string) => {
-    switch (status) {
-      case "CONFIRMED":
-        return t("tickets.statusConfirmed");
-      case "PENDING":
-        return t("tickets.statusPending");
-      case "CANCELLED":
-        return t("tickets.statusCancelled");
-      case "ATTENDED":
-        return t("tickets.statusAttended");
-      default:
-        return status;
-    }
+    const key = TICKET_STATUS_KEYS[status as TicketStatus];
+    return key ? t(key) : status;
   };
 
   const handleShare = async () => {
@@ -177,7 +153,7 @@ export default function TicketSummaryPage() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-4 start-4 end-4">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold border ${getStatusColor(
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold border ${getTicketStatusColor(
                     ticket.status
                   )}`}
                 >

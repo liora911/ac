@@ -9,6 +9,7 @@ import type { FeaturedEventProps } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import DOMPurify from "dompurify";
 import { formatDateWithWeekday } from "@/lib/utils/date";
+import { getPriceDisplay } from "@/lib/utils/currency";
 
 const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) => {
   const { t, locale } = useTranslation();
@@ -28,12 +29,6 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
   // Check if registration is available (upcoming, requires registration, not closed, and seats available)
   const canRegister = isUpcoming && requiresRegistration && !event.isClosed && (!event.seatsInfo || event.seatsInfo.availableSeats > 0);
 
-  // Format price
-  const formatPrice = () => {
-    if (!event.price) return t("events.free");
-    const priceInShekels = event.price / 100;
-    return `${event.currency === "ILS" ? "₪" : "$"}${priceInShekels}`;
-  };
 
   return (
     <motion.div
@@ -74,7 +69,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           {isUpcoming && (
             <div className="absolute bottom-4 left-4 rtl:left-auto rtl:right-4">
               <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-emerald-500 text-white text-sm font-bold shadow-md">
-                {formatPrice()}
+                {getPriceDisplay(event.price, event.currency || "ILS", t("events.free"))}
               </span>
             </div>
           )}

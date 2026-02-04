@@ -7,6 +7,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategories } from "@/hooks/useArticles";
 import { useEvent, useUpdateEvent } from "@/hooks/useEvents";
+import { agorotToShekels, shekelsToAgorot } from "@/lib/utils/currency";
 import { EventForm, initialEventFormData } from "@/components/EventForm";
 import type { EventFormData } from "@/components/EventForm";
 
@@ -51,7 +52,7 @@ export default function EditEventForm({ eventId, onSuccess }: EditEventFormProps
         isFeatured: event.isFeatured || false,
         isClosed: event.isClosed || false,
         requiresRegistration: event.requiresRegistration !== false,
-        price: event.price ? String(event.price / 100) : "",
+        price: event.price ? String(agorotToShekels(event.price)) : "",
       });
       setIsInitialized(true);
     }
@@ -144,7 +145,7 @@ export default function EditEventForm({ eventId, onSuccess }: EditEventFormProps
         id: eventId,
         ...formData,
         maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
-        price: formData.price ? Math.round(parseFloat(formData.price) * 100) : null,
+        price: formData.price ? shekelsToAgorot(parseFloat(formData.price)) : null,
       };
 
       await updateEventMutation.mutateAsync(submissionData);

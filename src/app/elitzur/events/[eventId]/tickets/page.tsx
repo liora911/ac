@@ -20,6 +20,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import type { Ticket, EventData, TicketStatus } from "@/types/Tickets/tickets";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { formatDateShort } from "@/lib/utils/date";
+import { getTicketStatusColor, TICKET_STATUS_KEYS } from "@/lib/utils/status";
 
 export default function EventTicketsPage({
   params,
@@ -225,34 +226,9 @@ export default function EventTicketsPage({
     URL.revokeObjectURL(url);
   };
 
-  const getStatusColor = (status: TicketStatus) => {
-    switch (status) {
-      case "CONFIRMED":
-        return "bg-green-100 text-green-800";
-      case "PENDING":
-        return "bg-yellow-100 text-yellow-800";
-      case "CANCELLED":
-        return "bg-red-100 text-red-800";
-      case "ATTENDED":
-        return "bg-blue-100 text-blue-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
   const getStatusText = (status: TicketStatus) => {
-    switch (status) {
-      case "CONFIRMED":
-        return t("tickets.statusConfirmed");
-      case "PENDING":
-        return t("tickets.statusPending");
-      case "CANCELLED":
-        return t("tickets.statusCancelled");
-      case "ATTENDED":
-        return t("tickets.statusAttended");
-      default:
-        return status;
-    }
+    const key = TICKET_STATUS_KEYS[status as keyof typeof TICKET_STATUS_KEYS];
+    return key ? t(key) : status;
   };
 
   if (!isAuthorized) {
@@ -460,7 +436,7 @@ export default function EventTicketsPage({
                     </td>
                     <td className="px-4 py-3">
                       <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTicketStatusColor(
                           ticket.status
                         )}`}
                       >

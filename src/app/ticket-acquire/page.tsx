@@ -22,6 +22,7 @@ import {
 import { Event } from "@/types/Events/events";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { formatDateWithWeekday } from "@/lib/utils/date";
+import { formatPriceSimple, formatTotalPrice, getPriceDisplay } from "@/lib/utils/currency";
 
 function TicketAcquireContent() {
   const searchParams = useSearchParams();
@@ -351,9 +352,7 @@ function TicketAcquireContent() {
                     <div>
                       <p className="text-sm text-gray-500">{t("tickets.price") || "Price"}</p>
                       <p className="font-medium">
-                        {event.price && event.price > 0
-                          ? `₪${(event.price / 100).toFixed(2)}`
-                          : t("tickets.free") || "Free"}
+                        {getPriceDisplay(event.price, event.currency || "ILS", t("tickets.free") || "Free")}
                       </p>
                     </div>
                   </div>
@@ -597,11 +596,11 @@ function TicketAcquireContent() {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-700 font-medium">{t("tickets.total") || "Total"}</span>
                     <span className="text-2xl font-bold text-amber-700">
-                      ₪{((event.price * formData.numberOfSeats) / 100).toFixed(2)}
+                      {formatTotalPrice(event.price, formData.numberOfSeats, event.currency || "ILS")}
                     </span>
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    {formData.numberOfSeats} × ₪{(event.price / 100).toFixed(2)}
+                    {formData.numberOfSeats} × {formatPriceSimple(event.price, event.currency || "ILS")}
                   </p>
                 </div>
               )}
@@ -653,7 +652,7 @@ function TicketAcquireContent() {
                 ) : event?.price && event.price > 0 ? (
                   <>
                     <CreditCard size={20} />
-                    {t("tickets.payAndReserve") || "Pay & Reserve"} - ₪{((event.price * formData.numberOfSeats) / 100).toFixed(2)}
+                    {t("tickets.payAndReserve") || "Pay & Reserve"} - {formatTotalPrice(event.price, formData.numberOfSeats, event.currency || "ILS")}
                   </>
                 ) : (
                   <>

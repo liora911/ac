@@ -8,22 +8,10 @@ import RichContent from "@/components/RichContent";
 import { formatDate } from "@/lib/utils/date";
 
 const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
-  const { t, locale } = useTranslation();
+  const { locale } = useTranslation();
 
   if (!article) return null;
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "PUBLISHED":
-        return "bg-green-100 text-green-800";
-      case "DRAFT":
-        return "bg-yellow-100 text-yellow-800";
-      case "ARCHIVED":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[100] p-4">

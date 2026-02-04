@@ -35,13 +35,8 @@ export const stripe = {
   },
 };
 
-// Helper to format price from agorot to ILS string
-export function formatPrice(priceInAgorot: number, currency = "ILS"): string {
-  return new Intl.NumberFormat("he-IL", {
-    style: "currency",
-    currency,
-  }).format(priceInAgorot / 100);
-}
+// Re-export formatPrice from currency utility for backward compatibility
+export { formatPrice } from "@/lib/utils/currency";
 
 // Get or create a Stripe customer for a user
 export async function getOrCreateStripeCustomer(

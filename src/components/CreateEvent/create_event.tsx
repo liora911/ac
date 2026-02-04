@@ -6,6 +6,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategories } from "@/hooks/useArticles";
 import { useCreateEvent } from "@/hooks/useEvents";
+import { shekelsToAgorot } from "@/lib/utils/currency";
 import { EventForm, initialEventFormData } from "@/components/EventForm";
 import type { EventFormData } from "@/components/EventForm";
 
@@ -95,7 +96,7 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
       const submissionData = {
         ...formData,
         maxSeats: formData.maxSeats ? parseInt(formData.maxSeats) : null,
-        price: formData.price ? Math.round(parseFloat(formData.price) * 100) : null,
+        price: formData.price ? shekelsToAgorot(parseFloat(formData.price)) : null,
       };
 
       await createEventMutation.mutateAsync(submissionData);

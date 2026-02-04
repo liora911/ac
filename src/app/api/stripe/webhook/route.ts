@@ -7,6 +7,7 @@ import {
   generatePaymentConfirmationEmail,
   getPaymentConfirmationSubject,
 } from "@/lib/email/templates/payment-confirmation";
+import { formatPriceSimple } from "@/lib/utils/currency";
 
 // Disable body parsing - we need the raw body for webhook verification
 export const runtime = "nodejs";
@@ -119,7 +120,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
 
     // Format amount paid (convert from cents to currency)
     const amountPaid = session.amount_total
-      ? `₪${(session.amount_total / 100).toFixed(2)}`
+      ? formatPriceSimple(session.amount_total)
       : "";
 
     sendEmail({

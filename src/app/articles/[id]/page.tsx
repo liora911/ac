@@ -18,6 +18,7 @@ import en from "@/locales/en.json";
 import he from "@/locales/he.json";
 import type { ArticlePageProps } from "@/types/Articles/articles";
 import { formatDate } from "@/lib/utils/date";
+import { getArticleStatusColor } from "@/lib/utils/status";
 
 // Server-side function to fetch article by ID or slug
 async function getArticle(idOrSlug: string) {
@@ -249,11 +250,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
   const locale = article.direction === "rtl" ? "he" : "en";
   const dateLocale = locale === "he" ? "he-IL" : "en-US";
 
-  const getStatusColor = (published: boolean) => {
-    return published
-      ? "bg-green-100 text-green-800"
-      : "bg-yellow-100 text-yellow-800";
-  };
 
   // Get translations from locale files
   const translations = locale === "he" ? he : en;
@@ -306,7 +302,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             {isAuthorized && (
               <>
                 <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(
+                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getArticleStatusColor(
                     article.published
                   )}`}
                 >
