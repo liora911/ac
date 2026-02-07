@@ -40,7 +40,11 @@
       "noItems": "No items yet",
       "noContent": "No content available yet",
       "exploreContent": "Explore Content",
-      "featured": "Featured"
+      "featured": "Featured",
+      "discoverMore": "Discover More",
+      "article": "Article",
+      "lecture": "Lecture",
+      "presentation": "Presentation"
     }
   },
   "presentations": {

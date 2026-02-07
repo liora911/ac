@@ -4,7 +4,7 @@ import { useHomeContent } from "@/hooks/useHomeContent";
 import { useHomePreview } from "@/hooks/useHomePreview";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
-import React, { useState, Suspense, useCallback } from "react";
+import React, { useState, useMemo, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -34,6 +34,10 @@ const CarouselSection = dynamic(() => import("./CarouselSection"), {
 });
 
 const FeaturedCarouselSection = dynamic(() => import("./FeaturedCarouselSection"), {
+  loading: () => <CarouselSkeleton />,
+});
+
+const MixedCarouselSection = dynamic(() => import("./MixedCarouselSection"), {
   loading: () => <CarouselSkeleton />,
 });
 
@@ -121,6 +125,51 @@ const Home = () => {
 
   const getDescriptionSubtitle = useCallback((item: ContentItem) => {
     return item.description || null;
+  }, []);
+
+  // Random mixed content: pick 3 random items from articles, lectures, presentations
+  const randomMixedItems = useMemo(() => {
+    if (!previewData) return [];
+
+    const pool: ContentItem[] = [
+      ...(previewData.articles || []).map((item) => ({ ...item, _contentType: "article" as const })),
+      ...(previewData.lectures || []).map((item) => ({ ...item, _contentType: "lecture" as const })),
+      ...(previewData.presentations || []).map((item) => ({ ...item, _contentType: "presentation" as const })),
+    ];
+
+    // Fisher-Yates shuffle
+    const shuffled = [...pool];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled.slice(0, 3);
+  }, [previewData]);
+
+  const getMixedImage = useCallback((item: ContentItem) => {
+    switch (item._contentType) {
+      case "article":
+        return item.articleImage || null;
+      case "lecture":
+        return item.bannerImageUrl || getYouTubeThumbnailFromUrl(item.videoUrl);
+      case "presentation":
+        return item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : null;
+      default:
+        return null;
+    }
+  }, []);
+
+  const getMixedSubtitle = useCallback((item: ContentItem) => {
+    switch (item._contentType) {
+      case "article":
+        return item.subtitle || null;
+      case "lecture":
+      case "presentation":
+        return item.description || null;
+      default:
+        return null;
+    }
   }, []);
 
   return (
@@ -429,6 +478,16 @@ const Home = () => {
                 getImageUrl={getEventImage}
                 getSubtitle={getDescriptionSubtitle}
               />
+
+              {/* Discover More - Random mixed content */}
+              {randomMixedItems.length > 0 && (
+                <MixedCarouselSection
+                  title={t("home.sections.discoverMore")}
+                  items={randomMixedItems}
+                  getImageUrl={getMixedImage}
+                  getSubtitle={getMixedSubtitle}
+                />
+              )}
             </div>
           )}
         </div>

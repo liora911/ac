@@ -41,7 +41,11 @@
       "noContent": "אין תוכן זמין עדיין",
       "exploreContent": "גלה תוכן",
       "featured": "מומלץ",
-      "featuredDescription": "מאמרים מומלצים"
+      "featuredDescription": "מאמרים מומלצים",
+      "discoverMore": "גלה עוד",
+      "article": "מאמר",
+      "lecture": "הרצאה",
+      "presentation": "מצגת"
     }
   },
   "presentations": {
