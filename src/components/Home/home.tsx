@@ -1,7 +1,7 @@
 "use client";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomeContent } from "@/hooks/useHomeContent";
-import { useHomePreview } from "@/hooks/useHomePreview";
+import { useHomePreview, useDiscoverCategories } from "@/hooks/useHomePreview";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
 import React, { useState, useMemo, Suspense, useCallback } from "react";
@@ -64,6 +64,7 @@ const Home = () => {
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
+  const { data: discoverCategories } = useDiscoverCategories();
   const { data: siteSettings } = useSiteSettings();
 
   // Load more items for carousel pagination
@@ -127,25 +128,31 @@ const Home = () => {
     return item.description || null;
   }, []);
 
-  // Random mixed content: pick 3 random items from articles, lectures, presentations
-  const randomMixedItems = useMemo(() => {
-    if (!previewData) return [];
+  // Per-category random items: for each category, pick 3 random items from its content
+  const categoryCarousels = useMemo(() => {
+    if (!discoverCategories) return [];
 
-    const pool: ContentItem[] = [
-      ...(previewData.articles || []).map((item) => ({ ...item, _contentType: "article" as const })),
-      ...(previewData.lectures || []).map((item) => ({ ...item, _contentType: "lecture" as const })),
-      ...(previewData.presentations || []).map((item) => ({ ...item, _contentType: "presentation" as const })),
-    ];
+    return discoverCategories.map((cat) => {
+      const pool: ContentItem[] = [
+        ...(cat.articles || []).map((item) => ({ ...item, _contentType: "article" as const })),
+        ...(cat.lectures || []).map((item) => ({ ...item, _contentType: "lecture" as const })),
+        ...(cat.presentations || []).map((item) => ({ ...item, _contentType: "presentation" as const })),
+      ];
 
-    // Fisher-Yates shuffle
-    const shuffled = [...pool];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
+      // Fisher-Yates shuffle
+      const shuffled = [...pool];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
 
-    return shuffled.slice(0, 3);
-  }, [previewData]);
+      return {
+        id: cat.id,
+        name: cat.name,
+        items: shuffled.slice(0, 3),
+      };
+    }).filter((cat) => cat.items.length > 0);
+  }, [discoverCategories]);
 
   const getMixedImage = useCallback((item: ContentItem) => {
     switch (item._contentType) {
@@ -479,15 +486,16 @@ const Home = () => {
                 getSubtitle={getDescriptionSubtitle}
               />
 
-              {/* Discover More - Random mixed content */}
-              {randomMixedItems.length > 0 && (
+              {/* Discover by Category - Random mixed content per category */}
+              {categoryCarousels.length > 0 && categoryCarousels.map((cat) => (
                 <MixedCarouselSection
-                  title={t("home.sections.discoverMore")}
-                  items={randomMixedItems}
+                  key={cat.id}
+                  title={cat.name}
+                  items={cat.items}
                   getImageUrl={getMixedImage}
                   getSubtitle={getMixedSubtitle}
                 />
-              )}
+              ))}
             </div>
           )}
         </div>

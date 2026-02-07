@@ -163,7 +163,7 @@ export default function Header() {
               title={t("settings.language")}
             >
               <MdLanguage size={18} />
-              <span>{locale === "he" ? "עב" : "EN"}</span>
+              <span>{locale === "he" ? "ריתעב" : "English"}</span>
             </button>
 
             {/* Profile/Menu Button */}
@@ -183,7 +183,9 @@ export default function Header() {
                   />
                 ) : (
                   <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                    {session?.user?.name?.charAt(0)?.toUpperCase() || <MdPerson size={18} />}
+                    {session?.user?.name?.charAt(0)?.toUpperCase() || (
+                      <MdPerson size={18} />
+                    )}
                   </div>
                 )}
               </button>
@@ -297,7 +299,11 @@ export default function Header() {
               ref={mobileButtonRef}
               className="md:hidden text-gray-700 dark:text-gray-200 p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label={mobileMenuOpen ? t("header.closeNavigationMenu") : t("header.openNavigationMenu")}
+              aria-label={
+                mobileMenuOpen
+                  ? t("header.closeNavigationMenu")
+                  : t("header.openNavigationMenu")
+              }
               aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
@@ -361,7 +367,9 @@ export default function Header() {
             className="w-full flex items-center gap-3 py-3 px-4 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <MdLanguage size={20} />
-            <span className="font-medium">{locale === "he" ? "Switch to English" : "עבור לעברית"}</span>
+            <span className="font-medium">
+              {locale === "he" ? "Switch to English" : "עבור לעברית"}
+            </span>
           </button>
 
           {session && (
@@ -394,7 +402,9 @@ export default function Header() {
                 className="w-full flex items-center gap-3 py-3 px-4 rounded-xl text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 <Bot size={20} />
-                <span className="font-medium">{t("settings.aiAssistant.title")}</span>
+                <span className="font-medium">
+                  {t("settings.aiAssistant.title")}
+                </span>
               </button>
             </>
           )}
@@ -432,10 +442,16 @@ export default function Header() {
       </nav>
 
       {/* Settings Panel */}
-      <SettingsPanel isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsPanel
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
 
       {/* AI Assistant Panel */}
-      <AIAssistantPanel isOpen={aiAssistantOpen} onClose={() => setAIAssistantOpen(false)} />
+      <AIAssistantPanel
+        isOpen={aiAssistantOpen}
+        onClose={() => setAIAssistantOpen(false)}
+      />
     </>
   );
 }
