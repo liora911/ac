@@ -163,7 +163,7 @@ export default function Header() {
               title={t("settings.language")}
             >
               <MdLanguage size={18} />
-              <span>{locale === "he" ? "ריתעב" : "English"}</span>
+              <span>{locale === "he" ? "English" : "עברית"}</span>
             </button>
 
             {/* Profile/Menu Button */}
