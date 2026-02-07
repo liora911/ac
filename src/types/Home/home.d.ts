@@ -13,7 +13,19 @@ export type ContentItem = {
   imageUrls?: string[];
   isPremium?: boolean;
   isFeatured?: boolean;
+  _contentType?: "article" | "lecture" | "presentation";
 };
+
+/**
+ * Props for the MixedCarouselSection component.
+ * Displays a mix of content types with per-item routing.
+ */
+export interface MixedCarouselSectionProps {
+  title: string;
+  items: ContentItem[];
+  getImageUrl: (item: ContentItem) => string | null;
+  getSubtitle?: (item: ContentItem) => string | null;
+}
 
 export interface ContentCardProps {
   title: string;

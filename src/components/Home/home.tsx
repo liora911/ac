@@ -1,10 +1,10 @@
 "use client";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomeContent } from "@/hooks/useHomeContent";
-import { useHomePreview } from "@/hooks/useHomePreview";
+import { useHomePreview, useDiscoverCategories } from "@/hooks/useHomePreview";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Image from "next/image";
-import React, { useState, Suspense, useCallback } from "react";
+import React, { useState, useMemo, Suspense, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -37,6 +37,10 @@ const FeaturedCarouselSection = dynamic(() => import("./FeaturedCarouselSection"
   loading: () => <CarouselSkeleton />,
 });
 
+const MixedCarouselSection = dynamic(() => import("./MixedCarouselSection"), {
+  loading: () => <CarouselSkeleton />,
+});
+
 const FaFacebook = dynamic(
   () => import("react-icons/fa").then((mod) => ({ default: mod.FaFacebook })),
   {
@@ -60,6 +64,7 @@ const Home = () => {
   const [showBio, setShowBio] = useState(false);
   const { data: homeContent } = useHomeContent();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
+  const { data: discoverCategories } = useDiscoverCategories();
   const { data: siteSettings } = useSiteSettings();
 
   // Load more items for carousel pagination
@@ -121,6 +126,57 @@ const Home = () => {
 
   const getDescriptionSubtitle = useCallback((item: ContentItem) => {
     return item.description || null;
+  }, []);
+
+  // Per-category random items: for each category, pick 3 random items from its content
+  const categoryCarousels = useMemo(() => {
+    if (!discoverCategories) return [];
+
+    return discoverCategories.map((cat) => {
+      const pool: ContentItem[] = [
+        ...(cat.articles || []).map((item) => ({ ...item, _contentType: "article" as const })),
+        ...(cat.lectures || []).map((item) => ({ ...item, _contentType: "lecture" as const })),
+        ...(cat.presentations || []).map((item) => ({ ...item, _contentType: "presentation" as const })),
+      ];
+
+      // Fisher-Yates shuffle
+      const shuffled = [...pool];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      return {
+        id: cat.id,
+        name: cat.name,
+        items: shuffled.slice(0, 3),
+      };
+    }).filter((cat) => cat.items.length > 0);
+  }, [discoverCategories]);
+
+  const getMixedImage = useCallback((item: ContentItem) => {
+    switch (item._contentType) {
+      case "article":
+        return item.articleImage || null;
+      case "lecture":
+        return item.bannerImageUrl || getYouTubeThumbnailFromUrl(item.videoUrl);
+      case "presentation":
+        return item.imageUrls && item.imageUrls.length > 0 ? item.imageUrls[0] : null;
+      default:
+        return null;
+    }
+  }, []);
+
+  const getMixedSubtitle = useCallback((item: ContentItem) => {
+    switch (item._contentType) {
+      case "article":
+        return item.subtitle || null;
+      case "lecture":
+      case "presentation":
+        return item.description || null;
+      default:
+        return null;
+    }
   }, []);
 
   return (
@@ -429,6 +485,17 @@ const Home = () => {
                 getImageUrl={getEventImage}
                 getSubtitle={getDescriptionSubtitle}
               />
+
+              {/* Discover by Category - Random mixed content per category */}
+              {categoryCarousels.length > 0 && categoryCarousels.map((cat) => (
+                <MixedCarouselSection
+                  key={cat.id}
+                  title={cat.name}
+                  items={cat.items}
+                  getImageUrl={getMixedImage}
+                  getSubtitle={getMixedSubtitle}
+                />
+              ))}
             </div>
           )}
         </div>

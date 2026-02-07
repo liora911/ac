@@ -46,8 +46,38 @@ export type HomePreviewData = {
   presentations: PreviewPresentation[];
 };
 
+export type DiscoverCategory = {
+  id: string;
+  name: string;
+  articles: Array<{
+    id: string;
+    slug?: string;
+    title: string;
+    subtitle?: string | null;
+    articleImage?: string | null;
+    isPremium?: boolean;
+    isFeatured?: boolean;
+  }>;
+  lectures: Array<{
+    id: string;
+    title: string;
+    description?: string | null;
+    bannerImageUrl?: string | null;
+    videoUrl?: string | null;
+    isPremium?: boolean;
+  }>;
+  presentations: Array<{
+    id: string;
+    title: string;
+    description?: string | null;
+    imageUrls?: string[];
+    isPremium?: boolean;
+  }>;
+};
+
 export const homePreviewKeys = {
   all: ["homePreview"] as const,
+  categories: ["homePreview", "categories"] as const,
 };
 
 export function useHomePreview() {
@@ -67,6 +97,21 @@ export function useHomePreview() {
         featuredEvents: data.featuredEvents || [],
         presentations: data.presentations || [],
       };
+    },
+    staleTime: 1000 * 60 * 5,
+    gcTime: 1000 * 60 * 30,
+  });
+}
+
+export function useDiscoverCategories() {
+  return useQuery<DiscoverCategory[], Error>({
+    queryKey: homePreviewKeys.categories,
+    queryFn: async () => {
+      const response = await fetch("/api/home-preview/categories");
+      if (!response.ok) {
+        throw new Error("Failed to fetch category discover data");
+      }
+      return response.json();
     },
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 30,
