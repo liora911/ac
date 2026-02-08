@@ -18,7 +18,7 @@ import StatCounter from "@/components/Analytics/StatCounter";
 
 // Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
 const WelcomeModal = dynamic(
-  () => import("@/components/CategoryPreferences/WelcomeModal")
+  () => import("@/components/CategoryPreferences/WelcomeModal"),
 );
 
 import { BASE_URL } from "@/constants/app";
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
     template: "%s | Avshalom C. Elitzur",
   },
   description:
-    "Prof. Avshalom C. Elitzur - Physicist and philosopher specializing in quantum mechanics, TSVF (Two-State Vector Formalism), quantum paradoxes, and the foundations of physics. Explore articles, lectures, and presentations.",
+    "Prof. Avshalom C. Elitzur - Physicist and philosopher specializing in quantum mechanics, TSVF (Two-State Vector Formalism), quantum paradoxes, and the foundations of physics. Explore articles, videos,lectures and presentations.",
   keywords: [
     "Avshalom Elitzur",
     "quantum physics",
@@ -47,6 +47,10 @@ export const metadata: Metadata = {
     "foundations of physics",
     "philosophy of science",
     "theoretical physics",
+    "פילוסופיה",
+    "תודעה",
+    "מכניקת קוונטים",
+    "חורים שחורים",
   ],
   authors: [{ name: "Avshalom C. Elitzur" }],
   creator: "Avshalom C. Elitzur",
@@ -92,12 +96,8 @@ export const metadata: Metadata = {
     // yandex: "your-yandex-verification-code",
   },
   icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-    apple: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
+    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    apple: [{ url: "/favicon.svg", type: "image/svg+xml" }],
   },
 };
 

@@ -1,9 +1,9 @@
 {
   "nav": {
-    "topics": "Topics",
+    "topics": "Lectures",
     "presentations": "Presentations",
     "articles": "Articles",
-    "lectures": "Lectures",
+    "lectures": "Video",
     "contact": "Contact",
     "events": "Events",
     "onlineEvents": "Online Events"
@@ -32,7 +32,7 @@
     "sections": {
       "featuredArticles": "Featured Articles",
       "featuredEvents": "Featured Events",
-      "latestLectures": "Latest Lectures",
+      "latestLectures": "Latest Videos",
       "recentArticles": "Recent Articles",
       "upcomingEvents": "Upcoming Events",
       "presentations": "Presentations",
@@ -43,7 +43,7 @@
       "featured": "Featured",
       "discoverMore": "Discover More",
       "article": "Article",
-      "lecture": "Lecture",
+      "lecture": "Video",
       "presentation": "Presentation"
     }
   },
@@ -70,29 +70,29 @@
     "title": "Avshalom Elitzur"
   },
   "lecturesPage": {
-    "title": "Lectures",
-    "subtitle": "Explore lectures by category on various topics",
-    "createLectureButton": "Upload New Lecture",
+    "title": "Videos",
+    "subtitle": "Explore videos by category on various topics",
+    "createLectureButton": "Upload New Video",
     "cancelButton": "Cancel",
     "bannerLoading": "Loading banner...",
-    "bannerPlaceholder": "Lecture image/banner will appear here",
-    "errorPrefix": "Error loading lectures",
-    "noLecturesFound": "No lectures found.",
-    "lecturesOnTopic": "Lectures on:",
+    "bannerPlaceholder": "Video image/banner will appear here",
+    "errorPrefix": "Error loading videos",
+    "noLecturesFound": "No videos found.",
+    "lecturesOnTopic": "Videos on:",
     "minutes": "minutes",
     "min": "min",
-    "lectures": "lectures",
+    "lectures": "videos",
     "duration": "Duration:",
-    "noLecturesAvailable": "No lectures available at the moment.",
-    "selectCategoryPrompt": "Please select a category to view lectures, or there are no lectures available in this category.",
-    "loadingLectures": "Loading lecture data...",
-    "searchPlaceholder": "Search lectures by title, description, or category...",
+    "noLecturesAvailable": "No videos available at the moment.",
+    "selectCategoryPrompt": "Please select a category to view videos, or there are no videos available in this category.",
+    "loadingLectures": "Loading video data...",
+    "searchPlaceholder": "Search videos by title, description, or category...",
     "clearSearch": "Clear search",
     "suggestions": "Suggestions",
     "searchWaiting": "Waiting for you to finish typing...",
     "searchResults": "Search Results",
     "found": "found",
-    "noSearchResults": "No lectures found matching your search"
+    "noSearchResults": "No videos found matching your search"
   },
   "presentationsPage": {
     "title": "Presentations by category on various topics",
@@ -194,35 +194,35 @@
     "relatedArticles": "Related Articles"
   },
   "lectureDetail": {
-    "loading": "Loading lecture...",
-    "errorTitle": "Error loading lecture",
-    "errorGeneric": "The lecture could not be found.",
-    "backToLectures": "Back to Lectures",
-    "notFoundTitle": "Lecture not found",
-    "notFoundMessage": "The lecture you're looking for doesn't exist.",
-    "editButton": "Edit Lecture",
+    "loading": "Loading video...",
+    "errorTitle": "Error loading video",
+    "errorGeneric": "The video could not be found.",
+    "backToLectures": "Back to Videos",
+    "notFoundTitle": "Video not found",
+    "notFoundMessage": "The video you're looking for doesn't exist.",
+    "editButton": "Edit Video",
     "duration": "Duration in minutes",
-    "copyleftNote": "This lecture is available for free viewing, no copyright.",
+    "copyleftNote": "This video is available for free viewing, no copyright.",
     "premium": "Premium",
     "linkCopied": "Link copied to clipboard!",
     "copyError": "Failed to copy link"
   },
   "lectures": {
     "share": "Share",
-    "watch": "Watch lecture",
-    "shareTitle": "Share lecture",
-    "lectureLink": "Lecture link",
+    "watch": "Watch video",
+    "shareTitle": "Share video",
+    "lectureLink": "Video link",
     "quickShare": "Quick share",
     "copiedDiscord": "Copied! Paste in Discord",
-    "deleteSuccess": "Lecture \"{title}\" deleted successfully",
-    "deleteError": "Failed to delete lecture",
+    "deleteSuccess": "Video \"{title}\" deleted successfully",
+    "deleteError": "Failed to delete video",
     "theaterModeOn": "Theater mode",
     "theaterModeOff": "Exit theater mode",
     "keyboardClose": "to close",
     "keyboardFullscreen": "fullscreen"
   },
   "editLecturePage": {
-    "title": "Edit Lecture"
+    "title": "Edit Video"
   },
   "editPresentationPage": {
     "title": "Edit Presentation"
@@ -231,7 +231,7 @@
     "title": "Edit Article"
   },
   "createLecturePage": {
-    "title": "Create New Lecture"
+    "title": "Create New Video"
   },
   "articlesPage": {
     "title": "Articles",
@@ -343,7 +343,7 @@
   },
   "loading": "Loading...",
   "loadingArticleData": "Loading article data...",
-  "loadingLectureData": "Loading lecture data...",
+  "loadingLectureData": "Loading video data...",
   "loadingPresentationData": "Loading presentation data...",
   "articleCard": {
     "featured": "Featured",
@@ -446,13 +446,13 @@
   },
   "editLectureForm": {
     "loginRequiredTitle": "Sign in required",
-    "loginRequiredMessage": "You must sign in to edit lectures.",
+    "loginRequiredMessage": "You must sign in to edit videos.",
     "loginButton": "Sign in",
     "notAuthorizedTitle": "Not authorized",
-    "notAuthorizedMessage": "You are not authorized to edit lectures on this site.",
-    "updateSuccess": "Lecture updated successfully!",
-    "updateError": "Error updating the lecture. Please try again.",
-    "title": "Edit Lecture",
+    "notAuthorizedMessage": "You are not authorized to edit videos on this site.",
+    "updateSuccess": "Video updated successfully!",
+    "updateError": "Error updating the video. Please try again.",
+    "title": "Edit Video",
     "loggedInAs": "Logged in as:",
     "tabs": {
       "basicInfo": "Basic Info",
@@ -461,10 +461,10 @@
     },
     "requiredFieldsError": "Please fill in all required fields (Title, Category, and Duration)",
     "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
-    "titleLabel": "Lecture title *",
-    "titlePlaceholder": "Enter lecture title",
-    "descriptionLabel": "Lecture description *",
-    "descriptionPlaceholder": "Enter lecture description",
+    "titleLabel": "Video title *",
+    "titlePlaceholder": "Enter video title",
+    "descriptionLabel": "Video description *",
+    "descriptionPlaceholder": "Enter video description",
     "videoUrlLabel": "Video URL (YouTube, etc.)",
     "durationLabel": "Duration (minutes) *",
     "durationPlaceholder": "For example: 60 minutes",
@@ -472,12 +472,12 @@
     "categoryLabel": "Category *",
     "loadingCategories": "Loading categories...",
     "selectCategory": "Select a category",
-    "imageSummary": "Lecture image (optional)",
+    "imageSummary": "Video image (optional)",
     "imagePlaceholder": "PNG, JPG, GIF up to 5MB",
     "removeImageButton": "Remove image",
     "imageUrlLabel": "Or enter image URL",
-    "submitUpdating": "Updating lecture...",
-    "submit": "Update lecture",
+    "submitUpdating": "Updating video...",
+    "submit": "Update video",
     "isPremiumLabel": "Premium Content",
     "isPremiumHint": "Only accessible to Researcher plan subscribers"
   },
@@ -540,7 +540,7 @@
     "placeholder": "I'm looking for...",
     "menuItem": "Search",
     "all": "All",
-    "lectures": "Lectures",
+    "lectures": "Videos",
     "events": "Events",
     "articles": "Articles",
     "presentations": "Presentations",
@@ -596,7 +596,7 @@
     "title": "Browse All Categories",
     "subtitle": "Explore all categories and their content",
     "articles": "articles",
-    "lectures": "lectures",
+    "lectures": "videos",
     "presentations": "presentations",
     "events": "events",
     "noCategories": "No categories available"
@@ -618,7 +618,7 @@
     "subjectRequired": "Please select a subject",
     "subjects": {
       "general": "General Inquiry",
-      "article": "Question about an Article/Lecture",
+      "article": "Question about an Article/Video",
       "collaboration": "Collaboration / Research",
       "event": "Event Invitation",
       "technical": "Technical Issue",
@@ -691,11 +691,11 @@
     "loading": "Loading...",
     "loadingCategories": "Loading categories...",
     "loginRequiredTitle": "Login Required",
-    "loginRequiredMessage": "You must be logged in to create lectures",
+    "loginRequiredMessage": "You must be logged in to create videos",
     "loginButton": "Log In",
     "notAuthorizedTitle": "Unauthorized",
-    "notAuthorizedMessage": "You are not authorized to create lectures on this site",
-    "title": "Create New Lecture",
+    "notAuthorizedMessage": "You are not authorized to create videos on this site",
+    "title": "Create New Video",
     "loggedInAs": "Logged in as:",
     "tabs": {
       "basicInfo": "Basic Info",
@@ -704,24 +704,24 @@
     },
     "requiredFieldsError": "Please fill in all required fields (Title, Category, and Duration)",
     "requiredFieldsHint": "* Required fields are missing in Basic Info tab",
-    "titleLabel": "Lecture Title *",
-    "titlePlaceholder": "Enter lecture title",
-    "descriptionLabel": "Lecture Description *",
-    "descriptionPlaceholder": "Enter lecture description",
+    "titleLabel": "Video Title *",
+    "titlePlaceholder": "Enter video title",
+    "descriptionLabel": "Video Description *",
+    "descriptionPlaceholder": "Enter video description",
     "videoUrlLabel": "Video URL (YouTube, etc.)",
     "durationLabel": "Duration (minutes) *",
     "durationPlaceholder": "For example: 60 minutes",
     "dateLabel": "Date (optional)",
     "categoryLabel": "Category *",
     "selectCategory": "Select a category",
-    "imageSummary": "Lecture Image (optional)",
+    "imageSummary": "Video Image (optional)",
     "imagePlaceholder": "PNG, JPG, GIF up to 5MB",
     "removeImageButton": "Remove Image",
     "imageUrlLabel": "Or enter image URL",
-    "submitCreating": "Creating lecture...",
-    "submit": "Create Lecture",
-    "successMessage": "Lecture created successfully!",
-    "errorMessage": "Error creating lecture. Please try again.",
+    "submitCreating": "Creating video...",
+    "submit": "Create Video",
+    "successMessage": "Video created successfully!",
+    "errorMessage": "Error creating video. Please try again.",
     "confirmAndContinue": "Confirm & Continue",
     "isPremiumLabel": "Premium Content",
     "isPremiumHint": "Only accessible to Researcher plan subscribers"
@@ -886,7 +886,7 @@
   },
   "searchPage": {
     "title": "Search Results",
-    "searchPlaceholder": "Search articles, presentations, events, lectures...",
+    "searchPlaceholder": "Search articles, presentations, events, videos...",
     "searchButton": "Search",
     "searching": "Searching...",
     "loading": "Loading search...",
@@ -898,7 +898,7 @@
       "articles": "Articles",
       "presentations": "Presentations",
       "events": "Events",
-      "lectures": "Lectures"
+      "lectures": "Videos"
     },
     "noDescription": "No description available",
     "noResultsTitle": "No results found",
@@ -906,9 +906,9 @@
     "browseArticles": "Browse Articles",
     "browsePresentations": "Browse Presentations",
     "browseEvents": "Browse Events",
-    "browseLectures": "Browse Lectures",
+    "browseLectures": "Browse Videos",
     "searchOurContent": "Search our content",
-    "enterSearchTerm": "Enter a search term above to find articles, presentations, events, and lectures."
+    "enterSearchTerm": "Enter a search term above to find articles, presentations, events, and videos."
   },
   "admin": {
     "common": {
@@ -1011,24 +1011,24 @@
       "deleteError": "Error deleting event"
     },
     "lectures": {
-      "newLecture": "+ New Lecture",
-      "filters": "Lecture filters",
+      "newLecture": "+ New Video",
+      "filters": "Video filters",
       "searchPlaceholder": "Search title or description...",
-      "searchHelp": "Search lectures by title or description",
-      "foundLectures": "Found {count} lectures",
-      "noLecturesFound": "No lectures found. Try adjusting filters or create a new one.",
+      "searchHelp": "Search videos by title or description",
+      "foundLectures": "Found {count} videos",
+      "noLecturesFound": "No videos found. Try adjusting filters or create a new one.",
       "duration": "Duration",
       "date": "Date",
-      "deleteTitle": "Delete Lecture",
+      "deleteTitle": "Delete Video",
       "deleteConfirm": "Are you sure?",
-      "deleteWarning": "This action will permanently delete the lecture",
+      "deleteWarning": "This action will permanently delete the video",
       "deleteIrreversible": "This action cannot be undone.",
       "deleting": "Deleting...",
-      "deleteButton": "Delete Lecture",
-      "categoryUpdated": "Lecture \"{title}\" category updated successfully",
-      "categoryError": "Error updating lecture category",
-      "deleteSuccess": "Lecture \"{title}\" deleted successfully",
-      "deleteError": "Error deleting lecture"
+      "deleteButton": "Delete Video",
+      "categoryUpdated": "Video \"{title}\" category updated successfully",
+      "categoryError": "Error updating video category",
+      "deleteSuccess": "Video \"{title}\" deleted successfully",
+      "deleteError": "Error deleting video"
     },
     "presentations": {
       "newPresentation": "+ New Presentation",
@@ -1249,7 +1249,7 @@
       "categories": "Categories",
       "articles": "Articles",
       "events": "Events",
-      "lectures": "Lectures",
+      "lectures": "Videos",
       "presentations": "Presentations",
       "comments": "Comments",
       "messages": "Messages",
@@ -1262,7 +1262,7 @@
     "quickActions": {
       "title": "Quick Actions",
       "addArticle": "Add Article",
-      "addLecture": "Add Lecture",
+      "addLecture": "Add Video",
       "addPresentation": "Add Presentation",
       "addEvent": "Add Event"
     },
@@ -1304,7 +1304,7 @@
     "loginButton": "Sign In",
     "subscribeButton": "Subscribe Now",
     "upgradeButton": "Upgrade to Researcher",
-    "benefits": "Get unlimited access to all premium articles, lectures, and presentations.",
+    "benefits": "Get unlimited access to all premium articles, videos, and presentations.",
     "subscriberOnlyLabel": "Premium content (subscribers only)",
     "subscribeAriaLabel": "Premium content - Subscribe",
     "clickToSubscribe": "Premium content - Click to subscribe"
@@ -1346,11 +1346,11 @@
       "subtitle": "Access content directly",
       "favorites": "My Favorites",
       "articles": "Articles",
-      "lectures": "Lectures",
+      "lectures": "Videos",
       "events": "Events"
     },
     "favorites": {
-      "subtitle": "Saved articles, lectures & more",
+      "subtitle": "Saved articles, videos & more",
       "view": "View Favorites",
       "total": "Total favorites"
     },
@@ -1400,7 +1400,7 @@
     "benefitTickets": "Event Tickets",
     "benefitTicketsDesc": "Purchase and manage your event tickets in one place",
     "benefitFavorites": "Save Favorites",
-    "benefitFavoritesDesc": "Save articles, lectures, and presentations to revisit later",
+    "benefitFavoritesDesc": "Save articles, videos, and presentations to revisit later",
     "benefitPremium": "Premium Content",
     "benefitPremiumDesc": "Subscribe to access exclusive content and support Avshalom's research",
     "register": "Register",
@@ -1473,7 +1473,7 @@
     "monthsAgo": "{count} months ago",
     "typeArticle": "Article",
     "typeEvent": "Event",
-    "typeLecture": "Lecture",
+    "typeLecture": "Video",
     "typePresentation": "Presentation",
     "filters": "Filters",
     "startDate": "Start Date",
@@ -1491,7 +1491,7 @@
     "removeFromFavorites": "Remove from favorites",
     "tabs": {
       "articles": "Articles",
-      "lectures": "Lectures",
+      "lectures": "Videos",
       "presentations": "Presentations"
     },
     "empty": {
@@ -1501,9 +1501,9 @@
         "cta": "Browse Articles"
       },
       "lectures": {
-        "title": "No favorite lectures yet",
-        "description": "Browse lectures and click the heart icon to save them here",
-        "cta": "Browse Lectures"
+        "title": "No favorite videos yet",
+        "description": "Browse videos and click the heart icon to save them here",
+        "cta": "Browse Videos"
       },
       "presentations": {
         "title": "No favorite presentations yet",
@@ -1577,17 +1577,17 @@
   "premiumTeaser": {
     "title": "Premium Content",
     "articleDescription": "Read the full article with a Researcher subscription",
-    "lectureDescription": "Watch the full lecture with a Researcher subscription",
+    "lectureDescription": "Watch the full video with a Researcher subscription",
     "presentationDescription": "Download the full presentation with a Researcher subscription",
     "benefit1": "Exclusive articles",
-    "benefit2": "Full lectures",
+    "benefit2": "Full videos",
     "benefit3": "Support research",
     "subscribeButton": "Subscribe Now",
     "priceHint": "Starting at $15/month"
   },
   "pricing": {
     "title": "Researcher Subscription",
-    "subtitle": "Get access to all premium content - exclusive articles, lectures and presentations",
+    "subtitle": "Get access to all premium content - exclusive articles, videos and presentations",
     "supportBadge": "Support Research",
     "backToHome": "Back to Home",
     "processing": "Processing...",
@@ -1615,7 +1615,7 @@
     },
     "features": {
       "premiumArticles": "Access to all premium articles",
-      "exclusiveLectures": "Access to exclusive lectures",
+      "exclusiveLectures": "Access to exclusive videos",
       "presentations": "Presentations and additional materials",
       "cancelAnytime": "Cancel anytime",
       "supportResearch": "Support Prof. Elitzur's research"
@@ -1627,8 +1627,8 @@
         "description": "Access to exclusive research articles"
       },
       "lectures": {
-        "title": "Exclusive Lectures",
-        "description": "Watch lectures not available to the public"
+        "title": "Exclusive Videos",
+        "description": "Watch videos not available to the public"
       },
       "presentations": {
         "title": "Presentations & Documents",

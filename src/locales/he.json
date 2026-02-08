@@ -1,9 +1,9 @@
 {
   "nav": {
-    "topics": "נושאים",
+    "topics": "הרצאות",
     "presentations": "מצגות",
     "articles": "מאמרים",
-    "lectures": "הרצאות",
+    "lectures": "וידאו",
     "contact": "צור קשר",
     "events": "אירועים",
     "onlineEvents": "אירועים מקוונים"
@@ -18,7 +18,7 @@
     ],
     "intro": [
       "אני אבשלום אליצור, פיזיקאי, פילוסוף ופסיכואנליטיקאי. אני עוסק בעיקר במכניקת קוונטים, תורת היחסות, תרמודינמיקה, ביולוגיה אבולוציונית, פסיכואנליזה ופילוסופיית התודעה.",
-      "באתר זה תמצאו מאמרים, מצגות והרצאות שלי בנושאים אלה. כל התוכן זמין להורדה חינם וללא זכויות יוצרים."
+      "באתר זה תמצאו מאמרים, מצגות וסרטונים שלי בנושאים אלה. כל התוכן זמין להורדה חינם וללא זכויות יוצרים."
     ],
     "bio": {
       "buttonRead": "קרא עוד...",
@@ -32,7 +32,7 @@
     "sections": {
       "featuredArticles": "מאמרים מומלצים",
       "featuredEvents": "אירועים מומלצים",
-      "latestLectures": "הרצאות אחרונות",
+      "latestLectures": "סרטונים אחרונים",
       "recentArticles": "מאמרים אחרונים",
       "upcomingEvents": "אירועים קרובים",
       "presentations": "מצגות",
@@ -44,7 +44,7 @@
       "featuredDescription": "מאמרים מומלצים",
       "discoverMore": "גלה עוד",
       "article": "מאמר",
-      "lecture": "הרצאה",
+      "lecture": "וידאו",
       "presentation": "מצגת"
     }
   },
@@ -71,29 +71,29 @@
     "title": "אבשלום אליצור"
   },
   "lecturesPage": {
-    "title": "הרצאות",
-    "subtitle": "חקור הרצאות בנושאים שונים לפי קטגוריות",
-    "createLectureButton": "העלאת הרצאה חדשה",
+    "title": "סרטונים",
+    "subtitle": "חקור סרטונים בנושאים שונים לפי קטגוריות",
+    "createLectureButton": "העלאת סרטון חדש",
     "cancelButton": "ביטול",
     "bannerLoading": "טוען באנר...",
-    "bannerPlaceholder": "תמונה/באנר של ההרצאות יופיע כאן",
-    "errorPrefix": "שגיאה בטעינת הרצאות",
-    "noLecturesFound": "לא נמצאו הרצאות.",
-    "lecturesOnTopic": "הרצאות בנושא:",
+    "bannerPlaceholder": "תמונה/באנר של הסרטונים יופיע כאן",
+    "errorPrefix": "שגיאה בטעינת סרטונים",
+    "noLecturesFound": "לא נמצאו סרטונים.",
+    "lecturesOnTopic": "סרטונים בנושא:",
     "minutes": "דקות",
     "min": "דק׳",
-    "lectures": "הרצאות",
+    "lectures": "סרטונים",
     "duration": "משך:",
-    "noLecturesAvailable": "אין הרצאות זמינות כרגע.",
-    "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג הרצאות, או שאין הרצאות זמינות בקטגוריה זו.",
-    "loadingLectures": "טוען נתוני הרצאות...",
-    "searchPlaceholder": "חפש הרצאות לפי כותרת, תיאור או קטגוריה...",
+    "noLecturesAvailable": "אין סרטונים זמינים כרגע.",
+    "selectCategoryPrompt": "אנא בחר קטגוריה כדי להציג סרטונים, או שאין סרטונים זמינים בקטגוריה זו.",
+    "loadingLectures": "טוען נתוני סרטונים...",
+    "searchPlaceholder": "חפש סרטונים לפי כותרת, תיאור או קטגוריה...",
     "clearSearch": "נקה חיפוש",
     "suggestions": "הצעות",
     "searchWaiting": "ממתין שתסיים להקליד...",
     "searchResults": "תוצאות חיפוש",
     "found": "נמצאו",
-    "noSearchResults": "לא נמצאו הרצאות התואמות לחיפוש"
+    "noSearchResults": "לא נמצאו סרטונים התואמים לחיפוש"
   },
   "presentationsPage": {
     "title": "מצגות בנושאים שונים לפי קטגוריות",
@@ -181,7 +181,7 @@
     "closedIndicator": "הרשמה סגורה"
   },
   "editLecturePage": {
-    "title": "עריכת הרצאה"
+    "title": "עריכת סרטון"
   },
   "editPresentationPage": {
     "title": "עריכת מצגת"
@@ -190,7 +190,7 @@
     "title": "עריכת מאמר"
   },
   "createLecturePage": {
-    "title": "יצירת הרצאה חדשה"
+    "title": "יצירת סרטון חדש"
   },
   "articleDetail": {
     "loading": "טוען מאמר...",
@@ -208,28 +208,28 @@
     "relatedArticles": "מאמרים קשורים"
   },
   "lectureDetail": {
-    "loading": "טוען הרצאה...",
-    "errorTitle": "שגיאה בטעינת ההרצאה",
-    "errorGeneric": "ההרצאה לא נמצאה.",
-    "backToLectures": "חזרה להרצאות",
-    "notFoundTitle": "הרצאה לא נמצאה",
-    "notFoundMessage": "ההרצאה שאתה מחפש אינה קיימת.",
-    "editButton": "ערוך הרצאה",
+    "loading": "טוען סרטון...",
+    "errorTitle": "שגיאה בטעינת הסרטון",
+    "errorGeneric": "הסרטון לא נמצא.",
+    "backToLectures": "חזרה לסרטונים",
+    "notFoundTitle": "סרטון לא נמצא",
+    "notFoundMessage": "הסרטון שאתה מחפש אינו קיים.",
+    "editButton": "ערוך סרטון",
     "duration": "משך בדקות",
-    "copyleftNote": "הרצאה זו ניתנת לצפייה בחינם, אין זכויות יוצרים.",
+    "copyleftNote": "סרטון זה ניתן לצפייה בחינם, אין זכויות יוצרים.",
     "premium": "פרימיום",
     "linkCopied": "הקישור הועתק!",
     "copyError": "שגיאה בהעתקת הקישור"
   },
   "lectures": {
     "share": "שתף",
-    "watch": "צפה בהרצאה",
-    "shareTitle": "שיתוף הרצאה",
-    "lectureLink": "קישור להרצאה",
+    "watch": "צפה בסרטון",
+    "shareTitle": "שיתוף סרטון",
+    "lectureLink": "קישור לסרטון",
     "quickShare": "שיתוף מהיר",
     "copiedDiscord": "הועתק! הדבק בדיסקורד",
-    "deleteSuccess": "ההרצאה \"{title}\" נמחקה בהצלחה",
-    "deleteError": "נכשל במחיקת ההרצאה",
+    "deleteSuccess": "הסרטון \"{title}\" נמחק בהצלחה",
+    "deleteError": "נכשל במחיקת הסרטון",
     "theaterModeOn": "מצב תיאטרון",
     "theaterModeOff": "יציאה ממצב תיאטרון",
     "keyboardClose": "לסגירה",
@@ -241,7 +241,7 @@
     "loginButton": "התחבר",
     "subscribeButton": "הרשם עכשיו",
     "upgradeButton": "שדרג לתוכנית חוקר",
-    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום.",
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, הסרטונים והמצגות הפרימיום.",
     "subscriberOnlyLabel": "תוכן פרימיום (למנויים בלבד)",
     "subscribeAriaLabel": "תוכן פרימיום - הרשם למנוי",
     "clickToSubscribe": "תוכן פרימיום - לחץ להרשמה"
@@ -356,7 +356,7 @@
   },
   "loading": "טוען...",
   "loadingArticleData": "טוען נתוני מאמר...",
-  "loadingLectureData": "טוען נתוני הרצאה...",
+  "loadingLectureData": "טוען נתוני סרטון...",
   "loadingPresentationData": "טוען נתוני מצגת...",
   "articleCard": {
     "featured": "מומלץ",
@@ -459,23 +459,23 @@
   },
   "editLectureForm": {
     "loginRequiredTitle": "נדרשת התחברות",
-    "loginRequiredMessage": "עליך להתחבר כדי לערוך הרצאות",
+    "loginRequiredMessage": "עליך להתחבר כדי לערוך סרטונים",
     "loginButton": "התחבר",
     "notAuthorizedTitle": "אין הרשאה",
-    "notAuthorizedMessage": "אין לך הרשאה לערוך הרצאות באתר זה",
-    "updateSuccess": "ההרצאה עודכנה בהצלחה!",
-    "updateError": "שגיאה בעדכון ההרצאה. נסה שוב.",
-    "title": "עריכת הרצאה",
+    "notAuthorizedMessage": "אין לך הרשאה לערוך סרטונים באתר זה",
+    "updateSuccess": "הסרטון עודכן בהצלחה!",
+    "updateError": "שגיאה בעדכון הסרטון. נסה שוב.",
+    "title": "עריכת סרטון",
     "loggedInAs": "מחובר כ:",
     "tabs": {
       "basicInfo": "מידע בסיסי",
       "content": "תוכן",
       "media": "מדיה"
     },
-    "titleLabel": "כותרת ההרצאה *",
-    "titlePlaceholder": "הכנס כותרת להרצאה",
-    "descriptionLabel": "תיאור ההרצאה *",
-    "descriptionPlaceholder": "הכנס תיאור להרצאה",
+    "titleLabel": "כותרת הסרטון *",
+    "titlePlaceholder": "הכנס כותרת לסרטון",
+    "descriptionLabel": "תיאור הסרטון *",
+    "descriptionPlaceholder": "הכנס תיאור לסרטון",
     "videoUrlLabel": "קישור לוידאו (YouTube וכו')",
     "durationLabel": "משך זמן (דקות) *",
     "durationPlaceholder": "למשל: 60 דקות",
@@ -483,14 +483,14 @@
     "categoryLabel": "קטגוריה *",
     "loadingCategories": "טוען קטגוריות...",
     "selectCategory": "בחר קטגוריה",
-    "imageSummary": "תמונת ההרצאה (אופציונלי)",
+    "imageSummary": "תמונת הסרטון (אופציונלי)",
     "imagePlaceholder": "PNG, JPG, GIF עד 5MB",
     "removeImageButton": "הסר תמונה",
     "imageUrlLabel": "או הכנס קישור לתמונה",
     "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, קטגוריה ומשך זמן)",
     "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
-    "submitUpdating": "מעדכן הרצאה...",
-    "submit": "עדכן הרצאה",
+    "submitUpdating": "מעדכן סרטון...",
+    "submit": "עדכן סרטון",
     "isPremiumLabel": "תוכן פרימיום",
     "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
   },
@@ -553,7 +553,7 @@
     "placeholder": "אני מחפש...",
     "menuItem": "חפש",
     "all": "הכל",
-    "lectures": "הרצאות",
+    "lectures": "סרטונים",
     "events": "אירועים",
     "articles": "מאמרים",
     "presentations": "מצגות",
@@ -611,7 +611,7 @@
     "title": "עיון בכל הקטגוריות",
     "subtitle": "גלה את כל הקטגוריות והתוכן שלהן",
     "articles": "מאמרים",
-    "lectures": "הרצאות",
+    "lectures": "סרטונים",
     "presentations": "מצגות",
     "events": "אירועים",
     "noCategories": "אין קטגוריות זמינות"
@@ -633,7 +633,7 @@
     "subjectRequired": "יש לבחור נושא",
     "subjects": {
       "general": "פנייה כללית",
-      "article": "שאלה על מאמר/הרצאה",
+      "article": "שאלה על מאמר/סרטון",
       "collaboration": "שיתוף פעולה / מחקר",
       "event": "הזמנה לאירוע",
       "technical": "בעיה טכנית",
@@ -706,37 +706,37 @@
     "loading": "טוען...",
     "loadingCategories": "טוען קטגוריות...",
     "loginRequiredTitle": "נדרשת התחברות",
-    "loginRequiredMessage": "עליך להתחבר כדי ליצור הרצאות",
+    "loginRequiredMessage": "עליך להתחבר כדי ליצור סרטונים",
     "loginButton": "התחבר",
     "notAuthorizedTitle": "אין הרשאה",
-    "notAuthorizedMessage": "אין לך הרשאה ליצור הרצאות באתר זה",
-    "title": "יצירת הרצאה חדשה",
+    "notAuthorizedMessage": "אין לך הרשאה ליצור סרטונים באתר זה",
+    "title": "יצירת סרטון חדש",
     "loggedInAs": "מחובר כ:",
     "tabs": {
       "basicInfo": "מידע בסיסי",
       "content": "תוכן",
       "media": "מדיה"
     },
-    "titleLabel": "כותרת ההרצאה *",
-    "titlePlaceholder": "הכנס כותרת להרצאה",
-    "descriptionLabel": "תיאור ההרצאה *",
-    "descriptionPlaceholder": "הכנס תיאור להרצאה",
+    "titleLabel": "כותרת הסרטון *",
+    "titlePlaceholder": "הכנס כותרת לסרטון",
+    "descriptionLabel": "תיאור הסרטון *",
+    "descriptionPlaceholder": "הכנס תיאור לסרטון",
     "videoUrlLabel": "קישור לוידאו (YouTube וכו')",
     "durationLabel": "משך זמן (דקות) *",
     "durationPlaceholder": "למשל: 60 דקות",
     "dateLabel": "תאריך (אופציונלי)",
     "categoryLabel": "קטגוריה *",
     "selectCategory": "בחר קטגוריה",
-    "imageSummary": "תמונת ההרצאה (אופציונלי)",
+    "imageSummary": "תמונת הסרטון (אופציונלי)",
     "imagePlaceholder": "PNG, JPG, GIF עד 5MB",
     "removeImageButton": "הסר תמונה",
     "imageUrlLabel": "או הכנס קישור לתמונה",
     "requiredFieldsError": "אנא מלא את כל השדות הנדרשים (כותרת, קטגוריה ומשך זמן)",
     "requiredFieldsHint": "* חסרים שדות חובה בלשונית מידע בסיסי",
-    "submitCreating": "יוצר הרצאה...",
-    "submit": "צור הרצאה",
-    "successMessage": "ההרצאה נוצרה בהצלחה!",
-    "errorMessage": "שגיאה ביצירת ההרצאה. נסה שוב.",
+    "submitCreating": "יוצר סרטון...",
+    "submit": "צור סרטון",
+    "successMessage": "הסרטון נוצר בהצלחה!",
+    "errorMessage": "שגיאה ביצירת הסרטון. נסה שוב.",
     "confirmAndContinue": "אישור והמשך",
     "isPremiumLabel": "תוכן פרימיום",
     "isPremiumHint": "נגיש רק למנויי תוכנית חוקר"
@@ -921,7 +921,7 @@
   },
   "searchPage": {
     "title": "תוצאות חיפוש",
-    "searchPlaceholder": "חפש מאמרים, מצגות, אירועים, הרצאות...",
+    "searchPlaceholder": "חפש מאמרים, מצגות, אירועים, סרטונים...",
     "searchButton": "חפש",
     "searching": "מחפש...",
     "loading": "טוען חיפוש...",
@@ -933,7 +933,7 @@
       "articles": "מאמרים",
       "presentations": "מצגות",
       "events": "אירועים",
-      "lectures": "הרצאות"
+      "lectures": "סרטונים"
     },
     "noDescription": "אין תיאור זמין",
     "noResultsTitle": "לא נמצאו תוצאות",
@@ -941,9 +941,9 @@
     "browseArticles": "עיין במאמרים",
     "browsePresentations": "עיין במצגות",
     "browseEvents": "עיין באירועים",
-    "browseLectures": "עיין בהרצאות",
+    "browseLectures": "עיין בסרטונים",
     "searchOurContent": "חפש בתוכן שלנו",
-    "enterSearchTerm": "הכנס מונח חיפוש למעלה כדי למצוא מאמרים, מצגות, אירועים והרצאות."
+    "enterSearchTerm": "הכנס מונח חיפוש למעלה כדי למצוא מאמרים, מצגות, אירועים וסרטונים."
   },
   "admin": {
     "common": {
@@ -1078,24 +1078,24 @@
       "checkInError": "שגיאה בביצוע צ'ק-אין"
     },
     "lectures": {
-      "newLecture": "+ הרצאה חדשה",
-      "filters": "סינון הרצאות",
+      "newLecture": "+ סרטון חדש",
+      "filters": "סינון סרטונים",
       "searchPlaceholder": "חפש בכותרת או בתיאור...",
-      "searchHelp": "חפש הרצאות לפי כותרת או תיאור",
-      "foundLectures": "נמצאו {count} הרצאות",
-      "noLecturesFound": "לא נמצאו הרצאות. נסה לשנות את הסינון או צור הרצאה חדשה.",
+      "searchHelp": "חפש סרטונים לפי כותרת או תיאור",
+      "foundLectures": "נמצאו {count} סרטונים",
+      "noLecturesFound": "לא נמצאו סרטונים. נסה לשנות את הסינון או צור סרטון חדש.",
       "duration": "משך",
       "date": "תאריך",
-      "deleteTitle": "מחיקת הרצאה",
+      "deleteTitle": "מחיקת סרטון",
       "deleteConfirm": "האם אתה בטוח?",
-      "deleteWarning": "פעולה זו תמחק לצמיתות את ההרצאה",
+      "deleteWarning": "פעולה זו תמחק לצמיתות את הסרטון",
       "deleteIrreversible": "לא ניתן לבטל פעולה זו.",
       "deleting": "מוחק...",
-      "deleteButton": "מחק הרצאה",
-      "categoryUpdated": "קטגוריית ההרצאה \"{title}\" עודכנה בהצלחה",
-      "categoryError": "שגיאה בעדכון קטגוריית ההרצאה",
-      "deleteSuccess": "ההרצאה \"{title}\" נמחקה בהצלחה",
-      "deleteError": "שגיאה במחיקת ההרצאה"
+      "deleteButton": "מחק סרטון",
+      "categoryUpdated": "קטגוריית הסרטון \"{title}\" עודכנה בהצלחה",
+      "categoryError": "שגיאה בעדכון קטגוריית הסרטון",
+      "deleteSuccess": "הסרטון \"{title}\" נמחק בהצלחה",
+      "deleteError": "שגיאה במחיקת הסרטון"
     },
     "presentations": {
       "newPresentation": "+ מצגת חדשה",
@@ -1316,7 +1316,7 @@
       "categories": "קטגוריות",
       "articles": "מאמרים",
       "events": "אירועים",
-      "lectures": "הרצאות",
+      "lectures": "סרטונים",
       "presentations": "מצגות",
       "comments": "תגובות",
       "messages": "הודעות",
@@ -1329,7 +1329,7 @@
     "quickActions": {
       "title": "פעולות מהירות",
       "addArticle": "הוסף מאמר",
-      "addLecture": "הוסף הרצאה",
+      "addLecture": "הוסף סרטון",
       "addPresentation": "הוסף מצגת",
       "addEvent": "הוסף אירוע"
     },
@@ -1392,11 +1392,11 @@
       "subtitle": "נווט לתוכן",
       "favorites": "המועדפים שלי",
       "articles": "מאמרים",
-      "lectures": "הרצאות",
+      "lectures": "סרטונים",
       "events": "אירועים"
     },
     "favorites": {
-      "subtitle": "מאמרים, הרצאות ועוד ששמרת",
+      "subtitle": "מאמרים, סרטונים ועוד ששמרת",
       "view": "צפו במועדפים",
       "total": "סה\"כ מועדפים"
     },
@@ -1446,7 +1446,7 @@
     "benefitTickets": "כרטיסים לאירועים",
     "benefitTicketsDesc": "רכוש ונהל את כרטיסי האירועים שלך במקום אחד",
     "benefitFavorites": "שמור מועדפים",
-    "benefitFavoritesDesc": "שמור מאמרים, הרצאות ומצגות לצפייה מאוחר יותר",
+    "benefitFavoritesDesc": "שמור מאמרים, סרטונים ומצגות לצפייה מאוחר יותר",
     "benefitPremium": "תוכן פרימיום",
     "benefitPremiumDesc": "הירשם למנוי לגישה לתוכן בלעדי ולתמיכה במחקר של אבשלום",
     "register": "הרשמה",
@@ -1490,7 +1490,7 @@
     "removeFromFavorites": "הסר ממועדפים",
     "tabs": {
       "articles": "מאמרים",
-      "lectures": "הרצאות",
+      "lectures": "סרטונים",
       "presentations": "מצגות"
     },
     "empty": {
@@ -1500,9 +1500,9 @@
         "cta": "עיין במאמרים"
       },
       "lectures": {
-        "title": "אין הרצאות מועדפות עדיין",
-        "description": "עיין בהרצאות ולחץ על סמל הלב כדי לשמור אותן כאן",
-        "cta": "עיין בהרצאות"
+        "title": "אין סרטונים מועדפים עדיין",
+        "description": "עיין בסרטונים ולחץ על סמל הלב כדי לשמור אותם כאן",
+        "cta": "עיין בסרטונים"
       },
       "presentations": {
         "title": "אין מצגות מועדפות עדיין",
@@ -1610,7 +1610,7 @@
     "monthsAgo": "לפני {count} חודשים",
     "typeArticle": "מאמר",
     "typeEvent": "אירוע",
-    "typeLecture": "הרצאה",
+    "typeLecture": "סרטון",
     "typePresentation": "מצגת",
     "filters": "סינון",
     "startDate": "תאריך התחלה",
@@ -1633,10 +1633,10 @@
   "premiumTeaser": {
     "title": "תוכן פרימיום",
     "articleDescription": "קרא את המאמר המלא עם מנוי חוקר",
-    "lectureDescription": "צפה בהרצאה המלאה עם מנוי חוקר",
+    "lectureDescription": "צפה בסרטון המלא עם מנוי חוקר",
     "presentationDescription": "הורד את המצגת המלאה עם מנוי חוקר",
     "benefit1": "מאמרים בלעדיים",
-    "benefit2": "הרצאות מלאות",
+    "benefit2": "סרטונים מלאים",
     "benefit3": "תומך במחקר",
     "subscribeButton": "הירשם עכשיו",
     "priceHint": "החל מ-₪49/חודש"
@@ -1652,14 +1652,14 @@
     "loginButton": "התחבר",
     "subscribeButton": "הירשם עכשיו",
     "upgradeButton": "שדרג לתוכנית חוקר",
-    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, ההרצאות והמצגות הפרימיום.",
+    "benefits": "קבל גישה בלתי מוגבלת לכל המאמרים, הסרטונים והמצגות הפרימיום.",
     "subscriberOnlyLabel": "תוכן פרימיום (למנויים בלבד)",
     "subscribeAriaLabel": "תוכן פרימיום - הרשם למנוי",
     "clickToSubscribe": "תוכן פרימיום - לחץ להרשמה"
   },
   "pricing": {
     "title": "מנוי חוקר",
-    "subtitle": "קבל גישה לכל התכנים הפרימיום - מאמרים, הרצאות ומצגות בלעדיות",
+    "subtitle": "קבל גישה לכל התכנים הפרימיום - מאמרים, סרטונים ומצגות בלעדיות",
     "supportBadge": "תמוך במחקר",
     "backToHome": "חזור לדף הבית",
     "processing": "מעבד...",
@@ -1687,7 +1687,7 @@
     },
     "features": {
       "premiumArticles": "גישה לכל המאמרים הפרימיום",
-      "exclusiveLectures": "גישה להרצאות בלעדיות",
+      "exclusiveLectures": "גישה לסרטונים בלעדיים",
       "presentations": "מצגות וחומרים נוספים",
       "cancelAnytime": "ביטול בכל עת",
       "supportResearch": "תומך במחקר של פרופ' אליצור"
@@ -1699,7 +1699,7 @@
         "description": "גישה למאמרים מחקריים בלעדיים"
       },
       "lectures": {
-        "title": "הרצאות בלעדיות",
+        "title": "סרטונים בלעדיים",
         "description": "צפייה בתוכן יחודי ומעמיק"
       },
       "presentations": {
