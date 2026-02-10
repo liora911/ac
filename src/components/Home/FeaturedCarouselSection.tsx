@@ -251,7 +251,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                 <Link
                   key={item.id}
                   href={itemLink}
-                  className="block group/card flex-shrink-0 w-80"
+                  className="block group/card flex-shrink-0 w-56"
                 >
                   <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30">
                     {imageUrl ? (
@@ -260,7 +260,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="320px"
+                        sizes="224px"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
@@ -302,7 +302,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-2 lg:grid-cols-3 gap-5"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
@@ -329,7 +329,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                           alt={item.title}
                           fill
                           className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                          sizes="(max-width: 1024px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                         />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />

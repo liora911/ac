@@ -233,7 +233,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                 <Link
                   key={item.id}
                   href={itemLink}
-                  className="block group/card flex-shrink-0 w-72"
+                  className="block group/card flex-shrink-0 w-56"
                 >
                   <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md">
                     {imageUrl ? (
@@ -242,7 +242,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="288px"
+                        sizes="224px"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
@@ -287,7 +287,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-2 lg:grid-cols-3 gap-4"
+              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
@@ -313,7 +313,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                           alt={item.title}
                           fill
                           className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                          sizes="(max-width: 1024px) 50vw, 33vw"
+                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
                         />
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />

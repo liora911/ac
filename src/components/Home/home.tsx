@@ -17,8 +17,8 @@ import { FETCH_BATCH_SIZE } from "@/constants/pagination";
 const CarouselSkeleton = () => (
   <div className="mb-10">
     <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-      {[...Array(3)].map((_, i) => (
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+      {[...Array(6)].map((_, i) => (
         <div
           key={i}
           className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
@@ -395,8 +395,8 @@ const Home = () => {
               {[...Array(4)].map((_, i) => (
                 <div key={i}>
                   <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-4" />
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {[...Array(3)].map((_, j) => (
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                    {[...Array(6)].map((_, j) => (
                       <div
                         key={j}
                         className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"

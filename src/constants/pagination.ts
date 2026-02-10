@@ -3,7 +3,7 @@
  */
 
 /** Default number of items to display per page in carousels and lists */
-export const ITEMS_PER_PAGE = 3;
+export const ITEMS_PER_PAGE = 6;
 
 /** Number of items to fetch in each batch for infinite scroll/loading */
 export const BATCH_SIZE = 9;
