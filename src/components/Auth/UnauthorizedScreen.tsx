@@ -12,20 +12,26 @@ function generateIncidentId() {
 }
 
 // Get real-ish browser/system info to display (all client-side, public info)
-function getSystemInfo() {
-  if (typeof window === "undefined") return {};
-  const nav = navigator;
-  return {
-    userAgent: nav.userAgent.slice(0, 80) + "...",
-    platform: nav.platform || "Unknown",
-    language: nav.language || "Unknown",
-    screen: `${screen.width}x${screen.height}`,
-    colorDepth: `${screen.colorDepth}-bit`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    cores: nav.hardwareConcurrency ? `${nav.hardwareConcurrency} cores` : "Unknown",
-    online: nav.onLine ? "Connected" : "Offline",
-    cookiesEnabled: nav.cookieEnabled ? "Yes" : "No",
-  };
+function getSystemInfo(): Record<string, string> {
+  try {
+    if (typeof window === "undefined") return {};
+    const nav = navigator;
+    const info: Record<string, string> = {};
+    if (nav.userAgent) info.userAgent = nav.userAgent.slice(0, 80) + "...";
+    if (nav.platform) info.platform = nav.platform;
+    if (nav.language) info.language = nav.language;
+    if (typeof window.screen !== "undefined") {
+      info.screen = `${window.screen.width}x${window.screen.height}`;
+      info.colorDepth = `${window.screen.colorDepth}-bit`;
+    }
+    try { info.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { /* */ }
+    if (nav.hardwareConcurrency) info.cores = `${nav.hardwareConcurrency} cores`;
+    info.online = nav.onLine ? "Connected" : "Offline";
+    info.cookiesEnabled = nav.cookieEnabled ? "Yes" : "No";
+    return info;
+  } catch {
+    return {};
+  }
 }
 
 const SCAN_LINES = [
@@ -56,42 +62,48 @@ function MatrixRain() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    let running = true;
+
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    resize();
 
     const fontSize = 14;
-    const columns = Math.floor(canvas.width / fontSize);
+    const columns = Math.max(1, Math.floor(canvas.width / fontSize));
     const drops: number[] = Array(columns).fill(1);
 
     const draw = () => {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#0f0";
-      ctx.font = `${fontSize}px monospace`;
+      if (!running) return;
+      try {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.font = `${fontSize}px monospace`;
 
-      for (let i = 0; i < drops.length; i++) {
-        const char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
-        // Randomly make some characters red for menacing effect
-        ctx.fillStyle = Math.random() > 0.97 ? "#ff0000" : `rgba(0, ${150 + Math.random() * 105}, 0, ${0.5 + Math.random() * 0.5})`;
-        ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+        for (let i = 0; i < drops.length; i++) {
+          const char = MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)];
+          ctx.fillStyle = Math.random() > 0.97 ? "#ff0000" : `rgba(0, ${150 + Math.random() * 105}, 0, ${0.5 + Math.random() * 0.5})`;
+          ctx.fillText(char, i * fontSize, drops[i] * fontSize);
 
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+            drops[i] = 0;
+          }
+          drops[i]++;
         }
-        drops[i]++;
+      } catch {
+        // Canvas error - stop animation
+        running = false;
       }
     };
 
     const interval = setInterval(draw, 45);
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", resize);
 
     return () => {
+      running = false;
       clearInterval(interval);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
@@ -103,19 +115,19 @@ function MatrixRain() {
   );
 }
 
-function GlitchText({ text, className = "" }: { text: string; className?: string }) {
+function GlitchText({ text }: { text: string }) {
   const [glitch, setGlitch] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setGlitch(true);
       setTimeout(() => setGlitch(false), 150);
-    }, 3000 + Math.random() * 2000);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <span className={`relative inline-block ${className}`}>
+    <span className="relative inline-block">
       <span className={glitch ? "opacity-0" : ""}>{text}</span>
       {glitch && (
         <>
@@ -135,11 +147,16 @@ export default function UnauthorizedScreen() {
   const [scanLines, setScanLines] = useState<string[]>([]);
   const [scanComplete, setScanComplete] = useState(false);
   const [systemInfo, setSystemInfo] = useState<Record<string, string>>({});
-  const [incidentId] = useState(generateIncidentId);
+  const [incidentId, setIncidentId] = useState("SEC---------");
   const [showInfo, setShowInfo] = useState(false);
   const [pulseRed, setPulseRed] = useState(false);
   const [accessCount, setAccessCount] = useState(1);
   const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Generate incident ID on client only (avoid hydration mismatch)
+  useEffect(() => {
+    setIncidentId(generateIncidentId());
+  }, []);
 
   // Track repeat visits
   useEffect(() => {
@@ -149,13 +166,13 @@ export default function UnauthorizedScreen() {
       sessionStorage.setItem("_sec_attempts", String(count));
       setAccessCount(count);
     } catch {
-      // ignore
+      // sessionStorage not available
     }
   }, []);
 
   // Collect display info
   useEffect(() => {
-    setSystemInfo(getSystemInfo() as Record<string, string>);
+    setSystemInfo(getSystemInfo());
   }, []);
 
   // Typing effect for terminal
@@ -202,6 +219,8 @@ export default function UnauthorizedScreen() {
       document.removeEventListener("keydown", handleKeydown);
     };
   }, [blockEvent]);
+
+  const now = new Date();
 
   return (
     <div className="fixed inset-0 bg-black text-green-400 font-mono overflow-hidden select-none cursor-not-allowed z-50">
@@ -275,7 +294,7 @@ export default function UnauthorizedScreen() {
                 }`}
               >
                 <span className="text-green-700 mr-2">
-                  [{new Date(Date.now() - (SCAN_LINES.length - i) * 400).toLocaleTimeString()}]
+                  [{now.toLocaleTimeString()}]
                 </span>
                 {line}
               </div>
@@ -288,7 +307,10 @@ export default function UnauthorizedScreen() {
 
         {/* Detected info panel */}
         {showInfo && (
-          <div className="w-full max-w-2xl mt-4 bg-red-950/40 border border-red-900/50 rounded-lg p-4 backdrop-blur-sm animate-fade-in">
+          <div
+            className="w-full max-w-2xl mt-4 bg-red-950/40 border border-red-900/50 rounded-lg p-4 backdrop-blur-sm"
+            style={{ animation: "fadeIn 0.5s ease-in" }}
+          >
             <div className="flex items-center gap-2 text-red-400 text-sm font-bold mb-3">
               <Fingerprint className="w-4 h-4" />
               CAPTURED SESSION DATA
@@ -298,12 +320,12 @@ export default function UnauthorizedScreen() {
               {Object.entries(systemInfo).map(([key, value]) => (
                 <div key={key} className="flex gap-2">
                   <span className="text-red-500/70 uppercase min-w-[100px]">{key}:</span>
-                  <span className="text-red-300/90 break-all">{value}</span>
+                  <span className="text-red-300/90 break-all">{String(value || "Unknown")}</span>
                 </div>
               ))}
               <div className="flex gap-2">
                 <span className="text-red-500/70 uppercase min-w-[100px]">TIMESTAMP:</span>
-                <span className="text-red-300/90">{new Date().toISOString()}</span>
+                <span className="text-red-300/90">{now.toISOString()}</span>
               </div>
               <div className="flex gap-2">
                 <span className="text-red-500/70 uppercase min-w-[100px]">INCIDENT:</span>
@@ -328,6 +350,14 @@ export default function UnauthorizedScreen() {
           </p>
         )}
       </div>
+
+      {/* Inline keyframes for fade-in */}
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

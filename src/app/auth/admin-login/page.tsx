@@ -8,6 +8,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { Shield, Mail, ArrowRight } from "lucide-react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import UnauthorizedScreen from "@/components/Auth/UnauthorizedScreen";
 import type { Notice } from "@/types/Auth/auth";
 
 function AdminLoginContent() {
@@ -15,6 +16,7 @@ function AdminLoginContent() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [blocked, setBlocked] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const { showSuccess, showError } = useNotification();
@@ -48,12 +50,7 @@ function AdminLoginContent() {
 
     // Check if email is in allowed list BEFORE sending magic link
     if (!ALLOWED_EMAILS.includes(email.toLowerCase())) {
-      setNotice({
-        kind: "error",
-        text: t("auth.unauthorized"),
-      });
-      showError(t("auth.unauthorized"));
-      setIsLoading(false);
+      setBlocked(true);
       return;
     }
 
@@ -95,6 +92,10 @@ function AdminLoginContent() {
       setIsLoading(false);
     }
   };
+
+  if (blocked) {
+    return <UnauthorizedScreen />;
+  }
 
   if (status === "loading") {
     return <LoginSkeleton />;
