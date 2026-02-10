@@ -235,7 +235,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                   href={itemLink}
                   className="block group/card flex-shrink-0 w-56"
                 >
-                  <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md">
+                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md">
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
@@ -250,21 +250,21 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-                    <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <div className="absolute top-2 right-2 flex items-center gap-1.5">
                       {item.isFeatured && (
-                        <div className="bg-amber-500 p-1.5 rounded-full shadow-lg">
-                          <Star className="w-4 h-4 text-white fill-white" />
+                        <div className="bg-amber-500 p-1 rounded-full shadow-lg">
+                          <Star className="w-3 h-3 text-white fill-white" />
                         </div>
                       )}
                       {item.isPremium && <PremiumBadge size="sm" />}
                     </div>
 
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-white font-semibold text-base line-clamp-2 drop-shadow-lg">
+                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                      <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
                         {item.title}
                       </h3>
                       {subtitle && (
-                        <p className="text-white/80 text-sm mt-1 line-clamp-1 drop-shadow-md">
+                        <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
                           {subtitle}
                         </p>
                       )}
@@ -306,7 +306,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                   >
-                    <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
@@ -321,21 +321,21 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-                      <div className="absolute top-3 right-3 flex items-center gap-2">
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
                         {item.isFeatured && (
-                          <div className="bg-amber-500 p-1.5 rounded-full shadow-lg">
-                            <Star className="w-4 h-4 text-white fill-white" />
+                          <div className="bg-amber-500 p-1 rounded-full shadow-lg">
+                            <Star className="w-3 h-3 text-white fill-white" />
                           </div>
                         )}
                         {item.isPremium && <PremiumBadge size="sm" />}
                       </div>
 
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-semibold text-lg line-clamp-2 drop-shadow-lg">
+                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                        <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
                           {item.title}
                         </h3>
                         {subtitle && (
-                          <p className="text-white/80 text-sm mt-1 line-clamp-1 drop-shadow-md">
+                          <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
                             {subtitle}
                           </p>
                         )}

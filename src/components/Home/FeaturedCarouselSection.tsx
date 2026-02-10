@@ -253,7 +253,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                   href={itemLink}
                   className="block group/card flex-shrink-0 w-56"
                 >
-                  <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30">
+                  <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30">
                     {imageUrl ? (
                       <Image
                         src={imageUrl}
@@ -269,17 +269,17 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                     {item.isPremium && (
-                      <div className="absolute top-3 right-3">
+                      <div className="absolute top-2 right-2">
                         <PremiumBadge size="sm" />
                       </div>
                     )}
 
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
+                    <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                      <h3 className="text-white font-bold text-sm line-clamp-2 drop-shadow-lg">
                         {item.title}
                       </h3>
                       {subtitle && (
-                        <p className="text-white/80 text-sm mt-1.5 line-clamp-1 drop-shadow-md">
+                        <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
                           {subtitle}
                         </p>
                       )}
@@ -322,7 +322,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                     onMouseMove={handleCardMouseMove}
                     onMouseLeave={handleCardMouseLeave}
                   >
-                    <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30 hover:ring-blue-400 dark:hover:ring-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
+                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30 hover:ring-blue-400 dark:hover:ring-blue-500 hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300">
                       {imageUrl ? (
                         <Image
                           src={imageUrl}
@@ -338,17 +338,17 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
                       {item.isPremium && (
-                        <div className="absolute top-3 right-3">
+                        <div className="absolute top-2 right-2">
                           <PremiumBadge size="sm" />
                         </div>
                       )}
 
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <h3 className="text-white font-bold text-lg line-clamp-2 drop-shadow-lg">
+                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                        <h3 className="text-white font-bold text-sm line-clamp-2 drop-shadow-lg">
                           {item.title}
                         </h3>
                         {subtitle && (
-                          <p className="text-white/80 text-sm mt-1.5 line-clamp-1 drop-shadow-md">
+                          <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
                             {subtitle}
                           </p>
                         )}

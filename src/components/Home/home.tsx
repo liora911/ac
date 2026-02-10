@@ -21,7 +21,7 @@ const CarouselSkeleton = () => (
       {[...Array(6)].map((_, i) => (
         <div
           key={i}
-          className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
+          className="aspect-[2/3] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
         />
       ))}
     </div>
@@ -399,7 +399,7 @@ const Home = () => {
                     {[...Array(6)].map((_, j) => (
                       <div
                         key={j}
-                        className="aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
+                        className="aspect-[2/3] bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"
                       />
                     ))}
                   </div>

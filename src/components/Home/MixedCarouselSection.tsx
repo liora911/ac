@@ -210,7 +210,7 @@ function MixedCard({
       href={itemLink}
       className="block group/card flex-shrink-0 w-56 sm:w-auto"
     >
-      <div className="relative aspect-[16/10] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
+      <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
         {imageUrl ? (
           <Image
             src={imageUrl}
@@ -226,9 +226,9 @@ function MixedCard({
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
         {/* Content type badge - top left */}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-2 left-2">
           <span
-            className={`${getTypeBadgeColor(item._contentType)} text-white text-xs font-medium px-2.5 py-1 rounded-full shadow-lg`}
+            className={`${getTypeBadgeColor(item._contentType)} text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-lg`}
           >
             {typeLabel}
           </span>
@@ -236,17 +236,17 @@ function MixedCard({
 
         {/* Premium badge - top right */}
         {item.isPremium && (
-          <div className="absolute top-3 right-3">
+          <div className="absolute top-2 right-2">
             <PremiumBadge size="sm" />
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-4">
-          <h3 className="text-white font-semibold text-lg line-clamp-2 drop-shadow-lg">
+        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+          <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
             {item.title}
           </h3>
           {subtitle && (
-            <p className="text-white/80 text-sm mt-1 line-clamp-1 drop-shadow-md">
+            <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
               {subtitle}
             </p>
           )}
