@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { ALLOWED_EMAILS } from "@/constants/auth";
 import type { Notice } from "@/types/Auth/auth";
 
 export default function LoginForm() {
@@ -32,6 +33,17 @@ export default function LoginForm() {
 
     setIsLoading(true);
     setNotice(null);
+
+    // Check if email is in allowed list BEFORE sending magic link
+    if (!ALLOWED_EMAILS.includes(email.toLowerCase())) {
+      setNotice({
+        kind: "error",
+        text: t("auth.unauthorized"),
+      });
+      showError(t("auth.unauthorized"));
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await signIn("email", {
