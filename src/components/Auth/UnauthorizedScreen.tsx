@@ -180,8 +180,9 @@ export default function UnauthorizedScreen() {
     let i = 0;
     const timer = setInterval(() => {
       if (i < SCAN_LINES.length) {
-        setScanLines((prev) => [...prev, SCAN_LINES[i]]);
+        const line = SCAN_LINES[i];
         i++;
+        setScanLines((prev) => [...prev, line]);
         if (terminalRef.current) {
           terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
         }
