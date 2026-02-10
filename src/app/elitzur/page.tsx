@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth/auth";
 import ElitzurDashboard from "./ElitzurDashboard";
+import UnauthorizedScreen from "@/components/Auth/UnauthorizedScreen";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
@@ -10,9 +11,9 @@ export default async function Page() {
     redirect("/auth/admin-login?callbackUrl=/elitzur");
   }
 
-  // Check for ADMIN role
+  // Non-admin users get the scary screen
   if (session.user.role !== "ADMIN") {
-    redirect("/");
+    return <UnauthorizedScreen />;
   }
 
   return <ElitzurDashboard />;

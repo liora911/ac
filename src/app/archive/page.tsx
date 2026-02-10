@@ -13,7 +13,7 @@ import {
 } from "@/hooks/useArchive";
 import TiptapEditor from "@/lib/editor/editor";
 import DragDropImageUpload from "@/components/Upload/upload";
-import LoginForm from "@/components/Login/login";
+import UnauthorizedScreen from "@/components/Auth/UnauthorizedScreen";
 import RichContent from "@/components/RichContent";
 import {
   Plus,
@@ -154,26 +154,7 @@ export default function ArchivePage() {
 
   // Unauthorized state
   if (!isAuthorized) {
-    return (
-      <div
-        className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6"
-        style={{ direction: isRTL ? "rtl" : "ltr" }}
-      >
-        <div className="max-w-md mx-auto mt-20">
-          <div className="rounded-xl border border-amber-200 bg-amber-50 dark:bg-amber-900/20 dark:border-amber-800 p-6">
-            <h2 className="text-xl font-bold text-amber-800 dark:text-amber-200 mb-4">
-              {isRTL ? "גישה מוגבלת" : "Access Restricted"}
-            </h2>
-            <p className="text-amber-700 dark:text-amber-300 mb-4">
-              {isRTL
-                ? "עמוד זה זמין למנהלים בלבד"
-                : "This page is available to administrators only"}
-            </p>
-            <LoginForm />
-          </div>
-        </div>
-      </div>
-    );
+    return <UnauthorizedScreen />;
   }
 
   return (
