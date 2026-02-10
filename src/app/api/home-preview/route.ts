@@ -138,7 +138,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Default: return initial load for all types (9 items each)
+    // Default: return all items for each type
     // Articles sorted newest first, other content sorted oldest to newest
     const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
       prisma.article.findMany({
@@ -153,7 +153,6 @@ export async function GET(request: NextRequest) {
           isFeatured: true,
         },
         orderBy: { createdAt: "desc" },
-        take: DEFAULT_LIMIT,
       }),
       prisma.article.findMany({
         where: { published: true, isFeatured: true },
@@ -167,7 +166,6 @@ export async function GET(request: NextRequest) {
           isFeatured: true,
         },
         orderBy: { createdAt: "asc" },
-        take: DEFAULT_LIMIT,
       }),
       prisma.presentation.findMany({
         where: { published: true },
@@ -179,7 +177,6 @@ export async function GET(request: NextRequest) {
           isPremium: true,
         },
         orderBy: { createdAt: "asc" },
-        take: DEFAULT_LIMIT,
       }),
       prisma.event.findMany({
         where: { published: true },
@@ -191,7 +188,6 @@ export async function GET(request: NextRequest) {
           isFeatured: true,
         },
         orderBy: [{ isFeatured: "desc" }, { eventDate: "asc" }],
-        take: DEFAULT_LIMIT,
       }),
       prisma.event.findMany({
         where: { published: true, isFeatured: true },
@@ -203,7 +199,6 @@ export async function GET(request: NextRequest) {
           isFeatured: true,
         },
         orderBy: { eventDate: "asc" },
-        take: DEFAULT_LIMIT,
       }),
       prisma.lecture.findMany({
         select: {
@@ -215,7 +210,6 @@ export async function GET(request: NextRequest) {
           isPremium: true,
         },
         orderBy: { createdAt: "asc" },
-        take: DEFAULT_LIMIT,
       }),
     ]);
 

@@ -149,7 +149,7 @@ const Home = () => {
       return {
         id: cat.id,
         name: cat.name,
-        items: shuffled.slice(0, 3),
+        items: shuffled,
       };
     }).filter((cat) => cat.items.length > 0);
   }, [discoverCategories]);
