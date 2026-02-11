@@ -27,7 +27,7 @@ export async function GET() {
             isPremium: true,
             isFeatured: true,
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { title: "asc" },
           take: 9,
         },
         lectures: {
@@ -39,7 +39,7 @@ export async function GET() {
             videoUrl: true,
             isPremium: true,
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { title: "asc" },
           take: 9,
         },
         presentations: {
@@ -51,7 +51,7 @@ export async function GET() {
             imageUrls: true,
             isPremium: true,
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { title: "asc" },
           take: 9,
         },
       },

@@ -291,6 +291,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
+                const rawSubtitle = getSubtitle?.(item);
+                const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
                 const itemLink = useSlug && item.slug
                   ? `${linkPrefix}/${item.slug}`
                   : `${linkPrefix}/${item.id}`;
@@ -316,6 +318,28 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
                       )}
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                        {item.isFeatured && (
+                          <div className="bg-amber-500 p-1 rounded-full shadow-lg">
+                            <Star className="w-3 h-3 text-white fill-white" />
+                          </div>
+                        )}
+                        {item.isPremium && <PremiumBadge size="sm" />}
+                      </div>
+
+                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
+                        <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
+                          {item.title}
+                        </h3>
+                        {subtitle && (
+                          <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
+                            {subtitle}
+                          </p>
+                        )}
+                      </div>
                     </div>
                   </Link>
                 );

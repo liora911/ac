@@ -186,7 +186,6 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
                 getImageUrl={getImageUrl}
                 getSubtitle={getSubtitle}
                 t={t}
-                isMobile
               />
             ))}
           </div>
@@ -266,7 +265,6 @@ function MixedCard({
   getImageUrl,
   getSubtitle,
   t,
-  isMobile = false,
   onMouseEnter,
   onMouseMove,
   onMouseLeave,
@@ -275,7 +273,6 @@ function MixedCard({
   getImageUrl: (item: ContentItem) => string | null;
   getSubtitle?: (item: ContentItem) => string | null;
   t: (key: string) => string;
-  isMobile?: boolean;
   onMouseEnter?: (e: React.MouseEvent) => void;
   onMouseMove?: (e: React.MouseEvent) => void;
   onMouseLeave?: () => void;
@@ -309,38 +306,34 @@ function MixedCard({
           <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
         )}
 
-        {isMobile && (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-            {/* Content type badge - top left */}
-            <div className="absolute top-2 left-2">
-              <span
-                className={`${getTypeBadgeColor(item._contentType)} text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-lg`}
-              >
-                {typeLabel}
-              </span>
-            </div>
+        {/* Content type badge - top left */}
+        <div className="absolute top-2 left-2">
+          <span
+            className={`${getTypeBadgeColor(item._contentType)} text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-lg`}
+          >
+            {typeLabel}
+          </span>
+        </div>
 
-            {/* Premium badge - top right */}
-            {item.isPremium && (
-              <div className="absolute top-2 right-2">
-                <PremiumBadge size="sm" />
-              </div>
-            )}
-
-            <div className="absolute bottom-0 left-0 right-0 p-2.5">
-              <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
-                {item.title}
-              </h3>
-              {subtitle && (
-                <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
-                  {subtitle}
-                </p>
-              )}
-            </div>
-          </>
+        {/* Premium badge - top right */}
+        {item.isPremium && (
+          <div className="absolute top-2 right-2">
+            <PremiumBadge size="sm" />
+          </div>
         )}
+
+        <div className="absolute bottom-0 left-0 right-0 p-2.5">
+          <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
+            {item.title}
+          </h3>
+          {subtitle && (
+            <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
+              {subtitle}
+            </p>
+          )}
+        </div>
       </div>
     </Link>
   );

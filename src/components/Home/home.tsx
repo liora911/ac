@@ -139,17 +139,13 @@ const Home = () => {
         ...(cat.presentations || []).map((item) => ({ ...item, _contentType: "presentation" as const })),
       ];
 
-      // Fisher-Yates shuffle
-      const shuffled = [...pool];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
+      // Sort alphabetically by title
+      const sorted = [...pool].sort((a, b) => a.title.localeCompare(b.title));
 
       return {
         id: cat.id,
         name: cat.name,
-        items: shuffled,
+        items: sorted,
       };
     }).filter((cat) => cat.items.length > 0);
   }, [discoverCategories]);
