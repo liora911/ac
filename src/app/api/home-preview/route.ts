@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
               isPremium: true,
               isFeatured: true,
             },
-            orderBy: { createdAt: "desc" },
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
               isPremium: true,
               isFeatured: true,
             },
-            orderBy: { createdAt: "asc" },
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -64,7 +64,7 @@ export async function GET(request: NextRequest) {
               imageUrls: true,
               isPremium: true,
             },
-            orderBy: { createdAt: "asc" },
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
               bannerImageUrl: true,
               isFeatured: true,
             },
-            orderBy: [{ isFeatured: "desc" }, { eventDate: "asc" }],
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -96,7 +96,7 @@ export async function GET(request: NextRequest) {
               bannerImageUrl: true,
               isFeatured: true,
             },
-            orderBy: { eventDate: "asc" },
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
               videoUrl: true,
               isPremium: true,
             },
-            orderBy: { createdAt: "asc" },
+            orderBy: { title: "asc" },
             skip,
             take: limit + 1,
           });
@@ -138,8 +138,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Default: return all items for each type
-    // Articles sorted newest first, other content sorted oldest to newest
+    // Default: return all items for each type, sorted alphabetically by title
     const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
       prisma.article.findMany({
         where: { published: true },
@@ -152,7 +151,7 @@ export async function GET(request: NextRequest) {
           isPremium: true,
           isFeatured: true,
         },
-        orderBy: { createdAt: "desc" },
+        orderBy: { title: "asc" },
       }),
       prisma.article.findMany({
         where: { published: true, isFeatured: true },
@@ -165,7 +164,7 @@ export async function GET(request: NextRequest) {
           isPremium: true,
           isFeatured: true,
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: { title: "asc" },
       }),
       prisma.presentation.findMany({
         where: { published: true },
@@ -176,7 +175,7 @@ export async function GET(request: NextRequest) {
           imageUrls: true,
           isPremium: true,
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: { title: "asc" },
       }),
       prisma.event.findMany({
         where: { published: true },
@@ -187,7 +186,7 @@ export async function GET(request: NextRequest) {
           bannerImageUrl: true,
           isFeatured: true,
         },
-        orderBy: [{ isFeatured: "desc" }, { eventDate: "asc" }],
+        orderBy: { title: "asc" },
       }),
       prisma.event.findMany({
         where: { published: true, isFeatured: true },
@@ -198,7 +197,7 @@ export async function GET(request: NextRequest) {
           bannerImageUrl: true,
           isFeatured: true,
         },
-        orderBy: { eventDate: "asc" },
+        orderBy: { title: "asc" },
       }),
       prisma.lecture.findMany({
         select: {
@@ -209,7 +208,7 @@ export async function GET(request: NextRequest) {
           videoUrl: true,
           isPremium: true,
         },
-        orderBy: { createdAt: "asc" },
+        orderBy: { title: "asc" },
       }),
     ]);
 
