@@ -306,8 +306,6 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
             >
               {currentItems.map((item) => {
                 const imageUrl = getImageUrl(item);
-                const rawSubtitle = getSubtitle?.(item);
-                const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
                 const itemLink =
                   useSlug && item.slug
                     ? `${linkPrefix}/${item.slug}`
@@ -334,25 +332,6 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                       ) : (
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
                       )}
-
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-
-                      {item.isPremium && (
-                        <div className="absolute top-2 right-2">
-                          <PremiumBadge size="sm" />
-                        </div>
-                      )}
-
-                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                        <h3 className="text-white font-bold text-sm line-clamp-2 drop-shadow-lg">
-                          {item.title}
-                        </h3>
-                        {subtitle && (
-                          <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
-                            {subtitle}
-                          </p>
-                        )}
-                      </div>
                     </div>
                   </Link>
                 );

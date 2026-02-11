@@ -3,8 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { Star } from "lucide-react";
-import PremiumBadge from "@/components/PremiumBadge";
+import { Star, Crown } from "lucide-react";
 import type { ContentPreviewPopoverProps } from "@/types/Home/home";
 
 const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
@@ -17,68 +16,79 @@ const ContentPreviewPopover: React.FC<ContentPreviewPopoverProps> = ({
 }) => {
 
   // Calculate position to keep popover in viewport
-  const popoverWidth = 320;
-  const popoverHeight = 280;
+  const popoverWidth = 420;
+  const popoverHeight = 400;
   const padding = 16;
 
   let left = position.x - popoverWidth / 2;
   let top = position.y - popoverHeight - 20;
 
   // Adjust horizontal position
-  if (left < padding) left = padding;
-  if (left + popoverWidth > window.innerWidth - padding) {
-    left = window.innerWidth - popoverWidth - padding;
-  }
+  if (typeof window !== "undefined") {
+    if (left < padding) left = padding;
+    if (left + popoverWidth > window.innerWidth - padding) {
+      left = window.innerWidth - popoverWidth - padding;
+    }
 
-  // If not enough space above, show below
-  if (top < padding) {
-    top = position.y + 20;
+    // If not enough space above, show below
+    if (top < padding) {
+      top = position.y + 20;
+    }
   }
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.9, y: 10 }}
+      initial={{ opacity: 0, scale: 0.92, y: 8 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9, y: 10 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed z-50 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-200 dark:border-gray-700"
-      style={{ left, top }}
+      exit={{ opacity: 0, scale: 0.92, y: 8 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="fixed z-50 bg-white dark:bg-gray-900 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.25)] dark:shadow-[0_8px_40px_rgba(0,0,0,0.5)] overflow-hidden border border-gray-200 dark:border-gray-700/80"
+      style={{ left, top, width: popoverWidth }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {/* Image */}
-      <div className="relative h-36 bg-gray-200 dark:bg-gray-700">
+      {/* Image section — larger */}
+      <div className="relative h-52 bg-gray-200 dark:bg-gray-800">
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={item.title}
             fill
             className="object-cover"
-            sizes="320px"
+            sizes="420px"
           />
         ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-700 dark:to-gray-800" />
         )}
 
-        {/* Badges */}
-        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+        {/* Bottom gradient fade into content */}
+        <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-white dark:from-gray-900 to-transparent" />
+
+        {/* Badges overlaid on image */}
+        <div className="absolute top-3 right-3 flex items-center gap-2">
           {item.isFeatured && (
-            <div className="bg-amber-500 p-1 rounded-full shadow">
-              <Star className="w-3 h-3 text-white fill-white" />
+            <div className="flex items-center gap-1 bg-amber-500/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-lg">
+              <Star className="w-3.5 h-3.5 text-white fill-white" />
+              <span className="text-white text-xs font-semibold">Featured</span>
             </div>
           )}
-          {item.isPremium && <PremiumBadge size="sm" />}
+          {item.isPremium && (
+            <div className="flex items-center gap-1 bg-purple-600/90 backdrop-blur-sm px-2.5 py-1 rounded-full shadow-lg">
+              <Crown className="w-3.5 h-3.5 text-white" />
+              <span className="text-white text-xs font-semibold">Premium</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 dark:text-white line-clamp-2 mb-1.5">
+      {/* Content section */}
+      <div className="px-5 pb-5 -mt-4 relative">
+        <h3 className="font-bold text-lg text-gray-900 dark:text-white line-clamp-2 mb-2 leading-snug">
           {item.title}
         </h3>
 
         {subtitle && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-4 leading-relaxed">
             {subtitle}
           </p>
         )}

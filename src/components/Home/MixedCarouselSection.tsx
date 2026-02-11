@@ -1,16 +1,17 @@
 "use client";
 
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
+import ContentPreviewPopover from "./ContentPreviewPopover";
 import type { ContentItem, MixedCarouselSectionProps } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE } from "@/constants/pagination";
-import { COOLDOWN_MS } from "@/constants/timing";
+import { COOLDOWN_MS, HOVER_DELAY_MS } from "@/constants/timing";
 
 function getItemLink(item: ContentItem): string {
   switch (item._contentType) {
@@ -51,6 +52,13 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const [direction, setDirection] = useState(0);
   const cooldownRef = useRef(false);
 
+  // Hover preview state
+  const [hoveredItem, setHoveredItem] = useState<ContentItem | null>(null);
+  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const isHoveringPopoverRef = useRef(false);
+  const pendingItemRef = useRef<ContentItem | null>(null);
+
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
@@ -77,6 +85,55 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const goToPage = useCallback((idx: number) => {
     if (idx !== page) navigate(idx > page ? 1 : -1, idx);
   }, [page, navigate]);
+
+  // Hover preview handlers
+  const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
+    const x = e.clientX;
+    const y = e.clientY;
+    pendingItemRef.current = item;
+
+    hoverTimerRef.current = setTimeout(() => {
+      setHoveredItem(item);
+      setHoverPosition({ x, y });
+    }, HOVER_DELAY_MS);
+  }, []);
+
+  const handleCardMouseMove = useCallback((e: React.MouseEvent) => {
+    if (!hoveredItem && pendingItemRef.current) {
+      setHoverPosition({ x: e.clientX, y: e.clientY });
+    }
+  }, [hoveredItem]);
+
+  const handleCardMouseLeave = useCallback(() => {
+    if (hoverTimerRef.current) {
+      clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    pendingItemRef.current = null;
+
+    setTimeout(() => {
+      if (!isHoveringPopoverRef.current) {
+        setHoveredItem(null);
+      }
+    }, 100);
+  }, []);
+
+  const handlePopoverMouseEnter = useCallback(() => {
+    isHoveringPopoverRef.current = true;
+  }, []);
+
+  const handlePopoverMouseLeave = useCallback(() => {
+    isHoveringPopoverRef.current = false;
+    setHoveredItem(null);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) {
+        clearTimeout(hoverTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -129,6 +186,7 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
                 getImageUrl={getImageUrl}
                 getSubtitle={getSubtitle}
                 t={t}
+                isMobile
               />
             ))}
           </div>
@@ -154,6 +212,9 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
                   getImageUrl={getImageUrl}
                   getSubtitle={getSubtitle}
                   t={t}
+                  onMouseEnter={(e) => handleCardMouseEnter(item, e)}
+                  onMouseMove={handleCardMouseMove}
+                  onMouseLeave={handleCardMouseLeave}
                 />
               ))}
             </motion.div>
@@ -182,6 +243,20 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
           </div>
         )}
       </div>
+
+      {/* Hover Preview Popover */}
+      <AnimatePresence>
+        {hoveredItem && (
+          <ContentPreviewPopover
+            item={hoveredItem}
+            imageUrl={getImageUrl(hoveredItem)}
+            subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
+            position={hoverPosition}
+            onMouseEnter={handlePopoverMouseEnter}
+            onMouseLeave={handlePopoverMouseLeave}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -191,11 +266,19 @@ function MixedCard({
   getImageUrl,
   getSubtitle,
   t,
+  isMobile = false,
+  onMouseEnter,
+  onMouseMove,
+  onMouseLeave,
 }: {
   item: ContentItem;
   getImageUrl: (item: ContentItem) => string | null;
   getSubtitle?: (item: ContentItem) => string | null;
   t: (key: string) => string;
+  isMobile?: boolean;
+  onMouseEnter?: (e: React.MouseEvent) => void;
+  onMouseMove?: (e: React.MouseEvent) => void;
+  onMouseLeave?: () => void;
 }) {
   const imageUrl = getImageUrl(item);
   const rawSubtitle = getSubtitle?.(item);
@@ -209,6 +292,9 @@ function MixedCard({
     <Link
       href={itemLink}
       className="block group/card flex-shrink-0 w-56 sm:w-auto"
+      onMouseEnter={onMouseEnter}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
     >
       <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
         {imageUrl ? (
@@ -223,34 +309,38 @@ function MixedCard({
           <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+        {isMobile && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-        {/* Content type badge - top left */}
-        <div className="absolute top-2 left-2">
-          <span
-            className={`${getTypeBadgeColor(item._contentType)} text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-lg`}
-          >
-            {typeLabel}
-          </span>
-        </div>
+            {/* Content type badge - top left */}
+            <div className="absolute top-2 left-2">
+              <span
+                className={`${getTypeBadgeColor(item._contentType)} text-white text-[10px] font-medium px-2 py-0.5 rounded-full shadow-lg`}
+              >
+                {typeLabel}
+              </span>
+            </div>
 
-        {/* Premium badge - top right */}
-        {item.isPremium && (
-          <div className="absolute top-2 right-2">
-            <PremiumBadge size="sm" />
-          </div>
+            {/* Premium badge - top right */}
+            {item.isPremium && (
+              <div className="absolute top-2 right-2">
+                <PremiumBadge size="sm" />
+              </div>
+            )}
+
+            <div className="absolute bottom-0 left-0 right-0 p-2.5">
+              <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
+                {item.title}
+              </h3>
+              {subtitle && (
+                <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
+                  {subtitle}
+                </p>
+              )}
+            </div>
+          </>
         )}
-
-        <div className="absolute bottom-0 left-0 right-0 p-2.5">
-          <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
-            {item.title}
-          </h3>
-          {subtitle && (
-            <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
-              {subtitle}
-            </p>
-          )}
-        </div>
       </div>
     </Link>
   );
