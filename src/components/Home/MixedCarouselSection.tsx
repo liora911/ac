@@ -265,25 +265,17 @@ function MixedCard({
           </div>
         )}
 
-        <div className={`absolute transition-opacity duration-300 ${
-          isExpanded
-            ? "inset-0 opacity-100 delay-300 flex items-end bg-gradient-to-l from-black/80 via-black/30 to-transparent"
-            : "bottom-0 left-0 right-0 p-2.5 lg:opacity-0"
+        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-300 ${
+          isExpanded ? "opacity-100 delay-300" : "lg:opacity-0"
         }`}>
-          <div className={isExpanded ? "w-[50%] ml-auto p-4" : ""}>
-            <h3 className={`text-white drop-shadow-lg ${
-              isExpanded ? "text-base font-bold line-clamp-3" : "text-sm font-semibold line-clamp-2"
-            }`}>
-              {item.title}
-            </h3>
-            {subtitle && (
-              <p className={`drop-shadow-md ${
-                isExpanded ? "text-white/90 text-sm line-clamp-2 mt-1.5" : "text-white/80 text-xs line-clamp-1 mt-0.5"
-              }`}>
-                {subtitle}
-              </p>
-            )}
-          </div>
+          <h3 className="text-white font-semibold text-sm drop-shadow-lg line-clamp-2">
+            {item.title}
+          </h3>
+          {subtitle && (
+            <p className="text-white/80 text-xs mt-0.5 drop-shadow-md line-clamp-1">
+              {subtitle}
+            </p>
+          )}
         </div>
       </div>
     </Link>
