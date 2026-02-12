@@ -1,17 +1,17 @@
 "use client";
 
-import React, { useState, useCallback, useRef, useEffect } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
-import ContentPreviewPopover from "./ContentPreviewPopover";
 import type { ContentItem, MixedCarouselSectionProps } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE } from "@/constants/pagination";
-import { COOLDOWN_MS, HOVER_DELAY_MS } from "@/constants/timing";
+import { COOLDOWN_MS } from "@/constants/timing";
+import { useCarouselExpand } from "@/hooks/useCarouselExpand";
 
 function getItemLink(item: ContentItem): string {
   switch (item._contentType) {
@@ -52,15 +52,11 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const [direction, setDirection] = useState(0);
   const cooldownRef = useRef(false);
 
-  // Hover preview state
-  const [hoveredItem, setHoveredItem] = useState<ContentItem | null>(null);
-  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isHoveringPopoverRef = useRef(false);
-  const pendingItemRef = useRef<ContentItem | null>(null);
-
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+
+  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns } =
+    useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE;
   const canGoNext = canNavigate && page < totalPages - 1;
@@ -85,55 +81,6 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const goToPage = useCallback((idx: number) => {
     if (idx !== page) navigate(idx > page ? 1 : -1, idx);
   }, [page, navigate]);
-
-  // Hover preview handlers
-  const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
-    const x = e.clientX;
-    const y = e.clientY;
-    pendingItemRef.current = item;
-
-    hoverTimerRef.current = setTimeout(() => {
-      setHoveredItem(item);
-      setHoverPosition({ x, y });
-    }, HOVER_DELAY_MS);
-  }, []);
-
-  const handleCardMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!hoveredItem && pendingItemRef.current) {
-      setHoverPosition({ x: e.clientX, y: e.clientY });
-    }
-  }, [hoveredItem]);
-
-  const handleCardMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    pendingItemRef.current = null;
-
-    setTimeout(() => {
-      if (!isHoveringPopoverRef.current) {
-        setHoveredItem(null);
-      }
-    }, 100);
-  }, []);
-
-  const handlePopoverMouseEnter = useCallback(() => {
-    isHoveringPopoverRef.current = true;
-  }, []);
-
-  const handlePopoverMouseLeave = useCallback(() => {
-    isHoveringPopoverRef.current = false;
-    setHoveredItem(null);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-    };
-  }, []);
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -202,20 +149,25 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
             >
-              {currentItems.map((item) => (
-                <MixedCard
-                  key={item.id}
-                  item={item}
-                  getImageUrl={getImageUrl}
-                  getSubtitle={getSubtitle}
-                  t={t}
-                  onMouseEnter={(e) => handleCardMouseEnter(item, e)}
-                  onMouseMove={handleCardMouseMove}
-                  onMouseLeave={handleCardMouseLeave}
-                />
-              ))}
+              <motion.div
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
+                animate={gridColumns ? { gridTemplateColumns: gridColumns } : {}}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {currentItems.map((item, idx) => (
+                  <MixedCard
+                    key={item.id}
+                    item={item}
+                    getImageUrl={getImageUrl}
+                    getSubtitle={getSubtitle}
+                    t={t}
+                    isExpanded={expandedIdx === idx}
+                    onMouseEnter={() => handleMouseEnter(idx)}
+                    onMouseLeave={handleMouseLeave}
+                  />
+                ))}
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -242,20 +194,6 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
           </div>
         )}
       </div>
-
-      {/* Hover Preview Popover */}
-      <AnimatePresence>
-        {hoveredItem && (
-          <ContentPreviewPopover
-            item={hoveredItem}
-            imageUrl={getImageUrl(hoveredItem)}
-            subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
-            position={hoverPosition}
-            onMouseEnter={handlePopoverMouseEnter}
-            onMouseLeave={handlePopoverMouseLeave}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 };
@@ -265,16 +203,16 @@ function MixedCard({
   getImageUrl,
   getSubtitle,
   t,
+  isExpanded = false,
   onMouseEnter,
-  onMouseMove,
   onMouseLeave,
 }: {
   item: ContentItem;
   getImageUrl: (item: ContentItem) => string | null;
   getSubtitle?: (item: ContentItem) => string | null;
   t: (key: string) => string;
-  onMouseEnter?: (e: React.MouseEvent) => void;
-  onMouseMove?: (e: React.MouseEvent) => void;
+  isExpanded?: boolean;
+  onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) {
   const imageUrl = getImageUrl(item);
@@ -290,16 +228,19 @@ function MixedCard({
       href={itemLink}
       className="block group/card flex-shrink-0 w-56 sm:w-auto"
       onMouseEnter={onMouseEnter}
-      onMouseMove={onMouseMove}
       onMouseLeave={onMouseLeave}
     >
-      <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
+      <div className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md ring-2 ring-inset transition-shadow duration-300 ${
+        isExpanded
+          ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30"
+          : "ring-transparent"
+      }`}>
         {imageUrl ? (
           <Image
             src={imageUrl}
             alt={item.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover/card:scale-105"
+            className="object-cover"
             sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
           />
         ) : (
@@ -324,15 +265,25 @@ function MixedCard({
           </div>
         )}
 
-        <div className="absolute bottom-0 left-0 right-0 p-2.5">
-          <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
-            {item.title}
-          </h3>
-          {subtitle && (
-            <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
-              {subtitle}
-            </p>
-          )}
+        <div className={`absolute transition-opacity duration-300 ${
+          isExpanded
+            ? "inset-0 opacity-100 delay-300 flex items-end bg-gradient-to-l from-black/80 via-black/30 to-transparent"
+            : "bottom-0 left-0 right-0 p-2.5 lg:opacity-0"
+        }`}>
+          <div className={isExpanded ? "w-[50%] ml-auto p-4" : ""}>
+            <h3 className={`text-white drop-shadow-lg ${
+              isExpanded ? "text-base font-bold line-clamp-3" : "text-sm font-semibold line-clamp-2"
+            }`}>
+              {item.title}
+            </h3>
+            {subtitle && (
+              <p className={`drop-shadow-md ${
+                isExpanded ? "text-white/90 text-sm line-clamp-2 mt-1.5" : "text-white/80 text-xs line-clamp-1 mt-0.5"
+              }`}>
+                {subtitle}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </Link>

@@ -7,11 +7,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Loader2, Star } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
-import ContentPreviewPopover from "./ContentPreviewPopover";
 import type { ContentItem, CarouselSectionProps } from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE, BATCH_SIZE } from "@/constants/pagination";
-import { COOLDOWN_MS, HOVER_DELAY_MS } from "@/constants/timing";
+import { COOLDOWN_MS } from "@/constants/timing";
+import { useCarouselExpand } from "@/hooks/useCarouselExpand";
 
 const CarouselSection: React.FC<CarouselSectionProps> = ({
   title,
@@ -34,13 +34,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const [hasMore, setHasMore] = useState(initialItems.length >= BATCH_SIZE);
   const cooldownRef = useRef(false);
 
-  // Hover preview state
-  const [hoveredItem, setHoveredItem] = useState<ContentItem | null>(null);
-  const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
-  const hoverTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isHoveringPopoverRef = useRef(false);
-  const pendingItemRef = useRef<ContentItem | null>(null);
-
   useEffect(() => {
     setItems(initialItems);
     setPage(0);
@@ -49,6 +42,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+
+  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns } =
+    useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -100,59 +96,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const goToPage = useCallback((idx: number) => {
     if (idx !== page) navigate(idx > page ? 1 : -1, idx);
   }, [page, navigate]);
-
-  // Hover preview handlers
-  const handleCardMouseEnter = useCallback((item: ContentItem, e: React.MouseEvent) => {
-    // Store cursor position
-    const x = e.clientX;
-    const y = e.clientY;
-    pendingItemRef.current = item;
-
-    hoverTimerRef.current = setTimeout(() => {
-      setHoveredItem(item);
-      setHoverPosition({ x, y });
-    }, HOVER_DELAY_MS);
-  }, []);
-
-  const handleCardMouseMove = useCallback((e: React.MouseEvent) => {
-    // Update position while moving over card (before popover shows)
-    if (!hoveredItem && pendingItemRef.current) {
-      setHoverPosition({ x: e.clientX, y: e.clientY });
-    }
-  }, [hoveredItem]);
-
-  const handleCardMouseLeave = useCallback(() => {
-    if (hoverTimerRef.current) {
-      clearTimeout(hoverTimerRef.current);
-      hoverTimerRef.current = null;
-    }
-    pendingItemRef.current = null;
-
-    // Delay closing to allow moving to popover
-    setTimeout(() => {
-      if (!isHoveringPopoverRef.current) {
-        setHoveredItem(null);
-      }
-    }, 100);
-  }, []);
-
-  const handlePopoverMouseEnter = useCallback(() => {
-    isHoveringPopoverRef.current = true;
-  }, []);
-
-  const handlePopoverMouseLeave = useCallback(() => {
-    isHoveringPopoverRef.current = false;
-    setHoveredItem(null);
-  }, []);
-
-  // Cleanup hover timer on unmount
-  useEffect(() => {
-    return () => {
-      if (hoverTimerRef.current) {
-        clearTimeout(hoverTimerRef.current);
-      }
-    };
-  }, []);
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -287,63 +230,82 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
               animate="center"
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
             >
-              {currentItems.map((item) => {
-                const imageUrl = getImageUrl(item);
-                const rawSubtitle = getSubtitle?.(item);
-                const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
-                const itemLink = useSlug && item.slug
-                  ? `${linkPrefix}/${item.slug}`
-                  : `${linkPrefix}/${item.id}`;
+              <motion.div
+                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
+                animate={gridColumns ? { gridTemplateColumns: gridColumns } : {}}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                {currentItems.map((item, idx) => {
+                  const imageUrl = getImageUrl(item);
+                  const rawSubtitle = getSubtitle?.(item);
+                  const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
+                  const itemLink = useSlug && item.slug
+                    ? `${linkPrefix}/${item.slug}`
+                    : `${linkPrefix}/${item.id}`;
+                  const isExpanded = expandedIdx === idx;
 
-                return (
-                  <Link
-                    key={item.id}
-                    href={itemLink}
-                    className="block group/card"
-                    onMouseEnter={(e) => handleCardMouseEnter(item, e)}
-                    onMouseMove={handleCardMouseMove}
-                    onMouseLeave={handleCardMouseLeave}
-                  >
-                    <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md hover:shadow-xl transition-shadow duration-300">
-                      {imageUrl ? (
-                        <Image
-                          src={imageUrl}
-                          alt={item.title}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover/card:scale-105"
-                          sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
-                        />
-                      ) : (
-                        <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
-                      )}
+                  return (
+                    <Link
+                      key={item.id}
+                      href={itemLink}
+                      className="block group/card"
+                      onMouseEnter={() => handleMouseEnter(idx)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      <div className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md ring-2 ring-inset transition-shadow duration-300 ${
+                        isExpanded
+                          ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30"
+                          : "ring-transparent"
+                      }`}>
+                        {imageUrl ? (
+                          <Image
+                            src={imageUrl}
+                            alt={item.title}
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
+                        )}
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
-                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
-                        {item.isFeatured && (
-                          <div className="bg-amber-500 p-1 rounded-full shadow-lg">
-                            <Star className="w-3 h-3 text-white fill-white" />
+                        <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                          {item.isFeatured && (
+                            <div className="bg-amber-500 p-1 rounded-full shadow-lg">
+                              <Star className="w-3 h-3 text-white fill-white" />
+                            </div>
+                          )}
+                          {item.isPremium && <PremiumBadge size="sm" />}
+                        </div>
+
+                        <div className={`absolute transition-opacity duration-300 ${
+                          isExpanded
+                            ? "inset-0 opacity-100 delay-300 flex items-end bg-gradient-to-l from-black/80 via-black/30 to-transparent"
+                            : "bottom-0 left-0 right-0 p-2.5 lg:opacity-0"
+                        }`}>
+                          <div className={isExpanded ? "w-[50%] ml-auto p-4" : ""}>
+                            <h3 className={`text-white drop-shadow-lg ${
+                              isExpanded ? "text-base font-bold line-clamp-3" : "text-sm font-semibold line-clamp-2"
+                            }`}>
+                              {item.title}
+                            </h3>
+                            {subtitle && (
+                              <p className={`drop-shadow-md ${
+                                isExpanded ? "text-white/90 text-sm line-clamp-2 mt-1.5" : "text-white/80 text-xs line-clamp-1 mt-0.5"
+                              }`}>
+                                {subtitle}
+                              </p>
+                            )}
                           </div>
-                        )}
-                        {item.isPremium && <PremiumBadge size="sm" />}
+                        </div>
                       </div>
-
-                      <div className="absolute bottom-0 left-0 right-0 p-2.5">
-                        <h3 className="text-white font-semibold text-sm line-clamp-2 drop-shadow-lg">
-                          {item.title}
-                        </h3>
-                        {subtitle && (
-                          <p className="text-white/80 text-xs mt-0.5 line-clamp-1 drop-shadow-md">
-                            {subtitle}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })}
+                    </Link>
+                  );
+                })}
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -370,20 +332,6 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           </div>
         )}
       </div>
-
-      {/* Hover Preview Popover */}
-      <AnimatePresence>
-        {hoveredItem && (
-          <ContentPreviewPopover
-            item={hoveredItem}
-            imageUrl={getImageUrl(hoveredItem)}
-            subtitle={getSubtitle ? stripHtml(getSubtitle(hoveredItem) || "") : null}
-            position={hoverPosition}
-            onMouseEnter={handlePopoverMouseEnter}
-            onMouseLeave={handlePopoverMouseLeave}
-          />
-        )}
-      </AnimatePresence>
     </div>
   );
 };

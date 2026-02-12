@@ -73,15 +73,3 @@ export interface CarouselSectionProps {
   getSubtitle?: (item: ContentItem) => string | null;
 }
 
-/**
- * Props for the ContentPreviewPopover component.
- * Hover preview popup for content items.
- */
-export interface ContentPreviewPopoverProps {
-  item: ContentItem;
-  imageUrl: string | null;
-  subtitle: string | null;
-  position: { x: number; y: number };
-  onMouseEnter?: () => void;
-  onMouseLeave?: () => void;
-}
