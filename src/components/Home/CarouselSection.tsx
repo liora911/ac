@@ -282,13 +282,17 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                         </div>
 
                         <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-300 ${
-                          isExpanded ? "opacity-100 delay-500" : "lg:opacity-0"
+                          isExpanded ? "opacity-100 delay-500" : "lg:opacity-60"
                         }`}>
-                          <h3 className="text-white font-semibold text-sm drop-shadow-lg line-clamp-2">
+                          <h3 className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
+                            isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"
+                          }`}>
                             {item.title}
                           </h3>
                           {subtitle && (
-                            <p className="text-white/80 text-xs mt-0.5 drop-shadow-md line-clamp-1">
+                            <p className={`text-white/80 drop-shadow-md line-clamp-1 ${
+                              isExpanded ? "text-xs mt-0.5" : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
+                            }`}>
                               {subtitle}
                             </p>
                           )}
