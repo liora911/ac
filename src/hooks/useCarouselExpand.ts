@@ -25,7 +25,6 @@ export function useCarouselExpand(): UseCarouselExpandResult {
   const [showText, setShowText] = useState(true);
   const expandTimerRef = useRef<NodeJS.Timeout | null>(null);
   const textTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isFirstRender = useRef(true);
 
   useEffect(() => {
     const check = () => setIsLgScreen(window.innerWidth >= 1024);
@@ -41,26 +40,23 @@ export function useCarouselExpand(): UseCarouselExpandResult {
     };
   }, []);
 
-  // Hide text during grid animation, reveal after it finishes
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
-    setShowText(false);
+  const scheduleTextReveal = useCallback(() => {
     if (textTimerRef.current) clearTimeout(textTimerRef.current);
     textTimerRef.current = setTimeout(() => setShowText(true), GRID_ANIMATION_MS + 50);
-  }, [expandedIdx]);
+  }, []);
 
   const handleMouseEnter = useCallback(
     (idx: number) => {
       if (!isLgScreen) return;
       if (expandTimerRef.current) clearTimeout(expandTimerRef.current);
       expandTimerRef.current = setTimeout(() => {
+        // Batched in same render: text hides before isExpanded changes classes
+        setShowText(false);
         setExpandedIdx(idx);
+        scheduleTextReveal();
       }, EXPAND_DELAY_MS);
     },
-    [isLgScreen],
+    [isLgScreen, scheduleTextReveal],
   );
 
   const handleMouseLeave = useCallback(() => {
@@ -68,8 +64,11 @@ export function useCarouselExpand(): UseCarouselExpandResult {
       clearTimeout(expandTimerRef.current);
       expandTimerRef.current = null;
     }
+    // Batched in same render: text hides before collapse changes classes
+    setShowText(false);
     setExpandedIdx(null);
-  }, []);
+    scheduleTextReveal();
+  }, [scheduleTextReveal]);
 
   const gridColumns = useMemo(() => {
     if (!isLgScreen) return undefined;
