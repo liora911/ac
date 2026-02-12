@@ -43,7 +43,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
-  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns } =
+  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns, showText } =
     useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
@@ -281,8 +281,8 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                           {item.isPremium && <PremiumBadge size="sm" />}
                         </div>
 
-                        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-300 ${
-                          isExpanded ? "opacity-100 delay-500" : "lg:opacity-60"
+                        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
+                          showText ? (isExpanded ? "opacity-100" : "lg:opacity-60") : "lg:opacity-0"
                         }`}>
                           <h3 className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
                             isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"

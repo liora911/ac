@@ -55,7 +55,7 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
-  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns } =
+  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns, showText } =
     useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE;
@@ -163,6 +163,7 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
                     getSubtitle={getSubtitle}
                     t={t}
                     isExpanded={expandedIdx === idx}
+                    showText={showText}
                     onMouseEnter={() => handleMouseEnter(idx)}
                     onMouseLeave={handleMouseLeave}
                   />
@@ -204,6 +205,7 @@ function MixedCard({
   getSubtitle,
   t,
   isExpanded = false,
+  showText = true,
   onMouseEnter,
   onMouseLeave,
 }: {
@@ -212,6 +214,7 @@ function MixedCard({
   getSubtitle?: (item: ContentItem) => string | null;
   t: (key: string) => string;
   isExpanded?: boolean;
+  showText?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) {
@@ -265,8 +268,8 @@ function MixedCard({
           </div>
         )}
 
-        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-300 ${
-          isExpanded ? "opacity-100 delay-500" : "lg:opacity-60"
+        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
+          showText ? (isExpanded ? "opacity-100" : "lg:opacity-60") : "lg:opacity-0"
         }`}>
           <h3 className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
             isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"
