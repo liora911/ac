@@ -293,7 +293,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                         )}
 
                         <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-300 ${
-                          isExpanded ? "opacity-100 delay-300" : "lg:opacity-0"
+                          isExpanded ? "opacity-100 delay-500" : "lg:opacity-0"
                         }`}>
                           <h3 className="text-white font-bold text-sm drop-shadow-lg line-clamp-2">
                             {item.title}
