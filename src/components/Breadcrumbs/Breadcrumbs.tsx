@@ -103,47 +103,52 @@ export default function Breadcrumbs() {
 
   let templates = buildCrumbs(pathname);
 
+  // Helper: insert a category crumb before the item crumb
+  const insertCategoryCrumb = (
+    tmpls: CrumbTemplate[],
+    itemSegment: string,
+    itemTitle: string,
+    category: { id: string; name: string } | undefined,
+    sectionPath: string,
+  ): CrumbTemplate[] => {
+    const result: CrumbTemplate[] = [];
+    for (const template of tmpls) {
+      if (template.rawSegment === itemSegment) {
+        if (category) {
+          result.push({
+            href: `${sectionPath}?categoryId=${category.id}`,
+            label: category.name,
+          });
+        }
+        result.push({ ...template, label: itemTitle, isCurrent: true });
+      } else {
+        result.push(template);
+      }
+    }
+    return result;
+  };
+
   if (articleId && article?.title) {
-    templates = templates.map((template) =>
-      template.rawSegment === articleId
-        ? {
-            ...template,
-            label: article.title,
-          }
-        : template
+    templates = insertCategoryCrumb(
+      templates, articleId, article.title, article.category, "/articles"
     );
   }
 
   if (eventId && event?.title) {
-    templates = templates.map((template) =>
-      template.rawSegment === eventId
-        ? {
-            ...template,
-            label: event.title,
-          }
-        : template
+    templates = insertCategoryCrumb(
+      templates, eventId, event.title, event.category, "/events"
     );
   }
 
   if (lectureId && lecture?.title) {
-    templates = templates.map((template) =>
-      template.rawSegment === lectureId
-        ? {
-            ...template,
-            label: lecture.title,
-          }
-        : template
+    templates = insertCategoryCrumb(
+      templates, lectureId, lecture.title, lecture.category, "/lectures"
     );
   }
 
   if (presentationId && presentation?.title) {
-    templates = templates.map((template) =>
-      template.rawSegment === presentationId
-        ? {
-            ...template,
-            label: presentation.title,
-          }
-        : template
+    templates = insertCategoryCrumb(
+      templates, presentationId, presentation.title, presentation.category, "/presentations"
     );
   }
 
