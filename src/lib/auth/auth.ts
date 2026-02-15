@@ -24,17 +24,18 @@ export const authOptions: NextAuthOptions = {
   providers: [
     EmailProvider({
       server: {
-        host: process.env.EMAIL_SERVER_HOST || "smtp.gmail.com",
-        port: parseInt(process.env.EMAIL_SERVER_PORT || "587"),
+        host: "smtp.resend.com",
+        port: 465,
+        secure: true,
         auth: {
-          user: process.env.EMAIL_SERVER_USER,
-          pass: process.env.EMAIL_SERVER_PASSWORD,
+          user: "resend",
+          pass: process.env.RESEND_API_KEY,
         },
         tls: {
           rejectUnauthorized: false,
         },
       },
-      from: process.env.EMAIL_FROM || "noreply@example.com",
+      from: process.env.RESEND_FROM_EMAIL || "noreply@example.com",
     }),
   ],
   callbacks: {
