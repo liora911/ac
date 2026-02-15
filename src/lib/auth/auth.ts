@@ -30,6 +30,9 @@ export const authOptions: NextAuthOptions = {
           user: process.env.EMAIL_SERVER_USER,
           pass: process.env.EMAIL_SERVER_PASSWORD,
         },
+        tls: {
+          rejectUnauthorized: false,
+        },
       },
       from: process.env.EMAIL_FROM || "noreply@example.com",
     }),
