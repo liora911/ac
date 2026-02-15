@@ -133,7 +133,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
           <div
             className="text-gray-600 dark:text-gray-400 text-sm lg:text-base mb-6 line-clamp-2 leading-relaxed"
             dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(event.description.substring(0, 200) + (event.description.length > 200 ? '...' : ''))
+              __html: DOMPurify.sanitize(event.description.substring(0, 200) + (event.description.length > 200 ? '...' : ''), { ADD_ATTR: ['style'] })
             }}
           />
 

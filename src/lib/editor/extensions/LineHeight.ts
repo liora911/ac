@@ -1,15 +1,14 @@
 import { Extension } from "@tiptap/core";
-import "@tiptap/extension-text-style";
 
 type LineHeightOptions = {
   types: string[];
+  defaultLineHeight: string | null;
 };
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
     lineHeight: {
       setLineHeight: (lineHeight: string) => ReturnType;
-
       unsetLineHeight: () => ReturnType;
     };
   }
@@ -20,7 +19,8 @@ export const LineHeight = Extension.create<LineHeightOptions>({
 
   addOptions() {
     return {
-      types: ["textStyle"],
+      types: ["paragraph", "heading"],
+      defaultLineHeight: null,
     };
   },
 
@@ -30,9 +30,9 @@ export const LineHeight = Extension.create<LineHeightOptions>({
         types: this.options.types,
         attributes: {
           lineHeight: {
-            default: null,
+            default: this.options.defaultLineHeight,
             parseHTML: (element) =>
-              element.style.lineHeight?.replace(/['"]+/g, ""),
+              element.style.lineHeight || null,
             renderHTML: (attributes) => {
               if (!attributes.lineHeight) {
                 return {};
@@ -51,16 +51,45 @@ export const LineHeight = Extension.create<LineHeightOptions>({
     return {
       setLineHeight:
         (lineHeight) =>
-        ({ chain }) => {
-          return chain().setMark("textStyle", { lineHeight }).run();
+        ({ tr, state, dispatch }) => {
+          const { selection } = state;
+          const { from, to } = selection;
+
+          let applied = false;
+          state.doc.nodesBetween(from, to, (node, pos) => {
+            if (this.options.types.includes(node.type.name)) {
+              if (dispatch) {
+                tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  lineHeight,
+                });
+              }
+              applied = true;
+            }
+          });
+
+          return applied;
         },
       unsetLineHeight:
         () =>
-        ({ chain }) => {
-          return chain()
-            .setMark("textStyle", { lineHeight: null })
-            .removeEmptyTextStyle()
-            .run();
+        ({ tr, state, dispatch }) => {
+          const { selection } = state;
+          const { from, to } = selection;
+
+          let applied = false;
+          state.doc.nodesBetween(from, to, (node, pos) => {
+            if (this.options.types.includes(node.type.name)) {
+              if (dispatch) {
+                tr.setNodeMarkup(pos, undefined, {
+                  ...node.attrs,
+                  lineHeight: null,
+                });
+              }
+              applied = true;
+            }
+          });
+
+          return applied;
         },
     };
   },

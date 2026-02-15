@@ -159,7 +159,9 @@ export default function ArticlePage() {
         <div
           className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none article-content"
           dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(article.content),
+            __html: DOMPurify.sanitize(article.content, {
+              ADD_ATTR: ['style'],
+            }),
           }}
         />
       </div>

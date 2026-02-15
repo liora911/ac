@@ -472,7 +472,7 @@ export default function TiptapEditor({
               {["0.8", "0.9", "1", "1.15", "1.25", "1.5", "1.75", "2", "2.5"].map((height) => (
                 <DropdownItem
                   key={height}
-                  onClick={() => editor.chain().focus().setLineHeight(height).run()}
+                  onClick={() => { editor.commands.setLineHeight(height); editor.commands.focus(); }}
                   label={
                     height === "0.8" ? "Tight (0.8)" :
                     height === "0.9" ? "Compact (0.9)" :
@@ -485,7 +485,7 @@ export default function TiptapEditor({
                 />
               ))}
               <DropdownItem
-                onClick={() => editor.chain().focus().unsetLineHeight().run()}
+                onClick={() => { editor.commands.unsetLineHeight(); editor.commands.focus(); }}
                 label="Default"
               />
             </Dropdown>

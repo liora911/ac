@@ -52,17 +52,6 @@ export default function RichContent({
           line-height: 1.7;
         }
 
-        /* Allow inline line-height to override */
-        .rich-content p[style*="line-height"],
-        .rich-content span[style*="line-height"],
-        .rich-content [style*="line-height"] {
-          line-height: inherit !important;
-        }
-
-        .rich-content span[style] {
-          line-height: inherit;
-        }
-
         /* Headings */
         .rich-content h1 {
           font-size: 2em;
