@@ -1,5 +1,8 @@
 import { Category } from "@/types/Lectures/lectures";
-import type { LectureTreeCategory, FormattedLecture } from "@/types/Lectures/lectures-api";
+import type {
+  LectureTreeCategory,
+  FormattedLecture,
+} from "@/types/Lectures/lectures-api";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { getServerSession } from "next-auth";
@@ -100,13 +103,17 @@ export async function GET() {
     }
 
     // Filter out categories with 0 lectures (including subcategories)
-    function filterEmptyCategories(categories: LectureTreeCategory[]): LectureTreeCategory[] {
+    function filterEmptyCategories(
+      categories: LectureTreeCategory[],
+    ): LectureTreeCategory[] {
       return categories
         .map((cat) => ({
           ...cat,
           subcategories: filterEmptyCategories(cat.subcategories),
         }))
-        .filter((cat) => cat.lectures.length > 0 || cat.subcategories.length > 0);
+        .filter(
+          (cat) => cat.lectures.length > 0 || cat.subcategories.length > 0,
+        );
     }
 
     const filteredRoots = filterEmptyCategories(roots);
@@ -115,7 +122,7 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch lecture data" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -126,9 +133,21 @@ export async function POST(request: Request) {
       throw new Error("Database connection not available");
     }
 
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) return authErrorResponse(auth);
-    const { user } = auth;
+    const session = await getServerSession(authOptions);
+    if (
+      !session?.user?.email ||
+      !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+    ) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+      select: { id: true },
+    });
+    if (!user) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
 
     const body = await request.json();
     const {
@@ -145,7 +164,7 @@ export async function POST(request: Request) {
     if (!title || !categoryId || !duration) {
       return NextResponse.json(
         { error: "Title, categoryId, and duration are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -156,7 +175,7 @@ export async function POST(request: Request) {
     if (!category) {
       return NextResponse.json(
         { error: "Category not found" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -188,7 +207,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to create lecture" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
