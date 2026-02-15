@@ -6,7 +6,22 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 
-type LectureWithAuthor = any;
+interface LectureWithAuthor {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string | null;
+  duration: string;
+  date: string | null;
+  bannerImageUrl: string | null;
+  isPremium: boolean;
+  createdAt: Date;
+  author: {
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
+}
 
 function formatLecture(lec: LectureWithAuthor): FormattedLecture {
   return {

@@ -1,11 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryCache } from "@/constants/query-cache";
-import type { Event } from "../types/Events/events";
+import type { Event, CreateEventData } from "../types/Events/events";
 
 export const eventsKeys = {
   all: ["events"] as const,
   lists: () => [...eventsKeys.all, "list"] as const,
-  list: (params?: any) => [...eventsKeys.lists(), params] as const,
+  list: (params?: Record<string, unknown>) => [...eventsKeys.lists(), params] as const,
   details: () => [...eventsKeys.all, "detail"] as const,
   detail: (id: string) => [...eventsKeys.details(), id] as const,
 };
@@ -50,7 +50,7 @@ export function useCreateEvent() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (eventData: any): Promise<Event> => {
+    mutationFn: async (eventData: CreateEventData & Record<string, unknown>): Promise<Event> => {
       const response = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +78,7 @@ export function useUpdateEvent() {
     mutationFn: async ({
       id,
       ...updateData
-    }: { id: string } & any): Promise<Event> => {
+    }: { id: string } & Partial<CreateEventData> & Record<string, unknown>): Promise<Event> => {
       const response = await fetch(`/api/events/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

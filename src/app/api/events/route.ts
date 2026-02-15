@@ -4,12 +4,14 @@ import prisma from "@/lib/prisma/prisma";
 
 export async function GET() {
   try {
-    console.log("Fetching eventds...");
     if (!prisma) {
       throw new Error("Database connection not available");
     }
 
     const events = await prisma.event.findMany({
+      where: {
+        published: true,
+      },
       include: {
         author: {
           select: {

@@ -16,6 +16,7 @@ export async function GET() {
     }
 
     const notifications = await prisma.notification.findMany({
+      take: 100,
       orderBy: { createdAt: "desc" },
       include: {
         _count: {

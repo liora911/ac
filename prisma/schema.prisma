@@ -119,7 +119,7 @@ model Article {
   tags           ArticleTag[]
   comments       Comment[]
   author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category       Category?         @relation(fields: [categoryId], references: [id])
+  category       Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
   @@map("articles")
 }

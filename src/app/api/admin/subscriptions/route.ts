@@ -22,8 +22,9 @@ export async function GET() {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    // Fetch all users with their subscriptions
+    // Fetch users with their subscriptions (capped at 500)
     const users = await prisma.user.findMany({
+      take: 500,
       select: {
         id: true,
         email: true,

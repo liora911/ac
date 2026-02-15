@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const type = searchParams.get("type");
     const skip = parseInt(searchParams.get("skip") || "0", 10);
-    const limit = parseInt(searchParams.get("limit") || String(DEFAULT_LIMIT), 10);
+    const limit = Math.min(parseInt(searchParams.get("limit") || String(DEFAULT_LIMIT), 10), 50);
 
     // If type is specified, return paginated results for that type only
     if (type) {

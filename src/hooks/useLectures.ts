@@ -2,10 +2,21 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryCache } from "@/constants/query-cache";
 import type { Lecture, Category } from "../types/Lectures/lectures";
 
+interface CreateLectureInput {
+  title: string;
+  description?: string;
+  videoUrl?: string;
+  duration: string;
+  date?: string;
+  bannerImageUrl?: string;
+  categoryId: string;
+  isPremium?: boolean;
+}
+
 export const lecturesKeys = {
   all: ["lectures"] as const,
   lists: () => [...lecturesKeys.all, "list"] as const,
-  list: (params?: any) => [...lecturesKeys.lists(), params] as const,
+  list: (params?: Record<string, unknown>) => [...lecturesKeys.lists(), params] as const,
   details: () => [...lecturesKeys.all, "detail"] as const,
   detail: (id: string) => [...lecturesKeys.details(), id] as const,
 };
@@ -50,7 +61,7 @@ export function useCreateLecture() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (lectureData: any): Promise<Lecture> => {
+    mutationFn: async (lectureData: CreateLectureInput): Promise<Lecture> => {
       const response = await fetch("/api/lectures", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -78,7 +89,7 @@ export function useUpdateLecture() {
     mutationFn: async ({
       id,
       ...updateData
-    }: { id: string } & any): Promise<Lecture> => {
+    }: { id: string } & Partial<CreateLectureInput>): Promise<Lecture> => {
       const response = await fetch(`/api/lectures/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

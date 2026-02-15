@@ -12,6 +12,7 @@ export async function GET() {
     }
 
     const comments = await prisma.comment.findMany({
+      take: 200,
       include: {
         user: {
           select: {

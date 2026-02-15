@@ -98,7 +98,7 @@ export async function GET(request: NextRequest) {
 
     const { searchParams } = new URL(request.url);
     const page = Number.parseInt(searchParams.get("page") || "1");
-    const limit = Number.parseInt(searchParams.get("limit") || "10");
+    const limit = Math.min(Number.parseInt(searchParams.get("limit") || "10"), 100);
 
     // Support both categoryId (legacy) and c (category ID) parameters
     const categoryId = searchParams.get("categoryId") || searchParams.get("c") || undefined;

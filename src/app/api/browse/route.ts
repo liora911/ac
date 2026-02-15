@@ -7,58 +7,86 @@ let cachedData: BrowseData | null = null;
 let cacheTimestamp = 0;
 const CACHE_DURATION = 60 * 60 * 1000; // 1 hour
 
-async function getCategoryContentCounts(categoryId: string): Promise<ContentCounts> {
-  const [articles, lectures, presentations, events] = await Promise.all([
-    prisma.article.count({
+interface CategoryRow {
+  id: string;
+  name: string;
+  description: string | null;
+  bannerImageUrl: string | null;
+  parentId: string | null;
+}
+
+async function getAllCountsBatch(categoryIds: string[]): Promise<Map<string, ContentCounts>> {
+  // Run 4 groupBy queries in parallel instead of 4*N individual count queries
+  const [articleCounts, lectureCounts, presentationCounts, eventCounts] = await Promise.all([
+    prisma.articleCategory.groupBy({
+      by: ["categoryId"],
+      where: {
+        categoryId: { in: categoryIds },
+        article: { published: true },
+      },
+      _count: true,
+    }),
+    prisma.lecture.groupBy({
+      by: ["categoryId"],
+      where: {
+        categoryId: { in: categoryIds },
+      },
+      _count: true,
+    }),
+    prisma.presentation.groupBy({
+      by: ["categoryId"],
       where: {
         published: true,
-        categories: {
-          some: {
-            categoryId,
-          },
-        },
+        categoryId: { in: categoryIds },
       },
+      _count: true,
     }),
-    prisma.lecture.count({
-      where: {
-        categoryId,
-      },
-    }),
-    prisma.presentation.count({
+    prisma.event.groupBy({
+      by: ["categoryId"],
       where: {
         published: true,
-        categoryId,
+        categoryId: { in: categoryIds },
       },
-    }),
-    prisma.event.count({
-      where: {
-        published: true,
-        categoryId,
-      },
+      _count: true,
     }),
   ]);
 
-  return {
-    articles,
-    lectures,
-    presentations,
-    events,
-    total: articles + lectures + presentations + events,
-  };
+  // Build lookup maps
+  const articleMap = new Map(articleCounts.map((r) => [r.categoryId, r._count]));
+  const lectureMap = new Map(lectureCounts.map((r) => [r.categoryId, r._count]));
+  const presentationMap = new Map(presentationCounts.map((r) => [r.categoryId, r._count]));
+  const eventMap = new Map(eventCounts.map((r) => [r.categoryId, r._count]));
+
+  const result = new Map<string, ContentCounts>();
+  for (const id of categoryIds) {
+    const articles = articleMap.get(id) ?? 0;
+    const lectures = lectureMap.get(id) ?? 0;
+    const presentations = presentationMap.get(id) ?? 0;
+    const events = eventMap.get(id) ?? 0;
+    result.set(id, {
+      articles,
+      lectures,
+      presentations,
+      events,
+      total: articles + lectures + presentations + events,
+    });
+  }
+
+  return result;
 }
 
-async function buildCategoryTree(categories: any[]): Promise<BrowseCategoryItem[]> {
-  // Get all root categories (no parent)
+function buildCategoryTree(
+  categories: CategoryRow[],
+  countsMap: Map<string, ContentCounts>
+): BrowseCategoryItem[] {
+  const emptyCounts: ContentCounts = { articles: 0, lectures: 0, presentations: 0, events: 0, total: 0 };
+
+  // Build tree in memory (no async needed)
   const rootCategories = categories.filter((cat) => !cat.parentId);
 
-  // Recursively build tree with counts
-  async function buildSubtree(category: any): Promise<BrowseCategoryItem> {
-    const counts = await getCategoryContentCounts(category.id);
+  function buildSubtree(category: CategoryRow): BrowseCategoryItem {
+    const counts = countsMap.get(category.id) ?? emptyCounts;
     const subcategories = categories.filter((cat) => cat.parentId === category.id);
-
-    const subcategoryItems = await Promise.all(
-      subcategories.map((sub) => buildSubtree(sub))
-    );
 
     return {
       id: category.id,
@@ -67,11 +95,11 @@ async function buildCategoryTree(categories: any[]): Promise<BrowseCategoryItem[
       bannerImageUrl: category.bannerImageUrl,
       parentId: category.parentId,
       counts,
-      subcategories: subcategoryItems,
+      subcategories: subcategories.map((sub) => buildSubtree(sub)),
     };
   }
 
-  return Promise.all(rootCategories.map((cat) => buildSubtree(cat)));
+  return rootCategories.map((cat) => buildSubtree(cat));
 }
 
 export async function GET() {
@@ -102,8 +130,12 @@ export async function GET() {
       },
     });
 
-    // Build hierarchical tree with counts
-    const categoryTree = await buildCategoryTree(allCategories);
+    // Batch-fetch all counts in 4 queries total (instead of 4 * N)
+    const categoryIds = allCategories.map((cat) => cat.id);
+    const countsMap = await getAllCountsBatch(categoryIds);
+
+    // Build hierarchical tree (synchronous — no DB calls)
+    const categoryTree = buildCategoryTree(allCategories, countsMap);
 
     // Calculate total counts
     const totalCounts: ContentCounts = categoryTree.reduce(

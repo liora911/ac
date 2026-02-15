@@ -3,12 +3,13 @@ import { queryCache } from "@/constants/query-cache";
 import type {
   Presentation,
   PresentationCategory,
+  CreatePresentationData,
 } from "../types/Presentations/presentations";
 
 export const presentationsKeys = {
   all: ["presentations"] as const,
   lists: () => [...presentationsKeys.all, "list"] as const,
-  list: (params?: any) => [...presentationsKeys.lists(), params] as const,
+  list: (params?: Record<string, unknown>) => [...presentationsKeys.lists(), params] as const,
   details: () => [...presentationsKeys.all, "detail"] as const,
   detail: (id: string) => [...presentationsKeys.details(), id] as const,
 };
@@ -55,7 +56,7 @@ export function useCreatePresentation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (presentationData: any): Promise<Presentation> => {
+    mutationFn: async (presentationData: CreatePresentationData & Record<string, unknown>): Promise<Presentation> => {
       const response = await fetch("/api/presentations", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -86,7 +87,7 @@ export function useUpdatePresentation() {
     mutationFn: async ({
       id,
       ...updateData
-    }: { id: string } & any): Promise<Presentation> => {
+    }: { id: string } & Partial<CreatePresentationData> & Record<string, unknown>): Promise<Presentation> => {
       const response = await fetch(`/api/presentations/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },

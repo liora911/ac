@@ -12,6 +12,9 @@ export async function GET() {
     const prismaCategories = await prisma.category.findMany({
       include: {
         presentations: {
+          where: {
+            published: true,
+          },
           include: {
             author: {
               select: {

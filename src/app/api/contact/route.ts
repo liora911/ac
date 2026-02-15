@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
+import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -84,6 +85,11 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
     const messages = await prisma.message.findMany({
       orderBy: {
         createdAt: "desc",
