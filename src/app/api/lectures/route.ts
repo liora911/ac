@@ -126,18 +126,9 @@ export async function POST(request: Request) {
       throw new Error("Database connection not available");
     }
 
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.email || !ALLOWED_EMAILS.includes(session.user.email.toLowerCase())) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true },
-    });
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
-    }
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) return authErrorResponse(auth);
+    const { user } = auth;
 
     const body = await request.json();
     const {

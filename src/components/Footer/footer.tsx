@@ -191,9 +191,7 @@ export default function Footer() {
           <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
             <BlackHoleIcon className="w-4 h-4" />
             <span>
-              {isHebrew
-                ? "מערכת זו פותחה על ידי : ירין מימון"
-                : "Developed By: Yarin Maimon"}
+              {t("footer.developedBy")}
             </span>
           </div>
         </div>

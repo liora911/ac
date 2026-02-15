@@ -22,18 +22,18 @@ export default function ArticlesDemoPage() {
 
   return (
     <div
-      className="min-h-screen bg-gray-50"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       {}
-      <div className="bg-white shadow-sm">
+      <div className="bg-white dark:bg-gray-900 shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
                 {t("articlesPage.title")}
               </h1>
-              <p className="text-gray-600 mt-2">{t("articlesPage.title")}</p>
+              <p className="text-gray-600 dark:text-gray-400 mt-2">{t("articlesPage.title")}</p>
             </div>
             {isAuthorized && (
               <button

@@ -172,12 +172,12 @@ function SearchPageContent() {
 
   return (
     <div
-      className="min-h-screen bg-gray-50 py-6 sm:py-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-950 py-6 sm:py-8"
       dir={isHebrew ? "rtl" : "ltr"}
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
             {t("searchPage.title")}
           </h1>
 
@@ -193,7 +193,7 @@ function SearchPageContent() {
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={t("searchPage.searchPlaceholder")}
-                className={`w-full ${isHebrew ? "pr-10 pl-16" : "pl-10 pr-16"} py-2.5 sm:py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base`}
+                className={`w-full ${isHebrew ? "pr-10 pl-16" : "pl-10 pr-16"} py-2.5 sm:py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base`}
                 autoFocus
               />
               <button
@@ -208,7 +208,7 @@ function SearchPageContent() {
         </div>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+          <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
             {error}
           </div>
         )}
@@ -273,7 +273,7 @@ function SearchPageContent() {
                   <Link
                     key={`${result.type}-${result.id}`}
                     href={getItemUrl(result, result.type)}
-                    className="block bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow"
+                    className="block bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-4 sm:p-6 hover:shadow-md transition-shadow"
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
                       <div className="flex-shrink-0 text-blue-600">
@@ -282,7 +282,7 @@ function SearchPageContent() {
                       <div className="flex-1 min-w-0 overflow-hidden">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
                           <div className="flex-1 min-w-0">
-                            <h3 className="text-base sm:text-xl font-semibold text-gray-900 hover:text-blue-600 transition-colors line-clamp-2 sm:truncate">
+                            <h3 className="text-base sm:text-xl font-semibold text-gray-900 dark:text-white hover:text-blue-600 transition-colors line-clamp-2 sm:truncate">
                               {result.title}
                             </h3>
                             <p className="mt-1.5 sm:mt-2 text-gray-600 line-clamp-2 text-xs sm:text-sm">
@@ -329,10 +329,10 @@ function SearchPageContent() {
             {results.total === 0 && !isLoading && (
               <div className="text-center py-12">
                 <MdSearch className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
                   {t("searchPage.noResultsTitle")}
                 </h3>
-                <p className="text-gray-600 mb-6 text-sm sm:text-base">
+                <p className="text-gray-600 dark:text-gray-400 mb-6 text-sm sm:text-base">
                   {t("searchPage.noResultsMessage")}
                 </p>
                 <div className="flex flex-wrap justify-center gap-2 sm:gap-4">
@@ -369,10 +369,10 @@ function SearchPageContent() {
         {!isLoading && !results && (
           <div className="text-center py-12">
             <MdSearch className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
+            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
               {t("searchPage.searchOurContent")}
             </h3>
-            <p className="text-gray-600 text-sm sm:text-base">
+            <p className="text-gray-600 dark:text-gray-400 text-sm sm:text-base">
               {t("searchPage.enterSearchTerm")}
             </p>
           </div>
@@ -384,11 +384,11 @@ function SearchPageContent() {
 
 function SearchPageFallback() {
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading...</p>
+          <p className="text-gray-600 dark:text-gray-400"></p>
         </div>
       </div>
     </div>

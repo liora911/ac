@@ -101,7 +101,7 @@ export default function ArchivePage() {
 
   const handleSubmit = async () => {
     if (!formData.title.trim() || !formData.content.trim()) {
-      showError(isRTL ? "יש למלא כותרת ותוכן" : "Title and content are required");
+      showError(t("archive.titleContentRequired"));
       return;
     }
 
@@ -116,7 +116,7 @@ export default function ArchivePage() {
             mediaType: formData.mediaType,
           },
         });
-        showSuccess(isRTL ? "הפריט עודכן בהצלחה" : "Item updated successfully");
+        showSuccess(t("archive.itemUpdated"));
       } else {
         await createMutation.mutateAsync({
           title: formData.title,
@@ -124,22 +124,22 @@ export default function ArchivePage() {
           mediaUrl: formData.mediaUrl || undefined,
           mediaType: formData.mediaType,
         });
-        showSuccess(isRTL ? "הפריט נוצר בהצלחה" : "Item created successfully");
+        showSuccess(t("archive.itemCreated"));
       }
       resetForm();
     } catch (error) {
-      showError(isRTL ? "שגיאה בשמירה" : "Failed to save");
+      showError(t("archive.saveError"));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm(isRTL ? "האם למחוק פריט זה?" : "Delete this item?")) return;
+    if (!confirm(t("archive.deleteConfirm"))) return;
 
     try {
       await deleteMutation.mutateAsync(id);
-      showSuccess(isRTL ? "הפריט נמחק" : "Item deleted");
+      showSuccess(t("archive.itemDeleted"));
     } catch (error) {
-      showError(isRTL ? "שגיאה במחיקה" : "Failed to delete");
+      showError(t("archive.deleteError"));
     }
   };
 
@@ -166,7 +166,7 @@ export default function ArchivePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
-            {isRTL ? "ארכיון" : "Archive"}
+            {t("archive.title")}
           </h1>
           {!isFormOpen && (
             <button
@@ -175,7 +175,7 @@ export default function ArchivePage() {
             >
               <Plus className="w-5 h-5" />
               <span className="hidden sm:inline">
-                {isRTL ? "פריט חדש" : "New Item"}
+                {t("archive.newItem")}
               </span>
             </button>
           )}
@@ -186,13 +186,7 @@ export default function ArchivePage() {
           <div className="mb-8 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                {editingItem
-                  ? isRTL
-                    ? "עריכת פריט"
-                    : "Edit Item"
-                  : isRTL
-                  ? "פריט חדש"
-                  : "New Item"}
+                {editingItem ? t("archive.editItem") : t("archive.newItem")}
               </h2>
               <button
                 onClick={resetForm}
@@ -206,7 +200,7 @@ export default function ArchivePage() {
               {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {isRTL ? "כותרת" : "Title"} *
+                  {t("archive.titleLabel")} *
                 </label>
                 <input
                   type="text"
@@ -215,19 +209,19 @@ export default function ArchivePage() {
                     setFormData({ ...formData, title: e.target.value })
                   }
                   className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder={isRTL ? "הזן כותרת..." : "Enter title..."}
+                  placeholder={t("archive.enterTitle")}
                 />
               </div>
 
               {/* Content Editor */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {isRTL ? "תוכן" : "Content"} *
+                  {t("archive.contentLabel")} *
                 </label>
                 <TiptapEditor
                   value={formData.content}
                   onChange={(val) => setFormData({ ...formData, content: val })}
-                  placeholder={isRTL ? "הזן תוכן..." : "Enter content..."}
+                  placeholder={t("archive.enterContent")}
                   direction={isRTL ? "rtl" : "ltr"}
                   theme="light"
                 />
@@ -236,7 +230,7 @@ export default function ArchivePage() {
               {/* Media Type Selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                  {isRTL ? "סוג מדיה" : "Media Type"}
+                  {t("archive.mediaType")}
                 </label>
                 <div className="flex gap-2">
                   <button
@@ -250,7 +244,7 @@ export default function ArchivePage() {
                         : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                     }`}
                   >
-                    {isRTL ? "ללא" : "None"}
+                    {t("archive.none")}
                   </button>
                   <button
                     type="button"
@@ -264,7 +258,7 @@ export default function ArchivePage() {
                     }`}
                   >
                     <ImageIcon className="w-4 h-4" />
-                    {isRTL ? "תמונה" : "Image"}
+                    {t("archive.image")}
                   </button>
                   <button
                     type="button"
@@ -278,7 +272,7 @@ export default function ArchivePage() {
                     }`}
                   >
                     <Video className="w-4 h-4" />
-                    {isRTL ? "וידאו" : "Video"}
+                    {t("archive.video")}
                   </button>
                 </div>
               </div>
@@ -287,7 +281,7 @@ export default function ArchivePage() {
               {formData.mediaType === "IMAGE" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {isRTL ? "העלאת תמונה" : "Upload Image"}
+                    {t("archive.uploadImage")}
                   </label>
                   <DragDropImageUpload
                     onImageSelect={(url) =>
@@ -304,7 +298,7 @@ export default function ArchivePage() {
               {formData.mediaType === "VIDEO" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {isRTL ? "קישור יוטיוב" : "YouTube URL"}
+                    {t("archive.youtubeUrl")}
                   </label>
                   <input
                     type="text"
@@ -339,7 +333,7 @@ export default function ArchivePage() {
                   onClick={resetForm}
                   className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
                 >
-                  {isRTL ? "ביטול" : "Cancel"}
+                  {t("archive.cancel")}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -349,12 +343,12 @@ export default function ArchivePage() {
                   {createMutation.isPending || updateMutation.isPending ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {isRTL ? "שומר..." : "Saving..."}
+                      {t("archive.saving")}
                     </>
                   ) : (
                     <>
                       <Save className="w-4 h-4" />
-                      {isRTL ? "שמור" : "Save"}
+                      {t("archive.save")}
                     </>
                   )}
                 </button>
@@ -373,14 +367,14 @@ export default function ArchivePage() {
         {/* Error */}
         {error && (
           <div className="text-center py-12 text-red-500">
-            {isRTL ? "שגיאה בטעינת הנתונים" : "Failed to load data"}
+            {t("archive.loadError")}
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && !error && archives?.length === 0 && (
           <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            {isRTL ? "אין פריטים בארכיון" : "No items in archive"}
+            {t("archive.noItems")}
           </div>
         )}
 
@@ -425,6 +419,7 @@ function ArchiveItem({
   isDeleting,
   isRTL,
 }: ArchiveItemProps) {
+  const { t } = useTranslation();
   const youtubeId =
     archive.mediaType === "VIDEO" ? getYouTubeVideoId(archive.mediaUrl) : null;
 
@@ -458,7 +453,7 @@ function ArchiveItem({
               onEdit();
             }}
             className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
-            title={isRTL ? "עריכה" : "Edit"}
+            title={t("archive.edit")}
           >
             <Edit3 className="w-4 h-4" />
           </button>
@@ -469,7 +464,7 @@ function ArchiveItem({
             }}
             disabled={isDeleting}
             className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-            title={isRTL ? "מחיקה" : "Delete"}
+            title={t("archive.delete")}
           >
             <Trash2 className="w-4 h-4" />
           </button>

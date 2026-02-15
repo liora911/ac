@@ -590,7 +590,8 @@
     "contact": "Contact: avshalom@iyar.org.il",
     "siteMap": "Site Map - מפת האתר",
     "browseByCategory": "Browse Articles by Category",
-    "browseAllCategories": "Sitemap"
+    "browseAllCategories": "Sitemap",
+    "developedBy": "Developed By: Yarin Maimon"
   },
   "browse": {
     "title": "Browse All Categories",
@@ -1655,5 +1656,73 @@
     "delete": "Delete comment",
     "deleted": "Comment deleted",
     "posted": "Comment posted"
-  }
-}
+  },
+  "authError": {
+    "configuration": {
+      "title": "Configuration Error",
+      "description": "There is a problem with the server settings. Please contact the administrator."
+    },
+    "accessDenied": {
+      "title": "Access Denied",
+      "description": "You do not have permission to access this resource."
+    },
+    "verification": {
+      "title": "Verification Error",
+      "description": "The link has expired or has already been used. Please try again."
+    },
+    "default": {
+      "title": "Error",
+      "description": "An error occurred during the login process. Please try again."
+    },
+    "tryAgain": "Try logging in again",
+    "backToHome": "Back to home page"
+  },
+  "articleView": {
+    "missingId": "Article ID is missing",
+    "loadError": "Error loading article",
+    "loading": "Loading article...",
+    "notFound": "Article not found",
+    "back": "Back",
+    "by": "By",
+    "readMinutes": "min read",
+    "downloadPdf": "Download PDF"
+  },
+  "quickStats": {
+    "loadError": "Unable to load statistics",
+    "articles": "Articles",
+    "events": "Events",
+    "lectures": "Lectures",
+    "presentations": "Presentations",
+    "thisMonth": "this month",
+    "noChange": "No change"
+  },
+  "archive": {
+    "title": "Archive",
+    "newItem": "New Item",
+    "editItem": "Edit Item",
+    "titleLabel": "Title",
+    "contentLabel": "Content",
+    "mediaType": "Media Type",
+    "none": "None",
+    "image": "Image",
+    "video": "Video",
+    "uploadImage": "Upload Image",
+    "youtubeUrl": "YouTube URL",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saving": "Saving...",
+    "edit": "Edit",
+    "delete": "Delete",
+    "titleContentRequired": "Title and content are required",
+    "itemUpdated": "Item updated successfully",
+    "itemCreated": "Item created successfully",
+    "saveError": "Failed to save",
+    "deleteConfirm": "Delete this item?",
+    "itemDeleted": "Item deleted",
+    "deleteError": "Failed to delete",
+    "loadError": "Failed to load data",
+    "noItems": "No items in archive",
+    "enterTitle": "Enter title...",
+    "enterContent": "Enter content..."
+  },
+  "searchPage": {

@@ -605,7 +605,8 @@
     "contact": "להזמנות: avshalom@iyar.org.il",
     "siteMap": "מפת האתר - Site Map",
     "browseByCategory": "עיון במאמרים לפי קטגוריה",
-    "browseAllCategories": "מפת האתר"
+    "browseAllCategories": "מפת האתר",
+    "developedBy": "מערכת זו פותחה על ידי : ירין מימון"
   },
   "browse": {
     "title": "עיון בכל הקטגוריות",
@@ -1727,5 +1728,73 @@
     "delete": "מחקו תגובה",
     "deleted": "התגובה נמחקה",
     "posted": "התגובה פורסמה"
+  },
+  "authError": {
+    "configuration": {
+      "title": "שגיאת תצורה",
+      "description": "יש בעיה בהגדרות השרת. אנא פנה למנהל המערכת."
+    },
+    "accessDenied": {
+      "title": "גישה נדחתה",
+      "description": "אין לך הרשאה לגשת למשאב זה."
+    },
+    "verification": {
+      "title": "שגיאת אימות",
+      "description": "הקישור פג תוקף או כבר נעשה בו שימוש. אנא נסה שוב."
+    },
+    "default": {
+      "title": "שגיאה",
+      "description": "אירעה שגיאה בתהליך ההתחברות. אנא נסה שוב."
+    },
+    "tryAgain": "נסה להתחבר שוב",
+    "backToHome": "חזור לדף הבית"
+  },
+  "articleView": {
+    "missingId": "מזהה מאמר חסר",
+    "loadError": "שגיאה בטעינת המאמר",
+    "loading": "טוען מאמר...",
+    "notFound": "המאמר לא נמצא",
+    "back": "חזור",
+    "by": "מאת",
+    "readMinutes": "דקות קריאה",
+    "downloadPdf": "הורד PDF"
+  },
+  "quickStats": {
+    "loadError": "לא ניתן לטעון סטטיסטיקות",
+    "articles": "מאמרים",
+    "events": "אירועים",
+    "lectures": "הרצאות",
+    "presentations": "מצגות",
+    "thisMonth": "החודש",
+    "noChange": "ללא שינוי"
+  },
+  "archive": {
+    "title": "ארכיון",
+    "newItem": "פריט חדש",
+    "editItem": "עריכת פריט",
+    "titleLabel": "כותרת",
+    "contentLabel": "תוכן",
+    "mediaType": "סוג מדיה",
+    "none": "ללא",
+    "image": "תמונה",
+    "video": "וידאו",
+    "uploadImage": "העלאת תמונה",
+    "youtubeUrl": "קישור יוטיוב",
+    "cancel": "ביטול",
+    "save": "שמור",
+    "saving": "שומר...",
+    "edit": "עריכה",
+    "delete": "מחיקה",
+    "titleContentRequired": "יש למלא כותרת ותוכן",
+    "itemUpdated": "הפריט עודכן בהצלחה",
+    "itemCreated": "הפריט נוצר בהצלחה",
+    "saveError": "שגיאה בשמירה",
+    "deleteConfirm": "האם למחוק פריט זה?",
+    "itemDeleted": "הפריט נמחק",
+    "deleteError": "שגיאה במחיקה",
+    "loadError": "שגיאה בטעינת הנתונים",
+    "noItems": "אין פריטים בארכיון",
+    "enterTitle": "הזן כותרת...",
+    "enterContent": "הזן תוכן..."
   }
 }

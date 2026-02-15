@@ -8,10 +8,12 @@ import html2canvas from "html2canvas";
 import DOMPurify from "dompurify";
 import type { ArticleViewData } from "@/types/Articles/articles";
 import { formatDate } from "@/lib/utils/date";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 
 export default function ArticlePage() {
   const searchParams = useSearchParams();
   const articleId = searchParams.get("id");
+  const { t, locale } = useTranslation();
 
   const [article, setArticle] = useState<ArticleViewData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,7 +58,7 @@ export default function ArticlePage() {
   useEffect(() => {
     const fetchArticle = async () => {
       if (!articleId) {
-        setError("מזהה מאמר חסר");
+        setError(t("articleView.missingId"));
         setLoading(false);
         return;
       }
@@ -73,21 +75,21 @@ export default function ArticlePage() {
         const foundArticle: ArticleViewData = await response.json();
         setArticle(foundArticle);
       } catch (err) {
-        setError("שגיאה בטעינת המאמר");
+        setError(t("articleView.loadError"));
       } finally {
         setLoading(false);
       }
     };
 
     fetchArticle();
-  }, [articleId]);
+  }, [articleId, t]);
 
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">טוען מאמר...</p>
+          <p className="text-gray-600 dark:text-gray-400">{t("articleView.loading")}</p>
         </div>
       </div>
     );
@@ -95,20 +97,20 @@ export default function ArticlePage() {
 
   if (error || !article) {
     return (
-      <div className="p-8 text-center text-gray-600">
-        <p className="text-lg mb-4">{error || "המאמר לא נמצא"}</p>
+      <div className="p-8 text-center text-gray-600 dark:text-gray-400">
+        <p className="text-lg mb-4">{error || t("articleView.notFound")}</p>
         <button
           onClick={() => window.history.back()}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors cursor-pointer"
         >
-          חזור
+          {t("articleView.back")}
         </button>
       </div>
     );
   }
 
   return (
-    <div className="w-full bg-white text-gray-900">
+    <div className="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <div className="relative w-full h-[80vh]">
         <Image
           src={article.articleImage}
@@ -122,7 +124,7 @@ export default function ArticlePage() {
             {article.title}
           </h1>
           <p className="mt-4 text-lg sm:text-xl text-gray-200 font-light">
-            מאת {article.publisherName} · {formatDate(article.createdAt, "he")}
+            {t("articleView.by")} {article.publisherName} · {formatDate(article.createdAt, locale)}
           </p>
         </div>
       </div>
@@ -141,8 +143,8 @@ export default function ArticlePage() {
             )}
             <div>
               <p className="font-semibold">{article.publisherName}</p>
-              <p className="text-sm text-gray-600">
-                {formatDate(article.createdAt, "he")} · {article.readDuration} דקות קריאה
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                {formatDate(article.createdAt, locale)} · {article.readDuration} {t("articleView.readMinutes")}
               </p>
             </div>
           </div>
@@ -151,13 +153,13 @@ export default function ArticlePage() {
               onClick={downloadPDF}
               className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 cursor-pointer"
             >
-              📄 הורד PDF
+              {t("articleView.downloadPdf")}
             </button>
           </div>
         </div>
 
         <div
-          className="text-lg leading-loose text-gray-800 prose prose-lg max-w-none article-content"
+          className="text-lg leading-loose text-gray-800 dark:text-gray-200 prose prose-lg dark:prose-invert max-w-none article-content"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(article.content, {
               ADD_ATTR: ['style'],
