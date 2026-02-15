@@ -1,14 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import { requireAdmin, authErrorResponse, isAuthError, isMcpAuthorized } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { Archive, CreateArchiveRequest } from "@/types/Archive/archive";
 
-// GET - List all archive items (admin only)
-export async function GET() {
+// GET - List all archive items (admin or MCP)
+export async function GET(request: NextRequest) {
   try {
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) {
-      return authErrorResponse(auth);
+    if (!isMcpAuthorized(request)) {
+      const auth = await requireAdmin();
+      if (isAuthError(auth)) {
+        return authErrorResponse(auth);
+      }
     }
 
     const archives = await prisma.archive.findMany({
@@ -36,12 +38,14 @@ export async function GET() {
   }
 }
 
-// POST - Create new archive item (admin only)
+// POST - Create new archive item (admin or MCP)
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) {
-      return authErrorResponse(auth);
+    if (!isMcpAuthorized(request)) {
+      const auth = await requireAdmin();
+      if (isAuthError(auth)) {
+        return authErrorResponse(auth);
+      }
     }
 
     const body: CreateArchiveRequest = await request.json();

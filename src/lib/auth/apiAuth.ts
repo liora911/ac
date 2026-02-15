@@ -95,6 +95,16 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 }
 
 /**
+ * Check if a request is authorized via MCP API key.
+ * Checks for x-api-key header against process.env.MCP_API_KEY.
+ */
+export function isMcpAuthorized(request: Request): boolean {
+  const apiKey = request.headers.get("x-api-key");
+  if (!apiKey || !process.env.MCP_API_KEY) return false;
+  return apiKey === process.env.MCP_API_KEY;
+}
+
+/**
  * Get the current session without requiring auth
  * Returns null if not authenticated
  */

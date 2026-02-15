@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import { requireAdmin, authErrorResponse, isAuthError, isMcpAuthorized } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import type { UpdateArchiveRequest } from "@/types/Archive/archive";
 
@@ -7,12 +7,14 @@ interface RouteParams {
   params: Promise<{ id: string }>;
 }
 
-// GET - Get single archive item (admin only)
+// GET - Get single archive item (admin or MCP)
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) {
-      return authErrorResponse(auth);
+    if (!isMcpAuthorized(request)) {
+      const auth = await requireAdmin();
+      if (isAuthError(auth)) {
+        return authErrorResponse(auth);
+      }
     }
 
     const { id } = await params;
@@ -43,12 +45,14 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// PUT - Update archive item (admin only)
+// PUT - Update archive item (admin or MCP)
 export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) {
-      return authErrorResponse(auth);
+    if (!isMcpAuthorized(request)) {
+      const auth = await requireAdmin();
+      if (isAuthError(auth)) {
+        return authErrorResponse(auth);
+      }
     }
 
     const { id } = await params;
@@ -93,12 +97,14 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
   }
 }
 
-// DELETE - Delete archive item (admin only)
+// DELETE - Delete archive item (admin or MCP)
 export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
-    const auth = await requireAdmin();
-    if (isAuthError(auth)) {
-      return authErrorResponse(auth);
+    if (!isMcpAuthorized(request)) {
+      const auth = await requireAdmin();
+      if (isAuthError(auth)) {
+        return authErrorResponse(auth);
+      }
     }
 
     const { id } = await params;
