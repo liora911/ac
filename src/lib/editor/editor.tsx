@@ -26,6 +26,7 @@ import Youtube from "@tiptap/extension-youtube";
 import { useEffect, useState, useRef } from "react";
 import { TextDirection } from "./text-direction";
 import DragDropImageUpload from "@/components/Upload/upload";
+import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
@@ -197,6 +198,127 @@ export default function TiptapEditor({
         class: `p-4 focus:outline-none prose prose-sm max-w-none ${
           theme === "dark" ? "prose-invert" : ""
         }`,
+      },
+      handlePaste: (view, event) => {
+        const files = Array.from(event.clipboardData?.files || []);
+        const imageFile = files.find((f) => f.type.startsWith("image/"));
+        if (!imageFile) return false;
+
+        event.preventDefault();
+        const placeholderId = `upload-${Date.now()}`;
+        const { state } = view;
+        const pos = state.selection.from;
+
+        // Insert placeholder image
+        view.dispatch(
+          state.tr.insert(
+            pos,
+            state.schema.nodes.image.create({
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%23374151' rx='8'/%3E%3Ctext x='100' y='55' text-anchor='middle' fill='%239CA3AF' font-size='14'%3EUploading...%3C/text%3E%3C/svg%3E",
+              alt: placeholderId,
+            })
+          )
+        );
+
+        if (!isImageFile(imageFile)) {
+          // Remove placeholder and alert
+          const { state: s } = view;
+          s.doc.descendants((node, nodePos) => {
+            if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+              view.dispatch(s.tr.delete(nodePos, nodePos + node.nodeSize));
+              return false;
+            }
+          });
+          alert("Please paste an image file (JPEG, PNG, GIF, or WebP).");
+          return true;
+        }
+
+        clientUpload(imageFile).then((result) => {
+          const { state: currentState } = view;
+          if (result.success) {
+            currentState.doc.descendants((node, nodePos) => {
+              if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+                view.dispatch(
+                  currentState.tr.setNodeMarkup(nodePos, undefined, {
+                    src: result.url,
+                    alt: "",
+                  })
+                );
+                return false;
+              }
+            });
+          } else {
+            currentState.doc.descendants((node, nodePos) => {
+              if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+                view.dispatch(currentState.tr.delete(nodePos, nodePos + node.nodeSize));
+                return false;
+              }
+            });
+            alert(result.error || "Upload failed");
+          }
+        });
+
+        return true;
+      },
+      handleDrop: (view, event) => {
+        const files = Array.from(event.dataTransfer?.files || []);
+        const imageFile = files.find((f) => f.type.startsWith("image/"));
+        if (!imageFile) return false;
+
+        event.preventDefault();
+        const placeholderId = `upload-${Date.now()}`;
+        const coords = { left: event.clientX, top: event.clientY };
+        const pos = view.posAtCoords(coords)?.pos ?? view.state.selection.from;
+
+        // Insert placeholder at drop position
+        view.dispatch(
+          view.state.tr.insert(
+            pos,
+            view.state.schema.nodes.image.create({
+              src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='100'%3E%3Crect width='200' height='100' fill='%23374151' rx='8'/%3E%3Ctext x='100' y='55' text-anchor='middle' fill='%239CA3AF' font-size='14'%3EUploading...%3C/text%3E%3C/svg%3E",
+              alt: placeholderId,
+            })
+          )
+        );
+
+        if (!isImageFile(imageFile)) {
+          const { state: s } = view;
+          s.doc.descendants((node, nodePos) => {
+            if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+              view.dispatch(s.tr.delete(nodePos, nodePos + node.nodeSize));
+              return false;
+            }
+          });
+          alert("Please drop an image file (JPEG, PNG, GIF, or WebP).");
+          return true;
+        }
+
+        clientUpload(imageFile).then((result) => {
+          const { state: currentState } = view;
+          if (result.success) {
+            currentState.doc.descendants((node, nodePos) => {
+              if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+                view.dispatch(
+                  currentState.tr.setNodeMarkup(nodePos, undefined, {
+                    src: result.url,
+                    alt: "",
+                  })
+                );
+                return false;
+              }
+            });
+          } else {
+            currentState.doc.descendants((node, nodePos) => {
+              if (node.type.name === "image" && node.attrs.alt === placeholderId) {
+                view.dispatch(currentState.tr.delete(nodePos, nodePos + node.nodeSize));
+                return false;
+              }
+            });
+            alert(result.error || "Upload failed");
+          }
+        });
+
+        return true;
       },
     },
   });
