@@ -112,7 +112,7 @@ export default function DragDropImageUpload({
       {preview ? (
         <div className="relative">
           <div className="relative w-full h-48 border-2 border-gray-600 rounded-lg overflow-hidden">
-            <Image src={preview} alt="Preview" fill className="object-cover" />
+            <Image src={preview} alt="Preview" fill className="object-cover" unoptimized />
             {isUploading && (
               <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center">
                 <Loader2 className="w-8 h-8 text-white animate-spin" />
