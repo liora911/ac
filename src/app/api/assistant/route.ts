@@ -421,15 +421,32 @@ export async function POST(req: Request) {
       );
     }
 
-    const { text } = await generateText({
-      model: google("gemini-2.5-flash-lite"),
+    const result = await generateText({
+      model: google("gemini-2.5-flash"),
       system: getSystemPrompt(!!isAdmin),
       messages,
       tools: isAdmin ? adminTools : visitorTools,
       stopWhen: stepCountIs(3),
     });
 
-    return new Response(text, {
+    // Extract text — check steps if main text is empty (can happen with tool calling)
+    let responseText = result.text;
+    if (!responseText) {
+      for (const step of result.steps) {
+        if (step.text) responseText = step.text;
+      }
+    }
+
+    if (!responseText) {
+      console.warn("Assistant: empty text after tool calling", {
+        steps: result.steps.length,
+        toolCalls: result.steps.map((s) => s.toolCalls?.length ?? 0),
+      });
+      responseText =
+        "I processed your request but couldn't generate a response. Please try rephrasing your question.";
+    }
+
+    return new Response(responseText, {
       headers: { "Content-Type": "text/plain; charset=utf-8" },
     });
   } catch (error) {
