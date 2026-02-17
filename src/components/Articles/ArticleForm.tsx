@@ -184,19 +184,22 @@ export default function ArticleForm({
         })),
       };
 
+      let resultSlug: string;
       if (isEditing && article) {
-        await updateMutation.mutateAsync({
+        const updated = await updateMutation.mutateAsync({
           id: article.id,
           ...submissionData,
         });
+        resultSlug = updated.slug || article.id;
       } else {
-        await createMutation.mutateAsync(submissionData);
+        const created = await createMutation.mutateAsync(submissionData);
+        resultSlug = created.slug || created.id;
       }
 
       if (onSuccess) {
-        onSuccess();
+        onSuccess(resultSlug);
       } else {
-        router.push("/articles");
+        router.push(`/articles/${resultSlug}`);
       }
     } catch (error) {}
   };

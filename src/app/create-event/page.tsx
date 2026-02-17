@@ -16,8 +16,8 @@ export default function CreateEventPage() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  const handleSuccess = () => {
-    router.push("/events");
+  const handleSuccess = (id: string) => {
+    router.push(`/events/${id}`);
   };
 
   if (status === "loading") {

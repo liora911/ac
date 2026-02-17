@@ -10,7 +10,7 @@ import { LectureForm, initialLectureFormData } from "@/components/LectureForm";
 import type { LectureFormData } from "@/components/LectureForm";
 
 interface CreateLectureFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (id: string) => void;
 }
 
 export default function CreateLectureForm({ onSuccess }: CreateLectureFormProps) {
@@ -91,10 +91,10 @@ export default function CreateLectureForm({ onSuccess }: CreateLectureFormProps)
     }
 
     try {
-      await createLectureMutation.mutateAsync(formData);
+      const created = await createLectureMutation.mutateAsync(formData);
       setMessage({ type: "success", text: t("createLecture.successMessage") });
       setFormData(initialLectureFormData);
-      onSuccess?.();
+      onSuccess?.(created.id);
     } catch (error) {
       setMessage({
         type: "error",

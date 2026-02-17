@@ -14,8 +14,8 @@ export default function EditArticlePage() {
 
   const { data: article, isLoading, error } = useArticle(articleId);
 
-  const handleSuccess = () => {
-    router.push("/articles");
+  const handleSuccess = (slug: string) => {
+    router.push(`/articles/${slug}`);
   };
 
   const handleCancel = () => {

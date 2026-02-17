@@ -186,7 +186,7 @@ export interface ArticleStats {
 
 export interface ArticleFormProps {
   article?: Article;
-  onSuccess?: () => void;
+  onSuccess?: (slug: string) => void;
   onCancel?: () => void;
 }
 

@@ -10,7 +10,7 @@ import { PresentationForm, initialPresentationFormData } from "@/components/Pres
 import type { PresentationFormData } from "@/components/PresentationForm";
 
 interface CreatePresentationFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (id: string) => void;
 }
 
 export default function CreatePresentationForm({ onSuccess }: CreatePresentationFormProps) {
@@ -95,10 +95,10 @@ export default function CreatePresentationForm({ onSuccess }: CreatePresentation
         imageUrls: formData.imageUrls.filter((url) => url.trim() !== ""),
       };
 
-      await createPresentationMutation.mutateAsync(submissionData);
+      const created = await createPresentationMutation.mutateAsync(submissionData);
       setMessage({ type: "success", text: t("createPresentation.successMessage") });
       setFormData(initialPresentationFormData);
-      onSuccess?.();
+      onSuccess?.(created.id);
     } catch (error) {
       setMessage({
         type: "error",

@@ -16,8 +16,8 @@ export default function CreatePresentationPage() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  const handleSuccess = () => {
-    router.push("/presentations");
+  const handleSuccess = (id: string) => {
+    router.push(`/presentations/${id}`);
   };
 
   if (status === "loading") {

@@ -16,8 +16,8 @@ export default function CreateLecturePage() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  const handleSuccess = () => {
-    router.push("/lectures");
+  const handleSuccess = (id: string) => {
+    router.push(`/lectures/${id}`);
   };
 
   if (status === "loading") {

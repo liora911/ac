@@ -16,8 +16,8 @@ export default function CreateArticlePage() {
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase());
 
-  const handleSuccess = () => {
-    router.push("/articles");
+  const handleSuccess = (slug: string) => {
+    router.push(`/articles/${slug}`);
   };
 
   const handleCancel = () => {

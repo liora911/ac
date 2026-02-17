@@ -154,7 +154,7 @@ export default function EditEventForm({ eventId, onSuccess }: EditEventFormProps
       if (onSuccess) {
         onSuccess();
       } else {
-        router.push("/events");
+        router.push(`/events/${eventId}`);
       }
     } catch (error) {
       setMessage({

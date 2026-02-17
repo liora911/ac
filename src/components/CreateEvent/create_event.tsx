@@ -11,7 +11,7 @@ import { EventForm, initialEventFormData } from "@/components/EventForm";
 import type { EventFormData } from "@/components/EventForm";
 
 interface CreateEventFormProps {
-  onSuccess?: () => void;
+  onSuccess?: (id: string) => void;
 }
 
 export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
@@ -99,10 +99,10 @@ export default function CreateEventForm({ onSuccess }: CreateEventFormProps) {
         price: formData.price ? shekelsToAgorot(parseFloat(formData.price)) : null,
       };
 
-      await createEventMutation.mutateAsync(submissionData);
+      const created = await createEventMutation.mutateAsync(submissionData);
       setMessage({ type: "success", text: t("createEvent.successMessage") });
       setFormData(initialEventFormData);
-      onSuccess?.();
+      onSuccess?.(created.id);
     } catch (error) {
       setMessage({
         type: "error",
