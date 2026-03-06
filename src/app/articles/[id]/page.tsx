@@ -142,40 +142,56 @@ async function getArticle(idOrSlug: string) {
   return article;
 }
 
-// Fetch related articles that share tags with the current article
+const PINNED_RELATED_ID = "cmlc13za90002l504vy30172b";
+
+const relatedArticleSelect = {
+  id: true,
+  title: true,
+  slug: true,
+  articleImage: true,
+  readDuration: true,
+  createdAt: true,
+  publisherName: true,
+  authors: {
+    orderBy: { order: "asc" as const },
+    take: 1,
+    select: { name: true, imageUrl: true },
+  },
+};
+
+// Fetch related articles — always includes the pinned article unless viewing it
 async function getRelatedArticles(articleId: string, tagIds: string[], limit: number = 3) {
-  if (!prisma || tagIds.length === 0) {
-    return [];
-  }
+  if (!prisma) return [];
 
-  const relatedArticles = await prisma.article.findMany({
-    where: {
-      published: true,
-      id: { not: articleId },
-      tags: { some: { tagId: { in: tagIds } } },
-    },
-    select: {
-      id: true,
-      title: true,
-      slug: true,
-      articleImage: true,
-      readDuration: true,
-      createdAt: true,
-      publisherName: true,
-      authors: {
-        orderBy: { order: "asc" },
-        take: 1,
-        select: {
-          name: true,
-          imageUrl: true,
-        },
-      },
-    },
-    orderBy: { createdAt: "desc" },
-    take: limit,
-  });
+  const isPinnedCurrent = articleId === PINNED_RELATED_ID;
 
-  return relatedArticles;
+  // Fetch pinned article (unless we're on that page)
+  const pinnedPromise = isPinnedCurrent
+    ? Promise.resolve(null)
+    : prisma.article.findUnique({
+        where: { id: PINNED_RELATED_ID, published: true },
+        select: relatedArticleSelect,
+      });
+
+  // Fetch tag-based related articles to fill remaining slots
+  const tagSlotsNeeded = limit - (isPinnedCurrent ? 0 : 1);
+  const tagBasedPromise =
+    tagIds.length > 0
+      ? prisma.article.findMany({
+          where: {
+            published: true,
+            id: { notIn: [articleId, PINNED_RELATED_ID] },
+            tags: { some: { tagId: { in: tagIds } } },
+          },
+          select: relatedArticleSelect,
+          orderBy: { createdAt: "desc" },
+          take: tagSlotsNeeded,
+        })
+      : Promise.resolve([]);
+
+  const [pinned, tagBased] = await Promise.all([pinnedPromise, tagBasedPromise]);
+
+  return [...(pinned ? [pinned] : []), ...tagBased];
 }
 
 // Generate metadata for SEO and social sharing
