@@ -96,7 +96,13 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   if (items.length === 0) return null;
 
   return (
-    <div className="mb-10">
+    <motion.div
+      className="mb-10"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
       </div>
@@ -195,7 +201,7 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -229,7 +235,7 @@ function MixedCard({
   return (
     <Link
       href={itemLink}
-      className="block group/card flex-shrink-0 w-56 sm:w-auto"
+      className="block group/card flex-shrink-0 w-44 sm:w-auto"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >

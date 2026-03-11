@@ -4,15 +4,13 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  ChevronLeft,
-  ChevronRight,
-  Loader2,
-  Flame,
-} from "lucide-react";
+import { ChevronLeft, ChevronRight, Loader2, Flame } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
-import type { ContentItem, FeaturedCarouselSectionProps } from "@/types/Home/home";
+import type {
+  ContentItem,
+  FeaturedCarouselSectionProps,
+} from "@/types/Home/home";
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE, BATCH_SIZE } from "@/constants/pagination";
 import { COOLDOWN_MS } from "@/constants/timing";
@@ -51,8 +49,13 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
     (page + 1) * ITEMS_PER_PAGE,
   );
 
-  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns, showText } =
-    useCarouselExpand();
+  const {
+    expandedIdx,
+    handleMouseEnter,
+    handleMouseLeave,
+    gridColumns,
+    showText,
+  } = useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -126,7 +129,13 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
   }
 
   return (
-    <div className="mb-12 -mx-6 px-6 py-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900/50 dark:via-blue-950/20 dark:to-slate-900/50 border-y border-slate-200/80 dark:border-slate-700/50 shadow-inner">
+    <motion.div
+      className="mb-12 -mx-6 px-6 py-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900/50 dark:via-blue-950/20 dark:to-slate-900/50 border-y border-slate-200/80 dark:border-slate-700/50 shadow-inner"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       {/* Header with special styling */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-3">
@@ -139,13 +148,6 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
             </h2>
           </div>
         </div>
-        <Link
-          href={href}
-          className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors flex items-center gap-1.5 px-4 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-950/30"
-        >
-          {t("home.sections.viewAll")}
-          <ChevronRight className="w-4 h-4" />
-        </Link>
       </div>
 
       <div className="relative group">
@@ -192,7 +194,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                 <Link
                   key={item.id}
                   href={itemLink}
-                  className="block group/card flex-shrink-0 w-56"
+                  className="block group/card flex-shrink-0 w-44"
                 >
                   <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-blue-300/50 dark:ring-blue-600/30">
                     {imageUrl ? (
@@ -201,7 +203,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="224px"
+                        sizes="176px"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
@@ -246,7 +248,9 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
             >
               <motion.div
                 className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
-                animate={gridColumns ? { gridTemplateColumns: gridColumns } : {}}
+                animate={
+                  gridColumns ? { gridTemplateColumns: gridColumns } : {}
+                }
                 transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 {currentItems.map((item, idx) => {
@@ -267,11 +271,13 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                       onMouseEnter={() => handleMouseEnter(idx)}
                       onMouseLeave={handleMouseLeave}
                     >
-                      <div className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-inset transition-shadow duration-300 ${
-                        isExpanded
-                          ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/30"
-                          : "ring-blue-300/50 dark:ring-blue-600/30"
-                      }`}>
+                      <div
+                        className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-inset transition-shadow duration-300 ${
+                          isExpanded
+                            ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/30"
+                            : "ring-blue-300/50 dark:ring-blue-600/30"
+                        }`}
+                      >
                         {imageUrl ? (
                           <Image
                             src={imageUrl}
@@ -292,18 +298,32 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                           </div>
                         )}
 
-                        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
-                          showText ? (isExpanded ? "opacity-100" : "lg:opacity-80") : "lg:opacity-0"
-                        }`}>
-                          <h3 className={`text-white font-bold drop-shadow-lg line-clamp-2 ${
-                            isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"
-                          }`}>
+                        <div
+                          className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
+                            showText
+                              ? isExpanded
+                                ? "opacity-100"
+                                : "lg:opacity-80"
+                              : "lg:opacity-0"
+                          }`}
+                        >
+                          <h3
+                            className={`text-white font-bold drop-shadow-lg line-clamp-2 ${
+                              isExpanded
+                                ? "text-sm"
+                                : "text-sm lg:text-[10px] lg:leading-tight"
+                            }`}
+                          >
                             {item.title}
                           </h3>
                           {subtitle && (
-                            <p className={`text-white/80 drop-shadow-md line-clamp-1 ${
-                              isExpanded ? "text-xs mt-0.5" : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
-                            }`}>
+                            <p
+                              className={`text-white/80 drop-shadow-md line-clamp-1 ${
+                                isExpanded
+                                  ? "text-xs mt-0.5"
+                                  : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
+                              }`}
+                            >
                               {subtitle}
                             </p>
                           )}
@@ -335,7 +355,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

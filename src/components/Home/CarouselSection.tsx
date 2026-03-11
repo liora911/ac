@@ -41,10 +41,18 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   }, [initialItems]);
 
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
-  const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
+  const currentItems = items.slice(
+    page * ITEMS_PER_PAGE,
+    (page + 1) * ITEMS_PER_PAGE,
+  );
 
-  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns, showText } =
-    useCarouselExpand();
+  const {
+    expandedIdx,
+    handleMouseEnter,
+    handleMouseLeave,
+    gridColumns,
+    showText,
+  } = useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -55,7 +63,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     cooldownRef.current = true;
     setDirection(dir);
     setPage(newPage);
-    setTimeout(() => { cooldownRef.current = false; }, COOLDOWN_MS);
+    setTimeout(() => {
+      cooldownRef.current = false;
+    }, COOLDOWN_MS);
   }, []);
 
   const loadMore = useCallback(async () => {
@@ -64,7 +74,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     try {
       const result = await onLoadMore(contentType, items.length);
       if (result.items.length > 0) {
-        setItems(prev => [...prev, ...result.items]);
+        setItems((prev) => [...prev, ...result.items]);
         setHasMore(result.hasMore);
         return true;
       }
@@ -93,9 +103,12 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     if (page > 0) navigate(-1, page - 1);
   }, [page, navigate]);
 
-  const goToPage = useCallback((idx: number) => {
-    if (idx !== page) navigate(idx > page ? 1 : -1, idx);
-  }, [page, navigate]);
+  const goToPage = useCallback(
+    (idx: number) => {
+      if (idx !== page) navigate(idx > page ? 1 : -1, idx);
+    },
+    [page, navigate],
+  );
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
@@ -112,10 +125,9 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     return (
       <div className="mb-10">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
-          <Link href={href} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-            {t("home.sections.viewAll")}
-          </Link>
+          <h2 className="text-xl font-bold text-[var(--foreground)]">
+            {title}
+          </h2>
         </div>
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
           {t("home.sections.noContent")}
@@ -125,12 +137,15 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   }
 
   return (
-    <div className="mb-10">
+    <motion.div
+      className="mb-10"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+    >
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
-        <Link href={href} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
-          {t("home.sections.viewAll")}
-        </Link>
       </div>
 
       <div className="relative group">
@@ -168,15 +183,16 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
               const imageUrl = getImageUrl(item);
               const rawSubtitle = getSubtitle?.(item);
               const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
-              const itemLink = useSlug && item.slug
-                ? `${linkPrefix}/${item.slug}`
-                : `${linkPrefix}/${item.id}`;
+              const itemLink =
+                useSlug && item.slug
+                  ? `${linkPrefix}/${item.slug}`
+                  : `${linkPrefix}/${item.id}`;
 
               return (
                 <Link
                   key={item.id}
                   href={itemLink}
-                  className="block group/card flex-shrink-0 w-56"
+                  className="block group/card flex-shrink-0 w-44"
                 >
                   <div className="relative aspect-[2/3] rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md">
                     {imageUrl ? (
@@ -185,7 +201,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                         alt={item.title}
                         fill
                         className="object-cover"
-                        sizes="224px"
+                        sizes="176px"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-300 to-gray-400 dark:from-gray-600 dark:to-gray-700" />
@@ -233,16 +249,19 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             >
               <motion.div
                 className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
-                animate={gridColumns ? { gridTemplateColumns: gridColumns } : {}}
+                animate={
+                  gridColumns ? { gridTemplateColumns: gridColumns } : {}
+                }
                 transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
               >
                 {currentItems.map((item, idx) => {
                   const imageUrl = getImageUrl(item);
                   const rawSubtitle = getSubtitle?.(item);
                   const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
-                  const itemLink = useSlug && item.slug
-                    ? `${linkPrefix}/${item.slug}`
-                    : `${linkPrefix}/${item.id}`;
+                  const itemLink =
+                    useSlug && item.slug
+                      ? `${linkPrefix}/${item.slug}`
+                      : `${linkPrefix}/${item.id}`;
                   const isExpanded = expandedIdx === idx;
 
                   return (
@@ -253,11 +272,13 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                       onMouseEnter={() => handleMouseEnter(idx)}
                       onMouseLeave={handleMouseLeave}
                     >
-                      <div className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md ring-2 ring-inset transition-shadow duration-300 ${
-                        isExpanded
-                          ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30"
-                          : "ring-transparent"
-                      }`}>
+                      <div
+                        className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-md ring-2 ring-inset transition-shadow duration-300 ${
+                          isExpanded
+                            ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/20 dark:shadow-blue-500/30"
+                            : "ring-transparent"
+                        }`}
+                      >
                         {imageUrl ? (
                           <Image
                             src={imageUrl}
@@ -281,18 +302,32 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                           {item.isPremium && <PremiumBadge size="sm" />}
                         </div>
 
-                        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
-                          showText ? (isExpanded ? "opacity-100" : "lg:opacity-80") : "lg:opacity-0"
-                        }`}>
-                          <h3 className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
-                            isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"
-                          }`}>
+                        <div
+                          className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
+                            showText
+                              ? isExpanded
+                                ? "opacity-100"
+                                : "lg:opacity-80"
+                              : "lg:opacity-0"
+                          }`}
+                        >
+                          <h3
+                            className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
+                              isExpanded
+                                ? "text-sm"
+                                : "text-sm lg:text-[10px] lg:leading-tight"
+                            }`}
+                          >
                             {item.title}
                           </h3>
                           {subtitle && (
-                            <p className={`text-white/80 drop-shadow-md line-clamp-1 ${
-                              isExpanded ? "text-xs mt-0.5" : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
-                            }`}>
+                            <p
+                              className={`text-white/80 drop-shadow-md line-clamp-1 ${
+                                isExpanded
+                                  ? "text-xs mt-0.5"
+                                  : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
+                              }`}
+                            >
                               {subtitle}
                             </p>
                           )}
@@ -328,7 +363,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
