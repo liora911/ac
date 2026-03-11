@@ -92,9 +92,8 @@ function ArticlesListContent({
     resetPreferences,
   } = useCategoryPreferences();
 
-  // Read URL params for initial state
-  const urlCategoryId = searchParams.get("c");
-  const urlPage = searchParams.get("page");
+  // Read URL params for initial state (support both ?categoryId= and legacy ?c=)
+  const urlCategoryId = searchParams.get("categoryId") || searchParams.get("c");
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || urlCategoryId || "");
@@ -170,10 +169,10 @@ function ArticlesListContent({
   const prevCountRef = useRef(0);
 
   // Update URL when filters change
-  const updateURL = useCallback((categoryId: string | null) => {
+  const updateURL = useCallback((catId: string | null) => {
     const params = new URLSearchParams();
-    if (categoryId) {
-      params.set("c", categoryId);
+    if (catId) {
+      params.set("categoryId", catId);
     }
     const queryString = params.toString();
     router.push(queryString ? `/articles?${queryString}` : "/articles", { scroll: false });
