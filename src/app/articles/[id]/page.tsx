@@ -194,6 +194,22 @@ async function getRelatedArticles(articleId: string, tagIds: string[], limit: nu
   return [...(pinned ? [pinned] : []), ...tagBased];
 }
 
+// Pre-render published article pages at build time
+export async function generateStaticParams() {
+  if (!prisma) return [];
+
+  const articles = await prisma.article.findMany({
+    where: { published: true },
+    select: { slug: true, id: true },
+    orderBy: { createdAt: "desc" },
+    take: 50,
+  });
+
+  return articles.map((article) => ({
+    id: article.slug || article.id,
+  }));
+}
+
 // Generate metadata for SEO and social sharing
 export async function generateMetadata({
   params,
@@ -521,6 +537,8 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                         alt={related.title}
                         fill
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        loading="lazy"
                       />
                     </div>
                   )}

@@ -48,7 +48,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event, onEventClick }) =>
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 100vw, 40vw"
-                priority
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
             </>

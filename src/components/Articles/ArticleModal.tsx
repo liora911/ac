@@ -87,6 +87,8 @@ const ArticleModal: React.FC<ArticleModalProps> = ({ article, onClose }) => {
                   alt={article.title}
                   fill
                   className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 896px"
+                  loading="lazy"
                 />
               </div>
             </div>

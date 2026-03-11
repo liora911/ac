@@ -115,6 +115,7 @@ export default function LectureDetailPage() {
             fill
             className="object-cover opacity-50"
             priority
+            sizes="100vw"
           />
         </div>
       )}

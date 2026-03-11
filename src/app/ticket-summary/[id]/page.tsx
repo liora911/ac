@@ -149,6 +149,8 @@ export default function TicketSummaryPage() {
                 alt={ticket.event.title}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, 672px"
+                priority
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div className="absolute bottom-4 start-4 end-4">

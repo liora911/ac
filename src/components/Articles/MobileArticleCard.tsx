@@ -66,6 +66,7 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
               fill
               className="object-cover"
               sizes="80px"
+              loading="lazy"
             />
 
             {/* Featured star overlay */}

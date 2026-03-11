@@ -118,6 +118,7 @@ export default function ArticlePage() {
           fill
           className="object-cover brightness-75"
           priority
+          sizes="100vw"
         />
         <div className="absolute inset-0 flex flex-col justify-center items-start px-8 sm:px-16 md:px-24 text-white">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight max-w-5xl drop-shadow-md">
@@ -139,6 +140,7 @@ export default function ArticlePage() {
                 width={40}
                 height={40}
                 className="rounded-full border"
+                loading="lazy"
               />
             )}
             <div>

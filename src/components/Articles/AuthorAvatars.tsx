@@ -145,6 +145,7 @@ const AuthorAvatars: React.FC<AuthorAvatarsProps> = ({
                         alt={author.name}
                         fill
                         className="object-cover"
+                        sizes="48px"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-400">
