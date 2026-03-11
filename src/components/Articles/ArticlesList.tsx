@@ -3,6 +3,7 @@
 import React, { useState, Suspense, useCallback, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   useArticles,
@@ -526,8 +527,15 @@ function ArticlesListContent({
       {/* Mobile: Compact card list */}
       {!isLoading && articles.length > 0 && (
         <div className="sm:hidden space-y-3">
-          {articles.map((article) => (
-            <MobileArticleCard key={article.id} article={article} />
+          {articles.map((article, idx) => (
+            <motion.div
+              key={article.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3, delay: idx * 0.05, ease: "easeOut" }}
+            >
+              <MobileArticleCard article={article} />
+            </motion.div>
           ))}
         </div>
       )}
@@ -538,15 +546,27 @@ function ArticlesListContent({
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article) => (
-                  <ArticleCard key={article.id} article={article} />
+                {articles.map((article, idx) => (
+                  <motion.div
+                    key={article.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
+                  >
+                    <ArticleCard article={article} />
+                  </motion.div>
                 ))}
               </div>
             ) : (
               <div className="space-y-3">
-                {articles.map((article) => (
-                  <Link
+                {articles.map((article, idx) => (
+                  <motion.div
                     key={article.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: idx * 0.05, ease: "easeOut" }}
+                  >
+                  <Link
                     href={`/articles/${article.slug || article.id}`}
                     className="group block"
                   >
@@ -623,6 +643,7 @@ function ArticlesListContent({
                       </div>
                     </div>
                   </Link>
+                  </motion.div>
                 ))}
               </div>
             )}
