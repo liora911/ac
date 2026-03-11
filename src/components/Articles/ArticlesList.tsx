@@ -13,7 +13,7 @@ import {
 import type { Article, ArticlesListProps, SortOption } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter } from "lucide-react";
+import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter, ChevronUp } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -136,6 +136,9 @@ function ArticlesListContent({
 
   // Intersection Observer for infinite scroll
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const topRef = useRef<HTMLDivElement>(null);
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
@@ -150,6 +153,18 @@ function ArticlesListContent({
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Show "back to top" button when filters scroll out of view
+  useEffect(() => {
+    const top = topRef.current;
+    if (!top) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setShowScrollTop(!entry.isIntersecting),
+      { threshold: 0 }
+    );
+    observer.observe(top);
+    return () => observer.disconnect();
+  }, []);
 
   // Track which articles are "new" (from the latest page load) for stagger animation
   const prevCountRef = useRef(0);
@@ -229,6 +244,7 @@ function ArticlesListContent({
 
   return (
     <div className="space-y-6">
+      <div ref={topRef} />
       {/* Category Preference Indicator */}
       {shouldFilterContent && (
         <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg px-4 py-3 flex items-center justify-between flex-wrap gap-2">
@@ -691,6 +707,21 @@ function ArticlesListContent({
         <div className="flex justify-center py-8">
           <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
+      )}
+
+      {/* Scroll to top / back to filters */}
+      {showScrollTop && (
+        <motion.button
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          onClick={() => topRef.current?.scrollIntoView({ behavior: "smooth" })}
+          className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg shadow-blue-500/30 transition-colors cursor-pointer"
+          aria-label={t("articlesPage.backToTop")}
+        >
+          <ChevronUp className="w-5 h-5" />
+          <span className="text-sm font-medium hidden sm:inline">{t("articlesPage.backToTop")}</span>
+        </motion.button>
       )}
     </div>
   );
