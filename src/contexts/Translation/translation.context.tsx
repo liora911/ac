@@ -21,37 +21,57 @@ const translations: Record<Locale, Record<string, TranslationNode>> = {
   he,
 } as const;
 
-export const getInitialLocale = (): Locale => {
-  if (typeof window === "undefined") return "en";
+function getCookieLocale(): Locale | null {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/(?:^|;\s*)locale=(en|he)/);
+  return match ? (match[1] as Locale) : null;
+}
+
+function setLocaleCookie(locale: Locale) {
+  document.cookie = `locale=${locale};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`;
+}
+
+function getInitialClientLocale(): Locale {
+  if (typeof window === "undefined") return "he";
+  // Cookie is the source of truth (also readable server-side)
+  const cookieLocale = getCookieLocale();
+  if (cookieLocale) return cookieLocale;
+  // Fallback to localStorage for existing users
   const saved = localStorage.getItem("locale");
-  return saved === "he" ? "he" : "en";
-};
+  return saved === "en" ? "en" : "he";
+}
 
 export const TranslationProvider = ({
   children,
 }: {
   children: React.ReactNode;
 }) => {
-  // Always start with "en" for SSR, then sync with localStorage in useEffect
-  const [locale, setLocale] = useState<Locale>("en");
-  const [isHydrated, setIsHydrated] = useState(false);
+  // Start with "he" (default language) — matches the blocking script in layout
+  const [locale, setLocaleState] = useState<Locale>("he");
 
-  // Load locale from localStorage after hydration
+  // Sync from cookie/localStorage after hydration
   useEffect(() => {
-    const saved = localStorage.getItem("locale");
-    if (saved === "he") {
-      setLocale("he");
-    }
-    setIsHydrated(true);
+    const initial = getInitialClientLocale();
+    setLocaleState(initial);
   }, []);
 
-  // Sync locale to localStorage and document
+  const setLocale = (newLocale: Locale) => {
+    setLocaleState(newLocale);
+    // Persist to both cookie (server-readable) and localStorage (backward compat)
+    setLocaleCookie(newLocale);
+    localStorage.setItem("locale", newLocale);
+    document.documentElement.dir = newLocale === "he" ? "rtl" : "ltr";
+    document.documentElement.lang = newLocale;
+  };
+
+  // Sync document attributes when locale changes (including initial hydration)
   useEffect(() => {
-    if (!isHydrated) return;
-    localStorage.setItem("locale", locale);
     document.documentElement.dir = locale === "he" ? "rtl" : "ltr";
     document.documentElement.lang = locale;
-  }, [locale, isHydrated]);
+    // Ensure cookie is set
+    setLocaleCookie(locale);
+    localStorage.setItem("locale", locale);
+  }, [locale]);
 
   const t = (key: string): string => {
     const keys = key.split(".");

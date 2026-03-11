@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
+import { cookies } from "next/headers";
 import Header from "@/components/Header/header";
 import Footer from "@/components/Footer/footer";
 import { TranslationProvider } from "@/contexts/Translation/translation.context";
@@ -101,13 +102,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+// Blocking script that runs before paint to set lang/dir from cookie
+// This prevents the flash of wrong language/direction
+const localeScript = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)locale=(en|he)/);var l=m?m[1]:"he";document.documentElement.lang=l;document.documentElement.dir=l==="he"?"rtl":"ltr"}catch(e){}})()`;
+
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const cookieStore = await cookies();
+  const localeCookie = cookieStore.get("locale")?.value;
+  const locale = localeCookie === "en" ? "en" : "he";
+
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: localeScript }} />
+      </head>
       <body
         className={`${poppins.className} antialiased focus-visible:outline-2 focus-visible:outline-blue-500`}
         suppressHydrationWarning={true}
