@@ -171,6 +171,65 @@ export function useArticlesPage(params: ArticlesQueryParams = {}) {
   return useArticles(params);
 }
 
+export function useInfiniteArticles(
+  params: Omit<ArticlesQueryParams, "page"> = {}
+) {
+  return useInfiniteQuery({
+    queryKey: [...articlesKeys.lists(), "infinite", params],
+    queryFn: async ({ pageParam = 1 }): Promise<ArticlesListResponse> => {
+      const searchParams = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.set(key, String(value));
+        }
+      });
+      searchParams.set("page", String(pageParam));
+      const response = await fetch(`/api/articles?${searchParams}`);
+      if (!response.ok) {
+        throw new Error(`Failed to fetch articles: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    staleTime: queryCache.articles.staleTime,
+    gcTime: queryCache.articles.gcTime,
+  });
+}
+
+export function useInfiniteSearchArticles(
+  searchQuery: string,
+  params: Omit<ArticlesQueryParams, "search" | "page"> = {}
+) {
+  return useInfiniteQuery({
+    queryKey: [...articlesKeys.lists(), "infinite-search", searchQuery, params],
+    queryFn: async ({ pageParam = 1 }): Promise<ArticlesListResponse> => {
+      if (!searchQuery.trim()) {
+        return { articles: [], total: 0, page: 1, limit: 10, totalPages: 0 };
+      }
+      const searchParams = new URLSearchParams({ search: searchQuery });
+      Object.entries(params).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          searchParams.set(key, String(value));
+        }
+      });
+      searchParams.set("page", String(pageParam));
+      const response = await fetch(`/api/articles?${searchParams}`);
+      if (!response.ok) {
+        throw new Error(`Failed to search articles: ${response.statusText}`);
+      }
+      return response.json();
+    },
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.page < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    enabled: !!searchQuery.trim(),
+    staleTime: queryCache.articleSearch.staleTime,
+    gcTime: queryCache.articleSearch.gcTime,
+  });
+}
+
 export function useSearchArticles(
   searchQuery: string,
   params: Omit<ArticlesQueryParams, "search"> = {}

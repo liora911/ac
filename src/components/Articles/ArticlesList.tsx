@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, Suspense, useCallback, useMemo } from "react";
+import React, { useState, Suspense, useCallback, useMemo, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  useArticles,
-  useSearchArticles,
+  useInfiniteArticles,
+  useInfiniteSearchArticles,
   useCategories,
 } from "../../hooks/useArticles";
 import type { Article, ArticlesListProps, SortOption } from "../../types/Articles/articles";
@@ -77,7 +77,6 @@ function ArticlesListSkeleton() {
 function ArticlesListContent({
   initialLimit = 12,
   showFilters = true,
-  showPagination = true,
   categoryId,
   featuredOnly = false,
   viewMode: initialViewMode = "grid",
@@ -99,7 +98,6 @@ function ArticlesListContent({
 
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(categoryId || urlCategoryId || "");
-  const [currentPage, setCurrentPage] = useState(urlPage ? parseInt(urlPage, 10) : 1);
   const [viewMode, setViewMode] = useState<"grid" | "list">(initialViewMode);
   const [isFilterSheetOpen, setIsFilterSheetOpen] = useState(false);
 
@@ -111,39 +109,56 @@ function ArticlesListContent({
 
   const { sortBy, sortOrder } = getSortParams(sortOption);
 
-  const {
-    data: articlesData,
-    isLoading,
-    error,
-    isFetching,
-  } = debouncedSearchQuery
-    ? useSearchArticles(debouncedSearchQuery, {
-        page: currentPage,
-        limit: initialLimit,
-        categoryId: selectedCategory || undefined,
-        sortBy,
-        sortOrder,
-      })
-    : useArticles({
-        page: currentPage,
-        limit: initialLimit,
-        categoryId: selectedCategory || undefined,
-        featured: featuredOnly || undefined,
-        sortBy,
-        sortOrder,
-      });
+  // Infinite scroll queries
+  const browseQuery = useInfiniteArticles({
+    limit: initialLimit,
+    categoryId: selectedCategory || undefined,
+    featured: featuredOnly || undefined,
+    sortBy,
+    sortOrder,
+  });
+
+  const searchInfiniteQuery = useInfiniteSearchArticles(
+    debouncedSearchQuery,
+    {
+      limit: initialLimit,
+      categoryId: selectedCategory || undefined,
+      sortBy,
+      sortOrder,
+    }
+  );
+
+  // Pick the active query based on whether user is searching
+  const activeQuery = debouncedSearchQuery ? searchInfiniteQuery : browseQuery;
+  const { data, isLoading, error, hasNextPage, fetchNextPage, isFetchingNextPage } = activeQuery;
 
   const { data: categories, isLoading: isLoadingCategories } = useCategories();
 
+  // Intersection Observer for infinite scroll
+  const sentinelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Track which articles are "new" (from the latest page load) for stagger animation
+  const prevCountRef = useRef(0);
 
   // Update URL when filters change
-  const updateURL = useCallback((categoryId: string | null, page: number) => {
+  const updateURL = useCallback((categoryId: string | null) => {
     const params = new URLSearchParams();
     if (categoryId) {
       params.set("c", categoryId);
-    }
-    if (page > 1) {
-      params.set("page", page.toString());
     }
     const queryString = params.toString();
     router.push(queryString ? `/articles?${queryString}` : "/articles", { scroll: false });
@@ -154,57 +169,50 @@ function ArticlesListContent({
     return categories?.find((c) => c.id === selectedCategory);
   }, [categories, selectedCategory]);
 
-  // Get raw articles from API
-  const rawArticles = articlesData?.articles || [];
+  // Flatten all pages into a single articles array
+  const rawArticles = useMemo(() => {
+    return data?.pages.flatMap((page) => page.articles) || [];
+  }, [data]);
 
   // Filter articles by user's category preferences (client-side filtering)
   const articles = useMemo(() => {
     if (!shouldFilterContent) return rawArticles;
     return rawArticles.filter((article: Article) => {
-      // Check if article has any category that matches user's preferences
       const articleCategoryIds = [
         ...(article.categories?.map((c: { id: string }) => c.id) || []),
         article.category?.id,
       ].filter(Boolean) as string[];
-
-      // If article has no categories, include it by default
       if (articleCategoryIds.length === 0) return true;
-
-      // Check if any of the article's categories match user preferences
       return articleCategoryIds.some((catId) =>
         preferredCategories.includes(catId)
       );
     });
   }, [rawArticles, shouldFilterContent, preferredCategories]);
 
-  const totalPages = articlesData?.totalPages || 1;
-  const total = shouldFilterContent ? articles.length : (articlesData?.total || 0);
+  const total = shouldFilterContent ? articles.length : (data?.pages[0]?.total || 0);
+
+  // Track new items for stagger animation
+  const newItemStartIdx = prevCountRef.current;
+  useEffect(() => {
+    prevCountRef.current = articles.length;
+  }, [articles.length]);
 
   const handleSearch = useCallback((query: string) => {
     setSearchQuery(query);
-    setCurrentPage(1);
   }, []);
 
   const handleClearSearch = useCallback(() => {
     setSearchQuery("");
-    setCurrentPage(1);
   }, []);
 
   const handleCategoryChange = useCallback((newCategoryId: string) => {
     setSelectedCategory(newCategoryId);
-    setCurrentPage(1);
-    updateURL(newCategoryId || null, 1);
+    updateURL(newCategoryId || null);
   }, [updateURL]);
 
   const handleSortChange = useCallback((sort: SortOption) => {
     setSortOption(sort);
-    setCurrentPage(1);
   }, []);
-
-  const handlePageChange = useCallback((page: number) => {
-    setCurrentPage(page);
-    updateURL(selectedCategory || null, page);
-  }, [selectedCategory, updateURL]);
 
   if (error) {
     return (
@@ -527,16 +535,19 @@ function ArticlesListContent({
       {/* Mobile: Compact card list */}
       {!isLoading && articles.length > 0 && (
         <div className="sm:hidden space-y-3">
-          {articles.map((article, idx) => (
-            <motion.div
-              key={article.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: idx * 0.05, ease: "easeOut" }}
-            >
-              <MobileArticleCard article={article} />
-            </motion.div>
-          ))}
+          {articles.map((article, idx) => {
+            const isNew = idx >= newItemStartIdx;
+            return (
+              <motion.div
+                key={article.id}
+                initial={isNew ? { opacity: 0, y: 20 } : false}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: isNew ? (idx - newItemStartIdx) * 0.05 : 0, ease: "easeOut" }}
+              >
+                <MobileArticleCard article={article} />
+              </motion.div>
+            );
+          })}
         </div>
       )}
 
@@ -546,105 +557,111 @@ function ArticlesListContent({
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {articles.map((article, idx) => (
-                  <motion.div
-                    key={article.id}
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: idx * 0.06, ease: "easeOut" }}
-                  >
-                    <ArticleCard article={article} />
-                  </motion.div>
-                ))}
+                {articles.map((article, idx) => {
+                  const isNew = idx >= newItemStartIdx;
+                  return (
+                    <motion.div
+                      key={article.id}
+                      initial={isNew ? { opacity: 0, y: 30 } : false}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4, delay: isNew ? (idx - newItemStartIdx) * 0.06 : 0, ease: "easeOut" }}
+                    >
+                      <ArticleCard article={article} />
+                    </motion.div>
+                  );
+                })}
               </div>
             ) : (
               <div className="space-y-3">
-                {articles.map((article, idx) => (
-                  <motion.div
-                    key={article.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: idx * 0.05, ease: "easeOut" }}
-                  >
-                  <Link
-                    href={`/articles/${article.slug || article.id}`}
-                    className="group block"
-                  >
-                    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all p-4">
-                      <div className="flex gap-4">
-                        {/* Thumbnail */}
-                        {article.featuredImage && (
-                          <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
-                            <Image
-                              src={article.featuredImage}
-                              alt={article.title}
-                              width={128}
-                              height={128}
-                              className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
-                              sizes="128px"
-                            />
-                          </div>
-                        )}
+                {articles.map((article, idx) => {
+                  const isNew = idx >= newItemStartIdx;
+                  return (
+                    <motion.div
+                      key={article.id}
+                      initial={isNew ? { opacity: 0, y: 20 } : false}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3, delay: isNew ? (idx - newItemStartIdx) * 0.05 : 0, ease: "easeOut" }}
+                    >
+                    <Link
+                      href={`/articles/${article.slug || article.id}`}
+                      className="group block"
+                    >
+                      <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:shadow-md transition-all p-4">
+                        <div className="flex gap-4">
+                          {/* Thumbnail */}
+                          {article.featuredImage && (
+                            <div className="w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0 rounded-lg overflow-hidden">
+                              <Image
+                                src={article.featuredImage}
+                                alt={article.title}
+                                width={128}
+                                height={128}
+                                className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-300"
+                                sizes="128px"
+                              />
+                            </div>
+                          )}
 
-                        {/* Content */}
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          {/* Top Section */}
-                          <div>
-                            <div className="flex items-start justify-between gap-3 mb-1">
-                              <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
-                                {article.title}
-                              </h3>
-                              <div className="flex items-center gap-2 flex-shrink-0">
-                                {article.isPremium && <PremiumBadge size="sm" />}
-                                {article.isFeatured && (
-                                  <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                                )}
+                          {/* Content */}
+                          <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            {/* Top Section */}
+                            <div>
+                              <div className="flex items-start justify-between gap-3 mb-1">
+                                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                                  {article.title}
+                                </h3>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  {article.isPremium && <PremiumBadge size="sm" />}
+                                  {article.isFeatured && (
+                                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+                                  )}
+                                </div>
                               </div>
+
+                              {article.subtitle && (
+                                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
+                                  {article.subtitle}
+                                </p>
+                              )}
+
+                              <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
+                                {stripHtml(article.excerpt || "")}
+                              </p>
                             </div>
 
-                            {article.subtitle && (
-                              <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">
-                                {article.subtitle}
-                              </p>
-                            )}
-
-                            <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
-                              {stripHtml(article.excerpt || "")}
-                            </p>
-                          </div>
-
-                          {/* Bottom Section - Meta */}
-                          <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
-                            {article.authors && article.authors.length > 0 ? (
-                              <div className="flex items-center gap-2">
-                                <AuthorAvatars authors={article.authors} size="sm" />
-                              </div>
-                            ) : (
-                              <span>
-                                {article.publisherName || article.author?.name || "Anonymous"}
-                              </span>
-                            )}
-                            <span>•</span>
-                            <span>{article.readTime} {t("articleCard.minRead")}</span>
-                            <span>•</span>
-                            <span>
-                              {formatDateShort(article.createdAt, locale)}
-                            </span>
-                            {article.category && (
-                              <>
-                                <span>•</span>
-                                <span className="text-blue-600 dark:text-blue-400">
-                                  {article.category.name}
+                            {/* Bottom Section - Meta */}
+                            <div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400 flex-wrap">
+                              {article.authors && article.authors.length > 0 ? (
+                                <div className="flex items-center gap-2">
+                                  <AuthorAvatars authors={article.authors} size="sm" />
+                                </div>
+                              ) : (
+                                <span>
+                                  {article.publisherName || article.author?.name || "Anonymous"}
                                 </span>
-                              </>
-                            )}
+                              )}
+                              <span>•</span>
+                              <span>{article.readTime} {t("articleCard.minRead")}</span>
+                              <span>•</span>
+                              <span>
+                                {formatDateShort(article.createdAt, locale)}
+                              </span>
+                              {article.category && (
+                                <>
+                                  <span>•</span>
+                                  <span className="text-blue-600 dark:text-blue-400">
+                                    {article.category.name}
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  </Link>
-                  </motion.div>
-                ))}
+                    </Link>
+                    </motion.div>
+                  );
+                })}
               </div>
             )}
           </div>
@@ -654,10 +671,10 @@ function ArticlesListContent({
       {!isLoading && articles.length === 0 && (
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">📝</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
             {t("articlesPage.noArticlesFound")}
           </h3>
-          <p className="text-gray-600">
+          <p className="text-gray-600 dark:text-gray-400">
             {searchQuery
               ? t("articlesPage.noArticlesMatch").replace(
                   "{query}",
@@ -668,45 +685,11 @@ function ArticlesListContent({
         </div>
       )}
 
-      {/* Pagination */}
-      {showPagination && totalPages > 1 && (
-        <div className="flex justify-center">
-          <nav className="flex items-center space-x-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1 || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {t("articlesPage.previousButton")}
-            </button>
-
-            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-              const page =
-                Math.max(1, Math.min(totalPages - 4, currentPage - 2)) + i;
-              return (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  disabled={isFetching}
-                  className={`px-3 py-2 text-sm font-medium rounded-md cursor-pointer ${
-                    page === currentPage
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-500 bg-white border border-gray-300 hover:bg-gray-50"
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {page}
-                </button>
-              );
-            })}
-
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages || isFetching}
-              className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
-            >
-              {t("articlesPage.nextButton")}
-            </button>
-          </nav>
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} className="h-1" />
+      {isFetchingNextPage && (
+        <div className="flex justify-center py-8">
+          <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
     </div>
