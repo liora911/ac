@@ -103,29 +103,29 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 px-4 sm:px-6 md:px-10 lg:px-12">
         <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
       </div>
 
       <div className="relative group">
-        {/* Desktop navigation arrows */}
+        {/* Desktop navigation - gradient edge overlays (Netflix-style) */}
         {showLeftArrow && (
           <button
             onClick={handleLeft}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-r from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
-            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-gray-700 dark:text-gray-200" />
+            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-[var(--foreground)] drop-shadow-lg" />
           </button>
         )}
 
         {showRightArrow && (
           <button
             onClick={handleRight}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white/90 dark:bg-gray-800/90 shadow-xl backdrop-blur-sm transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-white dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-l from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
-            <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-gray-700 dark:text-gray-200" />
+            <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-[var(--foreground)] drop-shadow-lg" />
           </button>
         )}
 
@@ -144,8 +144,8 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
           </div>
         </div>
 
-        {/* Desktop: Paginated grid */}
-        <div className="hidden sm:block overflow-hidden px-1">
+        {/* Desktop: Paginated grid - full bleed */}
+        <div className="hidden sm:block overflow-hidden px-6 md:px-10 lg:px-12">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={page}

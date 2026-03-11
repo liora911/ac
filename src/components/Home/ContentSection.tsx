@@ -131,11 +131,13 @@ const ContentSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="py-8 md:py-12 px-6 bg-[var(--background)]">
-      <div className="max-w-6xl mx-auto">
+    <section className="py-8 md:py-12 bg-[var(--background)]">
+      <div className="px-6 max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold text-start mb-8 text-[var(--foreground)]">
           {t("home.sections.exploreContent")}
         </h2>
+      </div>
+      <div>
 
         {previewLoading ? (
           <div className="space-y-10">

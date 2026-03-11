@@ -130,14 +130,14 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
 
   return (
     <motion.div
-      className="mb-12 -mx-6 px-6 py-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900/50 dark:via-blue-950/20 dark:to-slate-900/50 border-y border-slate-200/80 dark:border-slate-700/50 shadow-inner"
+      className="mb-12 py-10 bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-50 dark:from-slate-900/50 dark:via-blue-950/20 dark:to-slate-900/50 border-y border-slate-200/80 dark:border-slate-700/50 shadow-inner"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       {/* Header with special styling */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8 px-4 sm:px-6 md:px-10 lg:px-12">
         <div className="flex items-center gap-3">
           <div className="flex items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br from-orange-500 to-red-600 shadow-lg shadow-orange-500/25">
             <Flame className="w-5 h-5 text-white" />
@@ -151,15 +151,15 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
       </div>
 
       <div className="relative group">
-        {/* Desktop navigation arrows */}
+        {/* Desktop navigation - gradient edge overlays (Netflix-style) */}
         {showLeftArrow && (
           <button
             onClick={handleLeft}
             disabled={isLoading}
-            className="hidden sm:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-r from-slate-50 dark:from-slate-900/80 via-slate-50/60 dark:via-slate-900/40 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
-            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
+            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400 drop-shadow-lg" />
           </button>
         )}
 
@@ -167,13 +167,13 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           <button
             onClick={handleRight}
             disabled={isLoading}
-            className="hidden sm:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-20 w-12 h-12 md:w-14 md:h-14 items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-xl border border-blue-200 dark:border-blue-700 transition-all duration-300 opacity-0 group-hover:opacity-100 hover:bg-blue-50 dark:hover:bg-gray-700 hover:scale-110 cursor-pointer"
+            className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-l from-slate-50 dark:from-slate-900/80 via-slate-50/60 dark:via-slate-900/40 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
             {isLoading ? (
               <Loader2 className="w-6 h-6 md:w-7 md:h-7 text-blue-600 dark:text-blue-400 animate-spin" />
             ) : (
-              <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400" />
+              <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-blue-600 dark:text-blue-400 drop-shadow-lg" />
             )}
           </button>
         )}
@@ -234,8 +234,8 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           </div>
         </div>
 
-        {/* Desktop: Paginated grid */}
-        <div className="hidden sm:block overflow-hidden px-1">
+        {/* Desktop: Paginated grid - full bleed */}
+        <div className="hidden sm:block overflow-hidden px-6 md:px-10 lg:px-12">
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={page}
