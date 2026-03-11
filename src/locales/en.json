@@ -278,6 +278,7 @@
     "embeddingsRequired": "AI search requires embeddings. Please generate them first."
   },
   "articleForm": {
+    "tab1RequiredHint": "* Title and at least one author are required",
     "createArticleButton": "Create Article",
     "searchLabel": "Search",
     "searchPlaceholder": "Search articles...",

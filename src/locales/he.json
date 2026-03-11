@@ -291,6 +291,7 @@
     "embeddingsRequired": "חיפוש AI דורש וקטורים. אנא צור אותם קודם."
   },
   "articleForm": {
+    "tab1RequiredHint": "* יש למלא כותרת ולהוסיף לפחות מחבר אחד",
     "createArticleButton": "צור מאמר",
     "searchLabel": "חיפוש",
     "allStatus": "כל הסטטוסים",
