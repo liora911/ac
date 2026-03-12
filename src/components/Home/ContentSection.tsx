@@ -131,7 +131,7 @@ const ContentSection: React.FC = () => {
   }, []);
 
   return (
-    <section className="py-8 md:py-12 bg-[var(--background)]">
+    <section className="py-8 md:py-12 bg-[var(--background)] overflow-x-hidden">
       <div className="px-6 max-w-6xl mx-auto">
         <h2 className="text-2xl font-bold text-start mb-8 text-[var(--foreground)]">
           {t("home.sections.exploreContent")}
