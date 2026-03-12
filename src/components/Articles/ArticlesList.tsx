@@ -725,9 +725,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
   const accentGradient = getCategoryColor(categoryId);
 
   return (
-    <article className={`group/card relative rounded-xl overflow-hidden transition-all duration-300 flex flex-col h-full ${
-      hasAccess ? "hover:shadow-xl hover:-translate-y-1" : ""
-    } ${isBento ? "min-h-[420px]" : ""}`}>
+    <article className={`group/card relative rounded-xl overflow-hidden flex flex-col h-full ${isBento ? "min-h-[420px]" : ""}`}>
       {/* Category color accent - top edge */}
       <div className={`h-1 w-full bg-gradient-to-r ${accentGradient}`} />
 
@@ -743,7 +741,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
             src={displayImage}
             alt={article.title}
             fill
-            className="object-cover transition-transform duration-500 group-hover/card:scale-105"
+            className="object-cover"
             sizes={isBento ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -769,7 +767,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
             </h3>
             {/* Abstract - reveals on hover */}
             {article.excerpt && (
-              <p className="text-white/0 group-hover/card:text-white/80 text-sm line-clamp-1 mt-1 drop-shadow-md transition-colors duration-300">
+              <p className="text-white/80 text-sm line-clamp-1 mt-1 drop-shadow-md">
                 {stripHtml(article.excerpt)}
               </p>
             )}
