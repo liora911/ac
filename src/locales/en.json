@@ -262,7 +262,11 @@
     "sortTitleAZ": "Title A-Z",
     "sortTitleZA": "Title Z-A",
     "filters": "Filters",
-    "applyFilters": "Apply Filters"
+    "applyFilters": "Apply Filters",
+    "allTopics": "All",
+    "searchAndFilter": "Search & Sort",
+    "readingTime": "{min} min read",
+    "featured": "Featured"
   },
   "semanticSearch": {
     "placeholder": "Describe what you're looking for...",

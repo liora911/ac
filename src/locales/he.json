@@ -275,7 +275,11 @@
     "activeFilters": "מסננים פעילים:",
     "clearAllFilters": "נקה הכל",
     "filters": "מסננים",
-    "applyFilters": "החל מסננים"
+    "applyFilters": "החל מסננים",
+    "allTopics": "הכל",
+    "searchAndFilter": "חיפוש ומיון",
+    "readingTime": "{min} דק׳ קריאה",
+    "featured": "מומלץ"
   },
   "semanticSearch": {
     "placeholder": "תאר מה אתה מחפש...",

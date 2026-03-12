@@ -13,7 +13,7 @@ import {
 import type { Article, ArticlesListProps, SortOption } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter, ChevronUp } from "lucide-react";
+import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter, ChevronUp, Clock } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -26,7 +26,7 @@ import MobileArticleCard from "./MobileArticleCard";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { DEFAULT_ARTICLE_IMAGE } from "@/constants/images";
 import { shareUrl } from "@/lib/utils/share";
-import { formatDate, formatDateShort } from "@/lib/utils/date";
+import { formatDateShort } from "@/lib/utils/date";
 import { stripHtml } from "@/lib/utils/stripHtml";
 
 // Pure function - defined outside component to avoid recreation on every render
@@ -362,143 +362,94 @@ function ArticlesListContent({
         </div>
       )}
 
-      {/* Desktop: Full filter panel */}
+      {/* Desktop: Category pill bar + compact controls */}
       {showFilters && (
-        <div className="hidden sm:block bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 p-6">
-          {/* Search Component */}
-          <div className="mb-4">
-            <SemanticSearch
-              onSearch={handleSearch}
-              onClear={handleClearSearch}
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Category Filter */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                {t("articleForm.categoryLabel")}
-              </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => handleCategoryChange(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+        <div className="hidden sm:flex flex-col gap-3">
+          {/* Category pill bar - horizontal scroll */}
+          <div className="overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
+            <div className="flex gap-2 w-max">
+              <button
+                onClick={() => handleCategoryChange("")}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                  !selectedCategory
+                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                    : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 backdrop-blur-sm"
+                }`}
               >
-                <option value="">{t("articleForm.allCategories")}</option>
-                {isLoadingCategories ? (
-                  <option disabled>{t("articleForm.loadingCategories")}</option>
-                ) : (
-                  categories?.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))
-                )}
-              </select>
+                {t("articlesPage.allTopics")}
+              </button>
+              {!isLoadingCategories && categories?.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryChange(category.id === selectedCategory ? "" : category.id)}
+                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                    selectedCategory === category.id
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                      : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 backdrop-blur-sm"
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Sort, View Toggle and Results Count Row */}
-          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            {/* Sort Dropdown */}
-            <div className="flex items-center gap-2">
-              <ArrowUpDown className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {t("articlesPage.sortBy") || "Sort by:"}
-              </label>
+          {/* Compact controls row: search + sort + view toggle + count */}
+          <div className="flex items-center gap-3">
+            {/* Inline search */}
+            <div className="flex-1 max-w-sm">
+              <SemanticSearch
+                onSearch={handleSearch}
+                onClear={handleClearSearch}
+              />
+            </div>
+
+            {/* Sort */}
+            <div className="flex items-center gap-1.5">
+              <ArrowUpDown className="w-3.5 h-3.5 text-gray-400" />
               <select
                 value={sortOption}
                 onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                className="px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                className="px-2.5 py-1.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer"
               >
-                <option value="newest">{t("articlesPage.sortNewest") || "Newest first"}</option>
-                <option value="oldest">{t("articlesPage.sortOldest") || "Oldest first"}</option>
-                <option value="title-asc">{t("articlesPage.sortTitleAZ") || "Title A-Z"}</option>
-                <option value="title-desc">{t("articlesPage.sortTitleZA") || "Title Z-A"}</option>
+                <option value="newest">{t("articlesPage.sortNewest")}</option>
+                <option value="oldest">{t("articlesPage.sortOldest")}</option>
+                <option value="title-asc">{t("articlesPage.sortTitleAZ")}</option>
+                <option value="title-desc">{t("articlesPage.sortTitleZA")}</option>
               </select>
             </div>
 
-            {/* View Toggle and Results Count */}
-            <div className="flex items-center gap-3">
-              {/* Results Count */}
-              <div className="text-sm text-gray-600 dark:text-gray-400">
-                {isLoading ? (
-                  t("loading")
-                ) : (
-                  t("articlesPage.articlesFound").replace(
-                    "{total}",
-                    total.toString()
-                  )
-                )}
-              </div>
-
-              {/* View Toggle Buttons */}
-              <div className="flex items-center gap-1 border border-gray-300 dark:border-gray-600 rounded-lg p-1">
-                <button
-                  onClick={() => setViewMode("grid")}
-                  className={`p-1.5 rounded transition-colors ${
-                    viewMode === "grid"
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                  title="Grid view"
-                >
-                  <Grid3X3 className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setViewMode("list")}
-                  className={`p-1.5 rounded transition-colors ${
-                    viewMode === "list"
-                      ? "bg-blue-600 text-white"
-                      : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                  title="List view"
-                >
-                  <List className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Filters Display */}
-          {(selectedCategory || searchQuery) && (
-            <div className="mt-3 flex items-center gap-2 flex-wrap">
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                {t("articlesPage.activeFilters") || "Active filters:"}
-              </span>
-              {searchQuery && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                  {t("articleForm.searchLabel")}: &quot;{searchQuery}&quot;
-                  <button
-                    onClick={() => handleSearch("")}
-                    className="hover:bg-blue-200 rounded-full p-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
-              {selectedCategoryData && (
-                <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">
-                  {selectedCategoryData.name}
-                  <button
-                    onClick={() => handleCategoryChange("")}
-                    className="hover:bg-green-200 rounded-full p-0.5"
-                  >
-                    <X className="w-3 h-3" />
-                  </button>
-                </span>
-              )}
+            {/* View toggle */}
+            <div className="flex items-center gap-0.5 border border-gray-200 dark:border-gray-700 rounded-lg p-0.5">
               <button
-                onClick={() => {
-                  handleSearch("");
-                  handleCategoryChange("");
-                }}
-                className="text-xs text-gray-500 hover:text-gray-700 underline"
+                onClick={() => setViewMode("grid")}
+                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                  viewMode === "grid"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+                title="Grid view"
               >
-                {t("articlesPage.clearAllFilters") || "Clear all"}
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-1.5 rounded-md transition-colors cursor-pointer ${
+                  viewMode === "list"
+                    ? "bg-blue-600 text-white"
+                    : "text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+                title="List view"
+              >
+                <List className="w-4 h-4" />
               </button>
             </div>
-          )}
+
+            {/* Results count */}
+            <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              {isLoading ? t("loading") : t("articlesPage.articlesFound").replace("{total}", total.toString())}
+            </span>
+          </div>
         </div>
       )}
 
@@ -576,17 +527,19 @@ function ArticlesListContent({
         articles.length > 0 && (
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {articles.map((article, idx) => {
                   const isNew = idx >= newItemStartIdx;
+                  const isBento = article.isFeatured && idx < 3;
                   return (
                     <motion.div
                       key={article.id}
                       initial={isNew ? { opacity: 0, y: 30 } : false}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: isNew ? (idx - newItemStartIdx) * 0.06 : 0, ease: "easeOut" }}
+                      className={isBento ? "md:col-span-2 lg:col-span-2 md:row-span-2" : ""}
                     >
-                      <ArticleCard article={article} />
+                      <ArticleCard article={article} isBento={isBento} />
                     </motion.div>
                   );
                 })}
@@ -731,7 +684,28 @@ function ArticlesListContent({
   );
 }
 
-const ArticleCard = React.memo(function ArticleCard({ article }: { article: Article }) {
+// Category color palette for card accents
+const CATEGORY_COLORS = [
+  "from-blue-500 to-cyan-500",
+  "from-violet-500 to-purple-500",
+  "from-emerald-500 to-teal-500",
+  "from-orange-500 to-amber-500",
+  "from-rose-500 to-pink-500",
+  "from-indigo-500 to-blue-500",
+  "from-lime-500 to-green-500",
+  "from-fuchsia-500 to-pink-500",
+];
+
+function getCategoryColor(categoryId?: string): string {
+  if (!categoryId) return "from-gray-400 to-gray-500";
+  let hash = 0;
+  for (let i = 0; i < categoryId.length; i++) {
+    hash = categoryId.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return CATEGORY_COLORS[Math.abs(hash) % CATEGORY_COLORS.length];
+}
+
+const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }: { article: Article; isBento?: boolean }) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const { showSuccess } = useNotification();
@@ -744,133 +718,104 @@ const ArticleCard = React.memo(function ArticleCard({ article }: { article: Arti
     showSuccess(t("articleDetail.linkCopied"));
   };
 
-  // Check if user has premium access
   const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
-
-  // Default fallback image for articles without a featured image
   const displayImage = article.featuredImage || DEFAULT_ARTICLE_IMAGE;
+  const categoryId = article.categories?.[0]?.id || article.category?.id;
+  const categoryName = article.categories?.[0]?.name || article.category?.name;
+  const accentGradient = getCategoryColor(categoryId);
 
   return (
-    <article className={`bg-white rounded-lg shadow-sm border overflow-hidden transition-shadow relative flex flex-col ${
-      hasAccess ? "hover:shadow-md" : ""
-    }`}>
+    <article className={`group/card relative rounded-xl overflow-hidden transition-all duration-300 flex flex-col h-full ${
+      hasAccess ? "hover:shadow-xl hover:-translate-y-1" : ""
+    } ${isBento ? "min-h-[420px]" : ""}`}>
+      {/* Category color accent - top edge */}
+      <div className={`h-1 w-full bg-gradient-to-r ${accentGradient}`} />
+
       {/* Overlay for non-accessible premium content */}
       {!hasAccess && (
-        <div className="absolute inset-0 bg-white/50 backdrop-blur-[1px] z-[5] rounded-lg pointer-events-none" />
+        <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-[1px] z-[5] rounded-xl pointer-events-none" />
       )}
 
-      {/* Top Section: Image with Title Overlay */}
-      <Link href={`/articles/${article.slug || article.id}`} className="block relative">
-        <div className={`relative h-52 overflow-hidden ${!hasAccess ? "grayscale-[30%]" : ""}`}>
+      <Link href={`/articles/${article.slug || article.id}`} className="block relative flex-1 flex flex-col">
+        {/* Image section */}
+        <div className={`relative overflow-hidden ${isBento ? "h-64" : "h-48"} ${!hasAccess ? "grayscale-[30%]" : ""}`}>
           <Image
             src={displayImage}
             alt={article.title}
             fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-500 group-hover/card:scale-105"
+            sizes={isBento ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
           />
-          {/* Dark gradient overlay for text readability */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-          {/* Featured badge */}
-          {article.isFeatured && (
-            <div className="absolute top-3 left-3 bg-yellow-500 text-white px-2 py-1 rounded text-xs font-semibold">
-              {t("articleCard.featured")}
+          {/* Top badges row */}
+          <div className="absolute top-3 left-3 right-3 flex items-start justify-between">
+            <div className="flex items-center gap-2">
+              {article.isFeatured && (
+                <span className="flex items-center gap-1 bg-amber-500/90 backdrop-blur-sm text-white px-2.5 py-1 rounded-full text-xs font-semibold shadow-lg">
+                  <Star className="w-3 h-3 fill-white" />
+                  {t("articlesPage.featured")}
+                </span>
+              )}
+              {article.isPremium && <PremiumBadge size="sm" />}
             </div>
-          )}
-
-          {/* Favorite Button */}
-          <div className="absolute top-3 right-3 z-10">
             <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
           </div>
 
-          {/* Title overlaid on image */}
+          {/* Title + hover abstract overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className="text-lg font-semibold text-white line-clamp-2 drop-shadow-md">
+            <h3 className={`text-white font-bold drop-shadow-lg line-clamp-2 ${isBento ? "text-xl" : "text-base"}`}>
               {article.title}
             </h3>
-            {article.subtitle && (
-              <p className="text-sm text-gray-200 line-clamp-1 mt-1 drop-shadow-md">
-                {article.subtitle}
+            {/* Abstract - reveals on hover */}
+            {article.excerpt && (
+              <p className="text-white/0 group-hover/card:text-white/80 text-sm line-clamp-1 mt-1 drop-shadow-md transition-colors duration-300">
+                {stripHtml(article.excerpt)}
               </p>
             )}
           </div>
         </div>
-      </Link>
 
-      {/* Bottom Section: Metadata on white background */}
-      <div className="p-4 flex flex-col flex-1">
-        {/* Excerpt if available */}
-        {article.excerpt && (
-          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
-            {stripHtml(article.excerpt)}
-          </p>
-        )}
-
-        {/* Spacer to push metadata to bottom */}
-        <div className="flex-1" />
-
-        {/* Author(s) and Read Time */}
-        <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
-          <div className="flex items-center gap-2">
-            {article.authors && article.authors.length > 0 ? (
-              <AuthorAvatars authors={article.authors} size="sm" />
-            ) : (
-              <div className="flex items-center space-x-2">
-                {article.author?.image && (
-                  <Image
-                    src={article.author.image}
-                    alt={
-                      article.author.name ||
-                      article.publisherName ||
-                      (t("articleCard.authorAnonymous") as string)
-                    }
-                    width={20}
-                    height={20}
-                    className="rounded-full"
-                  />
-                )}
-                <span className="truncate max-w-[100px]">{article.publisherName || article.author?.name}</span>
-              </div>
+        {/* Bottom metadata section */}
+        <div className="bg-white dark:bg-gray-800 p-3.5 flex flex-col flex-1 border-x border-b border-gray-100 dark:border-gray-700/50 rounded-b-xl">
+          {/* Reading time + category */}
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+                <Clock className="w-3 h-3" />
+                {t("articlesPage.readingTime").replace("{min}", String(article.readTime))}
+              </span>
+            </div>
+            {categoryName && (
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold text-white bg-gradient-to-r ${accentGradient} shadow-sm`}>
+                {categoryName}
+              </span>
             )}
           </div>
-          <div className="flex items-center gap-2 flex-shrink-0">
-            <span>
-              {article.readTime} {t("articleCard.minRead")}
-            </span>
+
+          <div className="flex-1" />
+
+          {/* Author row + share + date */}
+          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-2 min-w-0">
+              {article.authors && article.authors.length > 0 ? (
+                <AuthorAvatars authors={article.authors} size="sm" />
+              ) : (
+                <span className="truncate max-w-[100px]">{article.publisherName || article.author?.name}</span>
+              )}
+              <span className="text-gray-300 dark:text-gray-600">·</span>
+              <span className="whitespace-nowrap">{formatDateShort(article.createdAt, locale)}</span>
+            </div>
             <button
               onClick={handleShare}
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
               title={t("articleDetail.share")}
             >
               <Share2 className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
             </button>
           </div>
         </div>
-
-        {/* Date, Categories, and Premium indicator */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 flex-wrap flex-1 min-w-0">
-            <span className="text-xs text-gray-400 flex-shrink-0">{formatDate(article.createdAt, locale)}</span>
-            {(article.categories && article.categories.length > 0) ? (
-              article.categories.slice(0, 1).map((cat) => (
-                <span
-                  key={cat.id}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 truncate max-w-[80px]"
-                >
-                  {cat.name}
-                </span>
-              ))
-            ) : article.category ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 truncate max-w-[80px]">
-                {article.category.name}
-              </span>
-            ) : null}
-          </div>
-          {/* Premium badge indicator */}
-          {article.isPremium && <PremiumBadge size="sm" />}
-        </div>
-      </div>
+      </Link>
     </article>
   );
 });
