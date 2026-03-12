@@ -103,6 +103,11 @@ function ArticlesListContent({
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
+  // Sync selectedCategory with URL when user navigates back/forward
+  useEffect(() => {
+    setSelectedCategory(categoryId || urlCategoryId || "");
+  }, [categoryId, urlCategoryId]);
+
   // Debounce search query to prevent API call on every keystroke
   const debouncedSearchQuery = useDebouncedValue(searchQuery, 350);
 
