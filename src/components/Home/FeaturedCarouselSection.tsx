@@ -179,8 +179,8 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
         )}
 
         {/* Mobile: Horizontal scroll */}
-        <div className="sm:hidden overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
-          <div className="flex gap-4" style={{ width: "max-content" }}>
+        <div className="sm:hidden overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2" dir={isRTL ? "rtl" : "ltr"}>
+          <div className="flex gap-4 w-max">
             {items.map((item) => {
               const imageUrl = getImageUrl(item);
               const rawSubtitle = getSubtitle?.(item);

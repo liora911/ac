@@ -130,8 +130,8 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
         )}
 
         {/* Mobile: Horizontal scroll */}
-        <div className="sm:hidden overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2">
-          <div className="flex gap-4" style={{ width: "max-content" }}>
+        <div className="sm:hidden overflow-x-auto scrollbar-hide -mx-4 px-4 pb-2" dir={isRTL ? "rtl" : "ltr"}>
+          <div className="flex gap-4 w-max">
             {items.map((item) => (
               <MixedCard
                 key={item.id}
