@@ -725,13 +725,13 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
   const accentGradient = getCategoryColor(categoryId);
 
   return (
-    <article className={`group/card relative rounded-xl overflow-hidden flex flex-col h-full ${isBento ? "min-h-[420px]" : ""}`}>
+    <article className={`group/card relative rounded-xl overflow-hidden flex flex-col h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm ${isBento ? "min-h-[420px]" : ""}`}>
       {/* Category color accent - top edge */}
-      <div className={`h-1 w-full bg-gradient-to-r ${accentGradient}`} />
+      <div className={`h-1 w-full bg-gradient-to-r ${accentGradient} -mt-px`} />
 
       {/* Overlay for non-accessible premium content */}
       {!hasAccess && (
-        <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-[1px] z-[5] rounded-xl pointer-events-none" />
+        <div className="absolute inset-0 bg-white/50 dark:bg-gray-900/50 backdrop-blur-[1px] z-[5] pointer-events-none" />
       )}
 
       <Link href={`/articles/${article.slug || article.id}`} className="block relative flex-1 flex flex-col">
@@ -775,7 +775,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
         </div>
 
         {/* Bottom metadata section */}
-        <div className="bg-white dark:bg-gray-800 p-3.5 flex flex-col flex-1 border-x border-b border-gray-100 dark:border-gray-700/50 rounded-b-xl">
+        <div className="p-3.5 flex flex-col flex-1">
           {/* Reading time + category */}
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
