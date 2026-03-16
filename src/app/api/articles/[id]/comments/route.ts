@@ -25,9 +25,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // Fetch comments with user info and like counts
+    // Fetch top-level comments (no parent) with user info, like counts, and reply counts
     const comments = await prisma.comment.findMany({
-      where: { articleId },
+      where: { articleId, parentId: null },
       include: {
         user: {
           select: {
@@ -40,6 +40,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         likes: {
           select: { userId: true },
         },
+        _count: {
+          select: { replies: true },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -50,6 +53,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         content: c.content,
         articleId: c.articleId,
         userId: c.userId,
+        parentId: c.parentId,
         createdAt: c.createdAt.toISOString(),
         updatedAt: c.updatedAt.toISOString(),
         user: {
@@ -60,6 +64,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         },
         likeCount: c.likes.length,
         isLikedByMe: currentUserId ? c.likes.some((l) => l.userId === currentUserId) : false,
+        replyCount: c._count.replies,
       })),
       total: comments.length,
     };

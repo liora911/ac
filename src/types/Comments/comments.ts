@@ -12,11 +12,13 @@ export interface Comment {
   content: string;
   articleId: string;
   userId: string;
+  parentId: string | null;
   createdAt: string;
   updatedAt: string;
   user: CommentAuthor;
   likeCount: number;
   isLikedByMe: boolean;
+  replyCount: number;
 }
 
 // User who liked a comment (for likers modal)
@@ -42,6 +44,7 @@ export interface AdminComment extends Comment {
 export interface CreateCommentRequest {
   articleId: string;
   content: string;
+  parentId?: string;
 }
 
 // Response for GET /api/articles/[id]/comments

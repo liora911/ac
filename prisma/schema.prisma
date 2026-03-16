@@ -427,15 +427,19 @@ model Comment {
   content   String
   articleId String
   userId    String
+  parentId  String?
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
 
   article   Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
   user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent    Comment?      @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]     @relation("CommentReplies")
   likes     CommentLike[]
 
   @@index([articleId, createdAt])
   @@index([userId])
+  @@index([parentId])
   @@map("comments")
 }
 

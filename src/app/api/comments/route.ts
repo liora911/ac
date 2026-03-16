@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { user } = auth;
 
     const body: CreateCommentRequest = await request.json();
-    const { articleId, content } = body;
+    const { articleId, content, parentId } = body;
 
     // Validate input
     if (!articleId || !content?.trim()) {
@@ -108,12 +108,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // If replying, verify parent comment exists and belongs to same article
+    if (parentId) {
+      const parentComment = await prisma.comment.findUnique({
+        where: { id: parentId },
+        select: { id: true, articleId: true },
+      });
+      if (!parentComment || parentComment.articleId !== articleId) {
+        return NextResponse.json(
+          { error: "Parent comment not found" },
+          { status: 404 }
+        );
+      }
+    }
+
     // Create the comment
     const comment = await prisma.comment.create({
       data: {
         content: content.trim(),
         articleId,
         userId: user.id,
+        ...(parentId && { parentId }),
       },
       include: {
         user: {
@@ -132,6 +147,7 @@ export async function POST(request: NextRequest) {
       content: comment.content,
       articleId: comment.articleId,
       userId: comment.userId,
+      parentId: comment.parentId,
       createdAt: comment.createdAt.toISOString(),
       updatedAt: comment.updatedAt.toISOString(),
       user: {
@@ -142,6 +158,7 @@ export async function POST(request: NextRequest) {
       },
       likeCount: 0,
       isLikedByMe: false,
+      replyCount: 0,
     };
 
     return NextResponse.json(response, { status: 201 });

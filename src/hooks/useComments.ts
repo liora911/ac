@@ -11,6 +11,7 @@ export const commentKeys = {
   all: ["comments"] as const,
   lists: () => [...commentKeys.all, "list"] as const,
   list: (articleId: string) => [...commentKeys.lists(), articleId] as const,
+  replies: (commentId: string) => [...commentKeys.all, "replies", commentId] as const,
 };
 
 // Get comments for an article
@@ -53,6 +54,12 @@ export function useCreateComment() {
       queryClient.invalidateQueries({
         queryKey: commentKeys.list(variables.articleId),
       });
+      // If this was a reply, also invalidate the replies list
+      if (variables.parentId) {
+        queryClient.invalidateQueries({
+          queryKey: commentKeys.replies(variables.parentId),
+        });
+      }
     },
   });
 }
@@ -111,6 +118,20 @@ export function useCommentLikers(commentId: string | null) {
       if (!res.ok) return [];
       const data = await res.json();
       return data.likers || [];
+    },
+    enabled: !!commentId,
+  });
+}
+
+// Fetch replies for a comment (for modal)
+export function useCommentReplies(commentId: string | null) {
+  return useQuery<Comment[]>({
+    queryKey: commentKeys.replies(commentId || ""),
+    queryFn: async () => {
+      const res = await fetch(`/api/comments/${commentId}/replies`);
+      if (!res.ok) throw new Error("Failed to fetch replies");
+      const data = await res.json();
+      return data.replies || [];
     },
     enabled: !!commentId,
   });

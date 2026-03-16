@@ -1680,7 +1680,13 @@
     "loginToLike": "Log in to like",
     "likedBy": "Liked by",
     "noLikes": "No likes yet",
-    "anonymous": "Anonymous"
+    "anonymous": "Anonymous",
+    "reply": "Reply",
+    "replies": "Replies",
+    "viewReplies": "View Replies",
+    "replyPlaceholder": "Write a reply...",
+    "noRepliesYet": "No replies yet",
+    "loginToReply": "Log in to reply"
   },
   "authError": {
     "configuration": {

@@ -614,7 +614,7 @@
     "siteMap": "מפת האתר - Site Map",
     "browseByCategory": "עיון במאמרים לפי קטגוריה",
     "browseAllCategories": "מפת האתר",
-    "developedBy": "מערכת זו פותחה על ידי : ירין מימון"
+    "developedBy": "מערכת זו פותחה על ידי ירין מימון"
   },
   "browse": {
     "title": "עיון בכל הקטגוריות",
@@ -1752,7 +1752,13 @@
     "loginToLike": "התחברו כדי לסמן אהבתי",
     "likedBy": "אהבו את זה",
     "noLikes": "עדיין אין לייקים",
-    "anonymous": "אנונימי"
+    "anonymous": "אנונימי",
+    "reply": "הגב",
+    "replies": "תגובות",
+    "viewReplies": "צפה בתגובות",
+    "replyPlaceholder": "כתוב תגובה...",
+    "noRepliesYet": "עדיין אין תגובות",
+    "loginToReply": "התחבר כדי להגיב"
   },
   "authError": {
     "configuration": {
