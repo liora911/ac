@@ -300,6 +300,7 @@ export async function POST(request: NextRequest) {
       isPremium = false,
       isFeatured = false,
       direction = "ltr",
+      titleDirection = "rtl",
       publisherName,
       publisherImage,
       authors,
@@ -386,6 +387,7 @@ export async function POST(request: NextRequest) {
         isFeatured,
         authorId: user.id,
         direction,
+        titleDirection,
         categoryId: allCategoryIds[0] || null, // Keep first category for backward compat
         // Create multiple category relations
         categories: allCategoryIds.length > 0

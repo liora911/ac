@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth/auth";
 import prisma from "@/lib/prisma/prisma";
 import type { CommentsResponse } from "@/types/Comments/comments";
 
@@ -10,6 +12,8 @@ interface RouteParams {
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const { id: articleId } = await params;
+    const session = await getServerSession(authOptions);
+    const currentUserId = session?.user?.id;
 
     // Check if article exists
     const article = await prisma.article.findUnique({
@@ -21,7 +25,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
-    // Fetch comments with user info
+    // Fetch comments with user info and like counts
     const comments = await prisma.comment.findMany({
       where: { articleId },
       include: {
@@ -32,6 +36,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
             email: true,
             image: true,
           },
+        },
+        likes: {
+          select: { userId: true },
         },
       },
       orderBy: { createdAt: "desc" },
@@ -51,6 +58,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           email: c.user.email,
           image: c.user.image,
         },
+        likeCount: c.likes.length,
+        isLikedByMe: currentUserId ? c.likes.some((l) => l.userId === currentUserId) : false,
       })),
       total: comments.length,
     };

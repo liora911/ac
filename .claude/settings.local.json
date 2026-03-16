@@ -5,7 +5,8 @@
       "Bash(npx tsc:*)",
       "Bash(xargs grep:*)",
       "Bash(find . -name migrations -o -name *.migration.*)",
-      "Bash(npx prisma:*)"
+      "Bash(npx prisma:*)",
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
     ]
   }
 }

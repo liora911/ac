@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { queryCache } from "@/constants/query-cache";
 import type {
   Comment,
+  CommentLiker,
   CommentsResponse,
   CreateCommentRequest,
 } from "@/types/Comments/comments";
@@ -53,6 +54,65 @@ export function useCreateComment() {
         queryKey: commentKeys.list(variables.articleId),
       });
     },
+  });
+}
+
+// Toggle like on a comment
+export function useToggleCommentLike() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ commentId, articleId }: { commentId: string; articleId: string }) => {
+      const response = await fetch(`/api/comments/${commentId}/like`, {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("Failed to toggle like");
+      return response.json() as Promise<{ liked: boolean }>;
+    },
+    onMutate: async ({ commentId, articleId }) => {
+      // Optimistic update
+      await queryClient.cancelQueries({ queryKey: commentKeys.list(articleId) });
+      const previous = queryClient.getQueryData<CommentsResponse>(commentKeys.list(articleId));
+
+      if (previous) {
+        queryClient.setQueryData<CommentsResponse>(commentKeys.list(articleId), {
+          ...previous,
+          comments: previous.comments.map((c) =>
+            c.id === commentId
+              ? {
+                  ...c,
+                  isLikedByMe: !c.isLikedByMe,
+                  likeCount: c.isLikedByMe ? c.likeCount - 1 : c.likeCount + 1,
+                }
+              : c
+          ),
+        });
+      }
+
+      return { previous };
+    },
+    onError: (_, { articleId }, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(commentKeys.list(articleId), context.previous);
+      }
+    },
+    onSettled: (_, __, { articleId }) => {
+      queryClient.invalidateQueries({ queryKey: commentKeys.list(articleId) });
+    },
+  });
+}
+
+// Fetch likers for a comment
+export function useCommentLikers(commentId: string | null) {
+  return useQuery<CommentLiker[]>({
+    queryKey: ["comment-likers", commentId],
+    queryFn: async () => {
+      const res = await fetch(`/api/comments/${commentId}/like`);
+      if (!res.ok) return [];
+      const data = await res.json();
+      return data.likers || [];
+    },
+    enabled: !!commentId,
   });
 }
 

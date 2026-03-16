@@ -49,6 +49,7 @@ function transformArticle(article: ArticleWithRelations): Article {
     viewCount: 0,
     readTime: article.readDuration,
     direction: article.direction === "rtl" ? "rtl" : "ltr",
+    titleDirection: article.titleDirection === "ltr" ? "ltr" : "rtl",
     createdAt: article.createdAt.toISOString(),
     updatedAt: article.updatedAt.toISOString(),
     authorId: article.authorId,
@@ -225,6 +226,7 @@ export async function PUT(
       isFeatured,
       isPremium,
       direction,
+      titleDirection,
       publisherName,
       publisherImage,
       authors,
@@ -284,6 +286,7 @@ export async function PUT(
     if (isPremium !== undefined) updateData.isPremium = isPremium;
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured;
     if (direction !== undefined) updateData.direction = direction;
+    if (titleDirection !== undefined) updateData.titleDirection = titleDirection;
     if (publisherName !== undefined) updateData.publisherName = publisherName;
     if (publisherImage !== undefined) {
       updateData.publisherImage = publisherImage;

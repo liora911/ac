@@ -60,6 +60,7 @@ model User {
   favorites         Favorite[]
   userNotifications UserNotification[]
   comments         Comment[]
+  commentLikes     CommentLike[]
   articleViews     ArticleView[]
 }
 
@@ -111,6 +112,7 @@ model Article {
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   direction      String            @default("ltr")
+  titleDirection String            @default("rtl")
   authorId       String
   categoryId     String?
   embedding      Float[]
@@ -197,6 +199,7 @@ model Category {
 model Lecture {
   id             String   @id @default(cuid())
   title          String
+  titleDirection String   @default("rtl")
   description    String
   videoUrl       String?
   duration       String
@@ -216,6 +219,7 @@ model Lecture {
 model Presentation {
   id              String   @id @default(cuid())
   title           String
+  titleDirection  String   @default("rtl")
   description     String
   content         String
   googleSlidesUrl String?
@@ -236,6 +240,7 @@ model Presentation {
 model Event {
   id             String   @id @default(cuid())
   title          String
+  titleDirection String   @default("rtl")
   description    String
   eventType      String
   location       String?
@@ -417,19 +422,34 @@ model Archive {
 }
 
 model Comment {
-  id        String   @id @default(cuid())
+  id        String        @id @default(cuid())
   content   String
   articleId String
   userId    String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
-  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article   Article       @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes     CommentLike[]
 
   @@index([articleId, createdAt])
   @@index([userId])
   @@map("comments")
+}
+
+model CommentLike {
+  id        String   @id @default(cuid())
+  commentId String
+  userId    String
+  createdAt DateTime @default(now())
+
+  comment Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([commentId, userId])
+  @@index([commentId])
+  @@map("comment_likes")
 }
 
 model ArticleView {

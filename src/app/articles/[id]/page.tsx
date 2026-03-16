@@ -346,12 +346,12 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             )}
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+          <h1 dir={article.titleDirection || "rtl"} className="text-4xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
             {article.title}
           </h1>
 
           {article.subtitle && (
-            <p className="text-xl text-gray-600 dark:text-gray-400 mb-4">
+            <p dir={article.titleDirection || "rtl"} className="text-xl text-gray-600 dark:text-gray-400 mb-4">
               {article.subtitle}
             </p>
           )}

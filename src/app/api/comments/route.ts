@@ -140,6 +140,8 @@ export async function POST(request: NextRequest) {
         email: comment.user.email,
         image: comment.user.image,
       },
+      likeCount: 0,
+      isLikedByMe: false,
     };
 
     return NextResponse.json(response, { status: 201 });

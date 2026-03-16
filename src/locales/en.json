@@ -1662,7 +1662,12 @@
     "deleteConfirm": "Delete this comment?",
     "delete": "Delete comment",
     "deleted": "Comment deleted",
-    "posted": "Comment posted"
+    "posted": "Comment posted",
+    "like": "Like",
+    "loginToLike": "Log in to like",
+    "likedBy": "Liked by",
+    "noLikes": "No likes yet",
+    "anonymous": "Anonymous"
   },
   "authError": {
     "configuration": {

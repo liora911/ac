@@ -171,6 +171,7 @@ export interface ArticleFormData {
   isFeatured: boolean;
   isPremium: boolean;
   direction: "ltr" | "rtl";
+  titleDirection: "ltr" | "rtl";
   publisherName: string;
   publisherImage?: string;
   authors: ArticleAuthorInput[]; // Multiple authors - required at least 1

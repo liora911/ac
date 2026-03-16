@@ -15,6 +15,15 @@ export interface Comment {
   createdAt: string;
   updatedAt: string;
   user: CommentAuthor;
+  likeCount: number;
+  isLikedByMe: boolean;
+}
+
+// User who liked a comment (for likers modal)
+export interface CommentLiker {
+  id: string;
+  name: string | null;
+  image: string | null;
 }
 
 // Article info for admin comment view

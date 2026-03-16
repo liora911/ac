@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
-import { useComments, useCreateComment, useDeleteComment } from "@/hooks/useComments";
+import { ThumbsUp, X } from "lucide-react";
+import { useComments, useCreateComment, useDeleteComment, useToggleCommentLike, useCommentLikers } from "@/hooks/useComments";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import type { Comment, CommentSectionProps } from "@/types/Comments/comments";
@@ -42,22 +43,95 @@ function getRelativeTime(dateString: string, locale: string): string {
   });
 }
 
+function LikersModal({
+  commentId,
+  onClose,
+}: {
+  commentId: string;
+  onClose: () => void;
+}) {
+  const { t } = useTranslation();
+  const { data: likers, isLoading } = useCommentLikers(commentId);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
+      <div
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-sm mx-4 max-h-80 flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+          <h3 className="font-semibold text-gray-900 dark:text-white text-sm">
+            {t("comments.likedBy")}
+          </h3>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+        <div className="overflow-y-auto p-2">
+          {isLoading ? (
+            <div className="flex justify-center py-4">
+              <svg className="animate-spin h-5 w-5 text-gray-400" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            </div>
+          ) : likers && likers.length > 0 ? (
+            likers.map((liker) => (
+              <div key={liker.id} className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                {liker.image ? (
+                  <Image
+                    src={liker.image}
+                    alt={liker.name || ""}
+                    width={32}
+                    height={32}
+                    className="rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-medium">
+                    {(liker.name || "?").charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="text-sm text-gray-900 dark:text-white">
+                  {liker.name || t("comments.anonymous")}
+                </span>
+              </div>
+            ))
+          ) : (
+            <p className="text-center text-gray-500 dark:text-gray-400 py-4 text-sm">
+              {t("comments.noLikes")}
+            </p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function CommentItem({
   comment,
+  articleId,
   currentUserId,
   isAdmin,
+  isAuthenticated,
   onDelete,
   isDeleting,
   locale,
 }: {
   comment: Comment;
+  articleId: string;
   currentUserId?: string;
   isAdmin: boolean;
+  isAuthenticated: boolean;
   onDelete: (id: string) => void;
   isDeleting: boolean;
   locale: string;
 }) {
   const { t } = useTranslation();
+  const [showLikers, setShowLikers] = useState(false);
+  const toggleLike = useToggleCommentLike();
   const canDelete = isAdmin || comment.userId === currentUserId;
   const displayName = comment.user.name || comment.user.email?.split("@")[0] || "Anonymous";
   const initials = displayName.charAt(0).toUpperCase();
@@ -66,6 +140,11 @@ function CommentItem({
     if (window.confirm(t("comments.deleteConfirm"))) {
       onDelete(comment.id);
     }
+  };
+
+  const handleLike = () => {
+    if (!isAuthenticated) return;
+    toggleLike.mutate({ commentId: comment.id, articleId });
   };
 
   return (
@@ -125,7 +204,39 @@ function CommentItem({
         <p className="mt-1 text-gray-700 dark:text-gray-300 text-sm whitespace-pre-wrap break-words">
           {comment.content}
         </p>
+
+        {/* Like button + count */}
+        <div className="mt-2 flex items-center gap-1">
+          <button
+            onClick={handleLike}
+            disabled={!isAuthenticated}
+            className={`flex items-center gap-1 text-xs transition-colors ${
+              comment.isLikedByMe
+                ? "text-blue-600 dark:text-blue-400"
+                : "text-gray-400 hover:text-blue-600 dark:hover:text-blue-400"
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
+            title={isAuthenticated ? t("comments.like") : t("comments.loginToLike")}
+          >
+            <ThumbsUp className={`w-3.5 h-3.5 ${comment.isLikedByMe ? "fill-current" : ""}`} />
+          </button>
+          {comment.likeCount > 0 && (
+            <button
+              onClick={() => setShowLikers(true)}
+              className="text-xs text-gray-500 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+            >
+              {comment.likeCount}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Likers Modal */}
+      {showLikers && (
+        <LikersModal
+          commentId={comment.id}
+          onClose={() => setShowLikers(false)}
+        />
+      )}
     </div>
   );
 }
@@ -293,8 +404,10 @@ export default function CommentSection({ articleId }: CommentSectionProps) {
               <CommentItem
                 key={comment.id}
                 comment={comment}
+                articleId={articleId}
                 currentUserId={session?.user?.id}
                 isAdmin={isAdmin}
+                isAuthenticated={!!isAuthenticated}
                 onDelete={handleDelete}
                 isDeleting={deleteComment.isPending}
                 locale={locale}

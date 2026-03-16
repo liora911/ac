@@ -44,6 +44,7 @@ export default function ArticleForm({
     isFeatured: article?.isFeatured || false,
     isPremium: article?.isPremium || false,
     direction: article?.direction || (locale === "en" ? "ltr" : "rtl"),
+    titleDirection: article?.titleDirection || "rtl",
     publisherName:
       article?.publisherName ||
       article?.author?.name ||
@@ -313,11 +314,21 @@ export default function ArticleForm({
           {activeTab === 1 && (
             <>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  {t("articleForm.titleLabel")}
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {t("articleForm.titleLabel")}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => handleInputChange("titleDirection", formData.titleDirection === "rtl" ? "ltr" : "rtl")}
+                    className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                  >
+                    {formData.titleDirection === "rtl" ? "RTL" : "LTR"}
+                  </button>
+                </div>
                 <input
                   type="text"
+                  dir={formData.titleDirection}
                   value={formData.title}
                   onChange={(e) => handleInputChange("title", e.target.value)}
                   className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
@@ -328,12 +339,13 @@ export default function ArticleForm({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t("articleForm.subtitleLabel")}
                   <span className="text-gray-400 text-xs mr-2">({t("articleForm.optional")})</span>
                 </label>
                 <input
                   type="text"
+                  dir={formData.titleDirection}
                   value={formData.subtitle}
                   onChange={(e) => handleInputChange("subtitle", e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"

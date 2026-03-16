@@ -1734,7 +1734,12 @@
     "deleteConfirm": "למחוק תגובה זו?",
     "delete": "מחקו תגובה",
     "deleted": "התגובה נמחקה",
-    "posted": "התגובה פורסמה"
+    "posted": "התגובה פורסמה",
+    "like": "אהבתי",
+    "loginToLike": "התחברו כדי לסמן אהבתי",
+    "likedBy": "אהבו את זה",
+    "noLikes": "עדיין אין לייקים",
+    "anonymous": "אנונימי"
   },
   "authError": {
     "configuration": {
