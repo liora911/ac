@@ -38,6 +38,7 @@ export default function EditEventForm({ eventId, onSuccess }: EditEventFormProps
     if (event && !isInitialized) {
       setFormData({
         title: event.title || "",
+        titleDirection: event?.titleDirection || "rtl",
         description: event.description || "",
         eventType: event.eventType || "",
         location: event.location || "",

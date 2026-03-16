@@ -103,6 +103,7 @@ export async function POST(request: NextRequest) {
       googleSlidesUrl,
       pdfUrl,
       isPremium = false,
+      titleDirection = "rtl",
     } = body;
 
     if (!title || !categoryId) {
@@ -134,6 +135,7 @@ export async function POST(request: NextRequest) {
         categoryId,
         authorId: user.id,
         isPremium,
+        titleDirection,
       },
       include: {
         author: {

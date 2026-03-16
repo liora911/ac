@@ -159,6 +159,7 @@ export async function POST(request: Request) {
       bannerImageUrl,
       categoryId,
       isPremium = false,
+      titleDirection = "rtl",
     } = body;
 
     if (!title || !categoryId || !duration) {
@@ -190,6 +191,7 @@ export async function POST(request: Request) {
         categoryId,
         authorId: user.id,
         isPremium,
+        titleDirection,
       },
       include: {
         author: {

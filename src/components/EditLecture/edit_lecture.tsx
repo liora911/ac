@@ -44,6 +44,7 @@ export default function EditLectureForm({ lectureId, onSuccess }: EditLectureFor
         bannerImageUrl: lecture.bannerImageUrl || "",
         categoryId: lecture.category?.id || "",
         isPremium: lecture.isPremium || false,
+        titleDirection: lecture.titleDirection || "rtl",
       });
       setIsInitialized(true);
     }

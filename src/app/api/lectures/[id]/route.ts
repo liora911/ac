@@ -91,6 +91,7 @@ export async function PUT(
       bannerImageUrl,
       categoryId,
       isPremium,
+      titleDirection,
     } = body;
 
     if (!title || !categoryId || !duration) {
@@ -122,6 +123,7 @@ export async function PUT(
         bannerImageUrl: bannerImageUrl || null,
         categoryId,
         isPremium: isPremium ?? false,
+        ...(titleDirection !== undefined && { titleDirection }),
       },
       include: {
         author: {

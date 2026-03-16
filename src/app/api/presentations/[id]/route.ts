@@ -83,6 +83,7 @@ export async function PUT(
       googleSlidesUrl,
       pdfUrl,
       isPremium,
+      titleDirection,
     } = body;
 
     if (!title || !categoryId) {
@@ -116,6 +117,7 @@ export async function PUT(
         imageUrls: imageUrls || [],
         categoryId,
         isPremium: isPremium ?? false,
+        ...(titleDirection !== undefined && { titleDirection }),
       },
       include: {
         author: {

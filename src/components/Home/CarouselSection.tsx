@@ -122,18 +122,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   };
 
   if (items.length === 0) {
-    return (
-      <div className="mb-10">
-        <div className="flex items-center justify-between mb-4 px-4 sm:px-6 md:px-10 lg:px-12">
-          <h2 className="text-xl font-bold text-[var(--foreground)]">
-            {title}
-          </h2>
-        </div>
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          {t("home.sections.noContent")}
-        </div>
-      </div>
-    );
+    return null;
   }
 
   return (

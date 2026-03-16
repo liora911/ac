@@ -130,7 +130,7 @@ export default function LectureDetailPage() {
               </span>
             </div>
           )}
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
+          <h1 dir={lecture.titleDirection || "rtl"} className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
             {lecture.title}
           </h1>
 

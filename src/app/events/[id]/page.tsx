@@ -100,7 +100,7 @@ export default function EventDetailPage() {
           </div>
         )}
 
-        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 text-center">
+        <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6 text-center" dir={event.titleDirection || "rtl"}>
           {event.title}
         </h1>
 

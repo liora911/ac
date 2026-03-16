@@ -37,6 +37,7 @@ export default function EditPresentationForm({ presentationId, onSuccess }: Edit
     if (presentation && !isInitialized) {
       setFormData({
         title: presentation.title || "",
+        titleDirection: presentation.titleDirection || "rtl",
         description: presentation.description || "",
         content: presentation.content || "",
         googleSlidesUrl: presentation.googleSlidesUrl || "",

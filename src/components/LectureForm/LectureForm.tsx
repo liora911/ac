@@ -9,6 +9,7 @@ import type { CategoryNode } from "@/types/Category/category";
 
 export interface LectureFormData {
   title: string;
+  titleDirection: "ltr" | "rtl";
   description: string;
   videoUrl: string;
   duration: string;
@@ -20,6 +21,7 @@ export interface LectureFormData {
 
 export const initialLectureFormData: LectureFormData = {
   title: "",
+  titleDirection: "rtl",
   description: "",
   videoUrl: "",
   duration: "",
@@ -172,13 +174,23 @@ export default function LectureForm({
         {activeTab === 1 && (
           <>
             <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                {t(`${translationPrefix}.titleLabel`)}
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label htmlFor="title" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t(`${translationPrefix}.titleLabel`)}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => onChange({ ...formData, titleDirection: formData.titleDirection === "rtl" ? "ltr" : "rtl" })}
+                  className="flex items-center gap-1 px-2 py-1 text-xs font-medium rounded border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                >
+                  {formData.titleDirection === "rtl" ? "RTL" : "LTR"}
+                </button>
+              </div>
               <input
                 type="text"
                 id="title"
                 name="title"
+                dir={formData.titleDirection}
                 value={formData.title}
                 onChange={handleChange}
                 className={`w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${

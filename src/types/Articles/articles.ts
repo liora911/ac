@@ -26,6 +26,7 @@ export type ArticleWithRelations = Prisma.ArticleGetPayload<{
     createdAt: true;
     updatedAt: true;
     direction: true;
+    titleDirection: true;
     authorId: true;
     categoryId: true;
     author: { select: { id: true; name: true; email: true; image: true } };
@@ -130,6 +131,7 @@ export interface CreateArticleRequest {
   isFeatured?: boolean;
   isPremium?: boolean;
   direction?: "ltr" | "rtl";
+  titleDirection?: "ltr" | "rtl";
   publisherName?: string;
   publisherImage?: string;
   authors?: ArticleAuthorInput[]; // Multiple authors

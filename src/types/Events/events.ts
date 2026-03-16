@@ -15,6 +15,7 @@ export interface SeatsInfo {
 export interface Event {
   id: string;
   title: string;
+  titleDirection?: "ltr" | "rtl";
   description: string;
   eventType: string;
   location: string | null;

@@ -71,6 +71,7 @@ export async function POST(request: NextRequest) {
       requiresRegistration = true,
       published = true, // Default to published when creating events
       price, // Price in agorot (null = free)
+      titleDirection = "rtl",
     } = body;
 
     if (!title || !eventType || !eventDate || !categoryId) {
@@ -142,6 +143,7 @@ export async function POST(request: NextRequest) {
         published: Boolean(published),
         price: price && price > 0 ? price : null,
         currency: "ILS",
+        titleDirection,
       },
       include: {
         author: {

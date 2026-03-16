@@ -108,6 +108,7 @@ export async function PUT(
       requiresRegistration = true,
       published = true,
       price,
+      titleDirection,
     } = body;
 
     if (!title || !eventType || !eventDate || !categoryId) {
@@ -175,6 +176,7 @@ export async function PUT(
         requiresRegistration: Boolean(requiresRegistration),
         published: Boolean(published),
         price: price && price > 0 ? price : null,
+        ...(titleDirection !== undefined && { titleDirection }),
       },
       include: {
         author: {

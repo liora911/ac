@@ -7,6 +7,7 @@ export interface LectureModalProps {
 export interface Lecture {
   id: string;
   title: string;
+  titleDirection?: "ltr" | "rtl";
   description: string;
   videoUrl?: string;
   duration: string;

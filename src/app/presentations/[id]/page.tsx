@@ -211,7 +211,7 @@ export default function PresentationDetailPage() {
                 {t("presentationDetail.premium") || "Premium"}
               </span>
             )}
-            <h1 className="text-3xl sm:text-5xl font-bold text-white text-center tracking-tight drop-shadow-lg max-w-3xl px-4">
+            <h1 dir={presentation.titleDirection || "rtl"} className="text-3xl sm:text-5xl font-bold text-white text-center tracking-tight drop-shadow-lg max-w-3xl px-4">
               {presentation.title}
             </h1>
             {/* Category */}
@@ -262,7 +262,7 @@ export default function PresentationDetailPage() {
 
         {/* Title - only show when no hero */}
         {!(hasMainContent && thumbnailUrl) && (
-          <h1 className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
+          <h1 dir={presentation.titleDirection || "rtl"} className="text-3xl sm:text-4xl font-semibold text-slate-900 mb-8 text-center tracking-tight">
             {presentation.title}
           </h1>
         )}

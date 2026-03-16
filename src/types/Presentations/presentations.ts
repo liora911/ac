@@ -1,6 +1,7 @@
 export interface Presentation {
   id: string;
   title: string;
+  titleDirection?: "ltr" | "rtl";
   description: string;
   content: string;
   /**
