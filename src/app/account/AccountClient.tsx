@@ -22,6 +22,7 @@ import {
   Crown,
   Bell,
   User,
+  Pencil,
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -99,6 +100,10 @@ function AccountContent({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editName, setEditName] = useState(user.name || "");
+  const [currentName, setCurrentName] = useState(user.name);
+  const [isSavingName, setIsSavingName] = useState(false);
   const searchParams = useSearchParams();
   const { t, locale } = useTranslation();
   const isRTL = locale === "he";
@@ -115,9 +120,29 @@ function AccountContent({
   const [tempSelectedIds, setTempSelectedIds] = useState<string[]>(selectedCategoryIds);
 
   const success = searchParams.get("subscription") === "success";
-  const displayName = user.name || getUsernameFromEmail(user.email);
-  const initials = getInitials(user.name, user.email);
+  const displayName = currentName || getUsernameFromEmail(user.email);
+  const initials = getInitials(currentName, user.email);
   const avatarColor = getAvatarColor(user.email);
+
+  const handleSaveName = async () => {
+    if (!editName.trim()) return;
+    setIsSavingName(true);
+    try {
+      const res = await fetch("/api/account", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: editName.trim() }),
+      });
+      if (res.ok) {
+        setCurrentName(editName.trim());
+        setIsEditingName(false);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setIsSavingName(false);
+    }
+  };
 
   const tabs: TabDef[] = [
     { id: "subscription", labelKey: "account.subscription.title", icon: <CreditCard className="w-4 h-4" /> },
@@ -555,10 +580,48 @@ function AccountContent({
                   </div>
                 </div>
 
-                {/* Name & Email */}
-                <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
-                  {displayName}
-                </h1>
+                {/* Name & Edit */}
+                {isEditingName ? (
+                  <div className="flex items-center gap-1.5">
+                    <input
+                      type="text"
+                      value={editName}
+                      onChange={(e) => setEditName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") handleSaveName();
+                        if (e.key === "Escape") setIsEditingName(false);
+                      }}
+                      autoFocus
+                      className="flex-1 min-w-0 px-2 py-1 text-sm font-bold rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      onClick={handleSaveName}
+                      disabled={isSavingName || !editName.trim()}
+                      className="p-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                    >
+                      <Check className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      onClick={() => { setIsEditingName(false); setEditName(currentName || ""); }}
+                      className="p-1 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 group">
+                    <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
+                      {displayName}
+                    </h1>
+                    <button
+                      onClick={() => { setEditName(currentName || getUsernameFromEmail(user.email)); setIsEditingName(true); }}
+                      className="p-1 rounded-lg text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 hover:text-gray-500 dark:hover:text-gray-400 transition-all"
+                      title={t("account.editNickname")}
+                    >
+                      <Pencil className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                )}
                 <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5 mt-1 truncate">
                   <Mail className="w-3.5 h-3.5 flex-shrink-0" />
                   <span className="truncate">{user.email}</span>
