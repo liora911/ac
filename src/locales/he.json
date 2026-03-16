@@ -1373,6 +1373,7 @@
   "account": {
     "welcomeMessage": "ברוך הבא! המנוי שלך הופעל בהצלחה.",
     "memberSince": "חבר מאז",
+    "editNickname": "עריכת כינוי",
     "logout": "התנתק",
     "backToHome": "חזור לדף הבית",
     "tabs": {
