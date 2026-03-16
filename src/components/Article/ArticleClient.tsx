@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
 import Link from "next/link";
 import { Pencil } from "lucide-react";
+import { useSession } from "next-auth/react";
 import type { ArticleClientProps } from "@/types/Articles/articles";
 
 export default function ArticleClient({
@@ -16,6 +18,17 @@ export default function ArticleClient({
   publisherName,
   translations,
 }: ArticleClientProps) {
+  // Track article view for logged-in users
+  const { data: session } = useSession();
+  useEffect(() => {
+    if (!session?.user?.id) return;
+    fetch("/api/articles/views", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId }),
+    }).catch(() => {/* silent fail */});
+  }, [articleId, session?.user?.id]);
+
   const downloadPDF = () => {
     // Get the article content
     const contentElement = document.querySelector(".article-content");

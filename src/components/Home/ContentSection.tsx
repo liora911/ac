@@ -4,6 +4,7 @@ import React, { useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomePreview, useDiscoverCategories } from "@/hooks/useHomePreview";
+import { useRecentlyRead } from "@/hooks/useRecentlyRead";
 import type { ContentItem } from "@/types/Home/home";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
 import { FETCH_BATCH_SIZE } from "@/constants/pagination";
@@ -40,6 +41,22 @@ const ContentSection: React.FC = () => {
   const { t } = useTranslation();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
   const { data: discoverCategories } = useDiscoverCategories();
+  const { data: recentlyRead } = useRecentlyRead();
+
+  // Convert recently read articles to ContentItem format for carousel
+  const recentlyReadItems: ContentItem[] = useMemo(() => {
+    if (!recentlyRead || recentlyRead.length === 0) return [];
+    return recentlyRead.map((item) => ({
+      id: item.id,
+      slug: item.slug || undefined,
+      title: item.title,
+      subtitle: item.subtitle || undefined,
+      articleImage: item.articleImage || undefined,
+      isPremium: item.isPremium,
+      isFeatured: item.isFeatured,
+      _contentType: "article" as const,
+    }));
+  }, [recentlyRead]);
 
   // Load more items for carousel pagination
   const handleLoadMore = useCallback(async (type: string, skip: number): Promise<{ items: ContentItem[]; hasMore: boolean }> => {
@@ -170,6 +187,16 @@ const ContentSection: React.FC = () => {
                 onLoadMore={handleLoadMore}
                 getImageUrl={getArticleImage}
                 getSubtitle={getArticleSubtitle}
+              />
+            )}
+
+            {/* Recently Read - only for logged-in users */}
+            {recentlyReadItems.length > 0 && (
+              <MixedCarouselSection
+                title={t("home.sections.recentlyRead")}
+                items={recentlyReadItems}
+                getImageUrl={getMixedImage}
+                getSubtitle={getMixedSubtitle}
               />
             )}
 

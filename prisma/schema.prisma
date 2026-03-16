@@ -60,6 +60,7 @@ model User {
   favorites         Favorite[]
   userNotifications UserNotification[]
   comments         Comment[]
+  articleViews     ArticleView[]
 }
 
 model VerificationToken {
@@ -118,6 +119,7 @@ model Article {
   categories     ArticleCategory[]
   tags           ArticleTag[]
   comments       Comment[]
+  views          ArticleView[]
   author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category       Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
 
@@ -428,4 +430,18 @@ model Comment {
   @@index([articleId, createdAt])
   @@index([userId])
   @@map("comments")
+}
+
+model ArticleView {
+  id        String   @id @default(cuid())
+  userId    String
+  articleId String
+  viewedAt  DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+
+  @@index([userId, viewedAt])
+  @@index([articleId])
+  @@map("article_views")
 }
