@@ -6,6 +6,7 @@ import { ALLOWED_EMAILS } from "@/constants/auth";
 import { SiteSettings } from "@/types/SiteSettings/settings";
 import { Globe, Mail, Phone, Save, Loader2 } from "lucide-react";
 import { FaFacebook, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
 
 const DEFAULT_SETTINGS: SiteSettings = {
   siteTitle: "Avshalom Elitzur",
@@ -14,6 +15,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactPhone: "",
   facebookUrl: "",
   youtubeUrl: "",
+  twitterUrl: "",
   defaultLanguage: "he",
 };
 
@@ -299,6 +301,29 @@ export default function SettingsAdmin() {
                 }
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="https://youtube.com/..."
+                dir="ltr"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="twitterUrl"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                <span className="flex items-center gap-1.5">
+                  <FaXTwitter className="w-4 h-4 text-gray-900" />
+                  קישור ל-X (טוויטר)
+                </span>
+              </label>
+              <input
+                id="twitterUrl"
+                type="url"
+                value={settings.twitterUrl}
+                onChange={(e) =>
+                  handleInputChange("twitterUrl", e.target.value)
+                }
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="https://x.com/..."
                 dir="ltr"
               />
             </div>

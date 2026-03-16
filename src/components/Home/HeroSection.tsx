@@ -26,6 +26,14 @@ const FaYoutube = dynamic(
     ),
   }
 );
+const FaXTwitter = dynamic(
+  () => import("react-icons/fa6").then((mod) => ({ default: mod.FaXTwitter })),
+  {
+    loading: () => (
+      <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+    ),
+  }
+);
 
 interface HeroSectionProps {
   homeContent: HomeContent | null;
@@ -156,7 +164,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ homeContent, siteSettings }) 
             )}
 
             {/* Social Links */}
-            {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl) && (
+            {(siteSettings?.facebookUrl || siteSettings?.youtubeUrl || siteSettings?.twitterUrl) && (
               <motion.div
                 className="flex justify-center md:justify-start gap-3 mt-6"
                 variants={itemVariants}
@@ -192,6 +200,23 @@ const HeroSection: React.FC<HeroSectionProps> = ({ homeContent, siteSettings }) 
                       aria-label={t("home.social.youtube")}
                     >
                       <FaYoutube size={18} />
+                    </a>
+                  </Suspense>
+                )}
+                {siteSettings?.twitterUrl && (
+                  <Suspense
+                    fallback={
+                      <div className="w-10 h-10 bg-slate-200 dark:bg-slate-700 rounded-full animate-pulse" />
+                    }
+                  >
+                    <a
+                      href={siteSettings.twitterUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-10 h-10 flex items-center justify-center rounded-full bg-black hover:bg-gray-800 text-white transition-colors"
+                      aria-label={t("home.social.twitter")}
+                    >
+                      <FaXTwitter size={16} />
                     </a>
                   </Suspense>
                 )}

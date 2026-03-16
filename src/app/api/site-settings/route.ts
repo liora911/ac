@@ -22,6 +22,7 @@ export async function GET() {
         contactPhone: "",
         facebookUrl: "",
         youtubeUrl: "",
+        twitterUrl: "",
         defaultLanguage: "he",
         updatedAt: null,
       });
@@ -56,6 +57,7 @@ export async function PUT(request: NextRequest) {
       contactPhone = "",
       facebookUrl = "",
       youtubeUrl = "",
+      twitterUrl = "",
       defaultLanguage = "he",
     } = body;
 
@@ -69,6 +71,7 @@ export async function PUT(request: NextRequest) {
         contactPhone,
         facebookUrl,
         youtubeUrl,
+        twitterUrl,
         defaultLanguage,
       },
       update: {
@@ -78,6 +81,7 @@ export async function PUT(request: NextRequest) {
         contactPhone,
         facebookUrl,
         youtubeUrl,
+        twitterUrl,
         defaultLanguage,
       },
     });

@@ -268,11 +268,11 @@ export default function ElitzurDashboard() {
         {/* Tabs Navigation - Grouped */}
         <div className="border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex flex-wrap items-center gap-x-1 gap-y-1.5 py-2" role="tablist">
+            <div className="flex items-center gap-x-1 py-2 overflow-x-auto scrollbar-hide" role="tablist">
               {TAB_GROUPS.map((group, gi) => (
-                <div key={group.labelKey} className="contents">
+                <div key={group.labelKey} className="flex items-center gap-x-1 flex-shrink-0">
                   {gi > 0 && (
-                    <div className="hidden sm:block w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1" />
+                    <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1 flex-shrink-0" />
                   )}
                   {group.tabs.filter(tab => !tab.disabled).map((tab) => {
                     const isActive = active === tab.key;
@@ -282,7 +282,7 @@ export default function ElitzurDashboard() {
                         key={tab.key}
                         type="button"
                         onClick={() => setActive(tab.key)}
-                        className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer ${
+                        className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
                           isActive
                             ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
                             : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
@@ -296,7 +296,7 @@ export default function ElitzurDashboard() {
                         {IconComponent && (
                           <IconComponent className="w-4 h-4 flex-shrink-0" />
                         )}
-                        <span className="hidden lg:inline text-xs">{t(`admin.nav.${tab.key}`)}</span>
+                        <span className="hidden xl:inline text-xs">{t(`admin.nav.${tab.key}`)}</span>
                       </button>
                     );
                   })}

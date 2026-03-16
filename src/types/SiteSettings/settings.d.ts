@@ -6,6 +6,7 @@ export interface SiteSettings {
   contactPhone: string;
   facebookUrl: string;
   youtubeUrl: string;
+  twitterUrl: string;
   defaultLanguage: "he" | "en";
   updatedAt?: string;
 }

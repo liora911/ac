@@ -321,6 +321,7 @@ model SiteSettings {
   contactPhone    String   @default("")
   facebookUrl     String   @default("")
   youtubeUrl      String   @default("")
+  twitterUrl      String   @default("")
   defaultLanguage String   @default("he")
   updatedAt       DateTime @updatedAt
 
