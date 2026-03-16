@@ -8,6 +8,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   contactPhone: "",
   facebookUrl: "",
   youtubeUrl: "",
+  twitterUrl: "",
   defaultLanguage: "he",
 };
 
@@ -33,6 +34,7 @@ export function useSiteSettings() {
         contactPhone: data.contactPhone ?? DEFAULT_SETTINGS.contactPhone,
         facebookUrl: data.facebookUrl ?? DEFAULT_SETTINGS.facebookUrl,
         youtubeUrl: data.youtubeUrl ?? DEFAULT_SETTINGS.youtubeUrl,
+        twitterUrl: data.twitterUrl ?? DEFAULT_SETTINGS.twitterUrl,
         defaultLanguage: data.defaultLanguage ?? DEFAULT_SETTINGS.defaultLanguage,
         updatedAt: data.updatedAt ?? null,
       } as SiteSettings;
