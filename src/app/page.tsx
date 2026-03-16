@@ -22,6 +22,7 @@ const DEFAULT_SITE_SETTINGS: SiteSettings = {
   contactPhone: "",
   facebookUrl: "",
   youtubeUrl: "",
+  twitterUrl: "",
   defaultLanguage: "he",
 };
 
