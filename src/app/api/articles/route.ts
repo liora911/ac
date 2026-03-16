@@ -49,6 +49,7 @@ function transformArticle(article: ArticleWithRelations): Article {
     viewCount: 0,
     readTime: article.readDuration,
     direction: article.direction === "rtl" ? "rtl" : "ltr",
+    titleDirection: article.titleDirection === "ltr" ? "ltr" : "rtl",
     createdAt: article.createdAt.toISOString(),
     updatedAt: article.updatedAt.toISOString(),
     authorId: article.authorId,

@@ -60,6 +60,7 @@ export interface Article {
   viewCount: number;
   readTime: number;
   direction?: "ltr" | "rtl";
+  titleDirection?: "ltr" | "rtl";
   createdAt: string;
   updatedAt: string;
   authorId: string;
