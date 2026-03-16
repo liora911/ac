@@ -1322,6 +1322,11 @@
     "memberSince": "Member since",
     "logout": "Sign Out",
     "backToHome": "Back to Home",
+    "tabs": {
+      "activity": "Tickets & Favorites",
+      "preferences": "Content Preferences",
+      "settings": "Settings"
+    },
     "role": {
       "admin": "Administrator",
       "premium": "Researcher"

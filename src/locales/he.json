@@ -1368,6 +1368,11 @@
     "memberSince": "חבר מאז",
     "logout": "התנתק",
     "backToHome": "חזור לדף הבית",
+    "tabs": {
+      "activity": "כרטיסים ומועדפים",
+      "preferences": "העדפות תוכן",
+      "settings": "הגדרות"
+    },
     "role": {
       "admin": "מנהל",
       "premium": "חוקר"

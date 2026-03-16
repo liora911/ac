@@ -6,7 +6,9 @@
       "Bash(xargs grep:*)",
       "Bash(find . -name migrations -o -name *.migration.*)",
       "Bash(npx prisma:*)",
-      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
+      "Bash(find /c/Users/krisl/ace/ace/src/app/account -type f -name *.tsx -o -name *.ts -o -name *.md)",
+      "Bash(find /c/Users/krisl/ace/ace/src/components -type f \\\\\\(-name *account* -o -name *Account* \\\\\\))"
     ]
   }
 }
