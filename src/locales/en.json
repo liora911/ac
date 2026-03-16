@@ -1327,6 +1327,7 @@
   "account": {
     "welcomeMessage": "Welcome back",
     "memberSince": "Member since",
+    "editNickname": "Edit nickname",
     "logout": "Sign Out",
     "backToHome": "Back to Home",
     "tabs": {
