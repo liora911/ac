@@ -30,6 +30,10 @@ import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
 import type { AccountClientProps } from "@/types/Account/account";
 import NotificationsSection from "@/components/Notifications/NotificationsSection";
+import LanguageToggle from "@/components/Settings/LanguageToggle";
+import ThemeToggleSection from "@/components/Settings/ThemeToggleSection";
+import FontSizeToggle from "@/components/Settings/FontSizeToggle";
+import ReduceMotionToggle from "@/components/Settings/ReduceMotionToggle";
 import { formatDate, formatMonthYear } from "@/lib/utils/date";
 
 // Extract username from email
@@ -468,6 +472,14 @@ function AccountContent({
 
   const renderSettings = () => (
     <div className="space-y-4">
+      {/* Display Settings */}
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5 space-y-5">
+        <LanguageToggle />
+        <ThemeToggleSection />
+        <FontSizeToggle />
+        <ReduceMotionToggle />
+      </div>
+
       {/* Admin Panel Link */}
       {user.role === "ADMIN" && (
         <Link
@@ -601,27 +613,11 @@ function AccountContent({
               ))}
             </nav>
 
-            {/* Back to Home */}
-            <div className="text-center">
-              <Link
-                href="/"
-                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              >
-                ← {t("account.backToHome")}
-              </Link>
-            </div>
           </div>
 
           {/* ── Right Content Area ── */}
           <div className="flex-1 min-w-0">
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-6">
-              {/* Tab Title */}
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-                {tabs.find(t => t.id === activeTab)?.icon}
-                {t(tabs.find(tab => tab.id === activeTab)?.labelKey || "")}
-              </h2>
-
-              {/* Tab Content */}
               {tabContent[activeTab]()}
             </div>
           </div>

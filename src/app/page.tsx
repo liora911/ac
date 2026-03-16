@@ -58,6 +58,7 @@ async function getHomeData() {
           contactPhone: siteSettings.contactPhone,
           facebookUrl: siteSettings.facebookUrl,
           youtubeUrl: siteSettings.youtubeUrl,
+          twitterUrl: siteSettings.twitterUrl,
           defaultLanguage: siteSettings.defaultLanguage as "he" | "en",
           updatedAt: siteSettings.updatedAt?.toISOString(),
         }
