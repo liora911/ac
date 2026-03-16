@@ -23,12 +23,14 @@ export interface Tab {
 
 export interface TabGroup {
   labelKey: string; // i18n key for group label
+  icon: string;     // Lucide icon name for collapsed group button
   tabs: Tab[];
 }
 
 export const TAB_GROUPS: TabGroup[] = [
   {
     labelKey: "admin.tabGroups.general",
+    icon: "LayoutDashboard",
     tabs: [
       { key: "user", label: "פעולות מהירות", icon: "User" },
       { key: "home", label: "דף הבית", icon: "Home" },
@@ -37,6 +39,7 @@ export const TAB_GROUPS: TabGroup[] = [
   },
   {
     labelKey: "admin.tabGroups.content",
+    icon: "BookOpen",
     tabs: [
       { key: "categories", label: "קטגוריות", icon: "FolderTree" },
       { key: "articles", label: "מאמרים", icon: "FileText" },
@@ -47,6 +50,7 @@ export const TAB_GROUPS: TabGroup[] = [
   },
   {
     labelKey: "admin.tabGroups.community",
+    icon: "Users",
     tabs: [
       { key: "comments", label: "תגובות", icon: "MessageCircle" },
       { key: "messages", label: "הודעות", icon: "MessageSquare" },
@@ -55,6 +59,7 @@ export const TAB_GROUPS: TabGroup[] = [
   },
   {
     labelKey: "admin.tabGroups.system",
+    icon: "Wrench",
     tabs: [
       { key: "subscriptions", label: "רשומים ומנויים", icon: "CreditCard" },
       { key: "settings", label: "הגדרות מערכת", icon: "Settings" },

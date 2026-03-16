@@ -1268,6 +1268,12 @@
       "recentActivity": "Recent Activity",
       "devMetrics": "Developer Metrics"
     },
+    "tabGroups": {
+      "general": "General",
+      "content": "Content",
+      "community": "Community",
+      "system": "System"
+    },
     "quickActions": {
       "title": "Quick Actions",
       "addArticle": "Add Article",

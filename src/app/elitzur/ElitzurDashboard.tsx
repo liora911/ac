@@ -36,6 +36,10 @@ import {
   CreditCard,
   Settings,
   BarChart3,
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  Wrench,
   LucideIcon,
   LogOut,
   Sparkles,
@@ -62,15 +66,36 @@ const iconMap: Record<string, LucideIcon> = {
   CreditCard,
   Settings,
   BarChart3,
+  LayoutDashboard,
+  BookOpen,
+  Users,
+  Wrench,
 };
 
 export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [active, setActive] = useState<TabKey>("user");
+  const [activeGroupIndex, setActiveGroupIndex] = useState(0);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
   const tabs = useMemo(() => TABS.filter((tab) => !tab.disabled), []);
+
+  // When a tab is clicked, also update the active group
+  const handleTabClick = (tabKey: TabKey) => {
+    setActive(tabKey);
+    const gi = TAB_GROUPS.findIndex((g) => g.tabs.some((t) => t.key === tabKey));
+    if (gi !== -1) setActiveGroupIndex(gi);
+  };
+
+  // When a group is clicked, switch to it and select its first tab
+  const handleGroupClick = (gi: number) => {
+    setActiveGroupIndex(gi);
+    const firstTab = TAB_GROUPS[gi].tabs.find((t) => !t.disabled);
+    if (firstTab) setActive(firstTab.key);
+  };
+
+  const activeGroup = TAB_GROUPS[activeGroupIndex];
 
   // AI Chat hook
   const {
@@ -265,43 +290,60 @@ export default function ElitzurDashboard() {
           </div>
         </div>
 
-        {/* Tabs Navigation - Grouped */}
+        {/* Top-level group tabs */}
         <div className="border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center gap-x-1 py-2 overflow-x-auto scrollbar-hide" role="tablist">
-              {TAB_GROUPS.map((group, gi) => (
-                <div key={group.labelKey} className="flex items-center gap-x-1 flex-shrink-0">
-                  {gi > 0 && (
-                    <div className="w-px h-5 bg-gray-200 dark:bg-gray-700 mx-1 flex-shrink-0" />
-                  )}
-                  {group.tabs.filter(tab => !tab.disabled).map((tab) => {
-                    const isActive = active === tab.key;
-                    const IconComponent = iconMap[tab.icon];
-                    return (
-                      <button
-                        key={tab.key}
-                        type="button"
-                        onClick={() => setActive(tab.key)}
-                        className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer whitespace-nowrap flex-shrink-0 ${
-                          isActive
-                            ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
-                            : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                        }`}
-                        role="tab"
-                        aria-selected={isActive}
-                        aria-controls={`panel-${tab.key}`}
-                        id={`tab-${tab.key}`}
-                        title={t(`admin.nav.${tab.key}`)}
-                      >
-                        {IconComponent && (
-                          <IconComponent className="w-4 h-4 flex-shrink-0" />
-                        )}
-                        <span className="hidden xl:inline text-xs">{t(`admin.nav.${tab.key}`)}</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              ))}
+            <div className="flex items-center gap-1 py-2">
+              {TAB_GROUPS.map((group, gi) => {
+                const isActiveGroup = gi === activeGroupIndex;
+                const GroupIcon = iconMap[group.icon];
+                return (
+                  <button
+                    key={group.labelKey}
+                    type="button"
+                    onClick={() => handleGroupClick(gi)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
+                      isActiveGroup
+                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
+                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {GroupIcon && <GroupIcon className="w-4 h-4" />}
+                    <span className="text-xs">{t(group.labelKey)}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+
+        {/* Sub-level tabs within selected group */}
+        <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center gap-1 py-1.5" role="tablist">
+              {activeGroup.tabs.filter(tab => !tab.disabled).map((tab) => {
+                const isActive = active === tab.key;
+                const IconComponent = iconMap[tab.icon];
+                return (
+                  <button
+                    key={tab.key}
+                    type="button"
+                    onClick={() => handleTabClick(tab.key)}
+                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
+                      isActive
+                        ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm border border-gray-200 dark:border-gray-600"
+                        : "text-gray-500 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-white"
+                    }`}
+                    role="tab"
+                    aria-selected={isActive}
+                    aria-controls={`panel-${tab.key}`}
+                    id={`tab-${tab.key}`}
+                  >
+                    {IconComponent && <IconComponent className="w-3.5 h-3.5" />}
+                    <span>{t(`admin.nav.${tab.key}`)}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

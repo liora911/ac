@@ -1335,6 +1335,12 @@
       "recentActivity": "פעילות אחרונה",
       "devMetrics": "מדדי מפתחים"
     },
+    "tabGroups": {
+      "general": "כללי",
+      "content": "תוכן",
+      "community": "קהילה",
+      "system": "מערכת"
+    },
     "quickActions": {
       "title": "פעולות מהירות",
       "addArticle": "הוסף מאמר",
