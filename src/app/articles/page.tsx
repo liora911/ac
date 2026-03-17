@@ -24,7 +24,7 @@ function ArticlesPageContent() {
   const categoryId = searchParams.get('c');
   const bannerSrc =
     categoryId === "cmldlqdpq0001l804wu8113br"
-      ? "https://vo7mgluzosvw8wff.public.blob.vercel-storage.com/1770451469610-strmst.png"
+      ? "https://vo7mgluzosvw8wff.public.blob.vercel-storage.com/1773748316734-05g5af.png"
       : "/gstudioArticles.jpg";
 
   return (
