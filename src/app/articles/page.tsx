@@ -38,7 +38,7 @@ function ArticlesPageContent() {
           src={bannerSrc}
           alt={t("articlesPage.title")}
           fill
-          className="object-cover"
+          className={`object-cover ${categoryId === "cmldlqdpq0001l804wu8113br" ? "object-top" : ""}`}
           priority
           sizes="100vw"
           quality={85}
