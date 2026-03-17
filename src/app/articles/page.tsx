@@ -33,12 +33,12 @@ function ArticlesPageContent() {
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       {/* Hero Banner */}
-      <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
+      <div className={`relative overflow-hidden ${categoryId === "cmldlqdpq0001l804wu8113br" ? "h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px]" : "h-[200px] sm:h-[250px] md:h-[300px]"}`}>
         <Image
           src={bannerSrc}
           alt={t("articlesPage.title")}
           fill
-          className={`object-cover ${categoryId === "cmldlqdpq0001l804wu8113br" ? "object-top" : ""}`}
+          className={`object-cover ${categoryId === "cmldlqdpq0001l804wu8113br" ? "object-[center_30%]" : ""}`}
           priority
           sizes="100vw"
           quality={85}
