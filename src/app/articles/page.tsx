@@ -62,7 +62,7 @@ function ArticlesPageContent() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ArticlesList
           initialLimit={12}
-          showFilters={true}
+          showFilters={categoryId !== "cmldlqdpq0001l804wu8113br"}
           showPagination={true}
           viewMode="grid"
           featuredOnly={featuredOnly}
