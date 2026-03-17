@@ -14,17 +14,17 @@ const ArticlesList = dynamic(
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     ),
-  }
+  },
 );
 
 function ArticlesPageContent() {
   const { t, locale } = useTranslation();
   const searchParams = useSearchParams();
-  const featuredOnly = searchParams.get('featured') === 'true';
-  const categoryId = searchParams.get('c');
+  const featuredOnly = searchParams.get("featured") === "true";
+  const categoryId = searchParams.get("c");
   const bannerSrc =
     categoryId === "cmldlqdpq0001l804wu8113br"
-      ? "https://vo7mgluzosvw8wff.public.blob.vercel-storage.com/1773748316734-05g5af.png"
+      ? "https://vo7mgluzosvw8wff.public.blob.vercel-storage.com/1773748296133-wac97w.png"
       : "/gstudioArticles.jpg";
 
   return (
@@ -33,7 +33,9 @@ function ArticlesPageContent() {
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
       {/* Hero Banner */}
-      <div className={`relative overflow-hidden ${categoryId === "cmldlqdpq0001l804wu8113br" ? "h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px]" : "h-[200px] sm:h-[250px] md:h-[300px]"}`}>
+      <div
+        className={`relative overflow-hidden ${categoryId === "cmldlqdpq0001l804wu8113br" ? "h-[250px] sm:h-[300px] md:h-[400px] lg:h-[500px]" : "h-[200px] sm:h-[250px] md:h-[300px]"}`}
+      >
         <Image
           src={bannerSrc}
           alt={t("articlesPage.title")}
