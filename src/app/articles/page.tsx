@@ -21,6 +21,11 @@ function ArticlesPageContent() {
   const { t, locale } = useTranslation();
   const searchParams = useSearchParams();
   const featuredOnly = searchParams.get('featured') === 'true';
+  const categoryId = searchParams.get('c');
+  const bannerSrc =
+    categoryId === "cmldlqdpq0001l804wu8113br"
+      ? "https://vo7mgluzosvw8wff.public.blob.vercel-storage.com/1770451469610-strmst.png"
+      : "/gstudioArticles.jpg";
 
   return (
     <div
@@ -30,7 +35,7 @@ function ArticlesPageContent() {
       {/* Hero Banner */}
       <div className="relative h-[200px] sm:h-[250px] md:h-[300px] overflow-hidden">
         <Image
-          src="/gstudioArticles.jpg"
+          src={bannerSrc}
           alt={t("articlesPage.title")}
           fill
           className="object-cover"
