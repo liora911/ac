@@ -200,31 +200,6 @@ const ContentSection: React.FC = () => {
               />
             )}
 
-            {/* Recent Articles */}
-            <CarouselSection
-              title={t("home.sections.recentArticles")}
-              items={previewData?.articles || []}
-              href="/articles"
-              linkPrefix="/articles"
-              useSlug={true}
-              contentType="articles"
-              onLoadMore={handleLoadMore}
-              getImageUrl={getArticleImage}
-              getSubtitle={getArticleSubtitle}
-            />
-
-            {/* Lectures */}
-            <CarouselSection
-              title={t("home.sections.latestLectures")}
-              items={previewData?.lectures || []}
-              href="/lectures"
-              linkPrefix="/lectures"
-              contentType="lectures"
-              onLoadMore={handleLoadMore}
-              getImageUrl={getLectureImage}
-              getSubtitle={getDescriptionSubtitle}
-            />
-
             {/* Presentations */}
             <CarouselSection
               title={t("home.sections.presentations")}

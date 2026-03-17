@@ -20,7 +20,7 @@ interface UseCarouselExpandResult {
 }
 
 export function useCarouselExpand(): UseCarouselExpandResult {
-  const [expandedIdx, setExpandedIdx] = useState<number | null>(0);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
   const [isLgScreen, setIsLgScreen] = useState(false);
   const [showText, setShowText] = useState(true);
   const expandTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -30,7 +30,6 @@ export function useCarouselExpand(): UseCarouselExpandResult {
     const check = () => {
       const lg = window.innerWidth >= 1024;
       setIsLgScreen(lg);
-      // On non-lg screens, clear the default expand
       if (!lg) setExpandedIdx(null);
     };
     check();
@@ -69,12 +68,12 @@ export function useCarouselExpand(): UseCarouselExpandResult {
       clearTimeout(expandTimerRef.current);
       expandTimerRef.current = null;
     }
-    // Batched in same render: text hides before collapse changes classes
-    setShowText(false);
-    // Return to first item expanded (Netflix-style default)
-    setExpandedIdx(isLgScreen ? 0 : null);
-    scheduleTextReveal();
-  }, [scheduleTextReveal, isLgScreen]);
+    if (expandedIdx !== null) {
+      setShowText(false);
+      setExpandedIdx(null);
+      scheduleTextReveal();
+    }
+  }, [scheduleTextReveal, expandedIdx]);
 
   const gridColumns = useMemo(() => {
     if (!isLgScreen) return undefined;
