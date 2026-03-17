@@ -97,7 +97,7 @@ export default function Breadcrumbs() {
   const listPagesWithHero = ["/articles", "/lectures", "/presentations", "/events", "/browse"];
   const isListPage = listPagesWithHero.includes(pathname);
 
-  if (!pathname || pathname === "/" || pathname.startsWith("/auth") || isListPage) {
+  if (!pathname || pathname === "/" || pathname.startsWith("/auth") || pathname.startsWith("/elitzur") || isListPage) {
     return null;
   }
 
