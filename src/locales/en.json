@@ -1754,6 +1754,9 @@
     "loadError": "Failed to load data",
     "noItems": "No items in archive",
     "enterTitle": "Enter title...",
-    "enterContent": "Enter content..."
+    "enterContent": "Enter content...",
+    "category": "Category",
+    "enterCategory": "Enter category...",
+    "uncategorized": "Uncategorized"
   }
 }

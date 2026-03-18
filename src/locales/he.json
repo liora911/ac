@@ -1826,6 +1826,9 @@
     "loadError": "שגיאה בטעינת הנתונים",
     "noItems": "אין פריטים בארכיון",
     "enterTitle": "הזן כותרת...",
-    "enterContent": "הזן תוכן..."
+    "enterContent": "הזן תוכן...",
+    "category": "קטגוריה",
+    "enterCategory": "הזן קטגוריה...",
+    "uncategorized": "ללא קטגוריה"
   }
 }

@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
       content: a.content,
       mediaUrl: a.mediaUrl,
       mediaType: a.mediaType,
+      category: a.category,
       order: a.order,
       createdAt: a.createdAt.toISOString(),
       updatedAt: a.updatedAt.toISOString(),
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body: CreateArchiveRequest = await request.json();
-    const { title, content, mediaUrl, mediaType = "NONE" } = body;
+    const { title, content, mediaUrl, mediaType = "NONE", category } = body;
 
     if (!title || !content) {
       return NextResponse.json(
@@ -70,6 +71,7 @@ export async function POST(request: NextRequest) {
         content,
         mediaUrl: mediaUrl || null,
         mediaType,
+        category: category || null,
         order: newOrder,
       },
     });
@@ -80,6 +82,7 @@ export async function POST(request: NextRequest) {
       content: archive.content,
       mediaUrl: archive.mediaUrl,
       mediaType: archive.mediaType,
+      category: archive.category,
       order: archive.order,
       createdAt: archive.createdAt.toISOString(),
       updatedAt: archive.updatedAt.toISOString(),

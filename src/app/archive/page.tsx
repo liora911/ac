@@ -58,21 +58,45 @@ export default function ArchivePage() {
     content: "",
     mediaUrl: "",
     mediaType: "NONE",
+    category: "",
   });
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  const categories = useMemo(() => {
+    if (!archives) return [];
+    const cats = new Set(archives.map((a) => a.category).filter(Boolean) as string[]);
+    return Array.from(cats).sort();
+  }, [archives]);
 
   const filteredArchives = useMemo(() => {
     if (!archives) return [];
-    if (!searchQuery.trim()) return archives;
-    const q = searchQuery.toLowerCase();
-    return archives.filter(
-      (item) =>
-        item.title.toLowerCase().includes(q) ||
-        stripHtml(item.content).toLowerCase().includes(q),
-    );
-  }, [archives, searchQuery]);
+    let filtered = archives;
+    if (activeCategory) {
+      filtered = filtered.filter((item) => item.category === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      filtered = filtered.filter(
+        (item) =>
+          item.title.toLowerCase().includes(q) ||
+          stripHtml(item.content).toLowerCase().includes(q),
+      );
+    }
+    return filtered;
+  }, [archives, searchQuery, activeCategory]);
+
+  const groupedArchives = useMemo(() => {
+    const groups: Record<string, Archive[]> = {};
+    for (const item of filteredArchives) {
+      const cat = item.category || t("archive.uncategorized");
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    }
+    return groups;
+  }, [filteredArchives, t]);
 
   const resetForm = () => {
-    setFormData({ title: "", content: "", mediaUrl: "", mediaType: "NONE" });
+    setFormData({ title: "", content: "", mediaUrl: "", mediaType: "NONE", category: "" });
     setEditingItem(null);
     setIsFormOpen(false);
   };
@@ -89,6 +113,7 @@ export default function ArchivePage() {
       content: archive.content,
       mediaUrl: archive.mediaUrl || "",
       mediaType: archive.mediaType,
+      category: archive.category || "",
     });
     setEditingItem(archive);
     setIsFormOpen(true);
@@ -110,6 +135,7 @@ export default function ArchivePage() {
             content: formData.content,
             mediaUrl: formData.mediaUrl || null,
             mediaType: formData.mediaType,
+            category: formData.category || null,
           },
         });
         showSuccess(t("archive.itemUpdated"));
@@ -119,6 +145,7 @@ export default function ArchivePage() {
           content: formData.content,
           mediaUrl: formData.mediaUrl || undefined,
           mediaType: formData.mediaType,
+          category: formData.category || undefined,
         });
         showSuccess(t("archive.itemCreated"));
       }
@@ -220,7 +247,12 @@ export default function ArchivePage() {
                 </div>
               </div>
 
-              <div className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+              <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500 mb-6">
+                {selectedItem.category && (
+                  <span className="px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-medium">
+                    {selectedItem.category}
+                  </span>
+                )}
                 {new Date(selectedItem.createdAt).toLocaleDateString(
                   isRTL ? "he-IL" : "en-US",
                   { year: "numeric", month: "long", day: "numeric" },
@@ -314,6 +346,29 @@ export default function ArchivePage() {
                   direction={isRTL ? "rtl" : "ltr"}
                   theme="light"
                 />
+              </div>
+              {/* Category */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  {t("archive.category")}
+                </label>
+                <input
+                  type="text"
+                  value={formData.category}
+                  onChange={(e) =>
+                    setFormData({ ...formData, category: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={t("archive.enterCategory")}
+                  list="archive-categories"
+                />
+                {categories.length > 0 && (
+                  <datalist id="archive-categories">
+                    {categories.map((cat) => (
+                      <option key={cat} value={cat} />
+                    ))}
+                  </datalist>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -427,6 +482,35 @@ export default function ArchivePage() {
           </div>
         )}
 
+        {/* Category Filter Chips */}
+        {!isLoading && !error && categories.length > 0 && (
+          <div className="flex flex-wrap gap-2 mb-6">
+            <button
+              onClick={() => setActiveCategory(null)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                activeCategory === null
+                  ? "bg-blue-600 text-white"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+              }`}
+            >
+              {t("common.all")}
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveCategory(activeCategory === cat ? null : cat)}
+                className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors cursor-pointer ${
+                  activeCategory === cat
+                    ? "bg-blue-600 text-white"
+                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Empty State */}
         {!isLoading && !error && filteredArchives.length === 0 && (
           <div className="text-center py-16 text-gray-500 dark:text-gray-400">
@@ -435,19 +519,32 @@ export default function ArchivePage() {
           </div>
         )}
 
-        {/* Card Grid */}
+        {/* Grouped Card Grid */}
         {!isLoading && !error && filteredArchives.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredArchives.map((item) => (
-              <ArchiveCard
-                key={item.id}
-                archive={item}
-                isRTL={isRTL}
-                onSelect={() => setSelectedItem(item)}
-                onEdit={() => openEditForm(item)}
-                onDelete={() => handleDelete(item.id)}
-                isDeleting={deleteMutation.isPending}
-              />
+          <div className="space-y-8">
+            {Object.entries(groupedArchives).map(([category, items]) => (
+              <div key={category}>
+                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center gap-2">
+                  <span className="w-1 h-5 bg-blue-500 rounded-full" />
+                  {category}
+                  <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
+                    ({items.length})
+                  </span>
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {items.map((item) => (
+                    <ArchiveCard
+                      key={item.id}
+                      archive={item}
+                      isRTL={isRTL}
+                      onSelect={() => setSelectedItem(item)}
+                      onEdit={() => openEditForm(item)}
+                      onDelete={() => handleDelete(item.id)}
+                      isDeleting={deleteMutation.isPending}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}

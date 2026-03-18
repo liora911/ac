@@ -8,6 +8,7 @@ export interface Archive {
   content: string; // HTML content from TipTap editor
   mediaUrl: string | null;
   mediaType: ArchiveMediaType;
+  category: string | null;
   order: number;
   createdAt: string;
   updatedAt: string;
@@ -19,6 +20,7 @@ export interface ArchiveFormData {
   content: string;
   mediaUrl: string;
   mediaType: ArchiveMediaType;
+  category: string;
 }
 
 // API request body for creating archive
@@ -27,6 +29,7 @@ export interface CreateArchiveRequest {
   content: string;
   mediaUrl?: string;
   mediaType: ArchiveMediaType;
+  category?: string;
 }
 
 // API request body for updating archive
@@ -35,6 +38,7 @@ export interface UpdateArchiveRequest {
   content?: string;
   mediaUrl?: string | null;
   mediaType?: ArchiveMediaType;
+  category?: string | null;
   order?: number;
 }
 

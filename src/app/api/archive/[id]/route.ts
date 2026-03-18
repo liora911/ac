@@ -32,6 +32,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       content: archive.content,
       mediaUrl: archive.mediaUrl,
       mediaType: archive.mediaType,
+      category: archive.category,
       order: archive.order,
       createdAt: archive.createdAt.toISOString(),
       updatedAt: archive.updatedAt.toISOString(),
@@ -65,7 +66,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const body: UpdateArchiveRequest = await request.json();
-    const { title, content, mediaUrl, mediaType, order } = body;
+    const { title, content, mediaUrl, mediaType, category, order } = body;
 
     const archive = await prisma.archive.update({
       where: { id },
@@ -74,6 +75,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
         ...(content !== undefined && { content }),
         ...(mediaUrl !== undefined && { mediaUrl: mediaUrl || null }),
         ...(mediaType !== undefined && { mediaType }),
+        ...(category !== undefined && { category: category || null }),
         ...(order !== undefined && { order }),
       },
     });
@@ -84,6 +86,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       content: archive.content,
       mediaUrl: archive.mediaUrl,
       mediaType: archive.mediaType,
+      category: archive.category,
       order: archive.order,
       createdAt: archive.createdAt.toISOString(),
       updatedAt: archive.updatedAt.toISOString(),
