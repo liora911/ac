@@ -12,7 +12,8 @@
       "Bash(node -e \"try { require\\(''react-icons/fa6''\\); console.log\\(''fa6 exists''\\); } catch\\(e\\) { console.log\\(''fa6 missing:'', e.message\\); }\")",
       "Bash(node -e \":*)",
       "Bash(npm run:*)",
-      "Bash(grep -r \"parentId\\\\|parentComment\\\\|reply\" c:Userskrislaceacesrc --include=*.ts --include=*.tsx)"
+      "Bash(grep -r \"parentId\\\\|parentComment\\\\|reply\" c:Userskrislaceacesrc --include=*.ts --include=*.tsx)",
+      "mcp__ym__create-archive-item"
     ]
   }
 }

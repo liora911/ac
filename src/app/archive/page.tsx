@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -17,7 +17,6 @@ import UnauthorizedScreen from "@/components/Auth/UnauthorizedScreen";
 import RichContent from "@/components/RichContent";
 import {
   Plus,
-  Minus,
   Loader2,
   Trash2,
   Edit3,
@@ -25,9 +24,13 @@ import {
   Save,
   Image as ImageIcon,
   Video,
+  Search,
+  FileText,
+  ChevronLeft,
 } from "lucide-react";
-import type { Archive, ArchiveMediaType, ArchiveFormData } from "@/types/Archive/archive";
+import type { Archive, ArchiveFormData } from "@/types/Archive/archive";
 import { getYouTubeVideoId } from "@/lib/utils/youtube";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 export default function ArchivePage() {
   const { t, locale } = useTranslation();
@@ -35,24 +38,21 @@ export default function ArchivePage() {
   const { showSuccess, showError } = useNotification();
   const isRTL = locale === "he";
 
-  // Auth check
   const isAuthorized = !!(
     session?.user?.email &&
     ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
   );
 
-  // Data fetching
   const { data: archives, isLoading, error } = useArchive();
   const createMutation = useCreateArchive();
   const updateMutation = useUpdateArchive();
   const deleteMutation = useDeleteArchive();
 
-  // UI state
-  const [expandedItems, setExpandedItems] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedItem, setSelectedItem] = useState<Archive | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<Archive | null>(null);
 
-  // Form state
   const [formData, setFormData] = useState<ArchiveFormData>({
     title: "",
     content: "",
@@ -60,25 +60,19 @@ export default function ArchivePage() {
     mediaType: "NONE",
   });
 
-  const toggleExpand = (id: string) => {
-    setExpandedItems((prev) => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
+  const filteredArchives = useMemo(() => {
+    if (!archives) return [];
+    if (!searchQuery.trim()) return archives;
+    const q = searchQuery.toLowerCase();
+    return archives.filter(
+      (item) =>
+        item.title.toLowerCase().includes(q) ||
+        stripHtml(item.content).toLowerCase().includes(q),
+    );
+  }, [archives, searchQuery]);
 
   const resetForm = () => {
-    setFormData({
-      title: "",
-      content: "",
-      mediaUrl: "",
-      mediaType: "NONE",
-    });
+    setFormData({ title: "", content: "", mediaUrl: "", mediaType: "NONE" });
     setEditingItem(null);
     setIsFormOpen(false);
   };
@@ -86,6 +80,7 @@ export default function ArchivePage() {
   const openCreateForm = () => {
     resetForm();
     setIsFormOpen(true);
+    setSelectedItem(null);
   };
 
   const openEditForm = (archive: Archive) => {
@@ -97,6 +92,7 @@ export default function ArchivePage() {
     });
     setEditingItem(archive);
     setIsFormOpen(true);
+    setSelectedItem(null);
   };
 
   const handleSubmit = async () => {
@@ -127,23 +123,22 @@ export default function ArchivePage() {
         showSuccess(t("archive.itemCreated"));
       }
       resetForm();
-    } catch (error) {
+    } catch {
       showError(t("archive.saveError"));
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm(t("archive.deleteConfirm"))) return;
-
     try {
       await deleteMutation.mutateAsync(id);
       showSuccess(t("archive.itemDeleted"));
-    } catch (error) {
+      if (selectedItem?.id === id) setSelectedItem(null);
+    } catch {
       showError(t("archive.deleteError"));
     }
   };
 
-  // Loading state
   if (status === "loading") {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
@@ -152,9 +147,94 @@ export default function ArchivePage() {
     );
   }
 
-  // Unauthorized state
   if (!isAuthorized) {
     return <UnauthorizedScreen />;
+  }
+
+  // Detail view for a selected item
+  if (selectedItem) {
+    const youtubeId =
+      selectedItem.mediaType === "VIDEO"
+        ? getYouTubeVideoId(selectedItem.mediaUrl)
+        : null;
+
+    return (
+      <div
+        className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-8"
+        style={{ direction: isRTL ? "rtl" : "ltr" }}
+      >
+        <div className="max-w-4xl mx-auto">
+          <button
+            onClick={() => setSelectedItem(null)}
+            className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 mb-6 transition-colors cursor-pointer"
+          >
+            <ChevronLeft className={`w-5 h-5 ${isRTL ? "rotate-180" : ""}`} />
+            <span>{t("archive.title")}</span>
+          </button>
+
+          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+            {/* Media */}
+            {selectedItem.mediaType === "IMAGE" && selectedItem.mediaUrl && (
+              <div className="w-full max-h-[400px] overflow-hidden bg-gray-100 dark:bg-gray-900">
+                <img
+                  src={selectedItem.mediaUrl}
+                  alt={selectedItem.title}
+                  className="w-full max-h-[400px] object-contain"
+                />
+              </div>
+            )}
+            {selectedItem.mediaType === "VIDEO" && youtubeId && (
+              <div className="aspect-video bg-black">
+                <iframe
+                  src={`https://www.youtube.com/embed/${youtubeId}`}
+                  title={selectedItem.title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  className="w-full h-full"
+                />
+              </div>
+            )}
+
+            <div className="p-6 md:p-8">
+              <div className="flex items-start justify-between gap-4 mb-6">
+                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
+                  {selectedItem.title}
+                </h1>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => openEditForm(selectedItem)}
+                    className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
+                    title={t("archive.edit")}
+                  >
+                    <Edit3 className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(selectedItem.id)}
+                    disabled={deleteMutation.isPending}
+                    className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                    title={t("archive.delete")}
+                  >
+                    <Trash2 className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="text-xs text-gray-400 dark:text-gray-500 mb-6">
+                {new Date(selectedItem.createdAt).toLocaleDateString(
+                  isRTL ? "he-IL" : "en-US",
+                  { year: "numeric", month: "long", day: "numeric" },
+                )}
+              </div>
+
+              <div className="prose dark:prose-invert max-w-none">
+                <RichContent content={selectedItem.content} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -162,23 +242,36 @@ export default function ArchivePage() {
       className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 md:p-8"
       style={{ direction: isRTL ? "rtl" : "ltr" }}
     >
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white">
             {t("archive.title")}
           </h1>
-          {!isFormOpen && (
-            <button
-              onClick={openCreateForm}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
-            >
-              <Plus className="w-5 h-5" />
-              <span className="hidden sm:inline">
-                {t("archive.newItem")}
-              </span>
-            </button>
-          )}
+          <div className="flex items-center gap-3 w-full sm:w-auto">
+            {/* Search */}
+            <div className="relative flex-1 sm:flex-initial">
+              <Search className="absolute top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 start-3" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder={t("common.search")}
+                className="w-full sm:w-64 ps-10 pe-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            {!isFormOpen && (
+              <button
+                onClick={openCreateForm}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer shrink-0"
+              >
+                <Plus className="w-5 h-5" />
+                <span className="hidden sm:inline">
+                  {t("archive.newItem")}
+                </span>
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Create/Edit Form */}
@@ -195,9 +288,7 @@ export default function ArchivePage() {
                 <X className="w-5 h-5 text-gray-500 dark:text-gray-400" />
               </button>
             </div>
-
             <div className="p-6 space-y-6">
-              {/* Title */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t("archive.titleLabel")} *
@@ -212,8 +303,6 @@ export default function ArchivePage() {
                   placeholder={t("archive.enterTitle")}
                 />
               </div>
-
-              {/* Content Editor */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t("archive.contentLabel")} *
@@ -226,58 +315,31 @@ export default function ArchivePage() {
                   theme="light"
                 />
               </div>
-
-              {/* Media Type Selector */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   {t("archive.mediaType")}
                 </label>
                 <div className="flex gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, mediaType: "NONE", mediaUrl: "" })
-                    }
-                    className={`flex-1 py-2 px-4 rounded-lg border transition-colors cursor-pointer ${
-                      formData.mediaType === "NONE"
-                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    {t("archive.none")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, mediaType: "IMAGE", mediaUrl: "" })
-                    }
-                    className={`flex-1 py-2 px-4 rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-2 ${
-                      formData.mediaType === "IMAGE"
-                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    {t("archive.image")}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, mediaType: "VIDEO", mediaUrl: "" })
-                    }
-                    className={`flex-1 py-2 px-4 rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-2 ${
-                      formData.mediaType === "VIDEO"
-                        ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
-                        : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <Video className="w-4 h-4" />
-                    {t("archive.video")}
-                  </button>
+                  {(["NONE", "IMAGE", "VIDEO"] as const).map((type) => (
+                    <button
+                      key={type}
+                      type="button"
+                      onClick={() =>
+                        setFormData({ ...formData, mediaType: type, mediaUrl: "" })
+                      }
+                      className={`flex-1 py-2 px-4 rounded-lg border transition-colors cursor-pointer flex items-center justify-center gap-2 ${
+                        formData.mediaType === type
+                          ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
+                          : "border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {type === "IMAGE" && <ImageIcon className="w-4 h-4" />}
+                      {type === "VIDEO" && <Video className="w-4 h-4" />}
+                      {t(`archive.${type === "NONE" ? "none" : type === "IMAGE" ? "image" : "video"}`)}
+                    </button>
+                  ))}
                 </div>
               </div>
-
-              {/* Image Upload */}
               {formData.mediaType === "IMAGE" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -293,8 +355,6 @@ export default function ArchivePage() {
                   />
                 </div>
               )}
-
-              {/* YouTube URL Input */}
               {formData.mediaType === "VIDEO" && (
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -313,9 +373,7 @@ export default function ArchivePage() {
                   {formData.mediaUrl && getYouTubeVideoId(formData.mediaUrl) && (
                     <div className="mt-3 aspect-video rounded-lg overflow-hidden bg-black">
                       <iframe
-                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(
-                          formData.mediaUrl
-                        )}`}
+                        src={`https://www.youtube.com/embed/${getYouTubeVideoId(formData.mediaUrl)}`}
                         title="Preview"
                         frameBorder="0"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -326,8 +384,6 @@ export default function ArchivePage() {
                   )}
                 </div>
               )}
-
-              {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
                 <button
                   onClick={resetForm}
@@ -372,25 +428,25 @@ export default function ArchivePage() {
         )}
 
         {/* Empty State */}
-        {!isLoading && !error && archives?.length === 0 && (
-          <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-            {t("archive.noItems")}
+        {!isLoading && !error && filteredArchives.length === 0 && (
+          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+            <FileText className="w-12 h-12 mx-auto mb-3 opacity-40" />
+            <p>{searchQuery ? t("common.noResults") : t("archive.noItems")}</p>
           </div>
         )}
 
-        {/* Archive List */}
-        {!isLoading && !error && archives && archives.length > 0 && (
-          <div className="space-y-3">
-            {archives.map((item) => (
-              <ArchiveItem
+        {/* Card Grid */}
+        {!isLoading && !error && filteredArchives.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {filteredArchives.map((item) => (
+              <ArchiveCard
                 key={item.id}
                 archive={item}
-                isExpanded={expandedItems.has(item.id)}
-                onToggle={() => toggleExpand(item.id)}
+                isRTL={isRTL}
+                onSelect={() => setSelectedItem(item)}
                 onEdit={() => openEditForm(item)}
                 onDelete={() => handleDelete(item.id)}
                 isDeleting={deleteMutation.isPending}
-                isRTL={isRTL}
               />
             ))}
           </div>
@@ -400,111 +456,113 @@ export default function ArchivePage() {
   );
 }
 
-interface ArchiveItemProps {
+interface ArchiveCardProps {
   archive: Archive;
-  isExpanded: boolean;
-  onToggle: () => void;
+  isRTL: boolean;
+  onSelect: () => void;
   onEdit: () => void;
   onDelete: () => void;
   isDeleting: boolean;
-  isRTL: boolean;
 }
 
-function ArchiveItem({
+function ArchiveCard({
   archive,
-  isExpanded,
-  onToggle,
+  isRTL,
+  onSelect,
   onEdit,
   onDelete,
   isDeleting,
-  isRTL,
-}: ArchiveItemProps) {
+}: ArchiveCardProps) {
   const { t } = useTranslation();
+  const snippet = stripHtml(archive.content).slice(0, 120);
   const youtubeId =
     archive.mediaType === "VIDEO" ? getYouTubeVideoId(archive.mediaUrl) : null;
 
+  const mediaBadge =
+    archive.mediaType === "IMAGE" ? (
+      <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300">
+        <ImageIcon className="w-3 h-3" />
+      </span>
+    ) : archive.mediaType === "VIDEO" ? (
+      <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300">
+        <Video className="w-3 h-3" />
+      </span>
+    ) : null;
+
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-      {/* Header - Always visible */}
-      <div
-        className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-        onClick={onToggle}
-      >
-        <button
-          className="w-8 h-8 flex-shrink-0 flex items-center justify-center rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggle();
-          }}
-        >
-          {isExpanded ? (
-            <Minus className="w-4 h-4" />
-          ) : (
-            <Plus className="w-4 h-4" />
-          )}
-        </button>
-        <h3 className="flex-1 font-medium text-gray-900 dark:text-white truncate">
-          {archive.title}
-        </h3>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onEdit();
-            }}
-            className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors cursor-pointer"
-            title={t("archive.edit")}
-          >
-            <Edit3 className="w-4 h-4" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete();
-            }}
-            disabled={isDeleting}
-            className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
-            title={t("archive.delete")}
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
+    <div
+      className="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-600 transition-all duration-200 cursor-pointer flex flex-col"
+      onClick={onSelect}
+    >
+      {/* Thumbnail */}
+      {archive.mediaType === "IMAGE" && archive.mediaUrl ? (
+        <div className="h-40 overflow-hidden bg-gray-100 dark:bg-gray-900">
+          <img
+            src={archive.mediaUrl}
+            alt={archive.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
         </div>
-      </div>
-
-      {/* Expanded Content */}
-      {isExpanded && (
-        <div className="px-4 pb-4 border-t border-gray-200 dark:border-gray-700">
-          <div className="pt-4 space-y-4">
-            {/* Media */}
-            {archive.mediaType === "IMAGE" && archive.mediaUrl && (
-              <div className="rounded-lg overflow-hidden">
-                <img
-                  src={archive.mediaUrl}
-                  alt={archive.title}
-                  className="w-full max-h-96 object-contain bg-gray-100 dark:bg-gray-900"
-                />
-              </div>
-            )}
-            {archive.mediaType === "VIDEO" && youtubeId && (
-              <div className="aspect-video rounded-lg overflow-hidden bg-black">
-                <iframe
-                  src={`https://www.youtube.com/embed/${youtubeId}`}
-                  title={archive.title}
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full"
-                />
-              </div>
-            )}
-
-            {/* Content */}
-            <div className="prose dark:prose-invert max-w-none">
-              <RichContent content={archive.content} />
-            </div>
-          </div>
+      ) : youtubeId ? (
+        <div className="h-40 overflow-hidden bg-black">
+          <img
+            src={`https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg`}
+            alt={archive.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+      ) : (
+        <div className="h-28 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/50 dark:to-indigo-950/50 flex items-center justify-center">
+          <FileText className="w-10 h-10 text-blue-300 dark:text-blue-700" />
         </div>
       )}
+
+      {/* Content */}
+      <div className="p-4 flex-1 flex flex-col">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-semibold text-sm text-gray-900 dark:text-white line-clamp-2 flex-1">
+            {archive.title}
+          </h3>
+          {mediaBadge}
+        </div>
+
+        <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3 mb-3 flex-1">
+          {snippet}
+          {snippet.length >= 120 ? "..." : ""}
+        </p>
+
+        <div className="flex items-center justify-between pt-2 border-t border-gray-100 dark:border-gray-700/50">
+          <span className="text-[10px] text-gray-400 dark:text-gray-500">
+            {new Date(archive.createdAt).toLocaleDateString(
+              isRTL ? "he-IL" : "en-US",
+              { month: "short", day: "numeric", year: "numeric" },
+            )}
+          </span>
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit();
+              }}
+              className="p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors cursor-pointer"
+              title={t("archive.edit")}
+            >
+              <Edit3 className="w-3.5 h-3.5" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete();
+              }}
+              disabled={isDeleting}
+              className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-md transition-colors cursor-pointer disabled:opacity-50"
+              title={t("archive.delete")}
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
