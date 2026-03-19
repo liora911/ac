@@ -786,13 +786,13 @@ function AccountContent({
                     </button>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-1.5 group">
+                  <div className="flex items-center gap-1.5">
                     <h1 className="text-lg font-bold text-gray-900 dark:text-white truncate">
                       {displayName}
                     </h1>
                     <button
                       onClick={() => { setEditName(currentName || getUsernameFromEmail(user.email)); setIsEditingName(true); }}
-                      className="p-1 rounded-lg text-gray-300 dark:text-gray-600 opacity-0 group-hover:opacity-100 hover:text-gray-500 dark:hover:text-gray-400 transition-all"
+                      className="p-1 rounded-lg text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors cursor-pointer"
                       title={t("account.editNickname")}
                     >
                       <Pencil className="w-3.5 h-3.5" />

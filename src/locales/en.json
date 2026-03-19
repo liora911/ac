@@ -1340,7 +1340,7 @@
       "premium": "Researcher"
     },
     "subscription": {
-      "title": "Subscription",
+      "title": "Registered User",
       "researcher": "Researcher Plan",
       "free": "Free Plan",
       "status": "Status",
