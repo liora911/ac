@@ -3,4 +3,5 @@ export interface NotificationContextType {
   showError: (message: string) => void;
   showInfo: (message: string) => void;
   showWarning: (message: string) => void;
+  showSuccessAt: (message: string, x: number, y: number) => void;
 }

@@ -18,7 +18,7 @@ import { formatMonthDay } from "@/lib/utils/date";
 export default function MobileArticleCard({ article }: MobileArticleCardProps) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
-  const { showSuccess } = useNotification();
+  const { showSuccessAt } = useNotification();
 
   // Check if user has premium access
   const hasAccess =
@@ -33,7 +33,7 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
     await shareUrl(url);
-    showSuccess(t("articleDetail.linkCopied"));
+    showSuccessAt(t("articleDetail.linkCopied"), e.clientX, e.clientY);
   };
 
   return (
@@ -129,10 +129,10 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
             <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
             <button
               onClick={handleShare}
-              className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all"
               title={t("articleDetail.share")}
             >
-              <Share2 className="w-3.5 h-3.5 text-gray-400" />
+              <Share2 className="w-4 h-4 text-blue-400 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors" />
             </button>
           </div>
         </div>

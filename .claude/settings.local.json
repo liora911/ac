@@ -14,7 +14,8 @@
       "Bash(npm run:*)",
       "Bash(grep -r \"parentId\\\\|parentComment\\\\|reply\" c:Userskrislaceacesrc --include=*.ts --include=*.tsx)",
       "mcp__ym__create-archive-item",
-      "mcp__ym__list-archive-items"
+      "mcp__ym__list-archive-items",
+      "mcp__ym__update-archive-item"
     ]
   }
 }

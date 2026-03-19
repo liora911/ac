@@ -708,14 +708,14 @@ function getCategoryColor(categoryId?: string): string {
 const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }: { article: Article; isBento?: boolean }) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
-  const { showSuccess } = useNotification();
+  const { showSuccessAt } = useNotification();
 
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     const url = `${window.location.origin}/articles/${article.slug || article.id}`;
     await shareUrl(url);
-    showSuccess(t("articleDetail.linkCopied"));
+    showSuccessAt(t("articleDetail.linkCopied"), e.clientX, e.clientY);
   };
 
   const hasAccess = !article.isPremium || session?.user?.role === "ADMIN" || session?.user?.hasActiveSubscription;
@@ -806,10 +806,10 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
             </div>
             <button
               onClick={handleShare}
-              className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex-shrink-0"
+              className="p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all flex-shrink-0 group/share"
               title={t("articleDetail.share")}
             >
-              <Share2 className="w-3.5 h-3.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" />
+              <Share2 className="w-4 h-4 text-blue-400 dark:text-blue-400 group-hover/share:text-blue-600 dark:group-hover/share:text-blue-300 transition-colors" />
             </button>
           </div>
         </div>
