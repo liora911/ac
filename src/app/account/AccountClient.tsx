@@ -362,10 +362,10 @@ function AccountContent({
                     ticket.status === "CANCELLED" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
                     "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
                   }`}>
-                    {ticket.status === "CONFIRMED" ? t("tickets.confirmed") || "Confirmed" :
-                     ticket.status === "ATTENDED" ? t("tickets.attended") || "Attended" :
-                     ticket.status === "CANCELLED" ? t("tickets.cancelled") || "Cancelled" :
-                     t("tickets.pending") || "Pending"}
+                    {ticket.status === "CONFIRMED" ? t("account.tickets.confirmed") :
+                     ticket.status === "ATTENDED" ? t("account.tickets.attended") :
+                     ticket.status === "CANCELLED" ? t("account.tickets.cancelled") :
+                     t("account.tickets.pending")}
                   </span>
                 </div>
               </Link>
@@ -374,7 +374,7 @@ function AccountContent({
         ) : (
           <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
             <Ticket className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-            <p>{t("account.tickets.empty") || "No tickets yet"}</p>
+            <p>{t("account.tickets.empty")}</p>
             <Link href="/events" className="text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block">
               {t("account.tickets.browse")}
             </Link>
@@ -398,7 +398,7 @@ function AccountContent({
           </div>
           {(favorites?.counts?.total ?? 0) > 0 && (
             <Link href="/favorites" className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
-              {t("account.favorites.viewAll") || "View all"}
+              {t("account.favorites.viewAll")}
             </Link>
           )}
         </div>
@@ -419,7 +419,7 @@ function AccountContent({
                   {t("favorites.tabs.articles")} ({favorites.articles.length})
                 </h4>
                 <div className="space-y-2">
-                  {favorites.articles.slice(0, 5).map((article) => (
+                  {favorites.articles.slice(0, 20).map((article) => (
                     <Link
                       key={article.id}
                       href={`/articles/${article.slug || article.id}`}
@@ -453,7 +453,7 @@ function AccountContent({
                   {t("favorites.tabs.lectures")} ({favorites.lectures.length})
                 </h4>
                 <div className="space-y-2">
-                  {favorites.lectures.slice(0, 5).map((lecture) => (
+                  {favorites.lectures.slice(0, 20).map((lecture) => (
                     <Link
                       key={lecture.id}
                       href={`/lectures/${lecture.id}`}
@@ -483,7 +483,7 @@ function AccountContent({
                   {t("favorites.tabs.presentations")} ({favorites.presentations.length})
                 </h4>
                 <div className="space-y-2">
-                  {favorites.presentations.slice(0, 5).map((pres) => (
+                  {favorites.presentations.slice(0, 20).map((pres) => (
                     <Link
                       key={pres.id}
                       href={`/presentations/${pres.id}`}
@@ -508,9 +508,9 @@ function AccountContent({
         ) : (
           <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
             <Heart className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
-            <p>{t("account.favorites.empty") || "No favorites yet"}</p>
+            <p>{t("account.favorites.empty")}</p>
             <Link href="/articles" className="text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block">
-              {t("account.favorites.browse") || "Browse articles"}
+              {t("account.favorites.browse")}
             </Link>
           </div>
         )}

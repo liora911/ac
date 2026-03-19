@@ -1360,7 +1360,12 @@
       "subtitle": "View your event reservations",
       "total": "Total tickets",
       "view": "View My Tickets",
-      "browse": "Browse Events"
+      "browse": "Browse Events",
+      "empty": "No tickets yet",
+      "confirmed": "Confirmed",
+      "attended": "Attended",
+      "cancelled": "Cancelled",
+      "pending": "Pending"
     },
     "quickLinks": {
       "title": "Quick Links",
@@ -1373,7 +1378,10 @@
     "favorites": {
       "subtitle": "Saved articles, videos & more",
       "view": "View Favorites",
-      "total": "Total favorites"
+      "total": "Total favorites",
+      "viewAll": "View all",
+      "empty": "No favorites yet",
+      "browse": "Browse articles"
     },
     "notifications": {
       "title": "Notifications",
