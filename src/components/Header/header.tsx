@@ -158,7 +158,7 @@ export default function Header() {
             {/* Language Switcher */}
             <button
               onClick={toggleLanguage}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              className="hidden sm:flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
               aria-label={t("settings.language")}
               title={t("settings.language")}
             >
@@ -171,7 +171,7 @@ export default function Header() {
               <button
                 ref={profileButtonRef}
                 onClick={() => setProfileMenuOpen(!profileMenuOpen)}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors cursor-pointer"
                 aria-label={session ? t("header.myAccount") : t("header.menu")}
                 aria-expanded={profileMenuOpen}
               >
