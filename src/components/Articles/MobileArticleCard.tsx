@@ -129,10 +129,10 @@ export default function MobileArticleCard({ article }: MobileArticleCardProps) {
             <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
             <button
               onClick={handleShare}
-              className="p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all"
+              className="p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all cursor-pointer"
               title={t("articleDetail.share")}
             >
-              <Share2 className="w-4 h-4 text-blue-400 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors" />
+              <Share2 className="w-3.5 h-3.5 text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors" />
             </button>
           </div>
         </div>

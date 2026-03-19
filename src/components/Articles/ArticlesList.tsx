@@ -757,7 +757,16 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
               )}
               {article.isPremium && <PremiumBadge size="sm" />}
             </div>
-            <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
+            <div className="flex items-center gap-1">
+              <button
+                onClick={handleShare}
+                className="p-1.5 rounded-full bg-black/30 backdrop-blur-sm hover:bg-blue-500/80 transition-all group/share cursor-pointer"
+                title={t("articleDetail.share")}
+              >
+                <Share2 className="w-3.5 h-3.5 text-white/90 group-hover/share:text-white transition-colors" />
+              </button>
+              <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
+            </div>
           </div>
 
           {/* Title + hover abstract overlay */}
@@ -793,24 +802,15 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
 
           <div className="flex-1" />
 
-          {/* Author row + share + date */}
-          <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-            <div className="flex items-center gap-2 min-w-0">
-              {article.authors && article.authors.length > 0 ? (
-                <AuthorAvatars authors={article.authors} size="sm" />
-              ) : (
-                <span className="truncate max-w-[100px]">{article.publisherName || article.author?.name}</span>
-              )}
-              <span className="text-gray-300 dark:text-gray-600">·</span>
-              <span className="whitespace-nowrap">{formatDateShort(article.createdAt, locale)}</span>
-            </div>
-            <button
-              onClick={handleShare}
-              className="p-1.5 rounded-full hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all flex-shrink-0 group/share"
-              title={t("articleDetail.share")}
-            >
-              <Share2 className="w-4 h-4 text-blue-400 dark:text-blue-400 group-hover/share:text-blue-600 dark:group-hover/share:text-blue-300 transition-colors" />
-            </button>
+          {/* Author row + date */}
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+            {article.authors && article.authors.length > 0 ? (
+              <AuthorAvatars authors={article.authors} size="sm" />
+            ) : (
+              <span className="truncate max-w-[100px]">{article.publisherName || article.author?.name}</span>
+            )}
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span className="whitespace-nowrap">{formatDateShort(article.createdAt, locale)}</span>
           </div>
         </div>
       </Link>
