@@ -1383,7 +1383,8 @@
     },
     "role": {
       "admin": "מנהל",
-      "premium": "חוקר"
+      "premium": "חוקר",
+      "free": "חבר רשום"
     },
     "subscription": {
       "title": "משתמש רשום",
