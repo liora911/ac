@@ -133,21 +133,6 @@ export default async function MyTicketsPage() {
         )}
 
         {/* Back links */}
-        <div className="mt-8 flex items-center justify-center gap-4 text-sm">
-          <a
-            href="/account"
-            className="text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            ← חזור לחשבון
-          </a>
-          <span className="text-gray-300">|</span>
-          <a
-            href="/"
-            className="text-gray-600 hover:text-gray-900 transition-colors"
-          >
-            חזור לדף הבית
-          </a>
-        </div>
       </div>
     </div>
   );

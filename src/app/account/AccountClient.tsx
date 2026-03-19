@@ -23,19 +23,29 @@ import {
   Bell,
   User,
   Pencil,
+  Calendar,
+  MapPin,
+  Users,
+  FileText,
+  Video,
+  Presentation,
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
+import { useFavoritesFull } from "@/hooks/useFavorites";
 import type { AccountClientProps } from "@/types/Account/account";
 import NotificationsSection from "@/components/Notifications/NotificationsSection";
 import LanguageToggle from "@/components/Settings/LanguageToggle";
 import ThemeToggleSection from "@/components/Settings/ThemeToggleSection";
 import FontSizeToggle from "@/components/Settings/FontSizeToggle";
 import ReduceMotionToggle from "@/components/Settings/ReduceMotionToggle";
-import { formatDate, formatMonthYear } from "@/lib/utils/date";
+import { FavoriteButton } from "@/components/FavoriteButton";
+import { formatDate, formatMonthYear, formatDateWithWeekday } from "@/lib/utils/date";
+import { stripHtml } from "@/lib/utils/stripHtml";
 
 // Extract username from email
 function getUsernameFromEmail(email: string | null | undefined): string {
@@ -117,6 +127,15 @@ function AccountContent({
     shouldFilterContent,
   } = useCategoryPreferences();
   const { data: categories } = useCategories();
+  const { data: favorites, isLoading: favoritesLoading } = useFavoritesFull();
+  const { data: myTickets, isLoading: ticketsLoading } = useQuery<any[]>({
+    queryKey: ["my-tickets"],
+    queryFn: async () => {
+      const res = await fetch("/api/my-tickets");
+      if (!res.ok) throw new Error("Failed to fetch tickets");
+      return res.json();
+    },
+  });
   const [tempSelectedIds, setTempSelectedIds] = useState<string[]>(selectedCategoryIds);
 
   const success = searchParams.get("subscription") === "success";
@@ -282,61 +301,219 @@ function AccountContent({
   );
 
   const renderActivity = () => (
-    <div className="space-y-4">
-      {/* Tickets */}
+    <div className="space-y-6">
+      {/* ── Tickets Section ── */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
               <Ticket className="w-5 h-5 text-blue-600 dark:text-blue-400" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.tickets.title")}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.tickets.subtitle")}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {myTickets?.length ?? ticketCount} {t("account.tickets.subtitle")}
+              </p>
             </div>
           </div>
-          <span className="text-3xl font-bold text-gray-900 dark:text-white">{ticketCount}</span>
         </div>
-        {ticketCount > 0 ? (
-          <Link
-            href="/my-tickets"
-            className="w-full py-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-          >
-            {t("account.tickets.view")}
-            <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-          </Link>
+
+        {ticketsLoading ? (
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : myTickets && myTickets.length > 0 ? (
+          <div className="space-y-3">
+            {myTickets.map((ticket: any) => (
+              <Link
+                key={ticket.id}
+                href={`/ticket-summary/${ticket.accessToken}`}
+                className="block rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h4 className="font-medium text-gray-900 dark:text-white text-sm truncate">
+                      {ticket.event?.title}
+                    </h4>
+                    <div className="flex items-center gap-3 mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      {ticket.event?.eventDate && (
+                        <span className="flex items-center gap-1">
+                          <Calendar className="w-3 h-3" />
+                          {formatDateWithWeekday(ticket.event.eventDate, locale)}
+                        </span>
+                      )}
+                      {ticket.event?.location && (
+                        <span className="flex items-center gap-1">
+                          <MapPin className="w-3 h-3" />
+                          {ticket.event.location}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {ticket.numberOfSeats}
+                      </span>
+                    </div>
+                  </div>
+                  <span className={`flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded-full ${
+                    ticket.status === "CONFIRMED" ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400" :
+                    ticket.status === "ATTENDED" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
+                    ticket.status === "CANCELLED" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" :
+                    "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                  }`}>
+                    {ticket.status === "CONFIRMED" ? t("tickets.confirmed") || "Confirmed" :
+                     ticket.status === "ATTENDED" ? t("tickets.attended") || "Attended" :
+                     ticket.status === "CANCELLED" ? t("tickets.cancelled") || "Cancelled" :
+                     t("tickets.pending") || "Pending"}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         ) : (
-          <Link
-            href="/events"
-            className="w-full py-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-          >
-            {t("account.tickets.browse")}
-            <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-          </Link>
+          <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+            <Ticket className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
+            <p>{t("account.tickets.empty") || "No tickets yet"}</p>
+            <Link href="/events" className="text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block">
+              {t("account.tickets.browse")}
+            </Link>
+          </div>
         )}
       </div>
 
-      {/* Favorites */}
+      {/* ── Favorites Section ── */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5">
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
               <Heart className="w-5 h-5 text-rose-600 dark:text-rose-400" />
             </div>
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.quickLinks.favorites")}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.favorites.subtitle")}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {favorites?.counts?.total ?? favoritesCount} {t("account.favorites.subtitle")}
+              </p>
             </div>
           </div>
-          <span className="text-3xl font-bold text-gray-900 dark:text-white">{favoritesCount}</span>
+          {(favorites?.counts?.total ?? 0) > 0 && (
+            <Link href="/favorites" className="text-sm text-blue-600 dark:text-blue-400 hover:underline font-medium">
+              {t("account.favorites.viewAll") || "View all"}
+            </Link>
+          )}
         </div>
-        <Link
-          href="/favorites"
-          className="w-full py-2 px-4 rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-2"
-        >
-          {t("account.favorites.view")}
-          <ChevronRight className="w-4 h-4 rtl:rotate-180" />
-        </Link>
+
+        {favoritesLoading ? (
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div key={i} className="h-16 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+            ))}
+          </div>
+        ) : (favorites?.counts?.total ?? 0) > 0 ? (
+          <div className="space-y-3">
+            {/* Articles */}
+            {favorites?.articles && favorites.articles.length > 0 && (
+              <div>
+                <h4 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  <FileText className="w-3 h-3" />
+                  {t("favorites.tabs.articles")} ({favorites.articles.length})
+                </h4>
+                <div className="space-y-2">
+                  {favorites.articles.slice(0, 5).map((article) => (
+                    <Link
+                      key={article.id}
+                      href={`/articles/${article.slug || article.id}`}
+                      className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+                    >
+                      {article.articleImage ? (
+                        <img src={article.articleImage} alt="" className="w-10 h-10 rounded-lg object-cover flex-shrink-0" />
+                      ) : (
+                        <div className="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-4 h-4 text-blue-500" />
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{article.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {article.category?.name} · {article.readDuration} {t("common.minRead")}
+                        </p>
+                      </div>
+                      <FavoriteButton itemId={article.id} itemType="ARTICLE" size="sm" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Lectures */}
+            {favorites?.lectures && favorites.lectures.length > 0 && (
+              <div>
+                <h4 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 mt-4">
+                  <Video className="w-3 h-3" />
+                  {t("favorites.tabs.lectures")} ({favorites.lectures.length})
+                </h4>
+                <div className="space-y-2">
+                  {favorites.lectures.slice(0, 5).map((lecture) => (
+                    <Link
+                      key={lecture.id}
+                      href={`/lectures/${lecture.id}`}
+                      className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center flex-shrink-0">
+                        <Video className="w-4 h-4 text-purple-500" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{lecture.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {lecture.category?.name} · {lecture.duration}
+                        </p>
+                      </div>
+                      <FavoriteButton itemId={lecture.id} itemType="LECTURE" size="sm" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Presentations */}
+            {favorites?.presentations && favorites.presentations.length > 0 && (
+              <div>
+                <h4 className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1.5 mt-4">
+                  <Presentation className="w-3 h-3" />
+                  {t("favorites.tabs.presentations")} ({favorites.presentations.length})
+                </h4>
+                <div className="space-y-2">
+                  {favorites.presentations.slice(0, 5).map((pres) => (
+                    <Link
+                      key={pres.id}
+                      href={`/presentations/${pres.id}`}
+                      className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 hover:border-blue-300 dark:hover:border-blue-600 transition-colors"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
+                        <Presentation className="w-4 h-4 text-amber-500" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{pres.title}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          {pres.category?.name} · {pres.imageUrls?.length} {t("common.slides")}
+                        </p>
+                      </div>
+                      <FavoriteButton itemId={pres.id} itemType="PRESENTATION" size="sm" />
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-center py-6 text-sm text-gray-500 dark:text-gray-400">
+            <Heart className="w-8 h-8 mx-auto mb-2 text-gray-300 dark:text-gray-600" />
+            <p>{t("account.favorites.empty") || "No favorites yet"}</p>
+            <Link href="/articles" className="text-blue-600 dark:text-blue-400 hover:underline mt-1 inline-block">
+              {t("account.favorites.browse") || "Browse articles"}
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
