@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sun, Moon, Globe, Crown, Ticket, Heart } from "lucide-react";
+import { Sun, Moon, Globe, UserPlus, Ticket, Heart } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
@@ -114,7 +114,7 @@ export default function WelcomeModal() {
               <div className="bg-gradient-to-br from-blue-600 to-blue-700 px-4 pt-10 pb-4 text-white text-center shrink-0">
                 <div className="flex justify-center mb-2">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                    <Crown className="w-5 h-5" />
+                    <UserPlus className="w-5 h-5" />
                   </div>
                 </div>
                 <h2 className="text-lg font-bold mb-1">
@@ -159,20 +159,6 @@ export default function WelcomeModal() {
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
-                    <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0">
-                      <Crown className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                    </div>
-                    <div>
-                      <h3 className="font-medium text-sm text-gray-900 dark:text-white">
-                        {t("categoryPreferences.benefitPremium") || "Premium Content"}
-                      </h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        {t("categoryPreferences.benefitPremiumDesc") ||
-                          "Subscribe to access exclusive content and support Avshalom's research"}
-                      </p>
-                    </div>
-                  </div>
                 </div>
               </div>
 
