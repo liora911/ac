@@ -19,8 +19,9 @@ import {
   MdAdminPanelSettings,
   MdLanguage,
 } from "react-icons/md";
-import { Bot } from "lucide-react";
+import { Bot, Bell } from "lucide-react";
 import { signOut } from "next-auth/react";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 
 export default function Header() {
   const { data: session } = useSession();
@@ -37,6 +38,8 @@ export default function Header() {
 
   const isAdmin = session?.user?.role === "ADMIN";
   const isRTL = locale === "he";
+  const { data: unreadData } = useUnreadNotificationCount();
+  const unreadCount = unreadData?.unreadCount ?? 0;
 
   // Close menus on outside click
   useEffect(() => {
@@ -175,19 +178,26 @@ export default function Header() {
                 aria-label={session ? t("header.myAccount") : t("header.menu")}
                 aria-expanded={profileMenuOpen}
               >
-                {session?.user?.image ? (
-                  <img
-                    src={session.user.image}
-                    alt={session.user.name || "User"}
-                    className="w-7 h-7 rounded-full"
-                  />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
-                    {session?.user?.name?.charAt(0)?.toUpperCase() || (
-                      <MdPerson size={18} />
-                    )}
-                  </div>
-                )}
+                <div className="relative">
+                  {session?.user?.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "User"}
+                      className="w-7 h-7 rounded-full"
+                    />
+                  ) : (
+                    <div className="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center text-white text-sm font-medium">
+                      {session?.user?.name?.charAt(0)?.toUpperCase() || (
+                        <MdPerson size={18} />
+                      )}
+                    </div>
+                  )}
+                  {session && unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-gray-950">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </div>
               </button>
 
               {/* Dropdown Menu */}
@@ -221,6 +231,12 @@ export default function Header() {
                         >
                           <MdPerson size={18} />
                           {t("header.myAccount")}
+                          {unreadCount > 0 && (
+                            <span className="ms-auto flex items-center gap-1 text-xs font-bold text-red-500">
+                              <Bell className="w-3.5 h-3.5" />
+                              {unreadCount}
+                            </span>
+                          )}
                         </Link>
 
                         {isAdmin && (
@@ -381,6 +397,12 @@ export default function Header() {
               >
                 <MdPerson size={20} />
                 <span className="font-medium">{t("header.myAccount")}</span>
+                {unreadCount > 0 && (
+                  <span className="ms-auto flex items-center gap-1 text-xs font-bold text-red-500">
+                    <Bell className="w-3.5 h-3.5" />
+                    {unreadCount}
+                  </span>
+                )}
               </Link>
 
               {isAdmin && (

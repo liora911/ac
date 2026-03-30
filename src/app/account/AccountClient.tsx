@@ -37,6 +37,7 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
 import { useFavoritesFull } from "@/hooks/useFavorites";
+import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import type { AccountClientProps } from "@/types/Account/account";
 import NotificationsSection from "@/components/Notifications/NotificationsSection";
 import LanguageToggle from "@/components/Settings/LanguageToggle";
@@ -128,6 +129,8 @@ function AccountContent({
   } = useCategoryPreferences();
   const { data: categories } = useCategories();
   const { data: favorites, isLoading: favoritesLoading } = useFavoritesFull();
+  const { data: unreadData } = useUnreadNotificationCount();
+  const unreadCount = unreadData?.unreadCount ?? 0;
   const { data: myTickets, isLoading: ticketsLoading } = useQuery<any[]>({
     queryKey: ["my-tickets"],
     queryFn: async () => {
@@ -846,6 +849,11 @@ function AccountContent({
                     {tab.icon}
                   </span>
                   {t(tab.labelKey)}
+                  {tab.id === "notifications" && unreadCount > 0 && (
+                    <span className="ms-1 inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-xs font-bold bg-red-500 text-white">
+                      {unreadCount}
+                    </span>
+                  )}
                   {activeTab === tab.id && (
                     <ChevronRight className="w-4 h-4 ms-auto rtl:rotate-180" />
                   )}

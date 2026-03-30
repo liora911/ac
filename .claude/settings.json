@@ -3,7 +3,11 @@
     "allow": [
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "WebFetch(domain:neonstatus.com)"
+      "WebFetch(domain:neonstatus.com)",
+      "Bash(xargs ls:*)",
+      "Bash(grep -r \"RESEND\\\\|EMAIL\" /c/Users/krisl/ace/ace/.env*)",
+      "Bash(ls c:/Users/krisl/ace/ace/src/hooks/useNotifications*)",
+      "Bash(ls c:/Users/krisl/ace/ace/src/constants/query-cache*)"
     ]
   }
 }
