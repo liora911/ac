@@ -35,7 +35,9 @@ export async function GET(
       return NextResponse.json({ error: "Lecture not found" }, { status: 404 });
     }
 
-    return NextResponse.json(lecture);
+    return NextResponse.json(lecture, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (error) {
     console.error("Error fetching lecture:", error);
     return NextResponse.json(

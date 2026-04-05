@@ -177,7 +177,9 @@ export async function GET(
 
     const transformedArticle = transformArticle(article as ArticleWithRelations);
 
-    return NextResponse.json(transformedArticle);
+    return NextResponse.json(transformedArticle, {
+      headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+    });
   } catch (error) {
     console.error("Error fetching article:", error);
     return NextResponse.json(
