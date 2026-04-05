@@ -139,22 +139,10 @@ export async function GET(request: NextRequest) {
     }
 
     // Default: return all items for each type, sorted alphabetically by title
-    const [articles, featuredArticles, presentations, events, featuredEvents, lectures] = await Promise.all([
+    // Fetch 4 queries instead of 6 — filter featured in-memory
+    const [articles, presentations, events, lectures] = await Promise.all([
       prisma.article.findMany({
         where: { published: true },
-        select: {
-          id: true,
-          slug: true,
-          title: true,
-          subtitle: true,
-          articleImage: true,
-          isPremium: true,
-          isFeatured: true,
-        },
-        orderBy: { title: "asc" },
-      }),
-      prisma.article.findMany({
-        where: { published: true, isFeatured: true },
         select: {
           id: true,
           slug: true,
@@ -188,17 +176,6 @@ export async function GET(request: NextRequest) {
         },
         orderBy: { title: "asc" },
       }),
-      prisma.event.findMany({
-        where: { published: true, isFeatured: true },
-        select: {
-          id: true,
-          title: true,
-          description: true,
-          bannerImageUrl: true,
-          isFeatured: true,
-        },
-        orderBy: { title: "asc" },
-      }),
       prisma.lecture.findMany({
         select: {
           id: true,
@@ -211,6 +188,10 @@ export async function GET(request: NextRequest) {
         orderBy: { title: "asc" },
       }),
     ]);
+
+    // Filter featured in-memory instead of extra DB queries
+    const featuredArticles = articles.filter((a) => a.isFeatured);
+    const featuredEvents = events.filter((e) => e.isFeatured);
 
     const total =
       articles.length + presentations.length + events.length + lectures.length;
