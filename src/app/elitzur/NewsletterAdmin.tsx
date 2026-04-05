@@ -94,10 +94,10 @@ export default function NewsletterAdmin() {
           </div>
           <div>
             <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-              {t("admin.newsletter.title")}
+              {t("newsletter.title")}
             </h2>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t("admin.newsletter.description")}
+              {t("newsletter.description")}
             </p>
           </div>
         </div>
@@ -107,21 +107,21 @@ export default function NewsletterAdmin() {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Send className="w-5 h-5" />
-          {t("admin.newsletter.sendNewsletter")}
+          {t("newsletter.sendNewsletter")}
         </h3>
 
         <div className="space-y-4">
           {/* Article Selector */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("admin.newsletter.selectArticle")}
+              {t("newsletter.selectArticle")}
             </label>
             <select
               value={selectedArticleId}
               onChange={(e) => handleArticleSelect(e.target.value)}
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
-              <option value="">{t("admin.newsletter.chooseArticle")}</option>
+              <option value="">{t("newsletter.chooseArticle")}</option>
               {articles?.map((article) => (
                 <option key={article.id} value={article.id}>
                   {article.title}
@@ -133,13 +133,13 @@ export default function NewsletterAdmin() {
           {/* Subject */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("admin.newsletter.subject")}
+              {t("newsletter.subject")}
             </label>
             <input
               type="text"
               value={subject}
               onChange={(e) => setSubject(e.target.value)}
-              placeholder={t("admin.newsletter.subjectPlaceholder")}
+              placeholder={t("newsletter.subjectPlaceholder")}
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
@@ -147,19 +147,19 @@ export default function NewsletterAdmin() {
           {/* Custom Message */}
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              {t("admin.newsletter.customMessage")}
+              {t("newsletter.customMessage")}
             </label>
             <textarea
               value={customMessage}
               onChange={(e) => setCustomMessage(e.target.value)}
               rows={4}
-              placeholder={t("admin.newsletter.messagePlaceholder")}
+              placeholder={t("newsletter.messagePlaceholder")}
               className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
             />
             <div className="mt-2 flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400">
               <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
               <span>
-                {t("admin.newsletter.variablesHint")}:
+                {t("newsletter.variablesHint")}:
                 <code className="mx-1 px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{"{articleName}"}</code>
                 <code className="mx-1 px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{"{articleSubtitle}"}</code>
               </span>
@@ -170,7 +170,7 @@ export default function NewsletterAdmin() {
           {customMessage && selectedArticle && (
             <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4 border border-gray-200 dark:border-gray-600">
               <p className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
-                {t("admin.newsletter.preview")}
+                {t("newsletter.preview")}
               </p>
               <p className="text-sm text-gray-900 dark:text-white whitespace-pre-wrap">
                 {previewMessage}
@@ -192,15 +192,15 @@ export default function NewsletterAdmin() {
                 : "bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400"
             }`}>
               <CheckCircle className="w-4 h-4" />
-              {t("admin.newsletter.sendSuccess")}: {sendResult.sent} {t("admin.newsletter.sent")}
-              {sendResult.failed > 0 && `, ${sendResult.failed} ${t("admin.newsletter.failed")}`}
+              {t("newsletter.sendSuccess")}: {sendResult.sent} {t("newsletter.sent")}
+              {sendResult.failed > 0 && `, ${sendResult.failed} ${t("newsletter.failed")}`}
             </div>
           )}
 
           {sendNewsletter.isError && (
             <div className="flex items-center gap-2 p-3 rounded-lg text-sm bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400">
               <AlertCircle className="w-4 h-4" />
-              {t("admin.newsletter.sendError")}
+              {t("newsletter.sendError")}
             </div>
           )}
 
@@ -216,7 +216,7 @@ export default function NewsletterAdmin() {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              {t("admin.newsletter.sendToAll")}
+              {t("newsletter.sendToAll")}
               {subscribersData?.total ? ` (${subscribersData.total})` : ""}
             </button>
           </div>
@@ -228,23 +228,23 @@ export default function NewsletterAdmin() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-sm w-full shadow-xl">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-              {t("admin.newsletter.confirmTitle")}
+              {t("newsletter.confirmTitle")}
             </h3>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              {t("admin.newsletter.confirmMessage").replace("{count}", String(subscribersData?.total || 0))}
+              {t("newsletter.confirmMessage").replace("{count}", String(subscribersData?.total || 0))}
             </p>
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setShowConfirm(false)}
                 className="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors cursor-pointer"
               >
-                {t("admin.newsletter.cancel")}
+                {t("newsletter.cancel")}
               </button>
               <button
                 onClick={handleSend}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors cursor-pointer"
               >
-                {t("admin.newsletter.confirmSend")}
+                {t("newsletter.confirmSend")}
               </button>
             </div>
           </div>
@@ -255,7 +255,7 @@ export default function NewsletterAdmin() {
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Users className="w-5 h-5" />
-          {t("admin.newsletter.subscribers")}
+          {t("newsletter.subscribers")}
           {subscribersData?.total != null && (
             <span className="text-sm font-normal text-gray-500 dark:text-gray-400">
               ({subscribersData.total})
@@ -271,7 +271,7 @@ export default function NewsletterAdmin() {
           <div className="text-center py-8">
             <Mail className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-2" />
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              {t("admin.newsletter.noSubscribers")}
+              {t("newsletter.noSubscribers")}
             </p>
           </div>
         ) : (
@@ -291,7 +291,7 @@ export default function NewsletterAdmin() {
                   onClick={() => removeSubscriber.mutate(sub.id)}
                   disabled={removeSubscriber.isPending}
                   className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
-                  title={t("admin.newsletter.removeSubscriber")}
+                  title={t("newsletter.removeSubscriber")}
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>

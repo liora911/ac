@@ -609,14 +609,6 @@
   "createEventPage": {
     "title": "יצירת אירוע חדש"
   },
-  "newsletter": {
-    "title": "הרשמה לניוזלטר",
-    "description": "קבלו עדכונים כשמאמרים חדשים מתפרסמים",
-    "placeholder": "הכנס את האימייל שלך",
-    "subscribe": "הרשמה",
-    "success": "נרשמת בהצלחה!",
-    "error": "ההרשמה נכשלה. נסה שנית."
-  },
   "footer": {
     "contact": "להזמנות: avshalom@iyar.org.il",
     "siteMap": "מפת האתר - Site Map",
@@ -1851,6 +1843,12 @@
   "newsletter": {
     "title": "ניוזלטר",
     "description": "שלח עדכונים במייל למנויי הניוזלטר",
+    "footerTitle": "הרשמה לניוזלטר",
+    "footerDescription": "קבלו עדכונים כשמאמרים חדשים מתפרסמים",
+    "placeholder": "הכנס את האימייל שלך",
+    "subscribe": "הרשמה",
+    "success": "נרשמת בהצלחה!",
+    "error": "ההרשמה נכשלה. נסה שנית.",
     "sendNewsletter": "שליחת מיילים",
     "selectArticle": "בחר מאמר",
     "chooseArticle": "בחר מאמר...",

@@ -161,10 +161,10 @@ function NewsletterSignup() {
       <div className="flex flex-col items-center text-center max-w-md mx-auto">
         <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
-          {t("newsletter.title")}
+          {t("newsletter.footerTitle")}
         </h3>
         <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-          {t("newsletter.description")}
+          {t("newsletter.footerDescription")}
         </p>
 
         {subscribe.isSuccess ? (
