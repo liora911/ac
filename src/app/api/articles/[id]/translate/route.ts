@@ -58,31 +58,50 @@ export async function POST(
     const targetLang = targetLanguage === "en" ? "English" : "Hebrew";
 
     // Translate title and subtitle first (fast, small)
-    const metaResult = await generateText({
-      model: google("gemini-2.0-flash"),
-      prompt: `Translate from ${sourceLang} to ${targetLang}. Return ONLY valid JSON, no markdown.
-{"title": "${article.title}", "subtitle": "${article.subtitle || ""}"}`,
-    });
+    let translatedTitle: string;
+    let translatedSubtitle: string | null = null;
 
-    let translatedMeta: { title: string; subtitle: string };
     try {
-      const jsonMatch = metaResult.text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("No JSON");
-      translatedMeta = JSON.parse(jsonMatch[0]);
-    } catch {
-      translatedMeta = { title: article.title, subtitle: article.subtitle || "" };
+      const titleResult = await generateText({
+        model: google("gemini-2.0-flash"),
+        prompt: `Translate the following title from ${sourceLang} to ${targetLang}. Return ONLY the translated text, nothing else.\n\n${article.title}`,
+      });
+      translatedTitle = titleResult.text.trim();
+    } catch (e) {
+      console.error("Title translation failed:", e);
+      return NextResponse.json({ error: "Failed to translate title" }, { status: 500 });
+    }
+
+    if (article.subtitle) {
+      try {
+        const subtitleResult = await generateText({
+          model: google("gemini-2.0-flash"),
+          prompt: `Translate the following subtitle from ${sourceLang} to ${targetLang}. Return ONLY the translated text, nothing else.\n\n${article.subtitle}`,
+        });
+        translatedSubtitle = subtitleResult.text.trim();
+      } catch (e) {
+        console.error("Subtitle translation failed:", e);
+        translatedSubtitle = article.subtitle;
+      }
     }
 
     // Translate content (can be large)
-    const contentResult = await generateText({
-      model: google("gemini-2.0-flash"),
-      prompt: `Translate this HTML from ${sourceLang} to ${targetLang}. Preserve ALL HTML tags exactly. Only translate text. Return ONLY the translated HTML, nothing else.\n\n${article.content}`,
-    });
+    let translatedContent: string;
+    try {
+      const contentResult = await generateText({
+        model: google("gemini-2.0-flash"),
+        prompt: `Translate this HTML from ${sourceLang} to ${targetLang}. Preserve ALL HTML tags exactly. Only translate the text between tags. Return ONLY the translated HTML, nothing else.\n\n${article.content}`,
+      });
+      translatedContent = contentResult.text.trim();
+    } catch (e) {
+      console.error("Content translation failed:", e);
+      return NextResponse.json({ error: "Failed to translate content" }, { status: 500 });
+    }
 
     const translated = {
-      title: translatedMeta.title,
-      subtitle: translatedMeta.subtitle || null,
-      content: contentResult.text.trim(),
+      title: translatedTitle,
+      subtitle: translatedSubtitle,
+      content: translatedContent,
     };
 
     // Generate a unique slug for the translation
