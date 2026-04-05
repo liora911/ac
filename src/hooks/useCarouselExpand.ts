@@ -30,7 +30,12 @@ export function useCarouselExpand(): UseCarouselExpandResult {
     const check = () => {
       const lg = window.innerWidth >= 1024;
       setIsLgScreen(lg);
-      if (!lg) setExpandedIdx(null);
+      if (lg) {
+        // Default: first item expanded on large screens
+        setExpandedIdx((prev) => (prev === null ? 0 : prev));
+      } else {
+        setExpandedIdx(null);
+      }
     };
     check();
     window.addEventListener("resize", check);
@@ -68,12 +73,13 @@ export function useCarouselExpand(): UseCarouselExpandResult {
       clearTimeout(expandTimerRef.current);
       expandTimerRef.current = null;
     }
-    if (expandedIdx !== null) {
+    if (expandedIdx !== null && expandedIdx !== 0) {
       setShowText(false);
-      setExpandedIdx(null);
+      // Return to first item expanded (default state)
+      setExpandedIdx(isLgScreen ? 0 : null);
       scheduleTextReveal();
     }
-  }, [scheduleTextReveal, expandedIdx]);
+  }, [scheduleTextReveal, expandedIdx, isLgScreen]);
 
   const gridColumns = useMemo(() => {
     if (!isLgScreen) return undefined;
