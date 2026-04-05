@@ -7,7 +7,8 @@
       "Bash(xargs ls:*)",
       "Bash(grep -r \"RESEND\\\\|EMAIL\" /c/Users/krisl/ace/ace/.env*)",
       "Bash(ls c:/Users/krisl/ace/ace/src/hooks/useNotifications*)",
-      "Bash(ls c:/Users/krisl/ace/ace/src/constants/query-cache*)"
+      "Bash(ls c:/Users/krisl/ace/ace/src/constants/query-cache*)",
+      "Bash(node -e \"const j = require\\('./src/locales/en.json'\\); console.log\\('top-level newsletter keys:', Object.keys\\(j.newsletter || {}\\)\\); console.log\\('admin.newsletter keys:', Object.keys\\(j.admin?.newsletter || {}\\)\\);\")"
     ]
   }
 }

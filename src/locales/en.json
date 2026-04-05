@@ -594,14 +594,6 @@
   "createEventPage": {
     "title": "Create New Event"
   },
-  "newsletter": {
-    "title": "Subscribe to Newsletter",
-    "description": "Get notified when new articles are published",
-    "placeholder": "Enter your email",
-    "subscribe": "Subscribe",
-    "success": "Subscribed successfully!",
-    "error": "Failed to subscribe. Please try again."
-  },
   "footer": {
     "contact": "Contact: avshalom@iyar.org.il",
     "siteMap": "Site Map - מפת האתר",
@@ -1778,6 +1770,12 @@
   "newsletter": {
     "title": "Newsletter",
     "description": "Send email updates to newsletter subscribers",
+    "footerTitle": "Subscribe to Newsletter",
+    "footerDescription": "Get notified when new articles are published",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "success": "Subscribed successfully!",
+    "error": "Failed to subscribe. Please try again.",
     "sendNewsletter": "Push Email",
     "selectArticle": "Select Article",
     "chooseArticle": "Choose an article...",
