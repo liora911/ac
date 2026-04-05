@@ -80,6 +80,13 @@ async function getArticle(idOrSlug: string) {
           },
         },
       },
+      translations: {
+        where: { published: true },
+        select: { id: true, slug: true, language: true, title: true },
+      },
+      translatedFrom: {
+        select: { id: true, slug: true, language: true, title: true, published: true },
+      },
     },
   });
 
@@ -134,6 +141,13 @@ async function getArticle(idOrSlug: string) {
             },
           },
         },
+      },
+      translations: {
+        where: { published: true },
+        select: { id: true, slug: true, language: true, title: true },
+      },
+      translatedFrom: {
+        select: { id: true, slug: true, language: true, title: true, published: true },
       },
     },
     });
@@ -355,6 +369,28 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
               {article.subtitle}
             </p>
           )}
+
+          {/* Language cross-link */}
+          {(() => {
+            const linkedArticles = [
+              ...(article.translations || []).filter((t: any) => t.slug),
+              ...((article.translatedFrom && article.translatedFrom.published) ? [article.translatedFrom] : []),
+            ];
+            if (linkedArticles.length === 0) return null;
+            return (
+              <div className="flex items-center gap-2 mb-4">
+                {linkedArticles.map((linked: any) => (
+                  <Link
+                    key={linked.id}
+                    href={`/articles/${linked.slug || linked.id}`}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-lg border border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  >
+                    🌐 {linked.language === "en" ? "Read in English" : "קרא בעברית"}
+                  </Link>
+                ))}
+              </div>
+            );
+          })()}
 
           <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-6">
             <div className="flex items-center space-x-4">

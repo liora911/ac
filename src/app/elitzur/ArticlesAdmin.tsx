@@ -17,7 +17,7 @@ import type {
 } from "@/types/Articles/articles";
 import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
-import { AlertTriangle, Trash2, RefreshCw, Sparkles, Loader2 } from "lucide-react";
+import { AlertTriangle, Trash2, RefreshCw, Sparkles, Loader2, Languages } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
@@ -53,6 +53,7 @@ export default function ArticlesAdmin() {
   } | null>(null);
   const [isGeneratingEmbeddings, setIsGeneratingEmbeddings] = useState(false);
   const [embeddingStatusLoading, setEmbeddingStatusLoading] = useState(false);
+  const [translatingId, setTranslatingId] = useState<string | null>(null);
 
   const queryParams: ArticlesQueryParams = useMemo(
     () => ({
@@ -132,6 +133,34 @@ export default function ArticlesAdmin() {
         },
       }
     );
+  };
+
+  const onTranslate = async (article: Article) => {
+    const sourceLang = article.direction === "rtl" ? "he" : "en";
+    const targetLang = sourceLang === "he" ? "en" : "he";
+    setTranslatingId(article.id);
+    try {
+      const res = await fetch(`/api/articles/${article.id}/translate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetLanguage: targetLang }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        showSuccess(
+          t("admin.articles.translateSuccess").replace("{title}", article.title)
+        );
+        refetch();
+      } else if (res.status === 409) {
+        showError(t("admin.articles.translateExists"));
+      } else {
+        showError(data.error || t("admin.articles.translateError"));
+      }
+    } catch {
+      showError(t("admin.articles.translateError"));
+    } finally {
+      setTranslatingId(null);
+    }
   };
 
   const openDeleteModal = (article: Article) => {
@@ -606,6 +635,20 @@ export default function ArticlesAdmin() {
                         >
                           {t("admin.common.edit")}
                         </Link>
+                        <button
+                          onClick={() => onTranslate(a)}
+                          disabled={translatingId === a.id}
+                          className="text-sm text-purple-600 hover:text-purple-800 disabled:opacity-50 focus:outline-2 focus:outline-blue-500 focus:outline-offset-2 flex items-center gap-1"
+                          aria-label={`Translate article "${a.title}"`}
+                          title={a.direction === "rtl" ? "Translate to English" : "תרגם לעברית"}
+                        >
+                          {translatingId === a.id ? (
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                          ) : (
+                            <Languages className="w-3.5 h-3.5" />
+                          )}
+                          {a.direction === "rtl" ? "EN" : "HE"}
+                        </button>
                         <button
                           onClick={() => openDeleteModal(a)}
                           disabled={deleteMutation.isPending}

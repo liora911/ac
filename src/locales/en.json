@@ -986,7 +986,10 @@
       "categoryError": "Error updating article category",
       "deleteSuccess": "Article \"{title}\" deleted successfully",
       "deleteError": "Error deleting article",
-      "removeAuthor": "Remove author"
+      "removeAuthor": "Remove author",
+      "translateSuccess": "Article \"{title}\" translated successfully! Check drafts.",
+      "translateExists": "Translation already exists for this article",
+      "translateError": "Failed to translate article"
     },
     "embeddings": {
       "title": "AI Search Embeddings",

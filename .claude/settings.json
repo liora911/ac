@@ -11,6 +11,9 @@
       "Bash(node -e \"const j = require\\('./src/locales/en.json'\\); console.log\\('top-level newsletter keys:', Object.keys\\(j.newsletter || {}\\)\\); console.log\\('admin.newsletter keys:', Object.keys\\(j.admin?.newsletter || {}\\)\\);\")",
       "Bash(grep -c \"@tiptap\\\\|framer-motion\" src/components/**/*.tsx src/app/**/*.tsx)",
       "Bash(grep -v \":0$\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]"
     ]
   }
 }

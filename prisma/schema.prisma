@@ -96,34 +96,38 @@ model Subscription {
 }
 
 model Article {
-  id             String            @id @default(cuid())
-  title          String
-  subtitle       String?
-  slug           String?           @unique
-  content        String
-  articleImage   String?
-  publisherName  String
-  publisherImage String?
-  readDuration   Int               @default(5)
-  published      Boolean           @default(false)
-  isPremium      Boolean           @default(false)
-  isFeatured     Boolean           @default(false)
-  order          Int               @default(0)
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  direction      String            @default("ltr")
-  titleDirection String            @default("rtl")
-  authorId       String
-  categoryId     String?
-  embedding      Float[]
-  embeddingModel String?
-  authors        ArticleAuthor[]
-  categories     ArticleCategory[]
-  tags           ArticleTag[]
-  comments       Comment[]
-  views          ArticleView[]
-  author         User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category       Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  id               String            @id @default(cuid())
+  title            String
+  subtitle         String?
+  slug             String?           @unique
+  content          String
+  articleImage     String?
+  publisherName    String
+  publisherImage   String?
+  readDuration     Int               @default(5)
+  published        Boolean           @default(false)
+  isPremium        Boolean           @default(false)
+  isFeatured       Boolean           @default(false)
+  order            Int               @default(0)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  direction        String            @default("ltr")
+  titleDirection   String            @default("rtl")
+  language         String            @default("he")
+  translatedFromId String?
+  authorId         String
+  categoryId       String?
+  embedding        Float[]
+  embeddingModel   String?
+  authors          ArticleAuthor[]
+  categories       ArticleCategory[]
+  tags             ArticleTag[]
+  comments         Comment[]
+  views            ArticleView[]
+  author           User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category         Category?         @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  translatedFrom   Article?          @relation("ArticleTranslations", fields: [translatedFromId], references: [id], onDelete: SetNull)
+  translations     Article[]         @relation("ArticleTranslations")
 
   @@map("articles")
 }

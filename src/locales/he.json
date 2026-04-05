@@ -1021,7 +1021,10 @@
       "categoryError": "שגיאה בעדכון קטגוריית המאמר",
       "deleteSuccess": "המאמר \"{title}\" נמחק בהצלחה",
       "deleteError": "שגיאה במחיקת המאמר",
-      "removeAuthor": "הסר מחבר"
+      "removeAuthor": "הסר מחבר",
+      "translateSuccess": "המאמר \"{title}\" תורגם בהצלחה! בדוק בטיוטות.",
+      "translateExists": "תרגום כבר קיים למאמר זה",
+      "translateError": "שגיאה בתרגום המאמר"
     },
     "embeddings": {
       "title": "אינדוקס חיפוש AI",
