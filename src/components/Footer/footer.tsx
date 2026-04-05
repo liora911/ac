@@ -157,8 +157,8 @@ function NewsletterSignup() {
   };
 
   return (
-    <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-      <div className="flex flex-col items-center text-center max-w-md mx-auto">
+    <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700 px-2">
+      <div className="flex flex-col items-center text-center max-w-md mx-auto w-full">
         <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
           {t("newsletter.footerTitle")}
@@ -173,7 +173,7 @@ function NewsletterSignup() {
             {t("newsletter.success")}
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="flex w-full gap-2">
+          <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row w-full gap-2">
             <input
               type="email"
               value={email}
