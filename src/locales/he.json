@@ -609,6 +609,14 @@
   "createEventPage": {
     "title": "יצירת אירוע חדש"
   },
+  "newsletter": {
+    "title": "הרשמה לניוזלטר",
+    "description": "קבלו עדכונים כשמאמרים חדשים מתפרסמים",
+    "placeholder": "הכנס את האימייל שלך",
+    "subscribe": "הרשמה",
+    "success": "נרשמת בהצלחה!",
+    "error": "ההרשמה נכשלה. נסה שנית."
+  },
   "footer": {
     "contact": "להזמנות: avshalom@iyar.org.il",
     "siteMap": "מפת האתר - Site Map",
@@ -1839,5 +1847,30 @@
     "category": "קטגוריה",
     "enterCategory": "הזן קטגוריה...",
     "uncategorized": "ללא קטגוריה"
+  },
+  "newsletter": {
+    "title": "ניוזלטר",
+    "description": "שלח עדכונים במייל למנויי הניוזלטר",
+    "sendNewsletter": "שליחת מיילים",
+    "selectArticle": "בחר מאמר",
+    "chooseArticle": "בחר מאמר...",
+    "subject": "נושא המייל",
+    "subjectPlaceholder": "שורת הנושא של המייל...",
+    "customMessage": "תוכן ההודעה",
+    "messagePlaceholder": "כתוב את ההודעה שלך כאן... השתמש ב-{articleName} ו-{articleSubtitle} כמשתנים",
+    "variablesHint": "משתנים זמינים",
+    "preview": "תצוגה מקדימה:",
+    "sendToAll": "שלח לכולם",
+    "confirmTitle": "לשלוח ניוזלטר?",
+    "confirmMessage": "זה ישלח את המייל ל-{count} מנויים. האם אתה בטוח?",
+    "confirmSend": "שלח",
+    "cancel": "ביטול",
+    "sendSuccess": "הניוזלטר נשלח",
+    "sent": "נשלחו",
+    "failed": "נכשלו",
+    "sendError": "שליחת הניוזלטר נכשלה",
+    "subscribers": "מנויים",
+    "noSubscribers": "אין מנויים עדיין",
+    "removeSubscriber": "הסר מנוי"
   }
 }

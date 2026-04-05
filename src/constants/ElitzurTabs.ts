@@ -10,6 +10,7 @@ export type TabKey =
   | "comments"
   | "messages"
   | "notifications"
+  | "newsletter"
   | "subscriptions"
   | "settings"
   | "devMetrics";
@@ -55,6 +56,7 @@ export const TAB_GROUPS: TabGroup[] = [
       { key: "comments", label: "תגובות", icon: "MessageCircle" },
       { key: "messages", label: "הודעות", icon: "MessageSquare" },
       { key: "notifications", label: "התראות", icon: "Bell" },
+      { key: "newsletter", label: "ניוזלטר", icon: "Mail" },
     ],
   },
   {

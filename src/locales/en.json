@@ -594,6 +594,14 @@
   "createEventPage": {
     "title": "Create New Event"
   },
+  "newsletter": {
+    "title": "Subscribe to Newsletter",
+    "description": "Get notified when new articles are published",
+    "placeholder": "Enter your email",
+    "subscribe": "Subscribe",
+    "success": "Subscribed successfully!",
+    "error": "Failed to subscribe. Please try again."
+  },
   "footer": {
     "contact": "Contact: avshalom@iyar.org.il",
     "siteMap": "Site Map - מפת האתר",
@@ -1766,5 +1774,30 @@
     "category": "Category",
     "enterCategory": "Enter category...",
     "uncategorized": "Uncategorized"
+  },
+  "newsletter": {
+    "title": "Newsletter",
+    "description": "Send email updates to newsletter subscribers",
+    "sendNewsletter": "Push Email",
+    "selectArticle": "Select Article",
+    "chooseArticle": "Choose an article...",
+    "subject": "Email Subject",
+    "subjectPlaceholder": "Email subject line...",
+    "customMessage": "Message Body",
+    "messagePlaceholder": "Write your message here... Use {articleName} and {articleSubtitle} as variables",
+    "variablesHint": "Available variables",
+    "preview": "Preview:",
+    "sendToAll": "Send to All",
+    "confirmTitle": "Send Newsletter?",
+    "confirmMessage": "This will send the email to {count} subscribers. Are you sure?",
+    "confirmSend": "Send",
+    "cancel": "Cancel",
+    "sendSuccess": "Newsletter sent",
+    "sent": "sent",
+    "failed": "failed",
+    "sendError": "Failed to send newsletter",
+    "subscribers": "Subscribers",
+    "noSubscribers": "No subscribers yet",
+    "removeSubscriber": "Remove subscriber"
   }
 }

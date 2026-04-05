@@ -471,3 +471,12 @@ model ArticleView {
   @@index([articleId])
   @@map("article_views")
 }
+
+model NewsletterSubscriber {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  unsubscribeToken String   @unique @default(cuid())
+  subscribedAt     DateTime @default(now())
+
+  @@map("newsletter_subscribers")
+}

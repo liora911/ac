@@ -40,3 +40,15 @@ export interface TicketConfirmationEmailProps {
   ticketUrl: string;
   locale?: "he" | "en";
 }
+
+/**
+ * Props for newsletter article email template
+ */
+export interface NewsletterArticleEmailProps {
+  articleTitle: string;
+  articleSubtitle?: string;
+  articleUrl: string;
+  customMessage: string;
+  unsubscribeUrl: string;
+  locale?: "he" | "en";
+}

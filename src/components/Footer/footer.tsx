@@ -4,7 +4,8 @@ import { useTranslation } from "@/contexts/Translation/translation.context";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronDown, ChevronUp, FolderOpen, FileText } from "lucide-react";
+import { ChevronDown, ChevronUp, FolderOpen, FileText, Mail, CheckCircle, Loader2 } from "lucide-react";
+import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
 import type {
   ArticlePreview,
   CategoryWithArticles,
@@ -142,6 +143,69 @@ function setCachedSitemapData(data: FooterSitemapData): void {
   }
 }
 
+function NewsletterSignup() {
+  const { t } = useTranslation();
+  const subscribe = useSubscribeNewsletter();
+  const [email, setEmail] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) return;
+    subscribe.mutate(email.trim(), {
+      onSuccess: () => setEmail(""),
+    });
+  };
+
+  return (
+    <div className="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex flex-col items-center text-center max-w-md mx-auto">
+        <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400 mb-2" />
+        <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+          {t("newsletter.title")}
+        </h3>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          {t("newsletter.description")}
+        </p>
+
+        {subscribe.isSuccess ? (
+          <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+            <CheckCircle className="w-4 h-4" />
+            {t("newsletter.success")}
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="flex w-full gap-2">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("newsletter.placeholder")}
+              required
+              className="flex-1 px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <button
+              type="submit"
+              disabled={subscribe.isPending}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:cursor-not-allowed"
+            >
+              {subscribe.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                t("newsletter.subscribe")
+              )}
+            </button>
+          </form>
+        )}
+
+        {subscribe.isError && (
+          <p className="mt-2 text-xs text-red-500 dark:text-red-400">
+            {t("newsletter.error")}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function Footer() {
   const { t, locale } = useTranslation();
   const pathname = usePathname();
@@ -185,6 +249,9 @@ export default function Footer() {
       dir={isHebrew ? "rtl" : "ltr"}
     >
       <div className="max-w-6xl mx-auto">
+        {/* Newsletter Section */}
+        <NewsletterSignup />
+
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400">
           <p>{t("footer.contact")}</p>

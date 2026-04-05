@@ -16,6 +16,7 @@ import PresentationsAdmin from "./PresentationsAdmin";
 import MessagesAdmin from "./MessagesAdmin";
 import CommentsAdmin from "./CommentsAdmin";
 import NotificationsAdmin from "./NotificationsAdmin";
+import NewsletterAdmin from "./NewsletterAdmin";
 import SubscriptionsAdmin from "./SubscriptionsAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import HomeAdmin from "./HomeAdmin";
@@ -47,6 +48,7 @@ import {
   Bot,
   Loader2,
   X,
+  Mail,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -70,6 +72,7 @@ const iconMap: Record<string, LucideIcon> = {
   BookOpen,
   Users,
   Wrench,
+  Mail,
 };
 
 export default function ElitzurDashboard() {
@@ -388,6 +391,8 @@ export default function ElitzurDashboard() {
           {active === "messages" && <MessagesAdmin />}
 
           {active === "notifications" && <NotificationsAdmin />}
+
+          {active === "newsletter" && <NewsletterAdmin />}
 
           {active === "subscriptions" && <SubscriptionsAdmin />}
 

@@ -135,6 +135,12 @@ export const queryCache = {
     gcTime: minutes(10),
   },
 
+  /** Newsletter subscribers (admin only) */
+  newsletter: {
+    staleTime: minutes(5),
+    gcTime: minutes(30),
+  },
+
   /** Default for any unspecified resource */
   default: {
     staleTime: minutes(5),
