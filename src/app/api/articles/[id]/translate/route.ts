@@ -5,7 +5,7 @@ import { google } from "@ai-sdk/google";
 import { generateText } from "ai";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 // POST - Translate an article to another language
 export async function POST(
@@ -57,50 +57,33 @@ export async function POST(
     const sourceLang = targetLanguage === "en" ? "Hebrew" : "English";
     const targetLang = targetLanguage === "en" ? "English" : "Hebrew";
 
-    // Translate title, subtitle, and content in one call
-    const prompt = `You are a professional translator. Translate the following article from ${sourceLang} to ${targetLang}.
-
-IMPORTANT RULES:
-- Preserve ALL HTML tags and structure exactly as they are
-- Only translate the text content between/outside HTML tags
-- Keep proper names, technical terms, and citations in their original form when appropriate
-- Maintain the academic tone and style
-- Do not add any commentary or notes
-
-Respond in this exact JSON format:
-{
-  "title": "translated title",
-  "subtitle": "translated subtitle or null",
-  "content": "translated HTML content"
-}
-
----
-
-TITLE: ${article.title}
-
-SUBTITLE: ${article.subtitle || ""}
-
-CONTENT:
-${article.content}`;
-
-    const result = await generateText({
-      model: google("gemini-2.5-flash"),
-      prompt,
+    // Translate title and subtitle first (fast, small)
+    const metaResult = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt: `Translate from ${sourceLang} to ${targetLang}. Return ONLY valid JSON, no markdown.
+{"title": "${article.title}", "subtitle": "${article.subtitle || ""}"}`,
     });
 
-    // Parse the AI response
-    let translated: { title: string; subtitle: string | null; content: string };
+    let translatedMeta: { title: string; subtitle: string };
     try {
-      // Extract JSON from response (might be wrapped in markdown code blocks)
-      const jsonMatch = result.text.match(/\{[\s\S]*\}/);
-      if (!jsonMatch) throw new Error("No JSON found in response");
-      translated = JSON.parse(jsonMatch[0]);
+      const jsonMatch = metaResult.text.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) throw new Error("No JSON");
+      translatedMeta = JSON.parse(jsonMatch[0]);
     } catch {
-      return NextResponse.json(
-        { error: "Failed to parse translation response" },
-        { status: 500 }
-      );
+      translatedMeta = { title: article.title, subtitle: article.subtitle || "" };
     }
+
+    // Translate content (can be large)
+    const contentResult = await generateText({
+      model: google("gemini-2.0-flash"),
+      prompt: `Translate this HTML from ${sourceLang} to ${targetLang}. Preserve ALL HTML tags exactly. Only translate text. Return ONLY the translated HTML, nothing else.\n\n${article.content}`,
+    });
+
+    const translated = {
+      title: translatedMeta.title,
+      subtitle: translatedMeta.subtitle || null,
+      content: contentResult.text.trim(),
+    };
 
     // Generate a unique slug for the translation
     const baseSlug = generateSlug(translated.title);
