@@ -259,7 +259,7 @@ export async function GET(request: NextRequest) {
     // Don't cache for admin users so they see real-time updates
     const cacheControl = isAuthorized
       ? "private, no-cache, no-store, must-revalidate"
-      : "public, s-maxage=60, stale-while-revalidate=300";
+      : "public, s-maxage=300, stale-while-revalidate=600";
 
     return NextResponse.json(response, {
       headers: {
