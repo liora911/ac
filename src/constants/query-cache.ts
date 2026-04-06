@@ -47,56 +47,56 @@ export const queryCache = {
 
   /** Lectures list (tree structure) */
   lectures: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(60),
+    gcTime: minutes(360),
   },
 
   /** Single lecture detail */
   lecture: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(30),
+    gcTime: minutes(120),
   },
 
   /** Presentations list (tree structure) */
   presentations: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(60),
+    gcTime: minutes(360),
   },
 
   /** Single presentation detail */
   presentation: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(30),
+    gcTime: minutes(120),
   },
 
   /** Events list */
   events: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(30),
+    gcTime: minutes(120),
   },
 
   /** Single event detail */
   event: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(30),
+    gcTime: minutes(120),
   },
 
   /** User favorites */
   favorites: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(10),
+    gcTime: minutes(60),
   },
 
   /** Categories list */
   categories: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(60),
+    gcTime: minutes(360),
   },
 
   /** Site settings */
   siteSettings: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(60),
+    gcTime: minutes(360),
   },
 
   /** Notifications (admin list) */
