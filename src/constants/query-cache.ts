@@ -29,14 +29,14 @@ export const queryCache = {
 
   /** Articles list */
   articles: {
-    staleTime: minutes(60),
-    gcTime: minutes(360), // 6 hours
+    staleTime: minutes(120),
+    gcTime: minutes(720), // 12 hours
   },
 
   /** Single article detail */
   article: {
-    staleTime: minutes(5),
-    gcTime: minutes(30),
+    staleTime: minutes(30),
+    gcTime: minutes(120),
   },
 
   /** Article search results */
