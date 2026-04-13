@@ -14,7 +14,8 @@
       "Bash(npm ls:*)"
     ],
     "additionalDirectories": [
-      "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]"
+      "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]",
+      "c:\\Users\\krisl\\ace\\ace\\src\\lib"
     ]
   }
 }

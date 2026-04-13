@@ -32,7 +32,7 @@ import {
 } from "lucide-react";
 import { Suspense } from "react";
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
 import { useCategories } from "@/hooks/useArticles";
@@ -137,6 +137,27 @@ function AccountContent({
       const res = await fetch("/api/my-tickets");
       if (!res.ok) throw new Error("Failed to fetch tickets");
       return res.json();
+    },
+  });
+  const queryClient = useQueryClient();
+  const { data: newsletterStatus } = useQuery<{ subscribed: boolean }>({
+    queryKey: ["newsletter-me"],
+    queryFn: async () => {
+      const res = await fetch("/api/newsletter/me");
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+  });
+  const newsletterToggle = useMutation({
+    mutationFn: async (subscribe: boolean) => {
+      const res = await fetch("/api/newsletter/me", {
+        method: subscribe ? "POST" : "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["newsletter-me"] });
     },
   });
   const [tempSelectedIds, setTempSelectedIds] = useState<string[]>(selectedCategoryIds);
@@ -683,6 +704,36 @@ function AccountContent({
         <ThemeToggleSection />
         <FontSizeToggle />
         <ReduceMotionToggle />
+      </div>
+
+      {/* Newsletter Subscription */}
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 p-5">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+              <Mail className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-900 dark:text-white">{t("account.newsletter.title")}</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t("account.newsletter.description")}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => newsletterToggle.mutate(!newsletterStatus?.subscribed)}
+            disabled={newsletterToggle.isPending}
+            className={`relative w-12 h-7 rounded-full transition-colors cursor-pointer disabled:opacity-50 ${
+              newsletterStatus?.subscribed
+                ? "bg-blue-600"
+                : "bg-gray-300 dark:bg-gray-600"
+            }`}
+          >
+            <span
+              className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow transition-transform ${
+                newsletterStatus?.subscribed ? "translate-x-5" : "translate-x-0.5"
+              }`}
+            />
+          </button>
+        </div>
       </div>
 
       {/* Admin Panel Link */}

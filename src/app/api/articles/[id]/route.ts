@@ -4,6 +4,7 @@ import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
+import { sendNewsletterForArticle } from "@/lib/newsletter/auto-send";
 import type { Prisma } from "@prisma/client";
 import type {
   Article,
@@ -427,6 +428,11 @@ export async function PUT(
     });
 
     const transformedArticle = transformArticle(updatedArticle as ArticleWithRelations);
+
+    // Auto-send newsletter when article transitions from draft → published
+    if (status === "PUBLISHED" && !existingArticle.published) {
+      sendNewsletterForArticle(id).catch(() => {});
+    }
 
     return NextResponse.json(transformedArticle);
   } catch (error) {

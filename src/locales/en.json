@@ -1338,6 +1338,10 @@
       "preferences": "Content Preferences",
       "settings": "Settings"
     },
+    "newsletter": {
+      "title": "Newsletter",
+      "description": "Get notified when new articles are published"
+    },
     "role": {
       "admin": "Administrator",
       "premium": "Researcher"

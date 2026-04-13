@@ -1384,6 +1384,10 @@
       "preferences": "העדפות תוכן",
       "settings": "הגדרות"
     },
+    "newsletter": {
+      "title": "ניוזלטר",
+      "description": "קבלו עדכונים כשמאמרים חדשים מתפרסמים"
+    },
     "role": {
       "admin": "מנהל",
       "premium": "חוקר",

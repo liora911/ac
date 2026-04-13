@@ -14,6 +14,7 @@ import type {
 } from "@/types/Articles/articles";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { findOrCreateTags } from "@/lib/prisma/tags";
+import { sendNewsletterForArticle } from "@/lib/newsletter/auto-send";
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {
@@ -464,6 +465,11 @@ export async function POST(request: NextRequest) {
     });
 
     const transformedArticle = transformArticle(article as ArticleWithRelations);
+
+    // Auto-send newsletter if article is created as published
+    if (status === "PUBLISHED") {
+      sendNewsletterForArticle(article.id).catch(() => {});
+    }
 
     return NextResponse.json(transformedArticle, { status: 201 });
   } catch (error) {
