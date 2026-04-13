@@ -95,3 +95,28 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+export async function PATCH(request: NextRequest) {
+  try {
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) {
+      return authErrorResponse(auth);
+    }
+
+    const body = await request.json();
+
+    const updated = await prisma.siteSettings.upsert({
+      where: { id: "settings" },
+      create: { id: "settings", ...body },
+      update: body,
+    });
+
+    return NextResponse.json(updated);
+  } catch (error) {
+    console.error("Error patching site settings:", error);
+    return NextResponse.json(
+      { error: "Failed to update settings" },
+      { status: 500 }
+    );
+  }
+}

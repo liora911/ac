@@ -1803,6 +1803,10 @@
     "sendError": "Failed to send newsletter",
     "subscribers": "Subscribers",
     "noSubscribers": "No subscribers yet",
-    "removeSubscriber": "Remove subscriber"
+    "removeSubscriber": "Remove subscriber",
+    "templateTitle": "Auto-Send Template",
+    "templateDescription": "This template is used when articles are auto-published. Edit the default message sent to subscribers.",
+    "saveTemplate": "Save Template",
+    "templateSaved": "Template saved!"
   }
 }

@@ -1876,6 +1876,10 @@
     "sendError": "שליחת הניוזלטר נכשלה",
     "subscribers": "מנויים",
     "noSubscribers": "אין מנויים עדיין",
-    "removeSubscriber": "הסר מנוי"
+    "removeSubscriber": "הסר מנוי",
+    "templateTitle": "תבנית שליחה אוטומטית",
+    "templateDescription": "התבנית הזו משמשת כשמאמרים מתפרסמים. ערוך את ההודעה שנשלחת למנויים.",
+    "saveTemplate": "שמור תבנית",
+    "templateSaved": "התבנית נשמרה!"
   }
 }

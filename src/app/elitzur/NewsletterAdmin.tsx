@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNewsletterSubscribers, useRemoveSubscriber, useSendNewsletter } from "@/hooks/useNewsletter";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Mail,
   Send,
@@ -13,6 +13,8 @@ import {
   CheckCircle,
   AlertCircle,
   Info,
+  Save,
+  FileEdit,
 } from "lucide-react";
 
 interface ArticleOption {
@@ -34,6 +36,56 @@ export default function NewsletterAdmin() {
   const [customMessage, setCustomMessage] = useState("");
   const [showConfirm, setShowConfirm] = useState(false);
   const [sendResult, setSendResult] = useState<{ sent: number; failed: number } | null>(null);
+  const [templateSaved, setTemplateSaved] = useState(false);
+
+  // Template fields
+  const [tplSubjectHe, setTplSubjectHe] = useState("מאמר חדש: {articleName}");
+  const [tplMessageHe, setTplMessageHe] = useState("מאמר חדש פורסם: {articleName}. מוזמנים לקרוא!");
+  const [tplSubjectEn, setTplSubjectEn] = useState("New Article: {articleName}");
+  const [tplMessageEn, setTplMessageEn] = useState("A new article has been published: {articleName}. Check it out!");
+
+  const queryClient = useQueryClient();
+
+  // Load saved template from site settings
+  const { data: siteSettings } = useQuery<any>({
+    queryKey: ["site-settings"],
+    queryFn: async () => {
+      const res = await fetch("/api/site-settings");
+      if (!res.ok) throw new Error("Failed");
+      return res.json();
+    },
+  });
+
+  useEffect(() => {
+    if (siteSettings) {
+      if (siteSettings.newsletterSubject) setTplSubjectHe(siteSettings.newsletterSubject);
+      if (siteSettings.newsletterMessage) setTplMessageHe(siteSettings.newsletterMessage);
+      if (siteSettings.newsletterSubjectEn) setTplSubjectEn(siteSettings.newsletterSubjectEn);
+      if (siteSettings.newsletterMessageEn) setTplMessageEn(siteSettings.newsletterMessageEn);
+    }
+  }, [siteSettings]);
+
+  const saveTemplate = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/site-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          newsletterSubject: tplSubjectHe,
+          newsletterMessage: tplMessageHe,
+          newsletterSubjectEn: tplSubjectEn,
+          newsletterMessageEn: tplMessageEn,
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to save");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["site-settings"] });
+      setTemplateSaved(true);
+      setTimeout(() => setTemplateSaved(false), 3000);
+    },
+  });
 
   // Fetch published articles for the dropdown
   const { data: articles } = useQuery<ArticleOption[]>({
@@ -299,6 +351,105 @@ export default function NewsletterAdmin() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* ── Auto-Send Template ── */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
+          <FileEdit className="w-5 h-5" />
+          {t("newsletter.templateTitle")}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+          {t("newsletter.templateDescription")}
+        </p>
+
+        <div className="space-y-5">
+          {/* Hebrew template */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">עברית</h4>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t("newsletter.subject")}
+              </label>
+              <input
+                type="text"
+                value={tplSubjectHe}
+                onChange={(e) => setTplSubjectHe(e.target.value)}
+                dir="rtl"
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t("newsletter.customMessage")}
+              </label>
+              <textarea
+                value={tplMessageHe}
+                onChange={(e) => setTplMessageHe(e.target.value)}
+                dir="rtl"
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              />
+            </div>
+          </div>
+
+          {/* English template */}
+          <div className="space-y-3">
+            <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300">English</h4>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t("newsletter.subject")}
+              </label>
+              <input
+                type="text"
+                value={tplSubjectEn}
+                onChange={(e) => setTplSubjectEn(e.target.value)}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                {t("newsletter.customMessage")}
+              </label>
+              <textarea
+                value={tplMessageEn}
+                onChange={(e) => setTplMessageEn(e.target.value)}
+                rows={2}
+                className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400">
+            <Info className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+            <span>
+              {t("newsletter.variablesHint")}:
+              <code className="mx-1 px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{"{articleName}"}</code>
+              <code className="mx-1 px-1 py-0.5 bg-gray-100 dark:bg-gray-700 rounded">{"{articleSubtitle}"}</code>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => saveTemplate.mutate()}
+              disabled={saveTemplate.isPending}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+            >
+              {saveTemplate.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              {t("newsletter.saveTemplate")}
+            </button>
+            {templateSaved && (
+              <span className="text-sm text-green-600 dark:text-green-400 flex items-center gap-1">
+                <CheckCircle className="w-4 h-4" />
+                {t("newsletter.templateSaved")}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

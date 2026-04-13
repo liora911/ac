@@ -2,16 +2,26 @@ import prisma from "@/lib/prisma/prisma";
 import { sendEmail } from "@/lib/email/resend";
 import { generateNewsletterArticleEmail } from "@/lib/email/templates/newsletter-article";
 
+function replaceVariables(template: string, article: { title: string; subtitle: string | null }) {
+  return template
+    .replace(/\{articleName\}/g, article.title)
+    .replace(/\{articleTitle\}/g, article.title)
+    .replace(/\{articleSubtitle\}/g, article.subtitle || "");
+}
+
 /**
  * Auto-send newsletter to all subscribers when an article is published.
  * Runs in the background (non-blocking) — does not throw.
  */
 export async function sendNewsletterForArticle(articleId: string) {
   try {
-    const article = await prisma.article.findUnique({
-      where: { id: articleId },
-      select: { title: true, subtitle: true, slug: true, language: true },
-    });
+    const [article, settings] = await Promise.all([
+      prisma.article.findUnique({
+        where: { id: articleId },
+        select: { title: true, subtitle: true, slug: true, language: true },
+      }),
+      prisma.siteSettings.findFirst(),
+    ]);
 
     if (!article || !article.slug) return;
 
@@ -28,13 +38,16 @@ export async function sendNewsletterForArticle(articleId: string) {
     const articleUrl = `${baseUrl}/articles/${article.slug}`;
     const isHebrew = article.language === "he" || !article.language;
 
-    const subject = isHebrew
-      ? `מאמר חדש: ${article.title}`
-      : `New Article: ${article.title}`;
+    const subjectTemplate = isHebrew
+      ? (settings?.newsletterSubject || "מאמר חדש: {articleName}")
+      : (settings?.newsletterSubjectEn || "New Article: {articleName}");
 
-    const customMessage = isHebrew
-      ? `מאמר חדש פורסם: ${article.title}. מוזמנים לקרוא!`
-      : `A new article has been published: ${article.title}. Check it out!`;
+    const messageTemplate = isHebrew
+      ? (settings?.newsletterMessage || "מאמר חדש פורסם: {articleName}. מוזמנים לקרוא!")
+      : (settings?.newsletterMessageEn || "A new article has been published: {articleName}. Check it out!");
+
+    const subject = replaceVariables(subjectTemplate, article);
+    const customMessage = replaceVariables(messageTemplate, article);
 
     for (const subscriber of subscribers) {
       const unsubscribeUrl = `${baseUrl}/unsubscribe?token=${subscriber.unsubscribeToken}`;

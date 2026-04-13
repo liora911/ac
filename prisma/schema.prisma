@@ -318,16 +318,20 @@ model HomeContent {
 }
 
 model SiteSettings {
-  id              String   @id @default("settings")
-  siteTitle       String   @default("Avshalom Elitzur")
-  siteDescription String   @default("")
-  contactEmail    String   @default("")
-  contactPhone    String   @default("")
-  facebookUrl     String   @default("")
-  youtubeUrl      String   @default("")
-  twitterUrl      String   @default("")
-  defaultLanguage String   @default("he")
-  updatedAt       DateTime @updatedAt
+  id                       String   @id @default("settings")
+  siteTitle                String   @default("Avshalom Elitzur")
+  siteDescription          String   @default("")
+  contactEmail             String   @default("")
+  contactPhone             String   @default("")
+  facebookUrl              String   @default("")
+  youtubeUrl               String   @default("")
+  twitterUrl               String   @default("")
+  defaultLanguage          String   @default("he")
+  newsletterSubject        String   @default("מאמר חדש: {articleName}")
+  newsletterMessage        String   @default("מאמר חדש פורסם: {articleName}. מוזמנים לקרוא!")
+  newsletterSubjectEn      String   @default("New Article: {articleName}")
+  newsletterMessageEn      String   @default("A new article has been published: {articleName}. Check it out!")
+  updatedAt                DateTime @updatedAt
 
   @@map("site_settings")
 }
