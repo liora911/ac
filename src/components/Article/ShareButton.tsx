@@ -8,7 +8,7 @@ export default function ShareButton({ shareText, copiedText }: ShareButtonProps)
   const { showSuccess } = useNotification();
 
   const handleShare = async () => {
-    const url = window.location.href;
+    const url = decodeURI(window.location.href);
 
     try {
       await navigator.clipboard.writeText(url);
