@@ -86,4 +86,8 @@ export const rateLimiters = {
   // Search: 30 requests per minute (moderate limit)
   search: (ip: string) =>
     rateLimit(`search:${ip}`, { maxRequests: 30, windowMs: 60 * 1000 }),
+
+  // Transcription: 30 requests per minute (expensive paid API, admin-only)
+  transcribe: (ip: string) =>
+    rateLimit(`transcribe:${ip}`, { maxRequests: 30, windowMs: 60 * 1000 }),
 };

@@ -31,6 +31,8 @@ import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
 import { TiptapEditorProps } from "@/types/Editor/editor";
+import { DictationModal } from "@/components/Dictation";
+import { useTranslation } from "@/contexts/Translation/translation.context";
 import {
   Bold,
   Italic,
@@ -62,7 +64,6 @@ import {
   IndentDecrease,
   Type,
   Mic,
-  MicOff,
 } from "lucide-react";
 
 import type {
@@ -71,10 +72,6 @@ import type {
   ToolbarButtonProps,
   DropdownItemProps,
 } from "@/types/Editor/tiptap-editor";
-import type {
-  SpeechRecognition,
-  SpeechRecognitionEvent,
-} from "@/types/Editor/speech-recognition";
 
 // Tooltip Component
 const Tooltip = ({ children, text }: TooltipProps) => {
@@ -141,17 +138,8 @@ export default function TiptapEditor({
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-
-  // Speech-to-text state
-  const [isListening, setIsListening] = useState(false);
-  const [speechSupported, setSpeechSupported] = useState(false);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
-
-  // Check for speech recognition support
-  useEffect(() => {
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    setSpeechSupported(!!SpeechRecognitionAPI);
-  }, []);
+  const [isDictationOpen, setIsDictationOpen] = useState(false);
+  const { t } = useTranslation();
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -336,64 +324,20 @@ export default function TiptapEditor({
     }
   }, [direction, editor, currentDirection]);
 
-  // Toggle speech recognition
-  const toggleSpeechRecognition = () => {
-    if (!speechSupported || !editor) return;
-
-    if (isListening) {
-      // Stop listening
-      recognitionRef.current?.stop();
-      setIsListening(false);
-      return;
-    }
-
-    // Start listening
-    const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
-    const recognition = new SpeechRecognitionAPI();
-
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = currentDirection === "rtl" ? "he-IL" : "en-US";
-
-    recognition.onstart = () => {
-      setIsListening(true);
-    };
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let finalTranscript = "";
-
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const result = event.results[i];
-        if (result.isFinal) {
-          finalTranscript += result[0].transcript;
-        }
-      }
-
-      if (finalTranscript && editor) {
-        // Insert the transcribed text at cursor position
-        editor.chain().focus().insertContent(finalTranscript + " ").run();
-      }
-    };
-
-    recognition.onerror = (event) => {
-      console.error("Speech recognition error:", event.error);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-    recognition.start();
+  const handleDictationApprove = (text: string) => {
+    if (!editor || !text) return;
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    // Split into paragraphs on double newlines; single newlines become <br>
+    const paragraphs = trimmed
+      .split(/\n\s*\n+/)
+      .map((p) => p.trim())
+      .filter(Boolean);
+    const html = paragraphs
+      .map((p) => `<p>${p.replace(/\n/g, "<br>")}</p>`)
+      .join("");
+    editor.chain().focus().insertContent(html).run();
   };
-
-  // Cleanup speech recognition on unmount
-  useEffect(() => {
-    return () => {
-      recognitionRef.current?.stop();
-    };
-  }, []);
 
   if (!editor) return null;
 
@@ -795,21 +739,14 @@ export default function TiptapEditor({
             </Dropdown>
           </div>
 
-          {/* Speech-to-Text & Direction Toggle */}
+          {/* Dictation & Direction Toggle */}
           <div className="ml-auto flex items-center gap-1">
-            {speechSupported && (
-              <ToolbarButton
-                onClick={toggleSpeechRecognition}
-                isActive={isListening}
-                title={isListening ? "Stop Dictation" : "Start Dictation"}
-              >
-                {isListening ? (
-                  <MicOff className="w-4 h-4 text-red-500" />
-                ) : (
-                  <Mic className="w-4 h-4" />
-                )}
-              </ToolbarButton>
-            )}
+            <ToolbarButton
+              onClick={() => setIsDictationOpen(true)}
+              title={t("dictation.buttonTitle")}
+            >
+              <Mic className="w-4 h-4" />
+            </ToolbarButton>
             <ToolbarButton
               onClick={() => {
                 const newDirection = currentDirection === "ltr" ? "rtl" : "ltr";
@@ -960,6 +897,15 @@ export default function TiptapEditor({
           className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset"
         />
       </div>
+
+      {/* AI Dictation Modal */}
+      <DictationModal
+        isOpen={isDictationOpen}
+        onClose={() => setIsDictationOpen(false)}
+        onApprove={handleDictationApprove}
+        defaultLanguage={currentDirection === "rtl" ? "he" : "auto"}
+      />
+
 
       <style jsx global>{`
         .ProseMirror {
