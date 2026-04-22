@@ -17,7 +17,8 @@
       "Read(//c/Users/krisl/.claude/projects/c--Users-krisl-Downloads-ace-ace/memory/**)",
       "Bash(curl -sS -w \"\\\\nHTTP:%{http_code}\\\\n\" \"https://avshalom-elitzur.academy/api/archive\" -o /tmp/archive.json)",
       "Read(//tmp/**)",
-      "Bash(curl -sS --ssl-no-revoke -w \"\\\\nHTTP:%{http_code}\\\\n\" \"https://avshalom-elitzur.academy/api/archive\" -o /tmp/archive.json)"
+      "Bash(curl -sS --ssl-no-revoke -w \"\\\\nHTTP:%{http_code}\\\\n\" \"https://avshalom-elitzur.academy/api/archive\" -o /tmp/archive.json)",
+      "Bash(echo \"EXIT=$?\")"
     ],
     "additionalDirectories": [
       "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]",

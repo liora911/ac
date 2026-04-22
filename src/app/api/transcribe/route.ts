@@ -134,8 +134,31 @@ export async function POST(req: Request) {
     if (!openaiRes.ok) {
       const errBody = await openaiRes.text();
       console.error("OpenAI transcription error:", openaiRes.status, errBody);
+
+      let parsedMessage = errBody;
+      try {
+        const parsed = JSON.parse(errBody) as {
+          error?: { message?: string; code?: string; type?: string };
+        };
+        if (parsed.error?.message) parsedMessage = parsed.error.message;
+      } catch {
+        // keep raw
+      }
+
       return NextResponse.json(
-        { error: "Transcription failed. Please try again." },
+        {
+          error: `OpenAI ${openaiRes.status}: ${parsedMessage}`,
+          openaiStatus: openaiRes.status,
+          model: TRANSCRIBE_MODEL,
+          hint:
+            openaiRes.status === 403
+              ? "Your OpenAI project likely lacks access to this model. Try OPENAI_TRANSCRIBE_MODEL=whisper-1 in your env, or enable the model in your project permissions."
+              : openaiRes.status === 429
+                ? "Rate limited or out of credits. Add billing at https://platform.openai.com/settings/organization/billing"
+                : openaiRes.status === 400
+                  ? "Bad request — usually a file format issue. Check browser console for the blob type."
+                  : undefined,
+        },
         { status: 502 }
       );
     }
