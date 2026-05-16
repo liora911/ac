@@ -27,7 +27,9 @@ interface UseRealtimeTranscriptionReturn {
 
 const REALTIME_URL = "wss://api.openai.com/v1/realtime";
 const TARGET_SAMPLE_RATE = 24000;
-const CHUNK_MS = 40;
+// Smaller chunks = lower perceived latency at the cost of more WS frames.
+// 20ms ≈ 480 samples ≈ 960 bytes per frame at 24kHz PCM16 — still very cheap.
+const CHUNK_MS = 20;
 const DEFAULT_MAX_DURATION_MS = 90_000;
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
