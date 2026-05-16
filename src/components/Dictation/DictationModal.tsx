@@ -82,6 +82,7 @@ export default function DictationModal({
   const mimeTypeRef = useRef<string>("");
   const finalLiveRef = useRef<string>("");
   const currentDeltaRef = useRef<string>("");
+  const livePreviewRef = useRef<HTMLDivElement | null>(null);
 
   const {
     start: startRealtime,
@@ -160,6 +161,14 @@ export default function DictationModal({
     accumulatedMsRef.current = 0;
     startedAtRef.current = 0;
   }, []);
+
+  // Keep the live preview pinned to the latest text so the speaker doesn't
+  // have to scroll to follow their own words.
+  useEffect(() => {
+    const node = livePreviewRef.current;
+    if (!node) return;
+    node.scrollTop = node.scrollHeight;
+  }, [livePreview]);
 
   // Reset when modal opens
   useEffect(() => {
@@ -581,13 +590,14 @@ export default function DictationModal({
                 {(phase === "recording" || phase === "paused") &&
                   livePreview && (
                     <div
+                      ref={livePreviewRef}
                       dir="auto"
-                      className="mt-4 w-full max-h-32 overflow-y-auto px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-sm italic text-gray-500 dark:text-gray-400 leading-relaxed"
+                      className="mt-4 w-full max-h-[45vh] min-h-[8rem] overflow-y-auto px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-base italic text-gray-600 dark:text-gray-300 leading-relaxed"
                       aria-live="polite"
                     >
                       {livePreview}
                       {phase === "recording" && (
-                        <span className="ms-1 inline-block w-1 h-4 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
+                        <span className="ms-1 inline-block w-1 h-5 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
                       )}
                     </div>
                   )}
