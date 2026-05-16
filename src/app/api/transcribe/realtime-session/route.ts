@@ -51,27 +51,35 @@ export async function POST(req: Request) {
     const language = body.language && body.language !== "auto" ? body.language : undefined;
     const prompt = body.prompt ? body.prompt.slice(0, 500) : undefined;
 
+    // GA Realtime API: mint a browser ephemeral key via /v1/realtime/client_secrets.
+    // The session is fully configured here; the browser just opens the WSS and streams audio.
     const sessionRes = await fetch(
-      "https://api.openai.com/v1/realtime/transcription_sessions",
+      "https://api.openai.com/v1/realtime/client_secrets",
       {
         method: "POST",
         headers: {
           Authorization: `Bearer ${apiKey}`,
           "Content-Type": "application/json",
-          "OpenAI-Beta": "realtime=v1",
         },
         body: JSON.stringify({
-          input_audio_format: "pcm16",
-          input_audio_transcription: {
-            model: REALTIME_MODEL,
-            ...(language ? { language } : {}),
-            ...(prompt ? { prompt } : {}),
-          },
-          turn_detection: {
-            type: "server_vad",
-            threshold: 0.5,
-            prefix_padding_ms: 300,
-            silence_duration_ms: 500,
+          session: {
+            type: "transcription",
+            audio: {
+              input: {
+                format: { type: "audio/pcm", rate: 24000 },
+                transcription: {
+                  model: REALTIME_MODEL,
+                  ...(language ? { language } : {}),
+                  ...(prompt ? { prompt } : {}),
+                },
+                turn_detection: {
+                  type: "server_vad",
+                  threshold: 0.5,
+                  prefix_padding_ms: 300,
+                  silence_duration_ms: 500,
+                },
+              },
+            },
           },
         }),
       }
@@ -94,21 +102,22 @@ export async function POST(req: Request) {
     }
 
     const data = (await sessionRes.json()) as {
-      client_secret?: { value?: string; expires_at?: number };
-      id?: string;
+      value?: string;
+      expires_at?: number;
+      session?: { id?: string };
     };
 
-    if (!data.client_secret?.value) {
+    if (!data.value) {
       return NextResponse.json(
-        { error: "Realtime session response missing client_secret." },
+        { error: "Realtime client secret response missing value." },
         { status: 502 }
       );
     }
 
     return NextResponse.json({
-      token: data.client_secret.value,
-      expiresAt: data.client_secret.expires_at,
-      sessionId: data.id,
+      token: data.value,
+      expiresAt: data.expires_at,
+      sessionId: data.session?.id,
       model: REALTIME_MODEL,
     });
   } catch (error) {

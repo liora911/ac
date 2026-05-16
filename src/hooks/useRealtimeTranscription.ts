@@ -25,7 +25,7 @@ interface UseRealtimeTranscriptionReturn {
   stop: () => void;
 }
 
-const REALTIME_URL = "wss://api.openai.com/v1/realtime?intent=transcription";
+const REALTIME_URL = "wss://api.openai.com/v1/realtime";
 const TARGET_SAMPLE_RATE = 24000;
 const CHUNK_MS = 40;
 const DEFAULT_MAX_DURATION_MS = 90_000;
@@ -190,10 +190,11 @@ export function useRealtimeTranscription(
 
       let ws: WebSocket;
       try {
+        // GA Realtime API: browser auth via subprotocol with the ephemeral
+        // client_secret value. No more openai-beta subprotocol.
         ws = new WebSocket(REALTIME_URL, [
           "realtime",
           `openai-insecure-api-key.${session.token}`,
-          "openai-beta.realtime-v1",
         ]);
       } catch (err) {
         reportError(
@@ -204,56 +205,46 @@ export function useRealtimeTranscription(
       wsRef.current = ws;
 
       ws.onopen = () => {
-        // Reaffirm the session config in case the server's session defaults
-        // drift. Safe no-op if matched.
-        try {
-          ws.send(
-            JSON.stringify({
-              type: "transcription_session.update",
-              session: {
-                input_audio_format: "pcm16",
-                input_audio_transcription: {
-                  model: "gpt-4o-transcribe",
-                  ...(opts.language && opts.language !== "auto"
-                    ? { language: opts.language }
-                    : {}),
-                  ...(opts.prompt ? { prompt: opts.prompt.slice(0, 500) } : {}),
-                },
-                turn_detection: {
-                  type: "server_vad",
-                  threshold: 0.5,
-                  prefix_padding_ms: 300,
-                  silence_duration_ms: 500,
-                },
-              },
-            })
-          );
-        } catch {
-          // non-fatal
-        }
+        // The session is fully configured by the server mint, so we don't
+        // strictly need to update it here. Left intentionally empty.
       };
 
       ws.onmessage = (event) => {
         if (typeof event.data !== "string") return;
-        let msg: { type?: string; delta?: string; transcript?: string; error?: { message?: string } };
+        let msg: {
+          type?: string;
+          delta?: string;
+          transcript?: string;
+          error?: { message?: string };
+        };
         try {
           msg = JSON.parse(event.data);
         } catch {
           return;
         }
-        switch (msg.type) {
-          case "conversation.item.input_audio_transcription.delta":
-            if (msg.delta) callbacksRef.current.onDelta?.(msg.delta);
-            break;
-          case "conversation.item.input_audio_transcription.completed":
-            if (msg.transcript)
-              callbacksRef.current.onFinalized?.(msg.transcript);
-            break;
-          case "error":
-            reportError(msg.error?.message || "Realtime stream error.");
-            break;
-          default:
-            break;
+        const type = msg.type || "";
+        if (type === "error") {
+          reportError(msg.error?.message || "Realtime stream error.");
+          return;
+        }
+        // Be resilient to GA event-name churn: any event whose type contains
+        // "transcription" and carries a delta / transcript gets treated as such.
+        if (type.includes("transcription")) {
+          if (type.endsWith(".delta") && msg.delta) {
+            callbacksRef.current.onDelta?.(msg.delta);
+            return;
+          }
+          if (
+            (type.endsWith(".completed") || type.endsWith(".done")) &&
+            msg.transcript
+          ) {
+            callbacksRef.current.onFinalized?.(msg.transcript);
+            return;
+          }
+        }
+        // Surface unknown event types so we can spot GA renames.
+        if (process.env.NODE_ENV !== "production") {
+          console.debug("[realtime] event:", type, msg);
         }
       };
 
