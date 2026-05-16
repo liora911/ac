@@ -90,4 +90,8 @@ export const rateLimiters = {
   // Transcription: 30 requests per minute (expensive paid API, admin-only)
   transcribe: (ip: string) =>
     rateLimit(`transcribe:${ip}`, { maxRequests: 30, windowMs: 60 * 1000 }),
+
+  // Realtime session minting: 10 per minute (each session opens a paid WSS stream, admin-only)
+  realtimeSession: (ip: string) =>
+    rateLimit(`realtime-session:${ip}`, { maxRequests: 10, windowMs: 60 * 1000 }),
 };

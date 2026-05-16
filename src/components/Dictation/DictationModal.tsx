@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useRealtimeTranscription } from "@/hooks/useRealtimeTranscription";
 import type {
   DictationLanguage,
   DictationModalProps,
@@ -67,6 +68,7 @@ export default function DictationModal({
   const [transcript, setTranscript] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPolished, setIsPolished] = useState(false);
+  const [livePreview, setLivePreview] = useState("");
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -78,6 +80,29 @@ export default function DictationModal({
   const accumulatedMsRef = useRef<number>(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const mimeTypeRef = useRef<string>("");
+  const finalLiveRef = useRef<string>("");
+  const currentDeltaRef = useRef<string>("");
+
+  const {
+    start: startRealtime,
+    stop: stopRealtime,
+    isSupported: realtimeSupported,
+  } = useRealtimeTranscription({
+    onDelta: (delta) => {
+      currentDeltaRef.current += delta;
+      const combined =
+        `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
+      setLivePreview(combined);
+    },
+    onFinalized: (text) => {
+      finalLiveRef.current = `${finalLiveRef.current} ${text}`.trim();
+      currentDeltaRef.current = "";
+      setLivePreview(finalLiveRef.current);
+    },
+    onError: (message) => {
+      console.warn("Realtime preview:", message);
+    },
+  });
 
   const supported = useMemo(
     () =>
@@ -117,9 +142,10 @@ export default function DictationModal({
     stopTimer();
     cleanupAudioGraph();
     releaseStream();
+    stopRealtime();
     recorderRef.current = null;
     chunksRef.current = [];
-  }, [stopTimer, cleanupAudioGraph, releaseStream]);
+  }, [stopTimer, cleanupAudioGraph, releaseStream, stopRealtime]);
 
   const resetState = useCallback(() => {
     setPhase("idle");
@@ -128,6 +154,9 @@ export default function DictationModal({
     setTranscript("");
     setErrorMsg(null);
     setIsPolished(false);
+    setLivePreview("");
+    finalLiveRef.current = "";
+    currentDeltaRef.current = "";
     accumulatedMsRef.current = 0;
     startedAtRef.current = 0;
   }, []);
@@ -224,6 +253,17 @@ export default function DictationModal({
       startAmplitudeTracking(stream);
       accumulatedMsRef.current = 0;
       startTimer();
+      finalLiveRef.current = "";
+      currentDeltaRef.current = "";
+      setLivePreview("");
+      if (realtimeSupported) {
+        startRealtime(stream, {
+          language: language === "auto" ? undefined : language,
+          prompt: contextHint,
+        }).catch(() => {
+          // Errors are surfaced via onError; recording still proceeds.
+        });
+      }
       setPhase("recording");
     } catch (err) {
       const name = err instanceof Error ? err.name : "";
@@ -236,24 +276,43 @@ export default function DictationModal({
       );
       teardown();
     }
-  }, [supported, t, startAmplitudeTracking, startTimer, teardown]);
+  }, [
+    supported,
+    t,
+    startAmplitudeTracking,
+    startTimer,
+    teardown,
+    realtimeSupported,
+    startRealtime,
+    language,
+    contextHint,
+  ]);
 
   const pauseRecording = useCallback(() => {
     const recorder = recorderRef.current;
     if (!recorder || recorder.state !== "recording") return;
     recorder.pause();
     stopTimer();
+    stopRealtime();
     accumulatedMsRef.current += Date.now() - startedAtRef.current;
     setPhase("paused");
-  }, [stopTimer]);
+  }, [stopTimer, stopRealtime]);
 
   const resumeRecording = useCallback(() => {
     const recorder = recorderRef.current;
     if (!recorder || recorder.state !== "paused") return;
     recorder.resume();
     startTimer();
+    if (realtimeSupported && streamRef.current) {
+      startRealtime(streamRef.current, {
+        language: language === "auto" ? undefined : language,
+        prompt: contextHint,
+      }).catch(() => {
+        // Errors are surfaced via onError; recording still proceeds.
+      });
+    }
     setPhase("recording");
-  }, [startTimer]);
+  }, [startTimer, realtimeSupported, startRealtime, language, contextHint]);
 
   const transcribeBlob = useCallback(
     async (blob: Blob) => {
@@ -302,6 +361,7 @@ export default function DictationModal({
       return;
     }
     stopTimer();
+    stopRealtime();
     if (recorder.state === "recording") {
       accumulatedMsRef.current += Date.now() - startedAtRef.current;
     }
@@ -319,7 +379,7 @@ export default function DictationModal({
       transcribeBlob(blob);
     };
     recorder.stop();
-  }, [stopTimer, cleanupAudioGraph, releaseStream, transcribeBlob, t]);
+  }, [stopTimer, cleanupAudioGraph, releaseStream, transcribeBlob, t, stopRealtime]);
 
   const handleClose = useCallback(() => {
     teardown();
@@ -518,6 +578,19 @@ export default function DictationModal({
                     </div>
                   )}
                 </div>
+                {(phase === "recording" || phase === "paused") &&
+                  livePreview && (
+                    <div
+                      dir="auto"
+                      className="mt-4 w-full max-h-32 overflow-y-auto px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-sm italic text-gray-500 dark:text-gray-400 leading-relaxed"
+                      aria-live="polite"
+                    >
+                      {livePreview}
+                      {phase === "recording" && (
+                        <span className="ms-1 inline-block w-1 h-4 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
+                      )}
+                    </div>
+                  )}
               </div>
             )}
 

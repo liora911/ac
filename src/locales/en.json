@@ -1847,6 +1847,6 @@
     "discard": "Discard",
     "insert": "Insert into Article",
     "inserted": "Dictation inserted into article",
-    "buttonTitle": "AI Dictation (Whisper)"
+    "buttonTitle": "AI Dictation"
   }
 }
