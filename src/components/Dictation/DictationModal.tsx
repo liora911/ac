@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
-import { useRealtimeTranscription } from "@/hooks/useRealtimeTranscription";
+import { useDeepgramTranscription } from "@/hooks/useDeepgramTranscription";
 import type {
   DictationLanguage,
   DictationModalProps,
@@ -88,9 +88,10 @@ export default function DictationModal({
     start: startRealtime,
     stop: stopRealtime,
     isSupported: realtimeSupported,
-  } = useRealtimeTranscription({
-    onDelta: (delta) => {
-      currentDeltaRef.current += delta;
+  } = useDeepgramTranscription({
+    onPartial: (text) => {
+      // Deepgram interims are cumulative for the active segment — replace, not append.
+      currentDeltaRef.current = text;
       const combined =
         `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
       setLivePreview(combined);
@@ -101,7 +102,7 @@ export default function DictationModal({
       setLivePreview(finalLiveRef.current);
     },
     onError: (message) => {
-      console.warn("Realtime preview:", message);
+      console.warn("Deepgram preview:", message);
     },
   });
 
