@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
+import { useRealtimeTranscription } from "@/hooks/useRealtimeTranscription";
 import { useDeepgramTranscription } from "@/hooks/useDeepgramTranscription";
 import type {
   DictationLanguage,
@@ -84,13 +85,27 @@ export default function DictationModal({
   const currentDeltaRef = useRef<string>("");
   const livePreviewRef = useRef<HTMLDivElement | null>(null);
 
-  const {
-    start: startRealtime,
-    stop: stopRealtime,
-    isSupported: realtimeSupported,
-  } = useDeepgramTranscription({
+  const openaiRealtime = useRealtimeTranscription({
+    onDelta: (delta) => {
+      // OpenAI Realtime sends additive token deltas — append, don't replace.
+      currentDeltaRef.current += delta;
+      const combined =
+        `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
+      setLivePreview(combined);
+    },
+    onFinalized: (text) => {
+      finalLiveRef.current = `${finalLiveRef.current} ${text}`.trim();
+      currentDeltaRef.current = "";
+      setLivePreview(finalLiveRef.current);
+    },
+    onError: (message) => {
+      console.warn("Realtime preview:", message);
+    },
+  });
+
+  const deepgramRealtime = useDeepgramTranscription({
     onPartial: (text) => {
-      // Deepgram interims are cumulative for the active segment — replace, not append.
+      // Deepgram interims are cumulative per active segment — replace, not append.
       currentDeltaRef.current = text;
       const combined =
         `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
@@ -105,6 +120,19 @@ export default function DictationModal({
       console.warn("Deepgram preview:", message);
     },
   });
+
+  // Per-language backend: Deepgram for English (low-latency live preview),
+  // OpenAI Realtime for Hebrew and Auto (Hebrew quality + safer auto-detect).
+  const useDeepgramBackend = language === "en";
+  const startRealtime = useDeepgramBackend
+    ? deepgramRealtime.start
+    : openaiRealtime.start;
+  const stopRealtime = useDeepgramBackend
+    ? deepgramRealtime.stop
+    : openaiRealtime.stop;
+  const realtimeSupported = useDeepgramBackend
+    ? deepgramRealtime.isSupported
+    : openaiRealtime.isSupported;
 
   const supported = useMemo(
     () =>
@@ -140,14 +168,19 @@ export default function DictationModal({
     streamRef.current = null;
   }, []);
 
+  const stopOpenAI = openaiRealtime.stop;
+  const stopDeepgram = deepgramRealtime.stop;
   const teardown = useCallback(() => {
     stopTimer();
     cleanupAudioGraph();
     releaseStream();
-    stopRealtime();
+    // Stop both backends defensively — only one is active at a time, but if
+    // the user changed language between sessions we don't want a stray WS.
+    stopOpenAI();
+    stopDeepgram();
     recorderRef.current = null;
     chunksRef.current = [];
-  }, [stopTimer, cleanupAudioGraph, releaseStream, stopRealtime]);
+  }, [stopTimer, cleanupAudioGraph, releaseStream, stopOpenAI, stopDeepgram]);
 
   const resetState = useCallback(() => {
     setPhase("idle");
@@ -474,7 +507,7 @@ export default function DictationModal({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.95, opacity: 0, y: 12 }}
           transition={{ duration: 0.2 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[92vh] overflow-hidden flex flex-col"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[88vh] max-h-[88vh] overflow-hidden flex flex-col"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -593,12 +626,12 @@ export default function DictationModal({
                     <div
                       ref={livePreviewRef}
                       dir="auto"
-                      className="mt-4 w-full max-h-[45vh] min-h-[8rem] overflow-y-auto px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-base italic text-gray-600 dark:text-gray-300 leading-relaxed"
+                      className="mt-6 w-full flex-1 min-h-[20rem] max-h-[60vh] overflow-y-auto px-5 py-4 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-lg italic text-gray-700 dark:text-gray-200 leading-relaxed"
                       aria-live="polite"
                     >
                       {livePreview}
                       {phase === "recording" && (
-                        <span className="ms-1 inline-block w-1 h-5 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
+                        <span className="ms-1 inline-block w-1 h-6 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
                       )}
                     </div>
                   )}
@@ -632,7 +665,7 @@ export default function DictationModal({
             )}
 
             {phase === "review" && (
-              <div>
+              <div className="flex flex-col h-full">
                 <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                   {t("dictation.reviewLabel")}
                   {isPolished && (
@@ -645,9 +678,8 @@ export default function DictationModal({
                 <textarea
                   value={transcript}
                   onChange={(e) => setTranscript(e.target.value)}
-                  rows={9}
                   dir="auto"
-                  className="w-full p-3 text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y leading-relaxed"
+                  className="w-full flex-1 min-h-[20rem] p-4 text-base bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
                   placeholder={t("dictation.reviewPlaceholder")}
                   autoFocus
                 />

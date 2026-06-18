@@ -137,25 +137,11 @@ export default function LectureDetailPage() {
           <div className="flex items-center justify-between border-b border-gray-200 pb-6">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-2">
-                {lecture.author?.image && (
-                  <Image
-                    src={lecture.author.image}
-                    alt={lecture.author.name || "Author"}
-                    width={40}
-                    height={40}
-                    className="rounded-full"
-                  />
-                )}
-                <div>
-                  <p className="font-medium text-gray-900">
-                    {lecture.author?.name || ""}
+                {lecture.date && (
+                  <p className="text-sm text-gray-900">
+                    {formatDate(lecture.date, locale)}
                   </p>
-                  {lecture.date && (
-                    <p className="text-sm text-gray-900">
-                      {formatDate(lecture.date, locale)}
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
             </div>
 
