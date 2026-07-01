@@ -18,7 +18,6 @@ import {
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useRealtimeTranscription } from "@/hooks/useRealtimeTranscription";
-import { useDeepgramTranscription } from "@/hooks/useDeepgramTranscription";
 import type {
   DictationLanguage,
   DictationModalProps,
@@ -85,9 +84,12 @@ export default function DictationModal({
   const currentDeltaRef = useRef<string>("");
   const livePreviewRef = useRef<HTMLDivElement | null>(null);
 
-  const openaiRealtime = useRealtimeTranscription({
+  const {
+    start: startRealtime,
+    stop: stopRealtime,
+    isSupported: realtimeSupported,
+  } = useRealtimeTranscription({
     onDelta: (delta) => {
-      // OpenAI Realtime sends additive token deltas — append, don't replace.
       currentDeltaRef.current += delta;
       const combined =
         `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
@@ -102,37 +104,6 @@ export default function DictationModal({
       console.warn("Realtime preview:", message);
     },
   });
-
-  const deepgramRealtime = useDeepgramTranscription({
-    onPartial: (text) => {
-      // Deepgram interims are cumulative per active segment — replace, not append.
-      currentDeltaRef.current = text;
-      const combined =
-        `${finalLiveRef.current} ${currentDeltaRef.current}`.trim();
-      setLivePreview(combined);
-    },
-    onFinalized: (text) => {
-      finalLiveRef.current = `${finalLiveRef.current} ${text}`.trim();
-      currentDeltaRef.current = "";
-      setLivePreview(finalLiveRef.current);
-    },
-    onError: (message) => {
-      console.warn("Deepgram preview:", message);
-    },
-  });
-
-  // Per-language backend: Deepgram for English (low-latency live preview),
-  // OpenAI Realtime for Hebrew and Auto (Hebrew quality + safer auto-detect).
-  const useDeepgramBackend = language === "en";
-  const startRealtime = useDeepgramBackend
-    ? deepgramRealtime.start
-    : openaiRealtime.start;
-  const stopRealtime = useDeepgramBackend
-    ? deepgramRealtime.stop
-    : openaiRealtime.stop;
-  const realtimeSupported = useDeepgramBackend
-    ? deepgramRealtime.isSupported
-    : openaiRealtime.isSupported;
 
   const supported = useMemo(
     () =>
@@ -168,19 +139,14 @@ export default function DictationModal({
     streamRef.current = null;
   }, []);
 
-  const stopOpenAI = openaiRealtime.stop;
-  const stopDeepgram = deepgramRealtime.stop;
   const teardown = useCallback(() => {
     stopTimer();
     cleanupAudioGraph();
     releaseStream();
-    // Stop both backends defensively — only one is active at a time, but if
-    // the user changed language between sessions we don't want a stray WS.
-    stopOpenAI();
-    stopDeepgram();
+    stopRealtime();
     recorderRef.current = null;
     chunksRef.current = [];
-  }, [stopTimer, cleanupAudioGraph, releaseStream, stopOpenAI, stopDeepgram]);
+  }, [stopTimer, cleanupAudioGraph, releaseStream, stopRealtime]);
 
   const resetState = useCallback(() => {
     setPhase("idle");
@@ -486,6 +452,8 @@ export default function DictationModal({
 
   const dir = locale === "he" ? "rtl" : "ltr";
   const isBusy = phase === "transcribing" || phase === "requesting-permission";
+  const settingsDisabled =
+    phase === "recording" || phase === "paused" || isBusy;
 
   return (
     <AnimatePresence>
@@ -503,11 +471,11 @@ export default function DictationModal({
           aria-hidden="true"
         />
         <motion.div
-          initial={{ scale: 0.95, opacity: 0, y: 12 }}
+          initial={{ scale: 0.98, opacity: 0, y: 12 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
-          exit={{ scale: 0.95, opacity: 0, y: 12 }}
+          exit={{ scale: 0.98, opacity: 0, y: 12 }}
           transition={{ duration: 0.2 }}
-          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-4xl h-[88vh] max-h-[88vh] overflow-hidden flex flex-col"
+          className="relative bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-[95vw] max-w-[95vw] h-[95vh] max-h-[95vh] overflow-hidden flex flex-col"
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"
@@ -515,19 +483,19 @@ export default function DictationModal({
           dir={dir}
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 dark:border-gray-800">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-800 shrink-0">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
                 <Mic className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h2
                   id="dictation-title"
-                  className="text-base font-semibold text-gray-900 dark:text-gray-50 leading-tight"
+                  className="text-lg font-semibold text-gray-900 dark:text-gray-50 leading-tight"
                 >
                   {t("dictation.title")}
                 </h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 leading-tight">
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-tight">
                   {t("dictation.subtitle")}
                 </p>
               </div>
@@ -536,20 +504,67 @@ export default function DictationModal({
               type="button"
               onClick={handleClose}
               disabled={isBusy}
-              className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
+              title={t("dictation.tooltip.close")}
+              className="w-9 h-9 rounded-full bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500"
               aria-label={t("dictation.close")}
             >
               <X className="w-4 h-4 text-gray-500 dark:text-gray-400" />
             </button>
           </div>
 
-          {/* Body */}
-          <div className="p-5 flex-1 overflow-y-auto">
-            {/* Language + Polish toggle row — hide once in review */}
-            {phase !== "review" && (
-              <div className="flex items-center flex-wrap gap-3 mb-4">
-                <div className="flex items-center gap-2">
-                  <label className="text-xs font-medium text-gray-600 dark:text-gray-400">
+          {/* Status + settings bar — visible in every phase except transcribing/error */}
+          {phase !== "transcribing" && phase !== "error" && (
+            <div className="flex items-center flex-wrap gap-4 px-6 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50/70 dark:bg-gray-900/60 shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="w-40">
+                  <WaveformVisualizer
+                    amplitude={amplitude}
+                    active={phase === "recording"}
+                  />
+                </div>
+                <div className="tabular-nums text-2xl font-light text-gray-900 dark:text-gray-100 min-w-[4rem]">
+                  {formatDuration(elapsedMs)}
+                </div>
+                <div className="min-w-[7rem]">
+                  {phase === "recording" && (
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-red-500">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                      {t("dictation.recording")}
+                    </div>
+                  )}
+                  {phase === "paused" && (
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-amber-500">
+                      <Pause className="w-3.5 h-3.5" />
+                      {t("dictation.paused")}
+                    </div>
+                  )}
+                  {phase === "requesting-permission" && (
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      {t("dictation.requestingPermission")}
+                    </div>
+                  )}
+                  {phase === "idle" && (
+                    <div className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                      <Volume2 className="w-3.5 h-3.5" />
+                      {t("dictation.readyHint")}
+                    </div>
+                  )}
+                  {phase === "review" && isPolished && (
+                    <div className="flex items-center gap-1.5 text-sm font-medium text-amber-600 dark:text-amber-400">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {t("dictation.polished")}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="ms-auto flex items-center gap-5">
+                <div
+                  className="flex items-center gap-2"
+                  title={t("dictation.tooltip.language")}
+                >
+                  <label className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     {t("dictation.language")}
                   </label>
                   <select
@@ -557,8 +572,8 @@ export default function DictationModal({
                     onChange={(e) =>
                       setLanguage(e.target.value as DictationLanguage)
                     }
-                    disabled={phase === "recording" || phase === "paused" || isBusy}
-                    className="text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-1.5 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60"
+                    disabled={settingsDisabled}
+                    className="text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-1.5 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60"
                   >
                     <option value="auto">{t("dictation.languageAuto")}</option>
                     <option value="he">{t("dictation.languageHe")}</option>
@@ -566,137 +581,124 @@ export default function DictationModal({
                   </select>
                 </div>
 
-                <label className="ms-auto flex items-center gap-2 cursor-pointer select-none">
+                <label
+                  className="flex items-center gap-2 cursor-pointer select-none"
+                  title={t("dictation.tooltip.polish")}
+                >
                   <input
                     type="checkbox"
                     checked={polish}
                     onChange={(e) => setPolish(e.target.checked)}
-                    disabled={phase === "recording" || phase === "paused" || isBusy}
+                    disabled={settingsDisabled}
                     className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="flex items-center gap-1 text-xs font-medium text-gray-700 dark:text-gray-300">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  <span className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <Sparkles className="w-4 h-4 text-amber-500" />
                     {t("dictation.polish")}
                   </span>
                 </label>
               </div>
+            </div>
+          )}
+
+          {/* Main content — dominant text panel */}
+          <div className="flex-1 min-h-0 p-6 flex flex-col overflow-hidden">
+            {phase === "idle" && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-4 text-center">
+                <div className="w-20 h-20 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <Mic className="w-10 h-10 text-blue-500" />
+                </div>
+                <p className="text-xl font-medium text-gray-900 dark:text-gray-100">
+                  {t("dictation.readyHint")}
+                </p>
+              </div>
             )}
 
-            {/* Phase content */}
-            {(phase === "idle" ||
-              phase === "requesting-permission" ||
-              phase === "recording" ||
-              phase === "paused") && (
-              <div className="flex flex-col items-center py-6">
-                <WaveformVisualizer
-                  amplitude={amplitude}
-                  active={phase === "recording"}
-                />
-                <div className="mt-4 tabular-nums text-3xl font-light text-gray-900 dark:text-gray-100">
-                  {formatDuration(elapsedMs)}
-                </div>
-                <div className="mt-2 h-5">
-                  {phase === "recording" && (
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-red-500">
-                      <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                      {t("dictation.recording")}
-                    </div>
-                  )}
-                  {phase === "paused" && (
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-amber-500">
-                      <Pause className="w-3 h-3" />
-                      {t("dictation.paused")}
-                    </div>
-                  )}
-                  {phase === "requesting-permission" && (
-                    <div className="flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
-                      <Loader2 className="w-3 h-3 animate-spin" />
-                      {t("dictation.requestingPermission")}
-                    </div>
-                  )}
-                  {phase === "idle" && (
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
-                      <Volume2 className="w-3 h-3" />
-                      {t("dictation.readyHint")}
-                    </div>
-                  )}
-                </div>
-                {(phase === "recording" || phase === "paused") &&
-                  livePreview && (
-                    <div
-                      ref={livePreviewRef}
-                      dir="auto"
-                      className="mt-6 w-full flex-1 min-h-[20rem] max-h-[60vh] overflow-y-auto px-5 py-4 rounded-lg bg-gray-50 dark:bg-gray-800/60 border border-dashed border-gray-200 dark:border-gray-700 text-lg italic text-gray-700 dark:text-gray-200 leading-relaxed"
-                      aria-live="polite"
-                    >
-                      {livePreview}
-                      {phase === "recording" && (
-                        <span className="ms-1 inline-block w-1 h-6 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
-                      )}
-                    </div>
-                  )}
+            {phase === "requesting-permission" && (
+              <div className="flex-1 flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-14 h-14 animate-spin text-blue-500" />
+                <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                  {t("dictation.requestingPermission")}
+                </p>
+              </div>
+            )}
+
+            {(phase === "recording" || phase === "paused") && (
+              <div
+                ref={livePreviewRef}
+                dir="auto"
+                className="flex-1 min-h-0 overflow-y-auto px-8 py-6 rounded-xl bg-gray-50 dark:bg-gray-800/60 border-2 border-dashed border-gray-200 dark:border-gray-700 text-2xl italic text-gray-800 dark:text-gray-100 leading-relaxed"
+                aria-live="polite"
+              >
+                {livePreview ? (
+                  <>
+                    {livePreview}
+                    {phase === "recording" && (
+                      <span className="ms-1 inline-block w-1.5 h-7 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
+                    )}
+                  </>
+                ) : (
+                  <span className="not-italic text-gray-400 dark:text-gray-500">
+                    {t("dictation.speakToSeePreview")}
+                  </span>
+                )}
               </div>
             )}
 
             {phase === "transcribing" && (
-              <div className="flex flex-col items-center py-10">
-                <Loader2 className="w-10 h-10 animate-spin text-blue-500 mb-3" />
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              <div className="flex-1 flex flex-col items-center justify-center gap-4">
+                <Loader2 className="w-16 h-16 animate-spin text-blue-500" />
+                <p className="text-xl font-medium text-gray-900 dark:text-gray-100">
                   {t("dictation.transcribing")}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {t("dictation.transcribingHint")}
                 </p>
               </div>
             )}
 
             {phase === "error" && (
-              <div className="flex flex-col items-center py-8 text-center">
-                <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center mb-3">
-                  <AlertCircle className="w-6 h-6 text-red-500" />
+              <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center">
+                <div className="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <AlertCircle className="w-8 h-8 text-red-500" />
                 </div>
-                <p className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
                   {t("dictation.somethingWentWrong")}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400 max-w-xs">
+                <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md">
                   {errorMsg || t("dictation.unknownError")}
                 </p>
               </div>
             )}
 
             {phase === "review" && (
-              <div className="flex flex-col h-full">
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+              <div className="flex-1 min-h-0 flex flex-col">
+                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
                   {t("dictation.reviewLabel")}
-                  {isPolished && (
-                    <span className="ms-2 inline-flex items-center gap-1 text-amber-600 dark:text-amber-400">
-                      <Sparkles className="w-3 h-3" />
-                      {t("dictation.polished")}
-                    </span>
-                  )}
                 </label>
                 <textarea
                   value={transcript}
                   onChange={(e) => setTranscript(e.target.value)}
                   dir="auto"
-                  className="w-full flex-1 min-h-[20rem] p-4 text-base bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
+                  className="w-full flex-1 min-h-0 p-5 text-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
                   placeholder={t("dictation.reviewPlaceholder")}
                   autoFocus
                 />
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                   {t("dictation.reviewHint")}
                 </p>
               </div>
             )}
           </div>
 
-          {/* Footer actions */}
-          <div className="flex items-center gap-2 px-5 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-950/40">
+          {/* Footer actions — all buttons consolidated here, every button gets a tooltip */}
+          <div className="flex items-center gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/60 dark:bg-gray-950/50 shrink-0">
             {(phase === "idle" || phase === "error") && (
               <>
                 <button
                   type="button"
                   onClick={handleClose}
+                  title={t("dictation.tooltip.cancel")}
                   className="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   {t("dictation.cancel")}
@@ -705,9 +707,10 @@ export default function DictationModal({
                   type="button"
                   onClick={startRecording}
                   disabled={!supported}
-                  className="ms-auto flex items-center gap-2 px-5 py-2.5 rounded-lg bg-red-500 hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors shadow-sm"
+                  title={t("dictation.tooltip.startRecording")}
+                  className="ms-auto flex items-center gap-2 px-6 py-3 rounded-lg bg-red-500 hover:bg-red-600 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-base font-medium transition-colors shadow-sm"
                 >
-                  <Mic className="w-4 h-4" />
+                  <Mic className="w-5 h-5" />
                   {phase === "error"
                     ? t("dictation.tryAgain")
                     : t("dictation.startRecording")}
@@ -719,6 +722,7 @@ export default function DictationModal({
               <button
                 type="button"
                 onClick={handleClose}
+                title={t("dictation.tooltip.cancel")}
                 className="ms-auto px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
               >
                 {t("dictation.cancel")}
@@ -730,16 +734,18 @@ export default function DictationModal({
                 <button
                   type="button"
                   onClick={handleClose}
+                  title={t("dictation.tooltip.cancel")}
                   className="px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   {t("dictation.cancel")}
                 </button>
-                <div className="ms-auto flex items-center gap-2">
+                <div className="ms-auto flex items-center gap-3">
                   {phase === "recording" ? (
                     <button
                       type="button"
                       onClick={pauseRecording}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
+                      title={t("dictation.tooltip.pause")}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
                     >
                       <Pause className="w-4 h-4" />
                       {t("dictation.pause")}
@@ -748,7 +754,8 @@ export default function DictationModal({
                     <button
                       type="button"
                       onClick={resumeRecording}
-                      className="flex items-center gap-2 px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
+                      title={t("dictation.tooltip.resume")}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 text-sm font-medium transition-colors"
                     >
                       <Play className="w-4 h-4" />
                       {t("dictation.resume")}
@@ -757,7 +764,8 @@ export default function DictationModal({
                   <button
                     type="button"
                     onClick={stopRecording}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors shadow-sm"
+                    title={t("dictation.tooltip.stopAndTranscribe")}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-base font-medium transition-colors shadow-sm"
                   >
                     <Square className="w-4 h-4" />
                     {t("dictation.stopAndTranscribe")}
@@ -770,7 +778,7 @@ export default function DictationModal({
               <button
                 type="button"
                 disabled
-                className="ms-auto flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 text-sm font-medium cursor-not-allowed"
+                className="ms-auto flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gray-200 dark:bg-gray-800 text-gray-500 text-sm font-medium cursor-not-allowed"
               >
                 <Loader2 className="w-4 h-4 animate-spin" />
                 {t("dictation.processing")}
@@ -782,15 +790,17 @@ export default function DictationModal({
                 <button
                   type="button"
                   onClick={handleRerecord}
+                  title={t("dictation.tooltip.recordAgain")}
                   className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
                   {t("dictation.recordAgain")}
                 </button>
-                <div className="ms-auto flex items-center gap-2">
+                <div className="ms-auto flex items-center gap-3">
                   <button
                     type="button"
                     onClick={handleClose}
+                    title={t("dictation.tooltip.discardTranscript")}
                     className="px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                   >
                     {t("dictation.discard")}
@@ -799,9 +809,10 @@ export default function DictationModal({
                     type="button"
                     onClick={handleApprove}
                     disabled={!transcript.trim()}
-                    className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors shadow-sm"
+                    title={t("dictation.tooltip.insertIntoArticle")}
+                    className="flex items-center gap-2 px-6 py-3 rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed text-white text-base font-medium transition-colors shadow-sm"
                   >
-                    <Check className="w-4 h-4" />
+                    <Check className="w-5 h-5" />
                     {t("dictation.insert")}
                   </button>
                 </div>
@@ -827,7 +838,7 @@ function WaveformVisualizer({
   );
 
   return (
-    <div className="flex items-end gap-1 h-20 w-full max-w-xs">
+    <div className="flex items-end gap-0.5 h-10 w-full">
       {seed.current.map((base, i) => {
         const distance = Math.abs(i - bars / 2) / (bars / 2);
         const factor = 1 - distance * 0.4;

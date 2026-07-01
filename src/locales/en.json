@@ -1847,6 +1847,20 @@
     "discard": "Discard",
     "insert": "Insert into Article",
     "inserted": "Dictation inserted into article",
-    "buttonTitle": "AI Dictation"
+    "buttonTitle": "AI Dictation",
+    "speakToSeePreview": "Speak into your microphone — your words will appear here as you talk.",
+    "tooltip": {
+      "close": "Close the dictation window (Esc)",
+      "language": "Language you'll be speaking. Auto lets the model detect it.",
+      "polish": "After transcription, have AI clean up punctuation and paragraphs.",
+      "startRecording": "Start capturing your voice (Space)",
+      "pause": "Temporarily pause recording (Space) — press again to resume",
+      "resume": "Continue recording where you left off (Space)",
+      "stopAndTranscribe": "End recording and send audio to AI for the final transcription",
+      "cancel": "Discard this session and close",
+      "recordAgain": "Throw away this transcript and record a new one",
+      "discardTranscript": "Discard this transcript without inserting",
+      "insertIntoArticle": "Add this text to your article at the cursor"
+    }
   }
 }

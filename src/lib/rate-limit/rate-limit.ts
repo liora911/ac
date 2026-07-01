@@ -94,8 +94,4 @@ export const rateLimiters = {
   // Realtime session minting: 10 per minute (each session opens a paid WSS stream, admin-only)
   realtimeSession: (ip: string) =>
     rateLimit(`realtime-session:${ip}`, { maxRequests: 10, windowMs: 60 * 1000 }),
-
-  // Deepgram temp-token grants: 10 per minute (each token opens a paid WSS stream, admin-only)
-  deepgramToken: (ip: string) =>
-    rateLimit(`deepgram-token:${ip}`, { maxRequests: 10, windowMs: 60 * 1000 }),
 };
