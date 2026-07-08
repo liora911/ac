@@ -155,7 +155,7 @@ export default function Header() {
           <div className="flex items-center gap-2">
             {/* Search - Desktop only */}
             <div className="hidden lg:block">
-              <GlobalSearch />
+              <GlobalSearch collapsible />
             </div>
 
             {/* Language Switcher */}

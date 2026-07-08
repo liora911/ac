@@ -8,12 +8,18 @@ import { SearchResult, SearchResults } from "@/types/GlobalSearch/globalsearch";
 
 type CategoryType = "all" | "lectures" | "events" | "articles" | "presentations";
 
-export default function GlobalSearch() {
+type GlobalSearchProps = {
+  collapsible?: boolean;
+};
+
+export default function GlobalSearch({ collapsible = false }: GlobalSearchProps) {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<CategoryType>("all");
   const [error, setError] = useState<string | null>(null);
@@ -174,10 +180,27 @@ export default function GlobalSearch() {
   };
 
   const handleInputFocus = () => {
+    setIsFocused(true);
     if (results) {
       setIsOpen(true);
     }
     // Don't auto-search on focus - wait for user to type at least 2 characters
+  };
+
+  // Collapsed mode: shrink to a magnifier icon; expand on hover/focus or while there's a query/results
+  const isExpanded =
+    !collapsible || isHovered || isFocused || query.length > 0 || isOpen;
+
+  const handleMouseEnter = () => {
+    if (!collapsible) return;
+    setIsHovered(true);
+    inputRef.current?.focus();
+  };
+
+  const handleMouseLeave = () => {
+    if (!collapsible) return;
+    setIsHovered(false);
+    if (!query) inputRef.current?.blur();
   };
 
   const clearSearch = () => {
@@ -216,10 +239,27 @@ export default function GlobalSearch() {
   const categories = allCategories.filter(cat => cat.key === "all" || cat.count > 0);
 
   return (
-    <div ref={searchRef} className="relative w-full max-w-xs sm:max-w-sm p-0 m-0">
+    <div
+      ref={searchRef}
+      className={`relative p-0 m-0 transition-all duration-300 ease-in-out ${
+        collapsible
+          ? isExpanded
+            ? "w-64 xl:w-80"
+            : "w-9 sm:w-10"
+          : "w-full max-w-xs sm:max-w-sm"
+      }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
-          <MdSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400 dark:text-gray-500" />
+          <MdSearch
+            className={`h-4 w-4 sm:h-5 sm:w-5 transition-colors ${
+              isExpanded
+                ? "text-gray-400 dark:text-gray-500"
+                : "text-gray-600 dark:text-gray-300"
+            }`}
+          />
         </div>
         <input
           ref={inputRef}
@@ -227,8 +267,13 @@ export default function GlobalSearch() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={handleInputFocus}
-          placeholder={t("globalSearch.placeholder")}
-          className="w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500"
+          onBlur={() => setIsFocused(false)}
+          placeholder={isExpanded ? t("globalSearch.placeholder") : ""}
+          className={`w-full pl-8 sm:pl-10 pr-8 sm:pr-10 py-1.5 sm:py-2 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 transition-opacity duration-300 ${
+            isExpanded
+              ? "opacity-100 border-gray-300 dark:border-gray-600"
+              : "opacity-0 cursor-pointer border-transparent"
+          }`}
           aria-label="Global search"
           aria-expanded={isOpen}
           aria-haspopup="listbox"

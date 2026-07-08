@@ -55,7 +55,6 @@ export async function GET() {
           take: 9,
         },
       },
-      orderBy: { name: "asc" },
     });
 
     // Filter out categories with no items at all
@@ -65,6 +64,15 @@ export async function GET() {
         cat.lectures.length > 0 ||
         cat.presentations.length > 0
     );
+
+    // Hebrew-named categories first, English (Latin) last; alphabetical within each group
+    const startsWithHebrew = (name: string) => /^[֐-׿]/.test(name.trim());
+    filtered.sort((a, b) => {
+      const aHebrew = startsWithHebrew(a.name);
+      const bHebrew = startsWithHebrew(b.name);
+      if (aHebrew !== bHebrew) return aHebrew ? -1 : 1;
+      return a.name.localeCompare(b.name, aHebrew ? "he" : "en");
+    });
 
     return NextResponse.json(filtered, {
       headers: {
