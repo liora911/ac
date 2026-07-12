@@ -366,8 +366,9 @@ export default function SketchBoard() {
     if (current.kind === "pen" || current.kind === "eraser") {
       current.points.push(pos);
     } else if (current.kind !== "text") {
-      current.x2 = pos.x;
-      current.y2 = pos.y;
+      const shape = current as Extract<Shape, { x2: number }>;
+      shape.x2 = pos.x;
+      shape.y2 = pos.y;
     }
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) drawAllShapes(ctx, board.shapes, current);
