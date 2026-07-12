@@ -13,7 +13,9 @@ export type TabKey =
   | "newsletter"
   | "subscriptions"
   | "settings"
-  | "devMetrics";
+  | "devMetrics"
+  | "pdfEditor"
+  | "sketchBoard";
 
 export interface Tab {
   key: TabKey;
@@ -57,6 +59,14 @@ export const TAB_GROUPS: TabGroup[] = [
       { key: "messages", label: "הודעות", icon: "MessageSquare" },
       { key: "notifications", label: "התראות", icon: "Bell" },
       { key: "newsletter", label: "מנויי ניוזלטר", icon: "Mail" },
+    ],
+  },
+  {
+    labelKey: "admin.tabGroups.tools",
+    icon: "Hammer",
+    tabs: [
+      { key: "pdfEditor", label: "עורך PDF", icon: "PenTool" },
+      { key: "sketchBoard", label: "לוח סקיצות", icon: "Brush" },
     ],
   },
   {

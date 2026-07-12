@@ -21,6 +21,8 @@ import SubscriptionsAdmin from "./SubscriptionsAdmin";
 import SettingsAdmin from "./SettingsAdmin";
 import HomeAdmin from "./HomeAdmin";
 import AboutAdmin from "./AboutAdmin";
+import PdfEditorAdmin from "./PdfEditorAdmin";
+import SketchBoardAdmin from "./SketchBoardAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
@@ -41,6 +43,9 @@ import {
   BookOpen,
   Users,
   Wrench,
+  Hammer,
+  PenTool,
+  Brush,
   LucideIcon,
   LogOut,
   Sparkles,
@@ -72,6 +77,9 @@ const iconMap: Record<string, LucideIcon> = {
   BookOpen,
   Users,
   Wrench,
+  Hammer,
+  PenTool,
+  Brush,
   Mail,
 };
 
@@ -399,6 +407,10 @@ export default function ElitzurDashboard() {
           {active === "settings" && <SettingsAdmin />}
 
           {active === "devMetrics" && <DevMetrics />}
+
+          {active === "pdfEditor" && <PdfEditorAdmin />}
+
+          {active === "sketchBoard" && <SketchBoardAdmin />}
         </div>
       </main>
     </div>

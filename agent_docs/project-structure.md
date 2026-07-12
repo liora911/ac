@@ -56,8 +56,10 @@ Complete file tree for the Avshalom Elitzur website.
       LecturesAdmin.tsx
       MessagesAdmin.tsx
       NotificationsAdmin.tsx
+      PdfEditorAdmin.tsx
       PresentationsAdmin.tsx
       SettingsAdmin.tsx
+      SketchBoardAdmin.tsx
       SubscriptionsAdmin.tsx
       events/[eventId]/tickets/page.tsx  # Event ticket management
     /events/                          # Events section
@@ -217,6 +219,8 @@ Complete file tree for the Avshalom Elitzur website.
     /Motion/MotionProvider.tsx        # Framer Motion provider
     /MotivationalQuote/MotivationalQuote.tsx  # Quote widget
     /Notifications/NotificationsSection.tsx   # Notification list
+    /PdfTools/                        # Client-side PDF editor (admin Tools tab)
+      PdfEditor.tsx
     /PdfViewer/                       # PDF viewer
       PdfViewer.tsx
       index.ts
@@ -240,6 +244,9 @@ Complete file tree for the Avshalom Elitzur website.
     /RichContent/                     # Rich text renderer
       RichContent.tsx
       index.ts
+    /SketchBoard/                     # Drawing canvas + scientific calculator (admin Tools tab)
+      SketchBoard.tsx
+      Calculator.tsx
     /Settings/                        # Settings panel
       AIAssistant.tsx
       DefaultViewToggle.tsx
