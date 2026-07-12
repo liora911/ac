@@ -3,174 +3,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Delete, Calculator as CalculatorIcon } from "lucide-react";
-
-type AngleMode = "deg" | "rad";
-
-// Safe recursive-descent expression evaluator — no eval().
-// Supports + - * / ^ ! ( ), sin cos tan asin acos atan ln log sqrt abs,
-// constants pi/e, scientific notation, and implicit multiplication (2pi, 3(1+2)).
-function evaluateExpression(input: string, angle: AngleMode): number {
-  const expr = input
-    .replace(/×/g, "*")
-    .replace(/÷/g, "/")
-    .replace(/−/g, "-")
-    .replace(/π/g, "pi")
-    .replace(/√/g, "sqrt");
-  let i = 0;
-
-  const isDigit = (c: string) => c >= "0" && c <= "9";
-  const isLetter = (c: string) => /[a-z]/i.test(c);
-  const skipWs = () => {
-    while (expr[i] === " ") i++;
-  };
-
-  const toRad = (x: number) => (angle === "deg" ? (x * Math.PI) / 180 : x);
-  const fromRad = (x: number) => (angle === "deg" ? (x * 180) / Math.PI : x);
-
-  const factorial = (v: number): number => {
-    if (v < 0 || !Number.isInteger(v) || v > 170) {
-      throw new Error("Invalid factorial");
-    }
-    let r = 1;
-    for (let n = 2; n <= v; n++) r *= n;
-    return r;
-  };
-
-  const applyFn = (name: string, arg: number): number => {
-    switch (name) {
-      case "sin":
-        return Math.sin(toRad(arg));
-      case "cos":
-        return Math.cos(toRad(arg));
-      case "tan":
-        return Math.tan(toRad(arg));
-      case "asin":
-        return fromRad(Math.asin(arg));
-      case "acos":
-        return fromRad(Math.acos(arg));
-      case "atan":
-        return fromRad(Math.atan(arg));
-      case "ln":
-        return Math.log(arg);
-      case "log":
-        return Math.log10(arg);
-      case "sqrt":
-        return Math.sqrt(arg);
-      case "abs":
-        return Math.abs(arg);
-      default:
-        throw new Error(`Unknown function: ${name}`);
-    }
-  };
-
-  function parseExpr(): number {
-    let v = parseTerm();
-    skipWs();
-    while (expr[i] === "+" || expr[i] === "-") {
-      const op = expr[i++];
-      const r = parseTerm();
-      v = op === "+" ? v + r : v - r;
-      skipWs();
-    }
-    return v;
-  }
-
-  function parseTerm(): number {
-    let v = parseFactor();
-    skipWs();
-    for (;;) {
-      const c = expr[i];
-      if (c === "*" || c === "/") {
-        i++;
-        const r = parseFactor();
-        v = c === "*" ? v * r : v / r;
-      } else if (c && (isDigit(c) || c === "." || c === "(" || isLetter(c))) {
-        v = v * parseFactor(); // implicit multiplication
-      } else {
-        break;
-      }
-      skipWs();
-    }
-    return v;
-  }
-
-  function parseFactor(): number {
-    skipWs();
-    if (expr[i] === "-") {
-      i++;
-      return -parseFactor();
-    }
-    if (expr[i] === "+") {
-      i++;
-      return parseFactor();
-    }
-    let v = parsePostfix();
-    skipWs();
-    if (expr[i] === "^") {
-      i++;
-      v = Math.pow(v, parseFactor()); // right-associative
-    }
-    return v;
-  }
-
-  function parsePostfix(): number {
-    let v = parsePrimary();
-    skipWs();
-    while (expr[i] === "!") {
-      i++;
-      v = factorial(v);
-      skipWs();
-    }
-    return v;
-  }
-
-  function parsePrimary(): number {
-    skipWs();
-    const c = expr[i];
-    if (c === "(") {
-      i++;
-      const v = parseExpr();
-      skipWs();
-      if (expr[i] !== ")") throw new Error("Missing )");
-      i++;
-      return v;
-    }
-    if (c !== undefined && (isDigit(c) || c === ".")) {
-      const m = /^\d*\.?\d+(e[+-]?\d+)?/i.exec(expr.slice(i));
-      if (!m) throw new Error("Invalid number");
-      i += m[0].length;
-      return parseFloat(m[0]);
-    }
-    if (c !== undefined && isLetter(c)) {
-      const m = /^[a-z]+/i.exec(expr.slice(i));
-      if (!m) throw new Error("Invalid token");
-      const name = m[0].toLowerCase();
-      i += m[0].length;
-      if (name === "pi") return Math.PI;
-      if (name === "e") return Math.E;
-      skipWs();
-      if (expr[i] !== "(") throw new Error("Expected (");
-      i++;
-      const arg = parseExpr();
-      skipWs();
-      if (expr[i] !== ")") throw new Error("Missing )");
-      i++;
-      return applyFn(name, arg);
-    }
-    throw new Error("Unexpected end of expression");
-  }
-
-  const result = parseExpr();
-  skipWs();
-  if (i < expr.length) throw new Error("Unexpected input");
-  if (!isFinite(result)) throw new Error("Math error");
-  return result;
-}
-
-function formatResult(n: number): string {
-  if (Number.isInteger(n) && Math.abs(n) < 1e15) return String(n);
-  return String(parseFloat(n.toPrecision(12)));
-}
+import { evaluateExpression, formatResult } from "./mathParser";
 
 type HistoryEntry = { expr: string; result: string };
 
@@ -191,13 +24,15 @@ export default function Calculator() {
   const [expr, setExpr] = useState("");
   const [result, setResult] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
-  const [angle, setAngle] = useState<AngleMode>("deg");
+  const [angle, setAngle] = useState<"deg" | "rad">("deg");
   const [history, setHistory] = useState<HistoryEntry[]>([]);
 
   const evaluate = () => {
     if (!expr.trim()) return;
     try {
-      const value = formatResult(evaluateExpression(expr, angle));
+      const raw = evaluateExpression(expr, angle);
+      if (!isFinite(raw)) throw new Error("Math error");
+      const value = formatResult(raw);
       setResult(value);
       setIsError(false);
       setHistory((h) => [{ expr, result: value }, ...h].slice(0, 6));
