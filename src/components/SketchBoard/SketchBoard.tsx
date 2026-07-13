@@ -1289,7 +1289,7 @@ export default function SketchBoard() {
       <div className="space-y-4">
           {/* Toolbar — sticky below the admin header so tools stay reachable
               while scrolling a tall board */}
-          <div className="sticky top-36 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm space-y-3">
+          <div className="sticky top-20 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm space-y-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {mainTools.map(({ key, icon, label }) => (
                 <button
@@ -1588,7 +1588,7 @@ export default function SketchBoard() {
 
       {/* Calculator drawer — floats beside the board, never steals width */}
       <div
-        className={`fixed top-40 bottom-4 end-4 z-40 w-80 max-w-[90vw] transition-all duration-300 ${
+        className={`fixed top-24 bottom-4 end-4 z-40 w-80 max-w-[90vw] transition-all duration-300 ${
           showCalc
             ? "opacity-100 scale-100 pointer-events-auto"
             : "opacity-0 scale-95 pointer-events-none"

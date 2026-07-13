@@ -210,7 +210,7 @@ export default function MessagesAdmin() {
 
         {/* Sticky so the content stays in view when the list is long —
             clicking a message at the bottom shows it without scrolling back up */}
-        <div className="space-y-4 lg:sticky lg:top-36 lg:self-start lg:max-h-[calc(100vh-10.5rem)] lg:overflow-y-auto">
+        <div className="space-y-4 lg:sticky lg:top-20 lg:self-start lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto">
           <h3 className="text-lg font-semibold text-gray-900">
             {t("admin.messages.messageDetails")}
           </h3>
