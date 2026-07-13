@@ -1276,15 +1276,7 @@ export default function SketchBoard() {
         </div>
       </Modal>
 
-      {/* Header */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-          {t("sketchBoard.title")}
-        </h2>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          {t("sketchBoard.subtitle")}
-        </p>
-      </div>
+    
 
       <div className="space-y-4">
           {/* Toolbar — sticky below the admin header so tools stay reachable
