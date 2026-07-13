@@ -1518,7 +1518,9 @@
       "devMetrics": "מדדי מפתחים",
       "pdfEditor": "עורך PDF",
       "sketchBoard": "לוח סקיצות",
-      "guests": "אורחים"
+      "guests": "אורחים",
+      "collapseMenu": "כווץ תפריט",
+      "expandMenu": "הרחב תפריט"
     },
     "tabGroups": {
       "general": "כללי",

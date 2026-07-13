@@ -56,6 +56,8 @@ import {
   X,
   Mail,
   Menu,
+  PanelLeftClose,
+  PanelLeftOpen,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -90,6 +92,24 @@ export default function ElitzurDashboard() {
   const { t, locale } = useTranslation();
   const [active, setActive] = useState<TabKey>("user");
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+
+  // Remember the collapsed preference across visits
+  useEffect(() => {
+    setCollapsed(localStorage.getItem("elitzur-sidebar-collapsed") === "1");
+  }, []);
+
+  const toggleCollapsed = () => {
+    setCollapsed((c) => {
+      const next = !c;
+      try {
+        localStorage.setItem("elitzur-sidebar-collapsed", next ? "1" : "0");
+      } catch {
+        // storage unavailable — preference just won't persist
+      }
+      return next;
+    });
+  };
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
   const validKeys = useMemo(() => new Set(TABS.map((tab) => tab.key)), []);
@@ -317,9 +337,39 @@ export default function ElitzurDashboard() {
       {/* Sidebar + Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
         <div className="flex items-start gap-6">
-          {/* Desktop sidebar — every section visible at once, stable positions */}
-          <aside className="hidden lg:block w-60 flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm">
-            <SidebarNav active={active} onSelect={handleTabClick} t={t} />
+          {/* Desktop sidebar — every section visible at once, stable positions.
+              Collapses to an icon rail; content reflows into the freed width */}
+          <aside
+            className={`hidden lg:flex lg:flex-col flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-all duration-300 ease-in-out ${
+              collapsed ? "w-[4.25rem] p-2" : "w-60 p-3"
+            }`}
+          >
+            <button
+              type="button"
+              onClick={toggleCollapsed}
+              title={
+                collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
+              }
+              aria-label={
+                collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
+              }
+              aria-expanded={!collapsed}
+              className={`mb-2 p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer ${
+                collapsed ? "self-center" : "self-end"
+              }`}
+            >
+              {collapsed ? (
+                <PanelLeftOpen className="w-4 h-4 rtl:rotate-180" />
+              ) : (
+                <PanelLeftClose className="w-4 h-4 rtl:rotate-180" />
+              )}
+            </button>
+            <SidebarNav
+              active={active}
+              onSelect={handleTabClick}
+              t={t}
+              collapsed={collapsed}
+            />
           </aside>
 
           {/* Mobile drawer */}
@@ -413,30 +463,42 @@ function SidebarNav({
   active,
   onSelect,
   t,
+  collapsed = false,
 }: {
   active: TabKey;
   onSelect: (key: TabKey) => void;
   t: (key: string) => string;
+  collapsed?: boolean;
 }) {
   return (
     <nav role="tablist" aria-orientation="vertical">
-      {TAB_GROUPS.map((group) => (
-        <div key={group.labelKey} className="mb-4 last:mb-0">
-          <div className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            {t(group.labelKey)}
-          </div>
+      {TAB_GROUPS.map((group, gi) => (
+        <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-4 last:mb-0"}>
+          {collapsed ? (
+            gi > 0 && (
+              <div className="mx-2 my-2 h-px bg-gray-200 dark:bg-gray-700" />
+            )
+          ) : (
+            <div className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 whitespace-nowrap">
+              {t(group.labelKey)}
+            </div>
+          )}
           <ul className="space-y-0.5">
             {group.tabs
               .filter((tab) => !tab.disabled)
               .map((tab) => {
                 const isActive = active === tab.key;
                 const IconComponent = iconMap[tab.icon];
+                const label = t(`admin.nav.${tab.key}`);
                 return (
                   <li key={tab.key}>
                     <button
                       type="button"
                       onClick={() => onSelect(tab.key)}
-                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
+                      title={label}
+                      className={`w-full flex items-center py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
+                        collapsed ? "justify-center px-0" : "gap-2.5 px-3"
+                      } ${
                         isActive
                           ? "bg-blue-600 text-white shadow-sm"
                           : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
@@ -445,11 +507,12 @@ function SidebarNav({
                       aria-selected={isActive}
                       aria-controls={`panel-${tab.key}`}
                       id={`tab-${tab.key}`}
+                      aria-label={label}
                     >
                       {IconComponent && (
                         <IconComponent className="w-4 h-4 flex-shrink-0" />
                       )}
-                      <span className="truncate">{t(`admin.nav.${tab.key}`)}</span>
+                      {!collapsed && <span className="truncate">{label}</span>}
                     </button>
                   </li>
                 );
