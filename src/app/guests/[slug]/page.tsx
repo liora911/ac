@@ -7,6 +7,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGuest } from "@/hooks/useGuests";
 import RichContent from "@/components/RichContent/RichContent";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
+import { normalizeExternalUrl } from "@/lib/utils/url";
 import {
   ArrowLeft,
   ArrowRight,
@@ -107,7 +108,7 @@ export default function GuestProfilePage() {
           )}
           {guest.websiteUrl && (
             <a
-              href={guest.websiteUrl}
+              href={normalizeExternalUrl(guest.websiteUrl) ?? guest.websiteUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-3 inline-flex items-center gap-1.5 text-sm text-blue-600 dark:text-blue-400 hover:underline"

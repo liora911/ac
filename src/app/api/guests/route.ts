@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { requireAdmin, getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
+import { normalizeExternalUrl } from "@/lib/utils/url";
 
 // GET /api/guests — public list of published guests (admins see all with ?all=true)
 export async function GET(request: Request) {
@@ -95,7 +96,7 @@ export async function POST(request: Request) {
         bio: bio || null,
         photoUrl: photoUrl || null,
         bannerImageUrl: bannerImageUrl || null,
-        websiteUrl: websiteUrl || null,
+        websiteUrl: normalizeExternalUrl(websiteUrl),
         email: email || null,
         titleDirection,
         published,

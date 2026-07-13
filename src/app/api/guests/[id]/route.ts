@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { requireAdmin, getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
+import { normalizeExternalUrl } from "@/lib/utils/url";
 
 // Accepts either a cuid or a slug so public URLs can use /guests/[slug]
 async function findGuest(idOrSlug: string, includeUnpublished: boolean) {
@@ -93,6 +94,7 @@ export async function PATCH(
       }
       data.name = String(body.name).trim();
     }
+    if ("websiteUrl" in body) data.websiteUrl = normalizeExternalUrl(body.websiteUrl);
     if ("titleDirection" in body) data.titleDirection = body.titleDirection || "rtl";
     if ("published" in body) data.published = !!body.published;
     if ("isFeatured" in body) data.isFeatured = !!body.isFeatured;
