@@ -55,6 +55,7 @@ import {
   Loader2,
   X,
   Mail,
+  Menu,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -88,26 +89,26 @@ export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const [active, setActive] = useState<TabKey>("user");
-  const [activeGroupIndex, setActiveGroupIndex] = useState(0);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
-  const tabs = useMemo(() => TABS.filter((tab) => !tab.disabled), []);
+  const validKeys = useMemo(() => new Set(TABS.map((tab) => tab.key)), []);
 
-  // When a tab is clicked, also update the active group
+  // Restore the active tab from the URL so refresh/bookmarks keep your place
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("tab");
+    if (param && validKeys.has(param as TabKey)) {
+      setActive(param as TabKey);
+    }
+  }, [validKeys]);
+
   const handleTabClick = (tabKey: TabKey) => {
     setActive(tabKey);
-    const gi = TAB_GROUPS.findIndex((g) => g.tabs.some((t) => t.key === tabKey));
-    if (gi !== -1) setActiveGroupIndex(gi);
+    setSidebarOpen(false);
+    const url = new URL(window.location.href);
+    url.searchParams.set("tab", tabKey);
+    window.history.replaceState(null, "", url.toString());
   };
-
-  // When a group is clicked, switch to it and select its first tab
-  const handleGroupClick = (gi: number) => {
-    setActiveGroupIndex(gi);
-    const firstTab = TAB_GROUPS[gi].tabs.find((t) => !t.disabled);
-    if (firstTab) setActive(firstTab.key);
-  };
-
-  const activeGroup = TAB_GROUPS[activeGroupIndex];
 
   // AI Chat hook
   const {
@@ -190,6 +191,15 @@ export default function ElitzurDashboard() {
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between gap-4 h-14">
+            {/* Mobile sidebar toggle */}
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              className="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              aria-label={t("admin.nav.title")}
+            >
+              <Menu className="w-5 h-5" />
+            </button>
             {/* AI Assistant Input */}
             <div className="relative flex-1 max-w-xl" ref={aiChatRef}>
               <form onSubmit={handleAiSubmit} className="relative">
@@ -302,72 +312,49 @@ export default function ElitzurDashboard() {
           </div>
         </div>
 
-        {/* Top-level group tabs */}
-        <div className="border-t border-gray-100 dark:border-gray-700">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center gap-1 py-2">
-              {TAB_GROUPS.map((group, gi) => {
-                const isActiveGroup = gi === activeGroupIndex;
-                const GroupIcon = iconMap[group.icon];
-                return (
-                  <button
-                    key={group.labelKey}
-                    type="button"
-                    onClick={() => handleGroupClick(gi)}
-                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-all cursor-pointer whitespace-nowrap ${
-                      isActiveGroup
-                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900 shadow-sm"
-                        : "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                    }`}
-                  >
-                    {GroupIcon && <GroupIcon className="w-4 h-4" />}
-                    <span className="text-xs">{t(group.labelKey)}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-
-        {/* Sub-level tabs within selected group */}
-        <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <div className="flex items-center gap-1 py-1.5" role="tablist">
-              {activeGroup.tabs.filter(tab => !tab.disabled).map((tab) => {
-                const isActive = active === tab.key;
-                const IconComponent = iconMap[tab.icon];
-                return (
-                  <button
-                    key={tab.key}
-                    type="button"
-                    onClick={() => handleTabClick(tab.key)}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer whitespace-nowrap ${
-                      isActive
-                        ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm border border-gray-200 dark:border-gray-600"
-                        : "text-gray-500 dark:text-gray-400 hover:bg-white/60 dark:hover:bg-gray-700/60 hover:text-gray-900 dark:hover:text-white"
-                    }`}
-                    role="tab"
-                    aria-selected={isActive}
-                    aria-controls={`panel-${tab.key}`}
-                    id={`tab-${tab.key}`}
-                  >
-                    {IconComponent && <IconComponent className="w-3.5 h-3.5" />}
-                    <span>{t(`admin.nav.${tab.key}`)}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
       </header>
 
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
-        <div
-          role="tabpanel"
-          aria-labelledby={`tab-${active}`}
-          id={`panel-${active}`}
-        >
+      {/* Sidebar + Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+        <div className="flex items-start gap-6">
+          {/* Desktop sidebar — every section visible at once, stable positions */}
+          <aside className="hidden lg:block w-60 flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm">
+            <SidebarNav active={active} onSelect={handleTabClick} t={t} />
+          </aside>
+
+          {/* Mobile drawer */}
+          {sidebarOpen && (
+            <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+              <div
+                className="absolute inset-0 bg-black/50"
+                onClick={() => setSidebarOpen(false)}
+                aria-hidden="true"
+              />
+              <div className="absolute inset-y-0 start-0 w-72 max-w-[85vw] bg-white dark:bg-gray-800 shadow-2xl overflow-y-auto p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                    {t("admin.nav.title")}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSidebarOpen(false)}
+                    className="p-2 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    aria-label={t("dictation.close")}
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+                <SidebarNav active={active} onSelect={handleTabClick} t={t} />
+              </div>
+            </div>
+          )}
+
+          <main className="flex-1 min-w-0">
+            <div
+              role="tabpanel"
+              aria-labelledby={`tab-${active}`}
+              id={`panel-${active}`}
+            >
           {active === "user" && (
             <div className="space-y-6">
               <QuickStats />
