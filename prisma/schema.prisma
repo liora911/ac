@@ -196,8 +196,53 @@ model Category {
   events            Event[]
   lectures          Lecture[]
   presentations     Presentation[]
+  guestWorks        GuestWork[]
 
   @@map("categories")
+}
+
+model Guest {
+  id             String      @id @default(cuid())
+  name           String
+  slug           String?     @unique
+  headline       String?     // e.g. "Ornithologist — 20 years of field research"
+  bio            String?     // rich HTML (Tiptap)
+  photoUrl       String?
+  bannerImageUrl String?
+  websiteUrl     String?
+  email          String?     // admin-only contact, never rendered publicly
+  titleDirection String      @default("rtl")
+  published      Boolean     @default(false)
+  isFeatured     Boolean     @default(false)
+  order          Int         @default(0)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  works          GuestWork[]
+
+  @@map("guests")
+}
+
+model GuestWork {
+  id             String    @id @default(cuid())
+  guestId        String
+  guest          Guest     @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  title          String
+  titleDirection String    @default("rtl")
+  description    String?   // short teaser for cards
+  content        String?   // rich HTML — the story behind the work
+  imageUrls      String[]  // gallery (e.g. scanned notebook drawings)
+  pdfUrl         String?
+  videoUrl       String?
+  coverImageUrl  String?
+  categoryId     String?
+  category       Category? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  published      Boolean   @default(false)
+  order          Int       @default(0)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([guestId, published])
+  @@map("guest_works")
 }
 
 model Lecture {

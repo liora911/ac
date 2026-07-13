@@ -4,4 +4,5 @@ export interface NavItem {
   className?: string;
   icon?: string;
   onClick?: () => void;
+  adminOnly?: boolean;
 }

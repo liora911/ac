@@ -23,6 +23,7 @@ import HomeAdmin from "./HomeAdmin";
 import AboutAdmin from "./AboutAdmin";
 import PdfEditorAdmin from "./PdfEditorAdmin";
 import SketchBoardAdmin from "./SketchBoardAdmin";
+import GuestsAdmin from "./GuestsAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
@@ -411,6 +412,8 @@ export default function ElitzurDashboard() {
           {active === "pdfEditor" && <PdfEditorAdmin />}
 
           {active === "sketchBoard" && <SketchBoardAdmin />}
+
+          {active === "guests" && <GuestsAdmin />}
         </div>
       </main>
     </div>

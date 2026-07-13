@@ -92,13 +92,15 @@ export default function RichContent({
           text-decoration: line-through;
         }
 
-        /* Links */
+        /* Links — overflow-wrap:anywhere lets a long raw URL break rather than
+           overflow, but unlike word-break:break-all it never splits normal
+           linked words letter-by-letter at line ends */
         .rich-content a {
           color: #2563eb;
           text-decoration: underline;
           transition: color 0.15s;
-          overflow-wrap: break-word;
-          word-break: break-all;
+          overflow-wrap: anywhere;
+          word-break: normal;
         }
 
         .rich-content a:hover {

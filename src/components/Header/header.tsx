@@ -38,6 +38,9 @@ export default function Header() {
 
   const isAdmin = session?.user?.role === "ADMIN";
   const isRTL = locale === "he";
+  const visibleNavItems = navItems.filter(
+    (item) => !item.adminOnly || isAdmin
+  );
   const { data: unreadData } = useUnreadNotificationCount();
   const unreadCount = unreadData?.unreadCount ?? 0;
 
@@ -132,7 +135,7 @@ export default function Header() {
             role="navigation"
             aria-label={t("header.mainNavigation")}
           >
-            {navItems.map(({ label, href }) => {
+            {visibleNavItems.map(({ label, href }) => {
               const isActive = pathname === href;
               return (
                 <Link
@@ -355,7 +358,7 @@ export default function Header() {
 
         {/* Navigation Links */}
         <ul className="flex flex-col p-3 space-y-1 max-h-[calc(100vh-240px)] overflow-y-auto">
-          {navItems.map(({ label, href }) => {
+          {visibleNavItems.map(({ label, href }) => {
             const isActive = pathname === href;
             return (
               <li key={href}>

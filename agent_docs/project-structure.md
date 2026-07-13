@@ -52,6 +52,7 @@ Complete file tree for the Avshalom Elitzur website.
       CommentsAdmin.tsx
       ElitzurDashboard.tsx
       EventsAdmin.tsx
+      GuestsAdmin.tsx
       HomeAdmin.tsx
       LecturesAdmin.tsx
       MessagesAdmin.tsx
@@ -66,6 +67,10 @@ Complete file tree for the Avshalom Elitzur website.
       page.tsx
       [id]/page.tsx
     /favorites/page.tsx               # User favorites
+    /guests/                          # Guest collaborators (hosted works)
+      page.tsx                        # Guests list
+      [slug]/page.tsx                 # Guest profile + works
+      [slug]/[workId]/page.tsx        # Single work (gallery/PDF/video/story)
     /lectures/                        # Lectures section
       page.tsx
       [id]/page.tsx
@@ -114,6 +119,11 @@ Complete file tree for the Avshalom Elitzur website.
         route.ts
         full/route.ts
       /footer-sitemap/route.ts        # Footer sitemap data
+      /guest-works/[id]/route.ts      # Guest work CRUD
+      /guests/                        # Guests CRUD
+        route.ts
+        [id]/route.ts
+        [id]/works/route.ts
       /home-content/route.ts          # Home page content
       /home-preview/                  # Home preview
         route.ts
@@ -305,6 +315,7 @@ Complete file tree for the Avshalom Elitzur website.
     useDebouncedValue.ts              # Debounce utility
     useEvents.ts                      # Events CRUD
     useFavorites.ts                   # User favorites
+    useGuests.ts                      # Guests & guest works CRUD
     useHomeContent.ts                 # Home page content
     useHomePreview.ts                 # Home preview
     useLectures.ts                    # Lectures CRUD
