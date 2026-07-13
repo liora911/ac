@@ -22,8 +22,10 @@ import type {
   DictationLanguage,
   DictationModalProps,
   DictationPhase,
+  SuggestResponse,
   TranscribeErrorResponse,
   TranscribeResponse,
+  TranscriptSuggestion,
 } from "@/types/Editor/dictation";
 
 const MIME_CANDIDATES = [
@@ -69,6 +71,9 @@ export default function DictationModal({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPolished, setIsPolished] = useState(false);
   const [livePreview, setLivePreview] = useState("");
+  const [suggestions, setSuggestions] = useState<TranscriptSuggestion[]>([]);
+  const [suggestLoading, setSuggestLoading] = useState(false);
+  const [suggestDone, setSuggestDone] = useState(false);
 
   const streamRef = useRef<MediaStream | null>(null);
   const recorderRef = useRef<MediaRecorder | null>(null);
@@ -156,6 +161,9 @@ export default function DictationModal({
     setErrorMsg(null);
     setIsPolished(false);
     setLivePreview("");
+    setSuggestions([]);
+    setSuggestLoading(false);
+    setSuggestDone(false);
     finalLiveRef.current = "";
     currentDeltaRef.current = "";
     accumulatedMsRef.current = 0;
@@ -323,6 +331,30 @@ export default function DictationModal({
     setPhase("recording");
   }, [startTimer, realtimeSupported, startRealtime, language, contextHint]);
 
+  // Runs in the background after transcription; failures degrade silently —
+  // the transcript itself is never blocked by the suggestion pass
+  const fetchSuggestions = useCallback(async (text: string) => {
+    setSuggestLoading(true);
+    setSuggestDone(false);
+    setSuggestions([]);
+    try {
+      const res = await fetch("/api/transcribe/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      if (!res.ok) throw new Error(`Suggest failed: ${res.status}`);
+      const data = (await res.json()) as SuggestResponse;
+      setSuggestions(data.suggestions || []);
+    } catch (err) {
+      console.warn("Suggestion pass failed:", err);
+      setSuggestions([]);
+    } finally {
+      setSuggestLoading(false);
+      setSuggestDone(true);
+    }
+  }, []);
+
   const transcribeBlob = useCallback(
     async (blob: Blob) => {
       setPhase("transcribing");
@@ -353,6 +385,7 @@ export default function DictationModal({
         setTranscript(data.text);
         setIsPolished(data.polished);
         setPhase("review");
+        fetchSuggestions(data.text);
       } catch (err) {
         console.error("Transcription error:", err);
         setPhase("error");
@@ -361,7 +394,7 @@ export default function DictationModal({
         );
       }
     },
-    [language, polish, contextHint, t]
+    [language, polish, contextHint, t, fetchSuggestions]
   );
 
   const stopRecording = useCallback(() => {
@@ -404,8 +437,36 @@ export default function DictationModal({
     }
     onApprove(cleaned);
     showSuccess(t("dictation.inserted"));
-    handleClose();
-  }, [transcript, onApprove, handleClose, showError, showSuccess, t]);
+    // Stay in the modal, ready for the next dictation — the author often
+    // dictates an article in several passes
+    teardown();
+    resetState();
+  }, [transcript, onApprove, teardown, resetState, showError, showSuccess, t]);
+
+  const applySuggestion = useCallback(
+    (suggestion: TranscriptSuggestion) => {
+      setTranscript((prev) => prev.replace(suggestion.original, suggestion.suggested));
+      setSuggestions((prev) => prev.filter((s) => s !== suggestion));
+    },
+    []
+  );
+
+  const dismissSuggestion = useCallback((suggestion: TranscriptSuggestion) => {
+    setSuggestions((prev) => prev.filter((s) => s !== suggestion));
+  }, []);
+
+  const applyAllSuggestions = useCallback(() => {
+    setTranscript((prev) => {
+      let next = prev;
+      for (const s of suggestions) {
+        if (next.includes(s.original)) {
+          next = next.replace(s.original, s.suggested);
+        }
+      }
+      return next;
+    });
+    setSuggestions([]);
+  }, [suggestions]);
 
   const handleRerecord = useCallback(() => {
     teardown();
@@ -672,21 +733,116 @@ export default function DictationModal({
             )}
 
             {phase === "review" && (
-              <div className="flex-1 min-h-0 flex flex-col">
-                <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                  {t("dictation.reviewLabel")}
-                </label>
-                <textarea
-                  value={transcript}
-                  onChange={(e) => setTranscript(e.target.value)}
-                  dir="auto"
-                  className="w-full flex-1 min-h-0 p-5 text-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
-                  placeholder={t("dictation.reviewPlaceholder")}
-                  autoFocus
-                />
-                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  {t("dictation.reviewHint")}
-                </p>
+              <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4">
+                {/* Transcript editor */}
+                <div className="flex-1 min-h-0 flex flex-col">
+                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
+                    {t("dictation.reviewLabel")}
+                  </label>
+                  <textarea
+                    value={transcript}
+                    onChange={(e) => setTranscript(e.target.value)}
+                    dir="auto"
+                    className="w-full flex-1 min-h-[200px] lg:min-h-0 p-5 text-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
+                    placeholder={t("dictation.reviewPlaceholder")}
+                    autoFocus
+                  />
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {t("dictation.reviewHint")}
+                  </p>
+                </div>
+
+                {/* Suggested fixes panel */}
+                {(suggestLoading || suggestions.length > 0 || suggestDone) && (
+                  <div className="w-full lg:w-96 flex-shrink-0 min-h-0 flex flex-col rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 overflow-hidden">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 shrink-0">
+                      <span className="flex items-center gap-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                        <Sparkles className="w-4 h-4 text-amber-500" />
+                        {t("dictation.suggestionsTitle")}
+                        {suggestions.length > 0 && (
+                          <span className="px-1.5 py-0.5 rounded-full text-xs bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-300">
+                            {suggestions.length}
+                          </span>
+                        )}
+                      </span>
+                      {suggestions.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={applyAllSuggestions}
+                          className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                        >
+                          {t("dictation.applyAll")}
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2.5">
+                      {suggestLoading ? (
+                        <div className="flex items-center gap-2 py-6 justify-center text-sm text-gray-500 dark:text-gray-400">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          {t("dictation.suggestionsLoading")}
+                        </div>
+                      ) : suggestions.length === 0 ? (
+                        <div className="flex items-center gap-2 py-6 justify-center text-sm text-gray-500 dark:text-gray-400">
+                          <Check className="w-4 h-4 text-green-500" />
+                          {t("dictation.suggestionsNone")}
+                        </div>
+                      ) : (
+                        suggestions.map((s, idx) => {
+                          const stillFound = transcript.includes(s.original);
+                          return (
+                            <div
+                              key={`${idx}-${s.original.slice(0, 24)}`}
+                              className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3"
+                            >
+                              <div dir="auto" className="text-sm leading-relaxed">
+                                <span className="px-1 rounded bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 line-through decoration-red-400/60">
+                                  {s.original}
+                                </span>
+                              </div>
+                              <div dir="auto" className="mt-1.5 text-sm leading-relaxed">
+                                <span className="px-1 rounded bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 font-medium">
+                                  {s.suggested}
+                                </span>
+                              </div>
+                              {s.reason && (
+                                <p
+                                  dir="auto"
+                                  className="mt-1.5 text-xs text-gray-500 dark:text-gray-400"
+                                >
+                                  {s.reason}
+                                </p>
+                              )}
+                              <div className="mt-2 flex items-center gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => applySuggestion(s)}
+                                  disabled={!stillFound}
+                                  title={
+                                    stillFound
+                                      ? t("dictation.applySuggestion")
+                                      : t("dictation.suggestionOutdated")
+                                  }
+                                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-green-600 hover:bg-green-700 text-white transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                                >
+                                  <Check className="w-3 h-3" />
+                                  {t("dictation.applySuggestion")}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => dismissSuggestion(s)}
+                                  className="flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                                >
+                                  <X className="w-3 h-3" />
+                                  {t("dictation.dismissSuggestion")}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

@@ -24,6 +24,16 @@ export interface TranscribeErrorResponse {
   retryAfter?: number;
 }
 
+export interface TranscriptSuggestion {
+  original: string;
+  suggested: string;
+  reason: string;
+}
+
+export interface SuggestResponse {
+  suggestions: TranscriptSuggestion[];
+}
+
 export type DictationPhase =
   | "idle"
   | "requesting-permission"

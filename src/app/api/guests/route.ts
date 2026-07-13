@@ -107,6 +107,22 @@ export async function POST(request: Request) {
     return NextResponse.json(guest, { status: 201 });
   } catch (error) {
     console.error("Guests POST error:", error);
+    const message = error instanceof Error ? error.message : "";
+    const prismaCode = (error as { code?: string })?.code;
+    // Most common setup failure: schema not pushed / stale Prisma client
+    if (
+      prismaCode === "P2021" ||
+      message.includes("does not exist") ||
+      message.includes("Cannot read properties of undefined")
+    ) {
+      return NextResponse.json(
+        {
+          error:
+            "Database is missing the guests tables. Run `npx prisma db push` and restart the dev server.",
+        },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
       { error: "Failed to create guest" },
       { status: 500 }
