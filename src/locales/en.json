@@ -2030,6 +2030,7 @@
     "discard": "Discard",
     "insert": "Insert into Article",
     "inserted": "Transcript added to the article — you can keep dictating",
+    "continueRecording": "Continue Recording",
     "suggestionsTitle": "Suggested Fixes",
     "suggestionsLoading": "Looking for possible transcription errors...",
     "suggestionsNone": "No fixes suggested — the transcript looks clean",

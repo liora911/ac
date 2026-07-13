@@ -382,10 +382,16 @@ export default function DictationModal({
         }
 
         const data = (await res.json()) as TranscribeResponse;
-        setTranscript(data.text);
+        // Append to what was already transcribed in earlier takes — the
+        // author dictates continuously in the same canvas
+        const combined = transcript.trim()
+          ? `${transcript.trim()}\n\n${data.text}`
+          : data.text;
+        setTranscript(combined);
         setIsPolished(data.polished);
+        setLivePreview("");
         setPhase("review");
-        fetchSuggestions(data.text);
+        fetchSuggestions(combined);
       } catch (err) {
         console.error("Transcription error:", err);
         setPhase("error");
@@ -394,7 +400,7 @@ export default function DictationModal({
         );
       }
     },
-    [language, polish, contextHint, t, fetchSuggestions]
+    [language, polish, contextHint, t, fetchSuggestions, transcript]
   );
 
   const stopRecording = useCallback(() => {
@@ -493,7 +499,7 @@ export default function DictationModal({
         return;
       }
       if (e.key === " " && !isTyping) {
-        if (phase === "idle" || phase === "error") {
+        if (phase === "idle" || phase === "error" || phase === "review") {
           e.preventDefault();
           startRecording();
         } else if (phase === "recording") {
@@ -684,37 +690,47 @@ export default function DictationModal({
               </div>
             )}
 
-            {(phase === "recording" || phase === "paused") && (
+            {(phase === "recording" ||
+              phase === "paused" ||
+              phase === "transcribing") && (
               <div
                 ref={livePreviewRef}
                 dir="auto"
-                className="flex-1 min-h-0 overflow-y-auto px-8 py-6 rounded-xl bg-gray-50 dark:bg-gray-800/60 border-2 border-dashed border-gray-200 dark:border-gray-700 text-2xl italic text-gray-800 dark:text-gray-100 leading-relaxed"
+                className="flex-1 min-h-0 overflow-y-auto px-8 py-6 rounded-xl bg-gray-50 dark:bg-gray-800/60 border-2 border-dashed border-gray-200 dark:border-gray-700 text-2xl leading-relaxed"
                 aria-live="polite"
               >
-                {livePreview ? (
-                  <>
-                    {livePreview}
-                    {phase === "recording" && (
-                      <span className="ms-1 inline-block w-1.5 h-7 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
-                    )}
-                  </>
-                ) : (
-                  <span className="not-italic text-gray-400 dark:text-gray-500">
-                    {t("dictation.speakToSeePreview")}
+                {/* Text confirmed by earlier transcription passes — solid */}
+                {transcript && (
+                  <span className="whitespace-pre-wrap text-gray-900 dark:text-gray-100">
+                    {transcript}{" "}
                   </span>
                 )}
-              </div>
-            )}
-
-            {phase === "transcribing" && (
-              <div className="flex-1 flex flex-col items-center justify-center gap-4">
-                <Loader2 className="w-16 h-16 animate-spin text-blue-500" />
-                <p className="text-xl font-medium text-gray-900 dark:text-gray-100">
-                  {t("dictation.transcribing")}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t("dictation.transcribingHint")}
-                </p>
+                {/* Words still waiting for Whisper — greyish, in place */}
+                {livePreview ? (
+                  <span
+                    className={`italic text-gray-400 dark:text-gray-500 ${
+                      phase === "transcribing" ? "animate-pulse" : ""
+                    }`}
+                  >
+                    {livePreview}
+                  </span>
+                ) : (
+                  !transcript &&
+                  phase !== "transcribing" && (
+                    <span className="text-gray-400 dark:text-gray-500">
+                      {t("dictation.speakToSeePreview")}
+                    </span>
+                  )
+                )}
+                {phase === "recording" && (
+                  <span className="ms-1 inline-block w-1.5 h-7 align-middle bg-gray-400 dark:bg-gray-500 animate-pulse" />
+                )}
+                {phase === "transcribing" && (
+                  <span className="ms-3 inline-flex items-center gap-2 align-middle not-italic text-base font-medium text-blue-600 dark:text-blue-400">
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {t("dictation.transcribing")}
+                  </span>
+                )}
               </div>
             )}
 
@@ -734,18 +750,15 @@ export default function DictationModal({
 
             {phase === "review" && (
               <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-4">
-                {/* Transcript editor */}
+                {/* Transcript editor — same canvas the live preview used,
+                    now editable with the confirmed text */}
                 <div className="flex-1 min-h-0 flex flex-col">
-                  <label className="block text-sm font-medium text-gray-600 dark:text-gray-400 mb-2">
-                    {t("dictation.reviewLabel")}
-                  </label>
                   <textarea
                     value={transcript}
                     onChange={(e) => setTranscript(e.target.value)}
                     dir="auto"
-                    className="w-full flex-1 min-h-[200px] lg:min-h-0 p-5 text-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
+                    className="w-full flex-1 min-h-[200px] lg:min-h-0 px-8 py-6 text-2xl bg-gray-50 dark:bg-gray-800/60 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none leading-relaxed"
                     placeholder={t("dictation.reviewPlaceholder")}
-                    autoFocus
                   />
                   <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
                     {t("dictation.reviewHint")}
@@ -951,6 +964,15 @@ export default function DictationModal({
                 >
                   <RotateCcw className="w-4 h-4" />
                   {t("dictation.recordAgain")}
+                </button>
+                <button
+                  type="button"
+                  onClick={startRecording}
+                  title={t("dictation.continueRecording")}
+                  className="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-red-200 dark:border-red-900/60 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-medium transition-colors"
+                >
+                  <Mic className="w-4 h-4" />
+                  {t("dictation.continueRecording")}
                 </button>
                 <div className="ms-auto flex items-center gap-3">
                   <button
