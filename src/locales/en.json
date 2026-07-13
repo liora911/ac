@@ -90,6 +90,8 @@
     "confirm": "Yes, clear",
     "cancel": "Cancel",
     "textPlaceholder": "Type and press Enter",
+    "toggleCalc": "Calculator",
+    "closeCalc": "Close calculator",
     "calc": {
       "title": "Scientific Calculator",
       "degrees": "Degrees",

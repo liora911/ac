@@ -39,6 +39,8 @@ import {
   Shapes as ShapesIcon,
   PaintBucket,
   ChartSpline,
+  Calculator as CalculatorIcon,
+  X,
 } from "lucide-react";
 
 // Fixed logical width — the canvas scales responsively via CSS, so
@@ -740,6 +742,7 @@ export default function SketchBoard() {
     value: string;
   } | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
+  const [showCalc, setShowCalc] = useState(false);
   const [showGraphModal, setShowGraphModal] = useState(false);
   const [graphExpr, setGraphExpr] = useState("sin(x)");
   const [graphFrom, setGraphFrom] = useState("-2pi");
@@ -1283,10 +1286,10 @@ export default function SketchBoard() {
         </p>
       </div>
 
-      <div className="flex flex-col xl:flex-row items-start gap-4">
-        <div className="flex-1 min-w-0 w-full space-y-4">
-          {/* Toolbar */}
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm space-y-3">
+      <div className="space-y-4">
+          {/* Toolbar — sticky below the admin header so tools stay reachable
+              while scrolling a tall board */}
+          <div className="sticky top-36 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm space-y-3">
             <div className="flex flex-wrap items-center gap-1.5">
               {mainTools.map(({ key, icon, label }) => (
                 <button
@@ -1328,7 +1331,7 @@ export default function SketchBoard() {
                 {showShapesMenu && (
                   <div
                     role="menu"
-                    className="absolute top-full mt-1 start-0 z-40 grid grid-cols-5 gap-1 p-2 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl"
+                    className="absolute top-full mt-1 start-0 z-40 grid grid-cols-2 gap-1 p-2 w-80 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl"
                   >
                     {shapeMenuItems.map(({ key, icon, label }) => (
                       <button
@@ -1339,15 +1342,15 @@ export default function SketchBoard() {
                           setTool(key);
                           setShowShapesMenu(false);
                         }}
-                        className={`w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer ${
+                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
                           tool === key
                             ? "bg-blue-600 text-white"
-                            : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         }`}
                         title={label}
-                        aria-label={label}
                       >
-                        {icon}
+                        <span className="flex-shrink-0">{icon}</span>
+                        <span className="truncate">{label}</span>
                       </button>
                     ))}
                   </div>
@@ -1465,6 +1468,20 @@ export default function SketchBoard() {
               <span className="w-px h-6 bg-gray-200 dark:bg-gray-600" />
               {/* Actions */}
               <div className="flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setShowCalc((v) => !v)}
+                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                    showCalc ? toolBtnActive : toolBtnIdle
+                  }`}
+                  title={t("sketchBoard.toggleCalc")}
+                  aria-pressed={showCalc}
+                >
+                  <CalculatorIcon className="w-4 h-4" />
+                  <span className="hidden lg:inline">
+                    {t("sketchBoard.toggleCalc")}
+                  </span>
+                </button>
                 <button type="button" onClick={undo} disabled={history.past.length === 0} className={actionBtn} title={t("sketchBoard.undo")}>
                   <Undo2 className="w-4 h-4" />
                 </button>
@@ -1567,12 +1584,31 @@ export default function SketchBoard() {
               )}
             </div>
           </div>
-        </div>
+      </div>
 
-        {/* Calculator */}
-        <aside className="w-full xl:w-80 flex-shrink-0">
-          <Calculator />
-        </aside>
+      {/* Calculator drawer — floats beside the board, never steals width */}
+      <div
+        className={`fixed top-40 bottom-4 end-4 z-40 w-80 max-w-[90vw] transition-all duration-300 ${
+          showCalc
+            ? "opacity-100 scale-100 pointer-events-auto"
+            : "opacity-0 scale-95 pointer-events-none"
+        }`}
+        aria-hidden={!showCalc}
+      >
+        <div className="relative h-full">
+          <button
+            type="button"
+            onClick={() => setShowCalc(false)}
+            className="absolute -top-2.5 -end-2.5 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-gray-900 dark:bg-gray-600 text-white shadow-lg hover:bg-gray-700 dark:hover:bg-gray-500 transition-colors cursor-pointer"
+            title={t("sketchBoard.closeCalc")}
+            aria-label={t("sketchBoard.closeCalc")}
+          >
+            <X className="w-4 h-4" />
+          </button>
+          <div className="max-h-full overflow-y-auto rounded-xl shadow-2xl">
+            <Calculator />
+          </div>
+        </div>
       </div>
     </div>
   );

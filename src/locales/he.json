@@ -90,6 +90,8 @@
     "confirm": "כן, נקה",
     "cancel": "ביטול",
     "textPlaceholder": "הקלד ולחץ Enter",
+    "toggleCalc": "מחשבון",
+    "closeCalc": "סגור מחשבון",
     "calc": {
       "title": "מחשבון מדעי",
       "degrees": "מעלות",
