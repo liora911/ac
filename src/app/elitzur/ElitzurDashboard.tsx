@@ -401,8 +401,62 @@ export default function ElitzurDashboard() {
           {active === "sketchBoard" && <SketchBoardAdmin />}
 
           {active === "guests" && <GuestsAdmin />}
+            </div>
+          </main>
         </div>
-      </main>
+      </div>
     </div>
+  );
+}
+
+function SidebarNav({
+  active,
+  onSelect,
+  t,
+}: {
+  active: TabKey;
+  onSelect: (key: TabKey) => void;
+  t: (key: string) => string;
+}) {
+  return (
+    <nav role="tablist" aria-orientation="vertical">
+      {TAB_GROUPS.map((group) => (
+        <div key={group.labelKey} className="mb-4 last:mb-0">
+          <div className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            {t(group.labelKey)}
+          </div>
+          <ul className="space-y-0.5">
+            {group.tabs
+              .filter((tab) => !tab.disabled)
+              .map((tab) => {
+                const isActive = active === tab.key;
+                const IconComponent = iconMap[tab.icon];
+                return (
+                  <li key={tab.key}>
+                    <button
+                      type="button"
+                      onClick={() => onSelect(tab.key)}
+                      className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
+                        isActive
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                      }`}
+                      role="tab"
+                      aria-selected={isActive}
+                      aria-controls={`panel-${tab.key}`}
+                      id={`tab-${tab.key}`}
+                    >
+                      {IconComponent && (
+                        <IconComponent className="w-4 h-4 flex-shrink-0" />
+                      )}
+                      <span className="truncate">{t(`admin.nav.${tab.key}`)}</span>
+                    </button>
+                  </li>
+                );
+              })}
+          </ul>
+        </div>
+      ))}
+    </nav>
   );
 }
