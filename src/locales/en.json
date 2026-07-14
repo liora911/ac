@@ -31,6 +31,8 @@
     "smallerText": "Smaller text",
     "biggerImage": "Bigger image",
     "smallerImage": "Smaller image",
+    "rotateLeft": "Rotate left",
+    "rotateRight": "Rotate right",
     "deleteItem": "Delete",
     "dragToMove": "Drag to move",
     "editHint": "Click a page on the side to work on it. Use the buttons above to add text or an image (for example, your signature), then download the edited file.",

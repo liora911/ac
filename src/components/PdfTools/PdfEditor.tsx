@@ -45,6 +45,7 @@ type Overlay = {
   dataUrl?: string; // normalized PNG data URL for image overlays
   widthFrac?: number; // image width as a fraction of displayed page width
   aspect?: number; // image height / width
+  rotation?: number; // clockwise degrees, rotated about the image center
 };
 
 type PageEntry = {
@@ -276,12 +277,13 @@ export default function PdfEditor() {
     signLastPointRef.current = null;
   }, [showSignModal]);
 
-  // Fit the main page render to the available column width
+  // Fit the main page render to the available column width — fill what the
+  // screen offers so the preview is comfortably readable
   useEffect(() => {
     const el = mainColRef.current;
     if (!el) return;
     const update = () =>
-      setEditorWidth(clamp(el.clientWidth - 16, 280, 760));
+      setEditorWidth(clamp(el.clientWidth - 40, 280, 1200));
     update();
     const ro = new ResizeObserver(update);
     ro.observe(el);
@@ -714,12 +716,28 @@ export default function PdfEditor() {
             const img = await out.embedPng(dataUrlToBytes(ov.dataUrl));
             const w = (ov.widthFrac ?? 0.3) * Dw;
             const h = w * (ov.aspect ?? 1);
-            target.drawImage(img, {
-              x: ov.x * Dw,
-              y: Dh - ov.y * Dh - h,
-              width: w,
-              height: h,
-            });
+            const x0 = ov.x * Dw;
+            const y0 = Dh - ov.y * Dh - h;
+            const rot = ov.rotation ?? 0;
+            if (rot === 0) {
+              target.drawImage(img, { x: x0, y: y0, width: w, height: h });
+            } else {
+              // The preview rotates about the image center (CSS default);
+              // pdf-lib rotates about the bottom-left anchor, so shift the
+              // anchor to where the rotated corner lands
+              const rad = (-rot * Math.PI) / 180; // CSS clockwise → PDF CCW
+              const cos = Math.cos(rad);
+              const sin = Math.sin(rad);
+              const cx = x0 + w / 2;
+              const cy = y0 + h / 2;
+              target.drawImage(img, {
+                x: cx - (cos * (w / 2) - sin * (h / 2)),
+                y: cy - (sin * (w / 2) + cos * (h / 2)),
+                width: w,
+                height: h,
+                rotate: degrees(-rot),
+              });
+            }
           }
         }
       }
@@ -1269,6 +1287,33 @@ export default function PdfEditor() {
                                   >
                                     <Plus className="w-4 h-4" />
                                   </button>
+                                  <span className="w-px h-4 bg-gray-600 mx-0.5" />
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateOverlay(ov.id, {
+                                        rotation: ((ov.rotation ?? 0) - 15 + 360) % 360,
+                                      })
+                                    }
+                                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                                    title={t("pdfTools.rotateLeft")}
+                                    aria-label={t("pdfTools.rotateLeft")}
+                                  >
+                                    <RotateCcw className="w-4 h-4" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      updateOverlay(ov.id, {
+                                        rotation: ((ov.rotation ?? 0) + 15) % 360,
+                                      })
+                                    }
+                                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                                    title={t("pdfTools.rotateRight")}
+                                    aria-label={t("pdfTools.rotateRight")}
+                                  >
+                                    <RotateCw className="w-4 h-4" />
+                                  </button>
                                 </>
                               )}
                               <span className="w-px h-4 bg-gray-600 mx-0.5" />
@@ -1321,6 +1366,9 @@ export default function PdfEditor() {
                               }`}
                               style={{
                                 width: (ov.widthFrac ?? 0.3) * editorWidth,
+                                transform: ov.rotation
+                                  ? `rotate(${ov.rotation}deg)`
+                                  : undefined,
                               }}
                             />
                           )}
