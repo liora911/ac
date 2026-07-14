@@ -28,6 +28,7 @@ import {
   Plus,
   Minus,
   ShieldCheck,
+  Signature,
 } from "lucide-react";
 
 // Set up the worker (same source as PdfViewer)
@@ -54,6 +55,10 @@ type PageEntry = {
 };
 
 const TEXT_COLORS = ["#111111", "#d32f2f", "#1565c0", "#2e7d32"];
+const INK_COLORS = ["#1e3a8a", "#111111"];
+const SIGNATURE_STORAGE_KEY = "elitzur-pdf-signature";
+const SIGN_W = 1200;
+const SIGN_H = 400;
 const HEBREW_RE = /[֐-׿]/;
 const TEXT_SCALE = 3; // rasterization supersampling for crisp text
 const LINE_HEIGHT = 1.3;
@@ -206,6 +211,13 @@ export default function PdfEditor() {
   const [isDragging, setIsDragging] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [showResetModal, setShowResetModal] = useState(false);
+  const [showSignModal, setShowSignModal] = useState(false);
+  const [signHasInk, setSignHasInk] = useState(false);
+  const [signColor, setSignColor] = useState(INK_COLORS[0]);
+  const [savedSignature, setSavedSignature] = useState<{
+    dataUrl: string;
+    aspect: number;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [editorWidth, setEditorWidth] = useState(560);
 
@@ -219,6 +231,8 @@ export default function PdfEditor() {
   const mainColRef = useRef<HTMLDivElement>(null);
   const pageBoxRef = useRef<HTMLDivElement>(null);
   const lastAddedOverlayRef = useRef<string | null>(null);
+  const signCanvasRef = useRef<HTMLCanvasElement>(null);
+  const signLastPointRef = useRef<{ x: number; y: number } | null>(null);
 
   // Copy the bytes for react-pdf — pdf.js transfers the buffer to its worker,
   // which would detach the original we still need for pdf-lib
@@ -234,6 +248,33 @@ export default function PdfEditor() {
   useEffect(() => {
     lastAddedOverlayRef.current = null;
   });
+
+  // Restore the remembered signature so it only has to be drawn once
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem(SIGNATURE_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as { dataUrl?: unknown; aspect?: unknown };
+      if (
+        typeof parsed.dataUrl === "string" &&
+        typeof parsed.aspect === "number"
+      ) {
+        setSavedSignature({ dataUrl: parsed.dataUrl, aspect: parsed.aspect });
+      }
+    } catch {
+      // corrupt entry — user just draws again
+    }
+  }, []);
+
+  // Fresh canvas every time the signature dialog opens
+  useEffect(() => {
+    if (!showSignModal) return;
+    const canvas = signCanvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignHasInk(false);
+    signLastPointRef.current = null;
+  }, [showSignModal]);
 
   // Fit the main page render to the available column width
   useEffect(() => {
@@ -461,6 +502,133 @@ export default function PdfEditor() {
     }
   };
 
+  // ---------- Signature ----------
+
+  const signPos = (e: React.PointerEvent) => {
+    const canvas = signCanvasRef.current;
+    if (!canvas) return { x: 0, y: 0 };
+    const rect = canvas.getBoundingClientRect();
+    return {
+      x: ((e.clientX - rect.left) * canvas.width) / rect.width,
+      y: ((e.clientY - rect.top) * canvas.height) / rect.height,
+    };
+  };
+
+  const signPointerDown = (e: React.PointerEvent) => {
+    const ctx = signCanvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    const p = signPos(e);
+    signLastPointRef.current = p;
+    ctx.fillStyle = signColor;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 3.5, 0, Math.PI * 2);
+    ctx.fill();
+    setSignHasInk(true);
+  };
+
+  const signPointerMove = (e: React.PointerEvent) => {
+    const last = signLastPointRef.current;
+    const ctx = signCanvasRef.current?.getContext("2d");
+    if (!last || !ctx) return;
+    const p = signPos(e);
+    ctx.strokeStyle = signColor;
+    ctx.lineWidth = 7;
+    ctx.lineCap = "round";
+    ctx.lineJoin = "round";
+    ctx.beginPath();
+    ctx.moveTo(last.x, last.y);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    signLastPointRef.current = p;
+  };
+
+  const signPointerUp = () => {
+    signLastPointRef.current = null;
+  };
+
+  const clearSignature = () => {
+    const canvas = signCanvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (canvas && ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+    setSignHasInk(false);
+    signLastPointRef.current = null;
+  };
+
+  const placeSignature = (dataUrl: string, aspect: number) => {
+    if (!selectedPage) return;
+    const ov: Overlay = {
+      id: uid(),
+      kind: "image",
+      x: 0.55,
+      y: 0.72,
+      widthFrac: 0.25,
+      aspect,
+      dataUrl,
+    };
+    setPages((prev) =>
+      prev.map((p) =>
+        p.id === selectedPageId ? { ...p, overlays: [...p.overlays, ov] } : p
+      )
+    );
+    setSelectedOverlayId(ov.id);
+    setShowSignModal(false);
+  };
+
+  // Crop the drawing to its inked bounding box so the placed signature has
+  // no dead margins, then remember it for the next document
+  const confirmSignature = () => {
+    const canvas = signCanvasRef.current;
+    const ctx = canvas?.getContext("2d");
+    if (!canvas || !ctx) return;
+    const { data, width, height } = ctx.getImageData(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+    let minX = width;
+    let minY = height;
+    let maxX = -1;
+    let maxY = -1;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        if (data[(y * width + x) * 4 + 3] > 10) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+    if (maxX < 0) return;
+    const pad = 12;
+    minX = Math.max(0, minX - pad);
+    minY = Math.max(0, minY - pad);
+    maxX = Math.min(width - 1, maxX + pad);
+    maxY = Math.min(height - 1, maxY + pad);
+    const w = maxX - minX + 1;
+    const h = maxY - minY + 1;
+    const out = document.createElement("canvas");
+    out.width = w;
+    out.height = h;
+    const outCtx = out.getContext("2d");
+    if (!outCtx) return;
+    outCtx.drawImage(canvas, minX, minY, w, h, 0, 0, w, h);
+    const dataUrl = out.toDataURL("image/png");
+    const aspect = h / w;
+    try {
+      localStorage.setItem(
+        SIGNATURE_STORAGE_KEY,
+        JSON.stringify({ dataUrl, aspect })
+      );
+    } catch {
+      // storage unavailable — signature still placed, just not remembered
+    }
+    setSavedSignature({ dataUrl, aspect });
+    placeSignature(dataUrl, aspect);
+  };
+
   const startDrag = (e: React.PointerEvent, ov: Overlay) => {
     const rect = pageBoxRef.current?.getBoundingClientRect();
     if (!rect) return;
@@ -600,6 +768,107 @@ export default function PdfEditor() {
         }}
       />
 
+      {/* Signature dialog */}
+      {showSignModal && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowSignModal(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="relative w-full max-w-2xl rounded-2xl bg-white dark:bg-gray-800 shadow-2xl p-6"
+            role="dialog"
+            aria-modal="true"
+          >
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+              {t("pdfTools.signTitle")}
+            </h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              {t("pdfTools.signHint")}
+            </p>
+
+            {savedSignature && (
+              <button
+                type="button"
+                onClick={() =>
+                  placeSignature(savedSignature.dataUrl, savedSignature.aspect)
+                }
+                className="mt-3 flex items-center gap-3 w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-blue-400 dark:hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+              >
+                <img
+                  src={savedSignature.dataUrl}
+                  alt=""
+                  className="h-9 max-w-[45%] object-contain bg-white rounded px-1"
+                />
+                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                  {t("pdfTools.signUseSaved")}
+                </span>
+              </button>
+            )}
+
+            <div className="relative mt-4 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 bg-white overflow-hidden">
+              <canvas
+                ref={signCanvasRef}
+                width={SIGN_W}
+                height={SIGN_H}
+                onPointerDown={signPointerDown}
+                onPointerMove={signPointerMove}
+                onPointerUp={signPointerUp}
+                onPointerCancel={signPointerUp}
+                className="block w-full h-auto touch-none cursor-crosshair"
+              />
+              {/* Baseline guide — display only, never exported */}
+              <div className="pointer-events-none absolute inset-x-10 bottom-[22%] border-b border-dashed border-gray-300" />
+            </div>
+
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-1.5">
+                {INK_COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSignColor(c)}
+                    className={`w-6 h-6 rounded-full border-2 cursor-pointer ${
+                      signColor === c
+                        ? "border-blue-500 scale-110"
+                        : "border-gray-200 dark:border-gray-600"
+                    }`}
+                    style={{ backgroundColor: c }}
+                    aria-label={c}
+                  />
+                ))}
+              </div>
+              <button
+                type="button"
+                onClick={clearSignature}
+                disabled={!signHasInk}
+                className="px-3 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                {t("pdfTools.signClear")}
+              </button>
+              <div className="flex-1" />
+              <button
+                type="button"
+                onClick={() => setShowSignModal(false)}
+                className="px-4 py-2 rounded-lg text-sm font-medium border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+              >
+                {t("pdfTools.cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={confirmSignature}
+                disabled={!signHasInk}
+                className="flex items-center gap-1.5 px-5 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Signature className="w-4 h-4" />
+                {t("pdfTools.signAdd")}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
         <h2 className="text-xl font-bold text-gray-900 dark:text-white">
@@ -676,6 +945,10 @@ export default function PdfEditor() {
               <button type="button" onClick={() => imageInputRef.current?.click()} className={toolbarBtn} disabled={!selectedPage}>
                 <ImagePlus className="w-4 h-4" />
                 {t("pdfTools.addImage")}
+              </button>
+              <button type="button" onClick={() => setShowSignModal(true)} className={toolbarBtn} disabled={!selectedPage}>
+                <Signature className="w-4 h-4" />
+                {t("pdfTools.sign")}
               </button>
               <button type="button" onClick={() => mergeInputRef.current?.click()} className={toolbarBtn}>
                 <FilePlus2 className="w-4 h-4" />
@@ -967,8 +1240,8 @@ export default function PdfEditor() {
                                     onClick={() =>
                                       updateOverlay(ov.id, {
                                         widthFrac: clamp(
-                                          (ov.widthFrac ?? 0.3) - 0.05,
-                                          0.05,
+                                          (ov.widthFrac ?? 0.3) - 0.04,
+                                          0.03,
                                           0.95
                                         ),
                                       })
@@ -984,8 +1257,8 @@ export default function PdfEditor() {
                                     onClick={() =>
                                       updateOverlay(ov.id, {
                                         widthFrac: clamp(
-                                          (ov.widthFrac ?? 0.3) + 0.05,
-                                          0.05,
+                                          (ov.widthFrac ?? 0.3) + 0.04,
+                                          0.03,
                                           0.95
                                         ),
                                       })
