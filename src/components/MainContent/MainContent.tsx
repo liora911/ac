@@ -10,7 +10,7 @@ export default function MainContent({ children }: MainContentProps) {
   return (
     <main
       id="main-content"
-      className={`flex-grow flex flex-col ${isAuthPage ? "" : "pt-20"}`}
+      className={`flex-grow flex flex-col ${isAuthPage ? "" : "pt-4"}`}
       role="main"
     >
       {children}
