@@ -143,10 +143,12 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           <button
             onClick={handleLeft}
             disabled={isLoading}
-            className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-r from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
+            className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-r from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-70 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
-            <ChevronLeft className="w-7 h-7 md:w-8 md:h-8 text-[var(--foreground)] drop-shadow-lg" />
+            <span className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg">
+              <ChevronLeft className="w-6 h-6 md:w-7 md:h-7 text-gray-800 dark:text-gray-100" />
+            </span>
           </button>
         )}
 
@@ -154,14 +156,16 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
           <button
             onClick={handleRight}
             disabled={isLoading}
-            className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-l from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-0 group-hover:opacity-100 cursor-pointer"
+            className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-l from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-70 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
-            {isLoading ? (
-              <Loader2 className="w-6 h-6 md:w-7 md:h-7 text-[var(--foreground)] animate-spin" />
-            ) : (
-              <ChevronRight className="w-7 h-7 md:w-8 md:h-8 text-[var(--foreground)] drop-shadow-lg" />
-            )}
+            <span className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg">
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 md:w-6 md:h-6 text-gray-800 dark:text-gray-100 animate-spin" />
+              ) : (
+                <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-gray-800 dark:text-gray-100" />
+              )}
+            </span>
           </button>
         )}
 
