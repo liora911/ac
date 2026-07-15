@@ -40,9 +40,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No subscribers" }, { status: 400 });
     }
 
-    const baseUrl = process.env.NEXTAUTH_URL || process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : "http://localhost:3000";
+    // NEXTAUTH_URL (the canonical domain) wins; VERCEL_URL is only a fallback.
+    // Without the parentheses this always resolved to the vercel.app host.
+    const baseUrl =
+      process.env.NEXTAUTH_URL ||
+      (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "http://localhost:3000");
 
     const articleUrl = `${baseUrl}/articles/${article.slug}`;
 
