@@ -504,6 +504,7 @@
     "filters": "Filters",
     "applyFilters": "Apply Filters",
     "allTopics": "All",
+    "topicsTitle": "Topics",
     "searchAndFilter": "Search & Sort",
     "readingTime": "{min} min read",
     "featured": "Featured"

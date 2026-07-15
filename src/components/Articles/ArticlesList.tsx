@@ -20,6 +20,7 @@ import FavoriteButton from "@/components/FavoriteButton";
 import PremiumBadge from "@/components/PremiumBadge";
 import SemanticSearch from "./SemanticSearch";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
+import CategoryIndexSidebar from "./CategoryIndexSidebar";
 import { Settings2 } from "lucide-react";
 import BottomSheet from "@/components/BottomSheet/BottomSheet";
 import MobileArticleCard from "./MobileArticleCard";
@@ -270,6 +271,18 @@ function ArticlesListContent({
         </div>
       )}
 
+      {/* Desktop layout: A-Z topics index pinned beside the scrolling articles */}
+      <div className="sm:flex sm:items-start sm:gap-6">
+        {showFilters && (
+          <CategoryIndexSidebar
+            categories={categories ?? []}
+            selectedCategory={selectedCategory}
+            onSelect={handleCategoryChange}
+            className="hidden sm:block"
+          />
+        )}
+
+        <div className="flex-1 min-w-0 space-y-6">
       {/* Mobile: Filter button + Results count */}
       {showFilters && (
         <div className="sm:hidden">
@@ -317,7 +330,12 @@ function ArticlesListContent({
                 </label>
                 <select
                   value={selectedCategory}
-                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  onChange={(e) => {
+                    handleCategoryChange(e.target.value);
+                    // Picking a filter is the final action — close the sheet
+                    // so the results are immediately visible
+                    setIsFilterSheetOpen(false);
+                  }}
                   className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="">{t("articleForm.allCategories")}</option>
@@ -340,7 +358,10 @@ function ArticlesListContent({
                 </label>
                 <select
                   value={sortOption}
-                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  onChange={(e) => {
+                    handleSortChange(e.target.value as SortOption);
+                    setIsFilterSheetOpen(false);
+                  }}
                   className="w-full px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 >
                   <option value="newest">{t("articlesPage.sortNewest") || "Newest first"}</option>
@@ -362,38 +383,9 @@ function ArticlesListContent({
         </div>
       )}
 
-      {/* Desktop: Category pill bar + compact controls */}
+      {/* Desktop: sticky controls row — stays reachable during infinite scroll */}
       {showFilters && (
-        <div className="hidden sm:flex flex-col gap-3">
-          {/* Category pill bar - horizontal scroll */}
-          <div className="overflow-x-auto scrollbar-hide -mx-2 px-2 pb-1">
-            <div className="flex gap-2 w-max">
-              <button
-                onClick={() => handleCategoryChange("")}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                  !selectedCategory
-                    ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                    : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 backdrop-blur-sm"
-                }`}
-              >
-                {t("articlesPage.allTopics")}
-              </button>
-              {!isLoadingCategories && categories?.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.id === selectedCategory ? "" : category.id)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                    selectedCategory === category.id
-                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                      : "bg-white/80 dark:bg-gray-800/80 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600 hover:bg-blue-50 dark:hover:bg-blue-950/30 backdrop-blur-sm"
-                  }`}
-                >
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
-
+        <div className="hidden sm:block sticky top-16 z-30 -mx-2 px-2 py-2 bg-[var(--background)]/95 backdrop-blur-sm rounded-xl">
           {/* Compact controls row: search + sort + view toggle + count */}
           <div className="flex items-center gap-3">
             {/* Inline search */}
@@ -665,6 +657,8 @@ function ArticlesListContent({
           <div className="h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
         </div>
       )}
+        </div>
+      </div>
 
       {/* Scroll to top / back to filters */}
       {showScrollTop && (

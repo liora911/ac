@@ -16,6 +16,9 @@ export async function GET(request: NextRequest) {
         name: true,
         description: true,
         parentId: true,
+        _count: {
+          select: { articles: { where: { published: true } } },
+        },
       },
       orderBy: {
         name: "asc",
