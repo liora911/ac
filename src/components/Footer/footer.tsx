@@ -238,8 +238,9 @@ export default function Footer() {
     fetchSitemapData();
   }, []);
 
-  // Hide footer on auth pages
-  if (pathname?.startsWith("/auth")) {
+  // Hide footer on auth pages and in the admin dashboard (it gets in the
+  // way of the work surfaces there, e.g. the sketch board)
+  if (pathname?.startsWith("/auth") || pathname?.startsWith("/elitzur")) {
     return null;
   }
 

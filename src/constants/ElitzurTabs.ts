@@ -16,7 +16,9 @@ export type TabKey =
   | "devMetrics"
   | "pdfEditor"
   | "sketchBoard"
-  | "guests";
+  | "guests"
+  | "ideas"
+  | "calendar";
 
 export interface Tab {
   key: TabKey;
@@ -69,6 +71,8 @@ export const TAB_GROUPS: TabGroup[] = [
     tabs: [
       { key: "pdfEditor", label: "עורך PDF", icon: "PenTool" },
       { key: "sketchBoard", label: "לוח סקיצות", icon: "Brush" },
+      { key: "ideas", label: "רעיונות", icon: "Lightbulb" },
+      { key: "calendar", label: "יומן אישי", icon: "CalendarDays" },
     ],
   },
   {

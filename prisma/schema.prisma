@@ -525,6 +525,32 @@ model ArticleView {
   @@map("article_views")
 }
 
+model IdeaNote {
+  id        String   @id @default(cuid())
+  title     String
+  content   String?  // rich HTML (Tiptap)
+  color     String?  // card accent, e.g. "amber" | "blue" | "green" | "pink"
+  pinned    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("idea_notes")
+}
+
+model PersonalEvent {
+  id        String   @id @default(cuid())
+  title     String
+  note      String?
+  date      DateTime // the day (midnight UTC)
+  time      String?  // display time, e.g. "14:30"
+  color     String?  // chip accent, same palette as idea notes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@map("personal_events")
+}
+
 model NewsletterSubscriber {
   id               String   @id @default(cuid())
   email            String   @unique

@@ -49,11 +49,13 @@ Complete file tree for the Avshalom Elitzur website.
       page.tsx
       AboutAdmin.tsx
       ArticlesAdmin.tsx
+      CalendarAdmin.tsx
       CommentsAdmin.tsx
       ElitzurDashboard.tsx
       EventsAdmin.tsx
       GuestsAdmin.tsx
       HomeAdmin.tsx
+      IdeasAdmin.tsx
       LecturesAdmin.tsx
       MessagesAdmin.tsx
       NotificationsAdmin.tsx
@@ -316,6 +318,8 @@ Complete file tree for the Avshalom Elitzur website.
     useEvents.ts                      # Events CRUD
     useFavorites.ts                   # User favorites
     useGuests.ts                      # Guests & guest works CRUD
+    useIdeas.ts                       # Idea notes CRUD (admin)
+    usePersonalEvents.ts              # Personal calendar CRUD (admin)
     useHomeContent.ts                 # Home page content
     useHomePreview.ts                 # Home preview
     useLectures.ts                    # Lectures CRUD

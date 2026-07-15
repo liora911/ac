@@ -1103,15 +1103,27 @@ export default function SketchBoard() {
 
   const scale = (boardWidth * zoom) / W;
 
-  const mainTools: { key: Tool; icon: React.ReactNode; label: string }[] = [
-    { key: "select", icon: <MousePointer2 className="w-4 h-4" />, label: t("sketchBoard.select") },
-    { key: "pen", icon: <Pencil className="w-4 h-4" />, label: t("sketchBoard.pen") },
-    { key: "eraser", icon: <Eraser className="w-4 h-4" />, label: t("sketchBoard.eraser") },
-    { key: "line", icon: <Slash className="w-4 h-4" />, label: t("sketchBoard.line") },
-    { key: "arrow", icon: <MoveUpRight className="w-4 h-4" />, label: t("sketchBoard.arrow") },
-    { key: "wave", icon: <Waves className="w-4 h-4" />, label: t("sketchBoard.wave") },
-    { key: "text", icon: <Type className="w-4 h-4" />, label: t("sketchBoard.text") },
+  // Rail groups: core tools, then physics lines — fixed homes for muscle memory
+  const railGroups: { key: Tool; icon: React.ReactNode; label: string }[][] = [
+    [
+      { key: "select", icon: <MousePointer2 className="w-4 h-4" />, label: t("sketchBoard.select") },
+      { key: "pen", icon: <Pencil className="w-4 h-4" />, label: t("sketchBoard.pen") },
+      { key: "eraser", icon: <Eraser className="w-4 h-4" />, label: t("sketchBoard.eraser") },
+      { key: "text", icon: <Type className="w-4 h-4" />, label: t("sketchBoard.text") },
+    ],
+    [
+      { key: "line", icon: <Slash className="w-4 h-4" />, label: t("sketchBoard.line") },
+      { key: "arrow", icon: <MoveUpRight className="w-4 h-4" />, label: t("sketchBoard.arrow") },
+      { key: "wave", icon: <Waves className="w-4 h-4" />, label: t("sketchBoard.wave") },
+    ],
   ];
+
+  const railBtn = (isActive: boolean) =>
+    `w-16 sm:w-full flex flex-col items-center gap-0.5 py-2 px-1 rounded-lg text-[10px] font-medium leading-tight transition-colors cursor-pointer ${
+      isActive
+        ? "bg-blue-600 text-white shadow-sm"
+        : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+    }`;
 
   const shapeMenuItems: { key: Tool; icon: React.ReactNode; label: string }[] = [
     { key: "rect", icon: <Square className="w-4 h-4" />, label: t("sketchBoard.rect") },
@@ -1281,91 +1293,7 @@ export default function SketchBoard() {
       <div className="space-y-4">
           {/* Toolbar — sticky below the admin header so tools stay reachable
               while scrolling a tall board */}
-          <div className="sticky top-20 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm space-y-3">
-            <div className="flex flex-wrap items-center gap-1.5">
-              {mainTools.map(({ key, icon, label }) => (
-                <button
-                  key={key}
-                  type="button"
-                  onClick={() => setTool(key)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                    tool === key ? toolBtnActive : toolBtnIdle
-                  }`}
-                  title={label}
-                >
-                  {icon}
-                  <span className="hidden sm:inline">{label}</span>
-                </button>
-              ))}
-
-              {/* Shapes gallery (Word-style) */}
-              <div className="relative" ref={shapesMenuRef}>
-                <button
-                  type="button"
-                  onClick={() => setShowShapesMenu((v) => !v)}
-                  className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-                    activeShapeItem ? toolBtnActive : toolBtnIdle
-                  }`}
-                  title={t("sketchBoard.shapes")}
-                  aria-expanded={showShapesMenu}
-                  aria-haspopup="menu"
-                >
-                  {activeShapeItem ? (
-                    activeShapeItem.icon
-                  ) : (
-                    <ShapesIcon className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">
-                    {activeShapeItem?.label ?? t("sketchBoard.shapes")}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5" />
-                </button>
-                {showShapesMenu && (
-                  <div
-                    role="menu"
-                    className="absolute top-full mt-1 start-0 z-40 grid grid-cols-2 gap-1 p-2 w-80 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl"
-                  >
-                    {shapeMenuItems.map(({ key, icon, label }) => (
-                      <button
-                        key={key}
-                        type="button"
-                        role="menuitem"
-                        onClick={() => {
-                          setTool(key);
-                          setShowShapesMenu(false);
-                        }}
-                        className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
-                          tool === key
-                            ? "bg-blue-600 text-white"
-                            : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
-                        title={label}
-                      >
-                        <span className="flex-shrink-0">{icon}</span>
-                        <span className="truncate">{label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Function graph */}
-              <button
-                type="button"
-                onClick={() => {
-                  setGraphError(false);
-                  setShowGraphModal(true);
-                }}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors cursor-pointer ${toolBtnIdle}`}
-                title={t("sketchBoard.graph")}
-              >
-                <ChartSpline className="w-4 h-4" />
-                <span className="hidden sm:inline">
-                  {t("sketchBoard.graph")}
-                </span>
-              </button>
-            </div>
-
+          <div className="sticky top-20 z-20 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm">
             <div className="flex flex-wrap items-center gap-4">
               {/* Colors + fill */}
               <div className="flex items-center gap-1.5" role="group" aria-label={t("sketchBoard.color")}>
@@ -1496,6 +1424,98 @@ export default function SketchBoard() {
             </div>
           </div>
 
+          <div className="flex flex-col sm:flex-row items-start gap-3">
+            {/* Tool rail — every tool always visible with a permanent home,
+                so muscle memory can form. Horizontal strip on mobile. */}
+            <div className="w-full sm:w-[92px] flex-shrink-0 sm:sticky sm:top-40 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 shadow-sm">
+              <div className="flex flex-row flex-wrap sm:flex-col gap-1 items-stretch">
+                {railGroups.map((group, gi) => (
+                  <React.Fragment key={gi}>
+                    {gi > 0 && (
+                      <div className="hidden sm:block h-px w-full bg-gray-200 dark:bg-gray-700 my-1" />
+                    )}
+                    {group.map(({ key, icon, label }) => (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => setTool(key)}
+                        className={railBtn(tool === key)}
+                        title={label}
+                      >
+                        {icon}
+                        <span className="truncate max-w-full">{label}</span>
+                      </button>
+                    ))}
+                  </React.Fragment>
+                ))}
+                <div className="hidden sm:block h-px w-full bg-gray-200 dark:bg-gray-700 my-1" />
+                {/* Shapes gallery */}
+                <div className="relative" ref={shapesMenuRef}>
+                  <button
+                    type="button"
+                    onClick={() => setShowShapesMenu((v) => !v)}
+                    className={railBtn(!!activeShapeItem)}
+                    title={t("sketchBoard.shapes")}
+                    aria-expanded={showShapesMenu}
+                    aria-haspopup="menu"
+                  >
+                    {activeShapeItem ? (
+                      activeShapeItem.icon
+                    ) : (
+                      <ShapesIcon className="w-4 h-4" />
+                    )}
+                    <span className="flex items-center gap-0.5 truncate max-w-full">
+                      {activeShapeItem?.label ?? t("sketchBoard.shapes")}
+                      <ChevronDown className="w-3 h-3 flex-shrink-0" />
+                    </span>
+                  </button>
+                  {showShapesMenu && (
+                    <div
+                      role="menu"
+                      className="absolute z-40 grid grid-cols-2 gap-1 p-2 w-80 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl top-full mt-1 start-0 sm:top-0 sm:mt-0 sm:start-full sm:ms-2"
+                    >
+                      {shapeMenuItems.map(({ key, icon, label }) => (
+                        <button
+                          key={key}
+                          type="button"
+                          role="menuitem"
+                          onClick={() => {
+                            setTool(key);
+                            setShowShapesMenu(false);
+                          }}
+                          className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
+                            tool === key
+                              ? "bg-blue-600 text-white"
+                              : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                          }`}
+                          title={label}
+                        >
+                          <span className="flex-shrink-0">{icon}</span>
+                          <span className="truncate">{label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {/* Function graph */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGraphError(false);
+                    setShowGraphModal(true);
+                  }}
+                  className={railBtn(false)}
+                  title={t("sketchBoard.graph")}
+                >
+                  <ChartSpline className="w-4 h-4" />
+                  <span className="truncate max-w-full">
+                    {t("sketchBoard.graph")}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 min-w-0 w-full">
           {/* Canvas — always white like paper, with a dot grid (display only).
               The outer container scrolls, so zooming in or adding space never
               disturbs what is already drawn. */}
@@ -1574,6 +1594,8 @@ export default function SketchBoard() {
                   }}
                 />
               )}
+            </div>
+          </div>
             </div>
           </div>
       </div>

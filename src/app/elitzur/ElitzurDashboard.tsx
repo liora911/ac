@@ -24,6 +24,8 @@ import AboutAdmin from "./AboutAdmin";
 import PdfEditorAdmin from "./PdfEditorAdmin";
 import SketchBoardAdmin from "./SketchBoardAdmin";
 import GuestsAdmin from "./GuestsAdmin";
+import IdeasAdmin from "./IdeasAdmin";
+import CalendarAdmin from "./CalendarAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
@@ -47,6 +49,7 @@ import {
   Hammer,
   PenTool,
   Brush,
+  Lightbulb,
   LucideIcon,
   LogOut,
   Sparkles,
@@ -84,6 +87,7 @@ const iconMap: Record<string, LucideIcon> = {
   Hammer,
   PenTool,
   Brush,
+  Lightbulb,
   Mail,
 };
 
@@ -220,8 +224,8 @@ export default function ElitzurDashboard() {
             >
               <Menu className="w-5 h-5" />
             </button>
-            {/* AI Assistant Input */}
-            <div className="relative flex-1 max-w-xl" ref={aiChatRef}>
+            {/* AI Assistant Input — the header's main element */}
+            <div className="relative flex-1 max-w-2xl" ref={aiChatRef}>
               <form onSubmit={handleAiSubmit} className="relative">
                 <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                   <Sparkles className="w-4 h-4 text-purple-500" />
@@ -232,7 +236,7 @@ export default function ElitzurDashboard() {
                   onChange={(e) => setAiInput(e.target.value)}
                   onFocus={() => aiMessages.length > 0 && setShowAiChat(true)}
                   placeholder={placeholderText}
-                  className="w-full py-2 ps-10 pe-10 text-sm rounded-full border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="w-full py-2.5 ps-10 pe-10 text-sm rounded-xl border-2 border-purple-200 dark:border-purple-800/70 bg-white dark:bg-gray-900 shadow-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                 />
                 <button
                   type="submit"
@@ -307,25 +311,22 @@ export default function ElitzurDashboard() {
               )}
             </div>
 
-            {/* User Section */}
+            {/* User Section — compact: the AI input is the header's focus */}
             {session && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-full flex-shrink-0">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
+                <div
+                  className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm"
+                  title={session.user?.email ?? undefined}
+                >
                   {session.user?.email?.charAt(0).toUpperCase()}
                 </div>
-                <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden sm:block max-w-[200px] truncate">
-                  {session.user?.email}
-                </span>
-                <div className="w-px h-5 bg-gray-300 dark:bg-gray-600 hidden sm:block" />
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                  className="p-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
                   title={t("admin.nav.logout")}
+                  aria-label={t("admin.nav.logout")}
                 >
                   <LogOut className="w-4 h-4" />
-                  <span className="hidden sm:inline">
-                    {t("admin.nav.logout")}
-                  </span>
                 </button>
               </div>
             )}
@@ -451,6 +452,10 @@ export default function ElitzurDashboard() {
           {active === "sketchBoard" && <SketchBoardAdmin />}
 
           {active === "guests" && <GuestsAdmin />}
+
+          {active === "ideas" && <IdeasAdmin />}
+
+          {active === "calendar" && <CalendarAdmin />}
             </div>
           </main>
         </div>
