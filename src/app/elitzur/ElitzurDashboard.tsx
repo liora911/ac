@@ -341,7 +341,7 @@ export default function ElitzurDashboard() {
           {/* Desktop sidebar — every section visible at once, stable positions.
               Collapses to an icon rail; content reflows into the freed width */}
           <aside
-            className={`hidden lg:flex lg:flex-col flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto overflow-x-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-all duration-300 ease-in-out ${
+            className={`hidden lg:flex lg:flex-col flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-all duration-300 ease-in-out ${
               collapsed ? "w-[4.25rem] p-2" : "w-60 p-3"
             }`}
           >
@@ -365,17 +365,20 @@ export default function ElitzurDashboard() {
                 <PanelLeftClose className="w-4 h-4 rtl:rotate-180" />
               )}
             </button>
-            <SidebarNav
-              active={active}
-              onSelect={handleTabClick}
-              t={t}
-              collapsed={collapsed}
-            />
+            {/* Only the nav list scrolls — the collapse button above stays pinned */}
+            <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
+              <SidebarNav
+                active={active}
+                onSelect={handleTabClick}
+                t={t}
+                collapsed={collapsed}
+              />
+            </div>
           </aside>
 
           {/* Mobile drawer */}
           {sidebarOpen && (
-            <div className="fixed inset-0 z-50 lg:hidden" role="dialog" aria-modal="true">
+            <div className="fixed inset-0 z-[70] lg:hidden" role="dialog" aria-modal="true">
               <div
                 className="absolute inset-0 bg-black/50"
                 onClick={() => setSidebarOpen(false)}
