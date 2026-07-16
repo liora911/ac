@@ -477,7 +477,7 @@ function ArticlesListContent({
           </div>
 
           {/* Desktop Loading Skeleton */}
-          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: initialLimit }).map((_, index) => (
               <div
                 key={index}
@@ -519,7 +519,7 @@ function ArticlesListContent({
         articles.length > 0 && (
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
                 {articles.map((article, idx) => {
                   const isNew = idx >= newItemStartIdx;
                   const isBento = article.isFeatured && idx < 3;

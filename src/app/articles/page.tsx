@@ -60,8 +60,9 @@ function ArticlesPageContent() {
         )}
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Main Content — wider than the site default: the topics sidebar
+          claims ~240px, so the grid needs the extra room on large screens */}
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <ArticlesList
           initialLimit={12}
           showFilters={categoryId !== "cmldlqdpq0001l804wu8113br"}
