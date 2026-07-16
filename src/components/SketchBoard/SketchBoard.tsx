@@ -2243,7 +2243,9 @@ export default function SketchBoard() {
           <div className="flex flex-col sm:flex-row items-start gap-3">
             {/* Tool rail — every tool always visible with a permanent home,
                 so muscle memory can form. Horizontal strip on mobile. */}
-            <div className="w-full sm:w-[92px] flex-shrink-0 sm:sticky sm:top-40 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 shadow-sm">
+            {/* z-30 lifts the rail's stacking context above the sticky
+                toolbar (z-20) so the shapes popover isn't covered by it */}
+            <div className="w-full sm:w-[92px] flex-shrink-0 sm:sticky sm:top-40 z-30 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-2 shadow-sm">
               <div className="flex flex-row flex-wrap sm:flex-col gap-1 items-stretch">
                 {railGroups.map((group, gi) => (
                   <React.Fragment key={gi}>
