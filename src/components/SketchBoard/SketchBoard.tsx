@@ -41,7 +41,29 @@ import {
   ChartSpline,
   Calculator as CalculatorIcon,
   X,
+  Disc,
+  Octagon,
+  Cross,
+  Heart,
+  Cloud,
+  Moon,
+  Cylinder,
+  Box,
+  Zap,
+  MessageSquare,
+  Magnet,
+  Atom as AtomIcon,
+  Orbit as OrbitIcon,
+  Sigma,
+  Plus,
+  Minus,
+  RotateCw,
+  RotateCcw,
 } from "lucide-react";
+import {
+  EQUATION_CATEGORIES,
+  TOTAL_EQUATIONS,
+} from "./equations";
 
 // Fixed logical width — the canvas scales responsively via CSS, so
 // coordinates stay stable no matter the screen size. Height is extendable
@@ -61,14 +83,33 @@ type BoxKind =
   | "wave"
   | "coil"
   | "circle"
+  | "disk"
   | "rect"
   | "triangle"
+  | "rightTriangle"
   | "diamond"
   | "pentagon"
   | "hexagon"
+  | "octagon"
   | "star"
   | "parallelogram"
   | "trapezoid"
+  | "semicircle"
+  | "cross"
+  | "ring"
+  | "torus"
+  | "orbit"
+  | "cylinder"
+  | "cube"
+  | "lightning"
+  | "heart"
+  | "cloud"
+  | "crescent"
+  | "speechBubble"
+  | "dipole"
+  | "atom"
+  | "zigzag"
+  | "dotted"
   | "dot"
   | "axes";
 
@@ -78,6 +119,7 @@ type Shape =
       points: { x: number; y: number }[];
       color: string;
       width: number;
+      rotation?: number; // clockwise degrees about the shape's bbox center
     }
   | {
       kind: BoxKind;
@@ -88,6 +130,8 @@ type Shape =
       color: string;
       width: number;
       fill?: boolean;
+      rotation?: number;
+      atomZ?: number; // for kind "atom": atomic number to render as Bohr model
     }
   | {
       kind: "text";
@@ -96,6 +140,7 @@ type Shape =
       text: string;
       color: string;
       size: number;
+      rotation?: number;
     }
   | {
       kind: "graph";
@@ -108,6 +153,7 @@ type Shape =
       expr: string;
       xMin: number;
       xMax: number;
+      rotation?: number;
     };
 
 type Tool = "select" | "pen" | "eraser" | "text" | BoxKind;
@@ -123,14 +169,23 @@ const COLORS = [
 const WIDTHS = [3, 5, 9];
 const CLOSED_KINDS: ReadonlySet<string> = new Set([
   "circle",
+  "disk",
   "rect",
   "triangle",
+  "rightTriangle",
   "diamond",
   "pentagon",
   "hexagon",
+  "octagon",
   "star",
   "parallelogram",
   "trapezoid",
+  "semicircle",
+  "cross",
+  "lightning",
+  "heart",
+  "cloud",
+  "speechBubble",
 ]);
 const SEGMENT_KINDS: ReadonlySet<string> = new Set([
   "line",
@@ -139,9 +194,13 @@ const SEGMENT_KINDS: ReadonlySet<string> = new Set([
   "dashed",
   "wave",
   "coil",
+  "zigzag",
+  "dotted",
 ]);
 
 const textSizeForWidth = (w: number) => 16 + w * 5;
+const clamp = (v: number, min: number, max: number) =>
+  Math.min(max, Math.max(min, v));
 const dotRadius = (w: number) => 4 + w * 1.5;
 const coilRadius = (w: number) => 7 + w * 1.5;
 const waveAmplitude = (w: number) => 8 + w * 2;
@@ -153,14 +212,50 @@ function regularPolygon(
   cy: number,
   rx: number,
   ry: number,
-  sides: number
+  sides: number,
+  startAngle = -Math.PI / 2
 ): { x: number; y: number }[] {
   const pts = [];
   for (let k = 0; k < sides; k++) {
-    const a = -Math.PI / 2 + (k * 2 * Math.PI) / sides;
+    const a = startAngle + (k * 2 * Math.PI) / sides;
     pts.push({ x: cx + rx * Math.cos(a), y: cy + ry * Math.sin(a) });
   }
   return pts;
+}
+
+// Bohr-model electron shells via aufbau (Madelung) filling — schematic
+// occupancies per principal shell, good for all 118 elements
+const MADELUNG: [number, number][] = [
+  [1, 2], [2, 2], [2, 6], [3, 2], [3, 6], [4, 2], [3, 10], [4, 6],
+  [5, 2], [4, 10], [5, 6], [6, 2], [4, 14], [5, 10], [6, 6], [7, 2],
+  [5, 14], [6, 10], [7, 6],
+];
+
+export const ELEMENT_SYMBOLS = [
+  "H", "He", "Li", "Be", "B", "C", "N", "O", "F", "Ne",
+  "Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar", "K", "Ca",
+  "Sc", "Ti", "V", "Cr", "Mn", "Fe", "Co", "Ni", "Cu", "Zn",
+  "Ga", "Ge", "As", "Se", "Br", "Kr", "Rb", "Sr", "Y", "Zr",
+  "Nb", "Mo", "Tc", "Ru", "Rh", "Pd", "Ag", "Cd", "In", "Sn",
+  "Sb", "Te", "I", "Xe", "Cs", "Ba", "La", "Ce", "Pr", "Nd",
+  "Pm", "Sm", "Eu", "Gd", "Tb", "Dy", "Ho", "Er", "Tm", "Yb",
+  "Lu", "Hf", "Ta", "W", "Re", "Os", "Ir", "Pt", "Au", "Hg",
+  "Tl", "Pb", "Bi", "Po", "At", "Rn", "Fr", "Ra", "Ac", "Th",
+  "Pa", "U", "Np", "Pu", "Am", "Cm", "Bk", "Cf", "Es", "Fm",
+  "Md", "No", "Lr", "Rf", "Db", "Sg", "Bh", "Hs", "Mt", "Ds",
+  "Rg", "Cn", "Nh", "Fl", "Mc", "Lv", "Ts", "Og",
+];
+
+function bohrShells(z: number): number[] {
+  const shells: number[] = [];
+  let remaining = z;
+  for (const [n, capacity] of MADELUNG) {
+    if (remaining <= 0) break;
+    const add = Math.min(capacity, remaining);
+    shells[n - 1] = (shells[n - 1] ?? 0) + add;
+    remaining -= add;
+  }
+  return shells.map((count) => count ?? 0);
 }
 
 function polygonPoints(
@@ -221,6 +316,50 @@ function polygonPoints(
         { x: maxX, y: maxY },
         { x: minX, y: maxY },
       ];
+    case "rightTriangle":
+      return [
+        { x: minX, y: minY },
+        { x: minX, y: maxY },
+        { x: maxX, y: maxY },
+      ];
+    case "octagon":
+      return regularPolygon(cx, cy, rx, ry, 8, -Math.PI / 2 + Math.PI / 8);
+    case "cross": {
+      // Plus sign built from horizontal/vertical thirds of the box
+      const w3 = (maxX - minX) / 3;
+      const h3 = (maxY - minY) / 3;
+      return [
+        { x: minX + w3, y: minY },
+        { x: maxX - w3, y: minY },
+        { x: maxX - w3, y: minY + h3 },
+        { x: maxX, y: minY + h3 },
+        { x: maxX, y: maxY - h3 },
+        { x: maxX - w3, y: maxY - h3 },
+        { x: maxX - w3, y: maxY },
+        { x: minX + w3, y: maxY },
+        { x: minX + w3, y: maxY - h3 },
+        { x: minX, y: maxY - h3 },
+        { x: minX, y: minY + h3 },
+        { x: minX + w3, y: minY + h3 },
+      ];
+    }
+    case "lightning": {
+      const w = maxX - minX;
+      const h = maxY - minY;
+      const pt = (fx: number, fy: number) => ({
+        x: minX + fx * w,
+        y: minY + fy * h,
+      });
+      return [
+        pt(0.55, 0),
+        pt(0.15, 0.6),
+        pt(0.4, 0.6),
+        pt(0.3, 1),
+        pt(0.85, 0.35),
+        pt(0.55, 0.35),
+        pt(0.75, 0),
+      ];
+    }
     default:
       return [];
   }
@@ -306,6 +445,20 @@ function hitTest(
   ctx?: CanvasRenderingContext2D
 ): boolean {
   const tol = 12;
+  // For rotated shapes, un-rotate the query point about the bbox center and
+  // test against the unrotated geometry — exact for every kind
+  if (s.rotation) {
+    const b = shapeBBox(s, ctx);
+    const cx = (b.minX + b.maxX) / 2;
+    const cy = (b.minY + b.maxY) / 2;
+    const rad = (-s.rotation * Math.PI) / 180;
+    const dx = p.x - cx;
+    const dy = p.y - cy;
+    p = {
+      x: cx + dx * Math.cos(rad) - dy * Math.sin(rad),
+      y: cy + dx * Math.sin(rad) + dy * Math.cos(rad),
+    };
+  }
   if (SEGMENT_KINDS.has(s.kind) && s.kind !== "text") {
     const seg = s as Extract<Shape, { x2: number }>;
     const pad =
@@ -346,6 +499,24 @@ function translateShape(s: Shape, dx: number, dy: number): Shape {
   }
 }
 
+// Scale any shape about its bbox center — geometry only, stroke width stays
+function scaleShape(s: Shape, factor: number): Shape {
+  const b = shapeBBox(s);
+  const cx = (b.minX + b.maxX) / 2;
+  const cy = (b.minY + b.maxY) / 2;
+  const sx = (v: number) => cx + (v - cx) * factor;
+  const sy = (v: number) => cy + (v - cy) * factor;
+  switch (s.kind) {
+    case "pen":
+    case "eraser":
+      return { ...s, points: s.points.map((p) => ({ x: sx(p.x), y: sy(p.y) })) };
+    case "text":
+      return { ...s, x: sx(s.x), y: sy(s.y), size: Math.max(8, s.size * factor) };
+    default:
+      return { ...s, x1: sx(s.x1), y1: sy(s.y1), x2: sx(s.x2), y2: sy(s.y2) };
+  }
+}
+
 // ---------- Drawing ----------
 
 function drawArrowHead(
@@ -377,6 +548,18 @@ function drawShape(ctx: CanvasRenderingContext2D, s: Shape) {
   ctx.lineJoin = "round";
   ctx.strokeStyle = s.kind === "eraser" ? "#000" : s.color;
   ctx.setLineDash([]);
+
+  // Any shape can be rotated about its bbox center
+  const rot = s.rotation ?? 0;
+  if (rot) {
+    const b = shapeBBox(s);
+    const rcx = (b.minX + b.maxX) / 2;
+    const rcy = (b.minY + b.maxY) / 2;
+    ctx.save();
+    ctx.translate(rcx, rcy);
+    ctx.rotate((rot * Math.PI) / 180);
+    ctx.translate(-rcx, -rcy);
+  }
 
   switch (s.kind) {
     case "pen":
@@ -468,7 +651,8 @@ function drawShape(ctx: CanvasRenderingContext2D, s: Shape) {
       ctx.stroke();
       break;
     }
-    case "circle": {
+    case "circle":
+    case "disk": {
       ctx.lineWidth = s.width;
       const rx = Math.abs(s.x2 - s.x1) / 2;
       const ry = Math.abs(s.y2 - s.y1) / 2;
@@ -504,10 +688,14 @@ function drawShape(ctx: CanvasRenderingContext2D, s: Shape) {
       break;
     }
     case "triangle":
+    case "rightTriangle":
     case "diamond":
     case "pentagon":
     case "hexagon":
+    case "octagon":
     case "star":
+    case "cross":
+    case "lightning":
     case "parallelogram":
     case "trapezoid": {
       ctx.lineWidth = s.width;
@@ -541,6 +729,372 @@ function drawShape(ctx: CanvasRenderingContext2D, s: Shape) {
       ctx.lineTo(s.x1, s.y2);
       drawArrowHead(ctx, s.x1, s.y1, s.x1, s.y2, s.width);
       ctx.stroke();
+      // x / y labels at the arrow tips
+      const fs = Math.max(14, s.width * 5);
+      ctx.font = `italic ${fs}px Arial, sans-serif`;
+      ctx.fillStyle = s.color;
+      const xDir = Math.sign(s.x2 - s.x1) || 1;
+      const yDir = Math.sign(s.y2 - s.y1) || 1;
+      ctx.fillText("x", s.x2 + xDir * 8 - (xDir < 0 ? fs : 0), s.y1 + fs * 0.35);
+      ctx.fillText("y", s.x1 + 10, s.y2 + yDir * 8 + (yDir > 0 ? fs * 0.8 : 0));
+      break;
+    }
+    case "semicircle": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      ctx.beginPath();
+      // Dome: upper half-ellipse plus the base chord
+      ctx.ellipse(
+        (minX + maxX) / 2,
+        maxY,
+        Math.max(1, (maxX - minX) / 2),
+        Math.max(1, maxY - minY),
+        0,
+        Math.PI,
+        2 * Math.PI
+      );
+      ctx.closePath();
+      if (s.fill) {
+        ctx.fillStyle = s.color + "40";
+        ctx.fill();
+      }
+      ctx.stroke();
+      break;
+    }
+    case "ring": {
+      ctx.lineWidth = s.width;
+      const cx = (s.x1 + s.x2) / 2;
+      const cy = (s.y1 + s.y2) / 2;
+      const rx = Math.max(1, Math.abs(s.x2 - s.x1) / 2);
+      const ry = Math.max(1, Math.abs(s.y2 - s.y1) / 2);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.moveTo(cx + rx * 0.55, cy);
+      ctx.ellipse(cx, cy, rx * 0.55, ry * 0.55, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      break;
+    }
+    case "torus": {
+      // 3D doughnut — outer ellipse plus the classic "eye" arcs of the hole
+      ctx.lineWidth = s.width;
+      const cx = (s.x1 + s.x2) / 2;
+      const cy = (s.y1 + s.y2) / 2;
+      const rx = Math.max(1, Math.abs(s.x2 - s.x1) / 2);
+      const ry = Math.max(1, Math.abs(s.y2 - s.y1) / 2);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(
+        cx,
+        cy - ry * 0.08,
+        rx * 0.45,
+        ry * 0.24,
+        0,
+        Math.PI * 0.1,
+        Math.PI * 0.9
+      );
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(
+        cx,
+        cy + ry * 0.06,
+        rx * 0.3,
+        ry * 0.14,
+        0,
+        Math.PI * 1.15,
+        Math.PI * 1.85
+      );
+      ctx.stroke();
+      break;
+    }
+    case "orbit": {
+      // Circular motion: dashed orbit + tangent arrowhead + center dot
+      ctx.lineWidth = s.width;
+      const cx = (s.x1 + s.x2) / 2;
+      const cy = (s.y1 + s.y2) / 2;
+      const rx = Math.max(1, Math.abs(s.x2 - s.x1) / 2);
+      const ry = Math.max(1, Math.abs(s.y2 - s.y1) / 2);
+      ctx.setLineDash([s.width * 3, s.width * 2.5]);
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Arrowhead at the top of the orbit, pointing in +x (motion direction)
+      const ax = cx;
+      const ay = cy - ry;
+      ctx.beginPath();
+      drawArrowHead(ctx, ax - 10, ay, ax + s.width * 2, ay, s.width);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(3, s.width * 1.2), 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      break;
+    }
+    case "cylinder": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const cx = (minX + maxX) / 2;
+      const rx = Math.max(1, (maxX - minX) / 2);
+      const eh = Math.max(2, (maxY - minY) * 0.15);
+      ctx.beginPath();
+      ctx.ellipse(cx, minY + eh, rx, eh, 0, 0, Math.PI * 2);
+      ctx.moveTo(minX, minY + eh);
+      ctx.lineTo(minX, maxY - eh);
+      ctx.moveTo(maxX, minY + eh);
+      ctx.lineTo(maxX, maxY - eh);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.ellipse(cx, maxY - eh, rx, eh, 0, 0, Math.PI);
+      ctx.stroke();
+      break;
+    }
+    case "cube": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const d = Math.max(
+        4,
+        Math.min(maxX - minX, maxY - minY) * 0.25
+      );
+      ctx.beginPath();
+      // Front face
+      ctx.rect(minX, minY + d, maxX - d - minX, maxY - (minY + d));
+      // Top face
+      ctx.moveTo(minX, minY + d);
+      ctx.lineTo(minX + d, minY);
+      ctx.lineTo(maxX, minY);
+      ctx.lineTo(maxX - d, minY + d);
+      // Right face
+      ctx.moveTo(maxX, minY);
+      ctx.lineTo(maxX, maxY - d);
+      ctx.lineTo(maxX - d, maxY);
+      ctx.stroke();
+      break;
+    }
+    case "heart": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const cx = (minX + maxX) / 2;
+      const h = maxY - minY;
+      ctx.beginPath();
+      ctx.moveTo(cx, minY + 0.3 * h);
+      ctx.bezierCurveTo(cx, minY, minX, minY, minX, minY + 0.35 * h);
+      ctx.bezierCurveTo(minX, minY + 0.6 * h, cx, minY + 0.8 * h, cx, maxY);
+      ctx.bezierCurveTo(cx, minY + 0.8 * h, maxX, minY + 0.6 * h, maxX, minY + 0.35 * h);
+      ctx.bezierCurveTo(maxX, minY, cx, minY, cx, minY + 0.3 * h);
+      ctx.closePath();
+      if (s.fill) {
+        ctx.fillStyle = s.color + "40";
+        ctx.fill();
+      }
+      ctx.stroke();
+      break;
+    }
+    case "cloud": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const w = Math.max(1, maxX - minX);
+      const h = Math.max(1, maxY - minY);
+      // Path drawn in a fixed 100x60 design space, scaled to the box;
+      // restore before stroking keeps the line width uniform
+      ctx.save();
+      ctx.translate(minX, minY);
+      ctx.scale(w / 100, h / 60);
+      ctx.beginPath();
+      ctx.moveTo(20, 58);
+      ctx.bezierCurveTo(2, 58, 0, 40, 14, 36);
+      ctx.bezierCurveTo(12, 20, 30, 12, 40, 20);
+      ctx.bezierCurveTo(48, 4, 72, 6, 76, 22);
+      ctx.bezierCurveTo(94, 22, 100, 38, 88, 50);
+      ctx.bezierCurveTo(92, 58, 84, 60, 78, 58);
+      ctx.closePath();
+      ctx.restore();
+      if (s.fill) {
+        ctx.fillStyle = s.color + "40";
+        ctx.fill();
+      }
+      ctx.stroke();
+      break;
+    }
+    case "crescent": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const w = Math.max(1, maxX - minX);
+      const h = Math.max(1, maxY - minY);
+      ctx.save();
+      ctx.translate(minX, minY);
+      ctx.scale(w / 100, h / 100);
+      ctx.beginPath();
+      // Outer arc the long way round, inner arc back — moon opening right
+      ctx.arc(50, 50, 48, 0.817, -0.817, false);
+      ctx.arc(68, 50, 38, -1.167, 1.167, true);
+      ctx.closePath();
+      ctx.restore();
+      ctx.stroke();
+      break;
+    }
+    case "speechBubble": {
+      ctx.lineWidth = s.width;
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const w = Math.max(1, maxX - minX);
+      const h = Math.max(1, maxY - minY);
+      const bodyH = h * 0.72;
+      const r = Math.min(w, bodyH) * 0.2;
+      ctx.beginPath();
+      ctx.roundRect(minX, minY, w, bodyH, r);
+      ctx.moveTo(minX + 0.2 * w, minY + bodyH);
+      ctx.lineTo(minX + 0.15 * w, maxY);
+      ctx.lineTo(minX + 0.38 * w, minY + bodyH);
+      if (s.fill) {
+        ctx.fillStyle = s.color + "40";
+        ctx.fill();
+      }
+      ctx.stroke();
+      break;
+    }
+    case "dipole": {
+      // Bar magnet with the classic nested field-line loops: true circles
+      // through both poles, mirrored above and below the axis
+      ctx.lineWidth = Math.max(1.5, s.width * 0.7);
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const rx = Math.max(1, (maxX - minX) / 2);
+      const ry = Math.max(1, (maxY - minY) / 2);
+      const d = rx * 0.3; // half pole separation
+      for (const extent of [0.45, 0.72, 1]) {
+        const e = ry * extent;
+        if (e <= d) continue;
+        const hOff = (e * e - d * d) / (2 * e);
+        const r = Math.hypot(d, hOff);
+        ctx.beginPath();
+        ctx.arc(cx, cy - hOff, r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(cx, cy + hOff, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      // The bar magnet
+      ctx.lineWidth = s.width;
+      const barH = Math.max(6, ry * 0.16);
+      ctx.fillStyle = s.color;
+      ctx.fillRect(cx - d, cy - barH / 2, 2 * d, barH);
+      break;
+    }
+    case "atom": {
+      // Bohr model: nucleus + shells + electrons per aufbau filling
+      const minX = Math.min(s.x1, s.x2);
+      const maxX = Math.max(s.x1, s.x2);
+      const minY = Math.min(s.y1, s.y2);
+      const maxY = Math.max(s.y1, s.y2);
+      const cx = (minX + maxX) / 2;
+      const cy = (minY + maxY) / 2;
+      const rMax = Math.max(10, Math.min(maxX - minX, maxY - minY) / 2);
+      const z = s.atomZ ?? 1;
+      const shells = bohrShells(z);
+      const nucleusR = Math.max(9, rMax * 0.14);
+      ctx.lineWidth = Math.max(1.5, s.width * 0.7);
+      shells.forEach((count, i) => {
+        const r = nucleusR + ((rMax - nucleusR) * (i + 1)) / shells.length;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        const eR = Math.max(2.5, s.width * 0.9);
+        for (let k = 0; k < count; k++) {
+          const a = (k * 2 * Math.PI) / count - Math.PI / 2 + i * 0.4;
+          ctx.beginPath();
+          ctx.arc(cx + r * Math.cos(a), cy + r * Math.sin(a), eR, 0, Math.PI * 2);
+          ctx.fillStyle = s.color;
+          ctx.fill();
+        }
+      });
+      ctx.beginPath();
+      ctx.arc(cx, cy, nucleusR, 0, Math.PI * 2);
+      ctx.fillStyle = s.color;
+      ctx.fill();
+      const symbol = ELEMENT_SYMBOLS[z - 1];
+      if (symbol) {
+        ctx.font = `bold ${Math.round(nucleusR * 0.95)}px Arial, sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ffffff";
+        ctx.fillText(symbol, cx, cy);
+        ctx.textAlign = "left";
+        ctx.textBaseline = "alphabetic";
+      }
+      break;
+    }
+    case "zigzag": {
+      // Resistor / spring: straight leads with a zigzag middle
+      ctx.lineWidth = s.width;
+      const dx = s.x2 - s.x1;
+      const dy = s.y2 - s.y1;
+      const len = Math.hypot(dx, dy);
+      if (len < 4) break;
+      const ux = dx / len;
+      const uy = dy / len;
+      const px = -uy;
+      const py = ux;
+      const amp = 8 + s.width * 2;
+      const lead = Math.min(0.15 * len, 30);
+      const inner = len - 2 * lead;
+      const segments = Math.max(4, Math.round(inner / 16));
+      ctx.beginPath();
+      ctx.moveTo(s.x1, s.y1);
+      ctx.lineTo(s.x1 + ux * lead, s.y1 + uy * lead);
+      for (let i = 0; i < segments; i++) {
+        const dAlong = lead + (inner * (i + 0.5)) / segments;
+        const sign = i % 2 === 0 ? 1 : -1;
+        ctx.lineTo(
+          s.x1 + ux * dAlong + px * amp * sign,
+          s.y1 + uy * dAlong + py * amp * sign
+        );
+      }
+      ctx.lineTo(s.x1 + ux * (len - lead), s.y1 + uy * (len - lead));
+      ctx.lineTo(s.x2, s.y2);
+      ctx.stroke();
+      break;
+    }
+    case "dotted": {
+      const dx = s.x2 - s.x1;
+      const dy = s.y2 - s.y1;
+      const len = Math.hypot(dx, dy);
+      if (len < 2) break;
+      const ux = dx / len;
+      const uy = dy / len;
+      const r = Math.max(1.5, s.width * 0.8);
+      const spacing = r * 5;
+      ctx.fillStyle = s.color;
+      for (let d = 0; d <= len; d += spacing) {
+        ctx.beginPath();
+        ctx.arc(s.x1 + ux * d, s.y1 + uy * d, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
       break;
     }
     case "graph": {
@@ -649,6 +1203,7 @@ function drawShape(ctx: CanvasRenderingContext2D, s: Shape) {
       break;
     }
   }
+  if (rot) ctx.restore();
   ctx.globalCompositeOperation = "source-over";
 }
 
@@ -662,8 +1217,16 @@ function drawAllShapes(
   for (const s of shapes) drawShape(ctx, s);
   if (temp) drawShape(ctx, temp);
   if (selectedIdx != null && shapes[selectedIdx]) {
-    const b = shapeBBox(shapes[selectedIdx], ctx);
+    const sel = shapes[selectedIdx];
+    const b = shapeBBox(sel, ctx);
     ctx.save();
+    if (sel.rotation) {
+      const cx = (b.minX + b.maxX) / 2;
+      const cy = (b.minY + b.maxY) / 2;
+      ctx.translate(cx, cy);
+      ctx.rotate((sel.rotation * Math.PI) / 180);
+      ctx.translate(-cx, -cy);
+    }
     ctx.strokeStyle = "#3b82f6";
     ctx.lineWidth = 2;
     ctx.setLineDash([8, 5]);
@@ -704,6 +1267,32 @@ const AxesIcon = () => (
     <path d="M5 21V5m0 16h16M5 5l-2.5 3M5 5l2.5 3M21 21l-3-2.5m3 2.5-2.5-3" />
   </svg>
 );
+const SemicircleIcon = () => (
+  <svg {...svgProps}>
+    <path d="M3 17a9 9 0 0 1 18 0Z" />
+  </svg>
+);
+const RightTriangleIcon = () => (
+  <svg {...svgProps}>
+    <path d="M5 4v16h16Z" />
+  </svg>
+);
+const RingIcon = () => (
+  <svg {...svgProps}>
+    <circle cx="12" cy="12" r="9" />
+    <circle cx="12" cy="12" r="4" />
+  </svg>
+);
+const ZigzagIcon = () => (
+  <svg {...svgProps}>
+    <path d="M2 12h3l2-5 3 10 3-10 3 10 2-5h4" />
+  </svg>
+);
+const DottedLineIcon = () => (
+  <svg {...svgProps}>
+    <line x1="3" y1="12" x2="21" y2="12" strokeDasharray="0.5 4.5" strokeWidth="3" />
+  </svg>
+);
 
 // ---------- Component ----------
 
@@ -723,7 +1312,7 @@ const GRAPH_PRESETS: {
 ];
 
 export default function SketchBoard() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
 
   const [history, setHistory] = useState<HistoryState>({
     past: [],
@@ -744,6 +1333,10 @@ export default function SketchBoard() {
   const [showClearModal, setShowClearModal] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
   const [showGraphModal, setShowGraphModal] = useState(false);
+  const [showEqDialog, setShowEqDialog] = useState(false);
+  const [eqSearch, setEqSearch] = useState("");
+  const [showAtomDialog, setShowAtomDialog] = useState(false);
+  const [atomSearch, setAtomSearch] = useState("");
   const [graphExpr, setGraphExpr] = useState("sin(x)");
   const [graphFrom, setGraphFrom] = useState("-2pi");
   const [graphTo, setGraphTo] = useState("2pi");
@@ -863,6 +1456,59 @@ export default function SketchBoard() {
     commit(shapes.filter((_, i) => i !== selectedIdx));
     setSelectedIdx(null);
   }, [selectedIdx, shapes, commit]);
+
+  // Universal transform of the selected shape — undoable via commit
+  const modifySelected = useCallback(
+    (fn: (s: Shape) => Shape) => {
+      if (selectedIdx == null) return;
+      commit(shapes.map((s, i) => (i === selectedIdx ? fn(s) : s)));
+    },
+    [selectedIdx, shapes, commit]
+  );
+
+  const scaleSelected = (factor: number) =>
+    modifySelected((s) => scaleShape(s, factor));
+
+  const rotateSelected = (delta: number) =>
+    modifySelected((s) => ({
+      ...s,
+      rotation: (((s.rotation ?? 0) + delta) % 360 + 360) % 360,
+    }));
+
+  const insertEquation = (formula: string) => {
+    const size = textSizeForWidth(strokeWidth) + 8;
+    const estWidth = formula.length * size * 0.5;
+    const shape: Shape = {
+      kind: "text",
+      x: Math.max(40, W / 2 - estWidth / 2),
+      y: 380,
+      text: formula,
+      color,
+      size,
+    };
+    commit([...shapes, shape]);
+    setSelectedIdx(shapes.length);
+    setTool("select");
+    setShowEqDialog(false);
+  };
+
+  const insertAtom = (z: number) => {
+    const r = 190;
+    const shape: Shape = {
+      kind: "atom",
+      x1: W / 2 - r,
+      y1: 460 - r,
+      x2: W / 2 + r,
+      y2: 460 + r,
+      color,
+      width: strokeWidth,
+      atomZ: z,
+    };
+    commit([...shapes, shape]);
+    setSelectedIdx(shapes.length);
+    setTool("select");
+    setShowAtomDialog(false);
+  };
 
   // Keyboard: Ctrl+Z / Ctrl+Shift+Z / Ctrl+Y, Delete removes selection,
   // Escape deselects
@@ -1007,6 +1653,18 @@ export default function SketchBoard() {
       const shape = current as Extract<Shape, { x2: number }>;
       shape.x2 = pos.x;
       shape.y2 = pos.y;
+      // "disk" is always a perfect circle; Shift constrains ellipse/rect
+      // to circle/square (drag distance = the larger axis)
+      if (
+        current.kind === "disk" ||
+        (e.shiftKey && (current.kind === "circle" || current.kind === "rect"))
+      ) {
+        const dx = pos.x - shape.x1;
+        const dy = pos.y - shape.y1;
+        const side = Math.max(Math.abs(dx), Math.abs(dy));
+        shape.x2 = shape.x1 + Math.sign(dx || 1) * side;
+        shape.y2 = shape.y1 + Math.sign(dy || 1) * side;
+      }
     }
     const ctx = canvasRef.current?.getContext("2d");
     if (ctx) drawAllShapes(ctx, shapes, current);
@@ -1128,14 +1786,32 @@ export default function SketchBoard() {
   const shapeMenuItems: { key: Tool; icon: React.ReactNode; label: string }[] = [
     { key: "rect", icon: <Square className="w-4 h-4" />, label: t("sketchBoard.rect") },
     { key: "circle", icon: <Circle className="w-4 h-4" />, label: t("sketchBoard.circle") },
+    { key: "disk", icon: <Disc className="w-4 h-4" />, label: t("sketchBoard.disk") },
+    { key: "semicircle", icon: <SemicircleIcon />, label: t("sketchBoard.semicircle") },
     { key: "triangle", icon: <Triangle className="w-4 h-4" />, label: t("sketchBoard.triangle") },
+    { key: "rightTriangle", icon: <RightTriangleIcon />, label: t("sketchBoard.rightTriangle") },
     { key: "diamond", icon: <Diamond className="w-4 h-4" />, label: t("sketchBoard.diamond") },
     { key: "pentagon", icon: <Pentagon className="w-4 h-4" />, label: t("sketchBoard.pentagon") },
     { key: "hexagon", icon: <Hexagon className="w-4 h-4" />, label: t("sketchBoard.hexagon") },
+    { key: "octagon", icon: <Octagon className="w-4 h-4" />, label: t("sketchBoard.octagon") },
     { key: "star", icon: <Star className="w-4 h-4" />, label: t("sketchBoard.star") },
+    { key: "cross", icon: <Cross className="w-4 h-4" />, label: t("sketchBoard.cross") },
     { key: "parallelogram", icon: <ParallelogramIcon />, label: t("sketchBoard.parallelogram") },
     { key: "trapezoid", icon: <TrapezoidIcon />, label: t("sketchBoard.trapezoid") },
+    { key: "ring", icon: <RingIcon />, label: t("sketchBoard.ring") },
+    { key: "torus", icon: <Moon className="w-4 h-4 rotate-45" />, label: t("sketchBoard.torus") },
+    { key: "orbit", icon: <OrbitIcon className="w-4 h-4" />, label: t("sketchBoard.orbit") },
+    { key: "cylinder", icon: <Cylinder className="w-4 h-4" />, label: t("sketchBoard.cylinder") },
+    { key: "cube", icon: <Box className="w-4 h-4" />, label: t("sketchBoard.cube") },
+    { key: "dipole", icon: <Magnet className="w-4 h-4" />, label: t("sketchBoard.dipole") },
+    { key: "lightning", icon: <Zap className="w-4 h-4" />, label: t("sketchBoard.lightning") },
+    { key: "heart", icon: <Heart className="w-4 h-4" />, label: t("sketchBoard.heart") },
+    { key: "cloud", icon: <Cloud className="w-4 h-4" />, label: t("sketchBoard.cloud") },
+    { key: "crescent", icon: <Moon className="w-4 h-4" />, label: t("sketchBoard.crescent") },
+    { key: "speechBubble", icon: <MessageSquare className="w-4 h-4" />, label: t("sketchBoard.speechBubble") },
     { key: "dashed", icon: <DashedLineIcon />, label: t("sketchBoard.dashed") },
+    { key: "dotted", icon: <DottedLineIcon />, label: t("sketchBoard.dotted") },
+    { key: "zigzag", icon: <ZigzagIcon />, label: t("sketchBoard.zigzag") },
     { key: "dblarrow", icon: <MoveHorizontal className="w-4 h-4" />, label: t("sketchBoard.dblarrow") },
     { key: "coil", icon: <Shell className="w-4 h-4" />, label: t("sketchBoard.coil") },
     { key: "dot", icon: <CircleDot className="w-4 h-4" />, label: t("sketchBoard.dot") },
@@ -1173,6 +1849,146 @@ export default function SketchBoard() {
           setShowClearModal(false);
         }}
       />
+
+      {/* Equation archive dialog */}
+      {showEqDialog && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowEqDialog(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="p-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
+                <Sigma className="w-5 h-5 text-blue-500" />
+                {t("sketchBoard.equationsTitle")}
+                <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
+                  ({TOTAL_EQUATIONS})
+                </span>
+              </h3>
+              <input
+                type="text"
+                value={eqSearch}
+                onChange={(e) => setEqSearch(e.target.value)}
+                placeholder={t("sketchBoard.equationsSearch")}
+                dir="auto"
+                autoFocus
+                className="mt-3 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              {EQUATION_CATEGORIES.map((cat) => {
+                const q = eqSearch.trim().toLowerCase();
+                const items = q
+                  ? cat.equations.filter(
+                      (eq) =>
+                        eq.formula.toLowerCase().includes(q) ||
+                        eq.nameEn.toLowerCase().includes(q) ||
+                        eq.nameHe.includes(eqSearch.trim())
+                    )
+                  : cat.equations;
+                if (items.length === 0) return null;
+                return (
+                  <div key={cat.key} className="mb-3">
+                    <div className="px-2 py-1 text-xs font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">
+                      {locale === "he" ? cat.labelHe : cat.labelEn}
+                    </div>
+                    {items.map((eq) => (
+                      <button
+                        key={eq.formula}
+                        type="button"
+                        onClick={() => insertEquation(eq.formula)}
+                        className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-start hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                      >
+                        <span
+                          dir="ltr"
+                          className="font-mono text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap overflow-x-auto"
+                        >
+                          {eq.formula}
+                        </span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 max-w-[40%] truncate">
+                          {locale === "he" ? eq.nameHe : eq.nameEn}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bohr atom picker */}
+      {showAtomDialog && (
+        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setShowAtomDialog(false)}
+            aria-hidden="true"
+          />
+          <div
+            className="relative w-full max-w-xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div className="p-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
+                <AtomIcon className="w-5 h-5 text-blue-500" />
+                {t("sketchBoard.atomTitle")}
+              </h3>
+              <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                {t("sketchBoard.atomHint")}
+              </p>
+              <input
+                type="text"
+                value={atomSearch}
+                onChange={(e) => setAtomSearch(e.target.value)}
+                placeholder={t("sketchBoard.atomSearch")}
+                dir="ltr"
+                autoFocus
+                className="mt-3 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="grid grid-cols-6 sm:grid-cols-8 gap-1.5" dir="ltr">
+                {ELEMENT_SYMBOLS.map((symbol, i) => {
+                  const z = i + 1;
+                  const q = atomSearch.trim().toLowerCase();
+                  if (
+                    q &&
+                    !symbol.toLowerCase().startsWith(q) &&
+                    String(z) !== q
+                  ) {
+                    return null;
+                  }
+                  return (
+                    <button
+                      key={symbol}
+                      type="button"
+                      onClick={() => insertAtom(z)}
+                      className="flex flex-col items-center py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                      title={`${symbol} (Z=${z})`}
+                    >
+                      <span className="text-[9px] text-gray-400 dark:text-gray-500 leading-none">
+                        {z}
+                      </span>
+                      <span className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+                        {symbol}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Insert-graph dialog */}
       <Modal
@@ -1472,7 +2288,7 @@ export default function SketchBoard() {
                   {showShapesMenu && (
                     <div
                       role="menu"
-                      className="absolute z-40 grid grid-cols-2 gap-1 p-2 w-80 rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl top-full mt-1 start-0 sm:top-0 sm:mt-0 sm:start-full sm:ms-2"
+                      className="absolute z-40 grid grid-cols-2 gap-1 p-2 w-80 max-h-[75vh] overflow-y-auto rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 shadow-xl top-full mt-1 start-0 sm:top-0 sm:mt-0 sm:start-full sm:ms-2"
                     >
                       {shapeMenuItems.map(({ key, icon, label }) => (
                         <button
@@ -1512,6 +2328,36 @@ export default function SketchBoard() {
                     {t("sketchBoard.graph")}
                   </span>
                 </button>
+                {/* Equation archive */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEqSearch("");
+                    setShowEqDialog(true);
+                  }}
+                  className={railBtn(false)}
+                  title={t("sketchBoard.equations")}
+                >
+                  <Sigma className="w-4 h-4" />
+                  <span className="truncate max-w-full">
+                    {t("sketchBoard.equations")}
+                  </span>
+                </button>
+                {/* Bohr atom */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAtomSearch("");
+                    setShowAtomDialog(true);
+                  }}
+                  className={railBtn(false)}
+                  title={t("sketchBoard.atom")}
+                >
+                  <AtomIcon className="w-4 h-4" />
+                  <span className="truncate max-w-full">
+                    {t("sketchBoard.atom")}
+                  </span>
+                </button>
               </div>
             </div>
 
@@ -1549,21 +2395,65 @@ export default function SketchBoard() {
                     : "cursor-crosshair"
                 }`}
               />
-              {/* Floating delete button for the selected shape */}
+              {/* Floating transform toolbar for the selected shape —
+                  resize, rotate, delete: works on every kind of shape */}
               {selectedBBox && tool === "select" && (
-                <button
-                  type="button"
-                  onClick={deleteSelected}
-                  className="absolute z-20 -translate-y-full flex items-center justify-center w-7 h-7 rounded-full bg-red-600 hover:bg-red-700 text-white shadow-lg cursor-pointer"
+                <div
+                  className="absolute z-20 -translate-y-full flex items-center gap-0.5 rounded-lg bg-gray-900 dark:bg-gray-700 text-white shadow-lg px-1 py-0.5"
                   style={{
-                    left: `${(Math.min(selectedBBox.maxX + 8, W - 20) / W) * 100}%`,
-                    top: `${(Math.max(selectedBBox.minY - 12, 24) / boardH) * 100}%`,
+                    left: `${(clamp((selectedBBox.minX + selectedBBox.maxX) / 2 - 120, 8, W - 260) / W) * 100}%`,
+                    top: `${(Math.max(selectedBBox.minY - 16, 40) / boardH) * 100}%`,
                   }}
-                  title={t("sketchBoard.deleteShape")}
-                  aria-label={t("sketchBoard.deleteShape")}
+                  onPointerDown={(e) => e.stopPropagation()}
                 >
-                  <Trash2 className="w-3.5 h-3.5" />
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => scaleSelected(0.87)}
+                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                    title={t("sketchBoard.shrinkShape")}
+                    aria-label={t("sketchBoard.shrinkShape")}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => scaleSelected(1.15)}
+                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                    title={t("sketchBoard.growShape")}
+                    aria-label={t("sketchBoard.growShape")}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                  <span className="w-px h-4 bg-gray-600 mx-0.5" />
+                  <button
+                    type="button"
+                    onClick={() => rotateSelected(-15)}
+                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                    title={t("sketchBoard.rotateShapeLeft")}
+                    aria-label={t("sketchBoard.rotateShapeLeft")}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => rotateSelected(15)}
+                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                    title={t("sketchBoard.rotateShapeRight")}
+                    aria-label={t("sketchBoard.rotateShapeRight")}
+                  >
+                    <RotateCw className="w-4 h-4" />
+                  </button>
+                  <span className="w-px h-4 bg-gray-600 mx-0.5" />
+                  <button
+                    type="button"
+                    onClick={deleteSelected}
+                    className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 text-red-400 cursor-pointer"
+                    title={t("sketchBoard.deleteShape")}
+                    aria-label={t("sketchBoard.deleteShape")}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               )}
               {pendingText && (
                 <input
