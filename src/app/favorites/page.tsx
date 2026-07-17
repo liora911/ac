@@ -52,7 +52,7 @@ export default function FavoritesPage() {
         className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
         style={{ direction: locale === "he" ? "rtl" : "ltr" }}
       >
-        <div className="max-w-7xl mx-auto">
+        <div className="w-full">
           <div className="animate-pulse">
             <div className="h-10 bg-gray-200 rounded w-48 mb-8" />
             <div className="flex gap-2 mb-8">
@@ -80,7 +80,7 @@ export default function FavoritesPage() {
         className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
         style={{ direction: locale === "he" ? "rtl" : "ltr" }}
       >
-        <div className="max-w-7xl mx-auto text-center py-12">
+        <div className="w-full text-center py-12">
           <p className="text-red-500">{t("favorites.errorLoading")}</p>
         </div>
       </div>
@@ -95,7 +95,7 @@ export default function FavoritesPage() {
       className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8"
       style={{ direction: locale === "he" ? "rtl" : "ltr" }}
     >
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-2">

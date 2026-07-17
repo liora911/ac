@@ -64,10 +64,12 @@ const ActivityFeed: React.FC = () => {
 
         const activities: ActivityItem[] = [];
 
+        // No per-type quotas: everything goes into one pool and only the
+        // final date sort decides what is "recent" — otherwise old items of
+        // a rarely-published type displace genuinely new ones
         if (articlesRes.ok) {
           const articlesData = await articlesRes.json();
-          const recentArticles = articlesData.articles.slice(0, 3);
-          recentArticles.forEach((article: any) => {
+          articlesData.articles.forEach((article: any) => {
             activities.push({
               id: `article-${article.id}`,
               rawId: article.id, // Use ID for editing, slug is only for viewing
@@ -83,8 +85,7 @@ const ActivityFeed: React.FC = () => {
 
         if (eventsRes.ok) {
           const eventsData = await eventsRes.json();
-          const recentEvents = eventsData.slice(0, 2);
-          recentEvents.forEach((event: any) => {
+          eventsData.forEach((event: any) => {
             activities.push({
               id: `event-${event.id}`,
               rawId: event.id,
@@ -118,16 +119,16 @@ const ActivityFeed: React.FC = () => {
             return result;
           };
 
-          const allLectures = flattenLectures(lecturesData).slice(0, 3);
-
-          allLectures.forEach((lecture: any) => {
+          flattenLectures(lecturesData).forEach((lecture: any) => {
             activities.push({
               id: `lecture-${lecture.id}`,
               rawId: lecture.id,
               type: "lecture",
               title: lecture.title,
               action: "created",
-              timestamp: lecture.date || lecture.createdAt,
+              // createdAt = when it was added to the site; the lecture's own
+              // "date" field can be a historic delivery date
+              timestamp: lecture.createdAt || lecture.date,
               author: lecture.author?.name || "Unknown",
             });
           });
@@ -154,11 +155,7 @@ const ActivityFeed: React.FC = () => {
             return result;
           };
 
-          const allPresentations = flattenPresentations(
-            presentationsData
-          ).slice(0, 3);
-
-          allPresentations.forEach((presentation: any) => {
+          flattenPresentations(presentationsData).forEach((presentation: any) => {
             activities.push({
               id: `presentation-${presentation.id}`,
               rawId: presentation.id,

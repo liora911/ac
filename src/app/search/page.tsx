@@ -175,7 +175,7 @@ function SearchPageContent() {
       className="min-h-screen bg-gray-50 dark:bg-gray-950 py-6 sm:py-8"
       dir={isHebrew ? "rtl" : "ltr"}
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-4">
             {t("searchPage.title")}
@@ -385,7 +385,7 @@ function SearchPageContent() {
 function SearchPageFallback() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="w-full px-4 sm:px-6 lg:px-8">
         <div className="text-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
           <p className="text-gray-600 dark:text-gray-400"></p>

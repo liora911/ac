@@ -13,7 +13,7 @@ import {
 import type { Article, ArticlesListProps, SortOption } from "../../types/Articles/articles";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter, ChevronUp, Clock } from "lucide-react";
+import { X, Star, ArrowUpDown, Share2, Grid3X3, List, Filter, ChevronUp, Clock, BookOpen } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import AuthorAvatars from "./AuthorAvatars";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -445,13 +445,30 @@ function ArticlesListContent({
         </div>
       )}
 
-      {/* Category Description */}
+      {/* Category Description — styled as a callout so readers actually
+          notice the topic's introduction before diving into the articles */}
       {selectedCategoryData?.description && (
-        <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 shadow-sm">
-          <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-            {stripHtml(selectedCategoryData.description)}
-          </p>
-        </div>
+        <motion.div
+          key={selectedCategoryData.id}
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+          className="relative overflow-hidden rounded-xl border border-blue-200/70 dark:border-blue-800/50 border-s-4 border-s-blue-500 bg-gradient-to-br from-blue-50 via-indigo-50/60 to-white dark:from-blue-950/40 dark:via-indigo-950/30 dark:to-gray-900 p-5 shadow-sm"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center flex-shrink-0 shadow-md">
+              <BookOpen className="w-5 h-5 text-white" />
+            </div>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                {selectedCategoryData.name}
+              </h2>
+              <p className="mt-1.5 text-[15px] leading-relaxed text-gray-700 dark:text-gray-200">
+                {stripHtml(selectedCategoryData.description)}
+              </p>
+            </div>
+          </div>
+        </motion.div>
       )}
 
       {/* Loading State */}
@@ -477,7 +494,7 @@ function ArticlesListContent({
           </div>
 
           {/* Desktop Loading Skeleton */}
-          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1920px]:grid-cols-6 gap-6">
             {Array.from({ length: initialLimit }).map((_, index) => (
               <div
                 key={index}
@@ -519,7 +536,7 @@ function ArticlesListContent({
         articles.length > 0 && (
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1920px]:grid-cols-6 gap-5">
                 {articles.map((article, idx) => {
                   const isNew = idx >= newItemStartIdx;
                   const isBento = article.isFeatured && idx < 3;

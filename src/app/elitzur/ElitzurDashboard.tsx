@@ -213,7 +213,7 @@ export default function ElitzurDashboard() {
 
       {/* Header */}
       <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="w-full px-4 sm:px-6">
           <div className="flex items-center justify-between gap-4 h-14">
             {/* Mobile sidebar toggle */}
             <button
@@ -311,30 +311,38 @@ export default function ElitzurDashboard() {
               )}
             </div>
 
-            {/* User Section — compact: the AI input is the header's focus */}
+            {/* User Section */}
             {session && (
-              <div className="flex items-center gap-1.5 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0">
                 <Link
                   href="/"
-                  className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  className="p-2.5 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                   title={t("admin.nav.backToSite")}
                   aria-label={t("admin.nav.backToSite")}
                 >
-                  <Home className="w-4 h-4" />
+                  <Home className="w-5 h-5" />
                 </Link>
-                <div
-                  className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm"
-                  title={session.user?.email ?? undefined}
-                >
-                  {session.user?.email?.charAt(0).toUpperCase()}
+                <div className="flex items-center gap-2 ps-2 border-s border-gray-200 dark:border-gray-600">
+                  <div
+                    className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm"
+                    title={session.user?.email ?? undefined}
+                  >
+                    {session.user?.email?.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[180px] truncate">
+                    {session.user?.email}
+                  </span>
                 </div>
                 <button
                   onClick={() => setShowLogoutModal(true)}
-                  className="p-2 rounded-lg text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-2.5 rounded-lg text-sm font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors cursor-pointer"
                   title={t("admin.nav.logout")}
                   aria-label={t("admin.nav.logout")}
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-5 h-5" />
+                  <span className="hidden sm:inline">
+                    {t("admin.nav.logout")}
+                  </span>
                 </button>
               </div>
             )}
@@ -344,7 +352,7 @@ export default function ElitzurDashboard() {
       </header>
 
       {/* Sidebar + Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div className="w-full px-4 sm:px-6 py-6">
         <div className="flex items-start gap-6">
           {/* Desktop sidebar — every section visible at once, stable positions.
               Collapses to an icon rail; content reflows into the freed width */}
