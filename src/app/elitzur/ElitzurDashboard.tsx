@@ -314,6 +314,14 @@ export default function ElitzurDashboard() {
             {/* User Section — compact: the AI input is the header's focus */}
             {session && (
               <div className="flex items-center gap-1.5 flex-shrink-0">
+                <Link
+                  href="/"
+                  className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  title={t("admin.nav.backToSite")}
+                  aria-label={t("admin.nav.backToSite")}
+                >
+                  <Home className="w-4 h-4" />
+                </Link>
                 <div
                   className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-medium shadow-sm"
                   title={session.user?.email ?? undefined}

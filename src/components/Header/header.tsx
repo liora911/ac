@@ -105,6 +105,12 @@ export default function Header() {
     setLocale(locale === "he" ? "en" : "he");
   };
 
+  // The admin dashboard has its own header; the fixed public navbar would
+  // cover it (nothing on /elitzur clears the fixed 60px)
+  if (pathname?.startsWith("/elitzur")) {
+    return null;
+  }
+
   return (
     <>
       {/* Skip to main content link */}
