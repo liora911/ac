@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { AlertTriangle, ArrowLeft, Home } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Home, LifeBuoy } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 
 const errorKeyMap: Record<string, string> = {
@@ -39,6 +39,13 @@ function AuthErrorContent() {
 
           {/* Actions */}
           <div className="flex flex-col gap-3">
+            <a
+              href="/contact?subject=technical"
+              className="w-full flex items-center justify-center gap-2 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-red-700 transition-colors"
+            >
+              <LifeBuoy className="w-4 h-4" />
+              {t("auth.contactSupport")}
+            </a>
             <a
               href="/auth/admin-login"
               className="w-full flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 text-sm font-medium text-white shadow-sm hover:bg-blue-700 transition-colors"

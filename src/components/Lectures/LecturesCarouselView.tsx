@@ -338,13 +338,19 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false 
   };
 
   return (
-    <div className={inGrid ? "" : "flex-shrink-0 w-[300px] sm:w-[340px] md:w-[360px]"}>
+    <div
+      className={
+        inGrid
+          ? ""
+          : "flex-shrink-0 w-[300px] sm:w-[340px] lg:w-[calc(50%-0.5rem)]"
+      }
+    >
       <Link
         href={`/lectures/${lecture.id}`}
         className="block bg-white dark:bg-gray-800 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700"
         onClick={(e) => !hasAccess && e.preventDefault()}
       >
-        {/* Thumbnail */}
+        {/* Thumbnail — the text lives on it, no separate content block */}
         <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-900">
           {thumbnailUrl ? (
             <img
@@ -359,21 +365,38 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false 
             />
           )}
 
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+          {/* Gradient overlay — stronger at the bottom so text stays readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
-          {/* Duration badge */}
-          <div className="absolute bottom-2 start-2 flex items-center gap-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-md text-white text-xs">
-            <Clock className="w-3 h-3" />
-            <span>{lecture.duration} {t("lecturesPage.min")}</span>
+          {/* Duration + premium badges — top start */}
+          <div className="absolute top-2 start-2 flex items-center gap-1.5">
+            {lecture.isPremium && <PremiumBadge size="sm" />}
+            <div className="flex items-center gap-1 px-2 py-1 bg-black/70 backdrop-blur-sm rounded-md text-white text-xs">
+              <Clock className="w-3 h-3" />
+              <span>{lecture.duration} {t("lecturesPage.min")}</span>
+            </div>
           </div>
 
-          {/* Premium badge */}
-          {lecture.isPremium && (
-            <div className="absolute top-2 start-2">
-              <PremiumBadge size="sm" />
-            </div>
-          )}
+          {/* Title & description over the thumbnail */}
+          <div className="absolute bottom-0 inset-x-0 p-3 lg:p-5 z-[5]">
+            <h3
+              className={`font-bold line-clamp-2 drop-shadow-lg text-base lg:text-2xl ${
+                hasAccess ? "text-white" : "text-gray-300"
+              }`}
+            >
+              {lecture.title}
+            </h3>
+            {categoryName && (
+              <p className="text-blue-300 text-xs lg:text-sm mt-0.5 drop-shadow">
+                {categoryName}
+              </p>
+            )}
+            {lecture.description && (
+              <p className="hidden lg:block text-white/85 text-sm line-clamp-2 mt-1.5 drop-shadow">
+                {lecture.description.replace(/<[^>]*>?/gm, "")}
+              </p>
+            )}
+          </div>
 
           {/* Action buttons - top right */}
           <div className="absolute top-2 end-2 z-20 flex items-center gap-1.5">
@@ -403,35 +426,6 @@ function LectureCard({ lecture, hasAccess, onPlay, categoryName, inGrid = false 
                 <Lock className="w-6 h-6 text-gray-400" />
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="p-4 min-h-[120px] flex flex-col">
-          <h3
-            className={`font-semibold line-clamp-2 mb-1 transition-colors ${
-              hasAccess
-                ? "text-gray-900 dark:text-white"
-                : "text-gray-500 dark:text-gray-400"
-            }`}
-          >
-            {lecture.title}
-          </h3>
-          {categoryName && (
-            <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">
-              {categoryName}
-            </p>
-          )}
-          {lecture.description && (
-            <p
-              className={`text-sm line-clamp-2 ${
-                hasAccess
-                  ? "text-gray-600 dark:text-gray-400"
-                  : "text-gray-400 dark:text-gray-500"
-              }`}
-            >
-              {lecture.description.replace(/<[^>]*>?/gm, "")}
-            </p>
           )}
         </div>
       </Link>

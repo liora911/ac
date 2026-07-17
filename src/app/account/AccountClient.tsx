@@ -786,8 +786,8 @@ function AccountContent({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-8 px-4">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-950 py-6 px-3 sm:px-6 lg:px-8">
+      <div className="w-full">
         {/* Success message */}
         {success && (
           <div className="mb-6 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-3 text-emerald-700 dark:text-emerald-400 flex items-center gap-2">
@@ -796,9 +796,9 @@ function AccountContent({
           </div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* ── Left Sidebar ── */}
-          <div className="lg:w-72 flex-shrink-0 space-y-4">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* ── Left Sidebar — sticky so navigation never scrolls away ── */}
+          <div className="w-full lg:w-72 flex-shrink-0 space-y-4 lg:sticky lg:top-20">
             {/* Profile Card */}
             <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden shadow-sm">
               {/* Mini Banner */}

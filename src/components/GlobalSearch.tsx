@@ -20,6 +20,13 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const collapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
+    };
+  }, []);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<CategoryType>("all");
   const [error, setError] = useState<string | null>(null);
@@ -193,14 +200,22 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
 
   const handleMouseEnter = () => {
     if (!collapsible) return;
+    if (collapseTimerRef.current) {
+      clearTimeout(collapseTimerRef.current);
+      collapseTimerRef.current = null;
+    }
     setIsHovered(true);
     inputRef.current?.focus();
   };
 
   const handleMouseLeave = () => {
     if (!collapsible) return;
-    setIsHovered(false);
-    if (!query) inputRef.current?.blur();
+    // Grace period before collapsing — prevents rapid flicker when the
+    // cursor sits near the expand/collapse boundary
+    collapseTimerRef.current = setTimeout(() => {
+      setIsHovered(false);
+      if (!query) inputRef.current?.blur();
+    }, 150);
   };
 
   const clearSearch = () => {
@@ -241,17 +256,23 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
   return (
     <div
       ref={searchRef}
-      className={`relative p-0 m-0 transition-all duration-300 ease-in-out ${
-        collapsible
-          ? isExpanded
-            ? "w-64 xl:w-80"
-            : "w-9 sm:w-10"
-          : "w-full max-w-xs sm:max-w-sm"
+      className={`relative p-0 m-0 ${
+        collapsible ? "w-9 sm:w-10 h-10" : "w-full max-w-xs sm:max-w-sm"
       }`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="relative">
+      {/* In collapsible mode the expansion is an overlay anchored to the
+          icon's fixed slot — neighbors never move, so no hover flicker */}
+      <div
+        className={
+          collapsible
+            ? `absolute end-0 top-1/2 -translate-y-1/2 z-30 transition-all duration-300 ease-in-out ${
+                isExpanded ? "w-64 xl:w-80" : "w-9 sm:w-10"
+              }`
+            : "relative"
+        }
+      >
         <div className="absolute inset-y-0 left-0 pl-2 sm:pl-3 flex items-center pointer-events-none">
           <MdSearch
             className={`h-4 w-4 sm:h-5 sm:w-5 transition-colors ${
@@ -292,7 +313,9 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
 
       {isOpen && (results || error) && (
         <div
-          className="absolute z-[60] w-full mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden"
+          className={`absolute z-[60] mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden ${
+            collapsible ? "end-0 top-full w-64 xl:w-80" : "w-full"
+          }`}
           role="listbox"
         >
           {isLoading ? (

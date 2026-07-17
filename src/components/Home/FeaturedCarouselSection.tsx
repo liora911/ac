@@ -115,6 +115,37 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
 
   const handleLeft = isRTL ? goNext : goPrev;
   const handleRight = isRTL ? goPrev : goNext;
+
+  // Mouse swipe on the desktop grid: dragging past a threshold flips the page
+  const swipeRef = useRef<{ startX: number; fired: boolean } | null>(null);
+  const swipeMovedRef = useRef(false);
+  const onSwipeDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    swipeRef.current = { startX: e.clientX, fired: false };
+    swipeMovedRef.current = false;
+  };
+  const onSwipeMove = (e: React.PointerEvent) => {
+    const s = swipeRef.current;
+    if (!s || s.fired) return;
+    const dx = e.clientX - s.startX;
+    if (Math.abs(dx) > 8) swipeMovedRef.current = true;
+    if (Math.abs(dx) > 60) {
+      s.fired = true;
+      if (dx < 0) handleRight();
+      else handleLeft();
+    }
+  };
+  const onSwipeEnd = () => {
+    swipeRef.current = null;
+  };
+  const onSwipeClickCapture = (e: React.MouseEvent) => {
+    if (swipeMovedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      swipeMovedRef.current = false;
+    }
+  };
+
   const showLeftArrow = isRTL ? canGoNext : canGoPrev;
   const showRightArrow = isRTL ? canGoPrev : canGoNext;
 
@@ -239,8 +270,16 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           </div>
         </div>
 
-        {/* Desktop: Paginated grid - full bleed */}
-        <div className="hidden sm:block overflow-hidden px-6 md:px-10 lg:px-12">
+        {/* Desktop: Paginated grid - full bleed, mouse-swipeable */}
+        <div
+          className="hidden sm:block overflow-hidden px-6 md:px-10 lg:px-12 cursor-grab active:cursor-grabbing select-none"
+          onPointerDown={onSwipeDown}
+          onPointerMove={onSwipeMove}
+          onPointerUp={onSwipeEnd}
+          onPointerLeave={onSwipeEnd}
+          onClickCapture={onSwipeClickCapture}
+          onDragStart={(e) => e.preventDefault()}
+        >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div
               key={page}

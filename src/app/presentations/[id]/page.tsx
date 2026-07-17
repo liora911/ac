@@ -239,7 +239,7 @@ export default function PresentationDetailPage() {
 
         {/* Content section with glass morphism background when over blurred image */}
         <div className={`${hasMainContent && thumbnailUrl ? "bg-slate-900/40 backdrop-blur-md" : ""}`}>
-        <div className={`max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 ${hasMainContent && thumbnailUrl ? "pt-6 pb-10" : "py-10"}`}>
+        <div className={`w-full px-3 sm:px-4 lg:px-6 ${hasMainContent && thumbnailUrl ? "pt-6 pb-10" : "py-10"}`}>
         {/* Back button */}
         <div className="mb-6 flex justify-between items-center">
           <button
@@ -279,11 +279,11 @@ export default function PresentationDetailPage() {
               {t("presentationDetail.watchInPlayer")}
             </button>
 
-            <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden bg-white border border-slate-200 shadow-md">
+            <div className="relative w-full max-w-[calc(85vh*16/9)] mx-auto aspect-video rounded-2xl bg-gray-950 p-2 md:p-3 shadow-2xl ring-1 ring-black/30">
               <iframe
                 src={embedUrl}
                 title={presentation.title}
-                className="w-full h-full border-0"
+                className="w-full h-full border-0 rounded-xl bg-white"
                 allowFullScreen
               />
             </div>
@@ -291,30 +291,34 @@ export default function PresentationDetailPage() {
         )}
 
         {hasPdfUrl && presentation.pdfUrl && (
-          <div className="mb-8 w-full max-w-4xl mx-auto">
-            <DocumentViewer
-              url={presentation.pdfUrl}
-              title={presentation.title}
-            />
+          <div className="mb-8 w-full rounded-2xl bg-gray-950 p-2 md:p-3 shadow-2xl ring-1 ring-black/30">
+            <div className="rounded-xl overflow-hidden">
+              <DocumentViewer
+                url={presentation.pdfUrl}
+                title={presentation.title}
+              />
+            </div>
           </div>
         )}
 
         {/* Image carousel - only show when there's no main content (no Google Slides, no PDF) */}
         {!hasMainContent && presentation.imageUrls.length > 0 && (
           <div
-            className="relative w-full aspect-video mb-8 rounded-2xl overflow-hidden bg-white/90 border border-slate-200 cursor-zoom-in shadow-md hover:shadow-lg transition-shadow"
+            className="relative w-full max-w-[calc(85vh*16/9)] mx-auto aspect-video mb-8 rounded-2xl bg-gray-950 p-2 md:p-3 shadow-2xl ring-1 ring-black/30 cursor-zoom-in hover:shadow-black/40 transition-shadow"
             onClick={() => setIsModalOpen(true)}
           >
-            <Image
-              src={presentation.imageUrls[currentImageIndex]}
-              alt={`${presentation.title} - ${t("presentationDetail.image")} ${
-                currentImageIndex + 1
-              }`}
-              fill
-              className="object-contain transition-opacity duration-300"
-              sizes="(max-width: 768px) 100vw, 800px"
-              priority
-            />
+            <div className="relative w-full h-full rounded-xl overflow-hidden bg-white">
+              <Image
+                src={presentation.imageUrls[currentImageIndex]}
+                alt={`${presentation.title} - ${t("presentationDetail.image")} ${
+                  currentImageIndex + 1
+                }`}
+                fill
+                className="object-contain transition-opacity duration-300"
+                sizes="(max-width: 768px) 100vw, 1600px"
+                priority
+              />
+            </div>
 
             {total > 1 && (
               <>

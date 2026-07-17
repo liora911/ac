@@ -18,7 +18,12 @@
       "Bash(curl -sS -w \"\\\\nHTTP:%{http_code}\\\\n\" \"https://avshalom-elitzur.academy/api/archive\" -o /tmp/archive.json)",
       "Read(//tmp/**)",
       "Bash(curl -sS --ssl-no-revoke -w \"\\\\nHTTP:%{http_code}\\\\n\" \"https://avshalom-elitzur.academy/api/archive\" -o /tmp/archive.json)",
-      "Bash(echo \"EXIT=$?\")"
+      "Bash(echo \"EXIT=$?\")",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 8; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/components/Lectures/LecturesCarouselView.tsx --file src/components/Login/login.tsx --file src/components/Contact/contact.tsx \"--file\" \"src/app/auth/error/page.tsx\" --file src/components/Home/CarouselSection.tsx --file src/components/Home/MixedCarouselSection.tsx --file src/components/Home/FeaturedCarouselSection.tsx 2>&1 | Select-Object -Last 2; try { Get-Content src\\\\locales\\\\en.json -Raw -Encoding utf8 | ConvertFrom-Json | Out-Null; Get-Content src\\\\locales\\\\he.json -Raw -Encoding utf8 | ConvertFrom-Json | Out-Null; \"locales OK\" } catch { \"locales INVALID\" }; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/components/GlobalSearch.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 8; \"tsc exit: $LASTEXITCODE\"; npx next lint \"--file\" \"src/app/articles/[id]/page.tsx\" 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint \"--file\" \"src/app/presentations/[id]/page.tsx\" --file src/components/MainContent/MainContent.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/account/AccountClient.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)"
     ],
     "additionalDirectories": [
       "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]",

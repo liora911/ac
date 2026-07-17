@@ -497,9 +497,21 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                     <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
                       {article.authors.map((a) => a.name).join(", ")}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      {t("articleDetail.copyleftNote")}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <ShareButton
+                        shareText={t("articleDetail.share")}
+                        copiedText={t("articleDetail.linkCopied")}
+                      />
+                      <DownloadPDFButton
+                        articleId={article.id}
+                        articleTitle={article.title}
+                        locale={locale}
+                        dateLocale={dateLocale}
+                        createdAt={article.createdAt.toISOString()}
+                        publisherName={article.authors.map((a) => a.name).join(", ")}
+                        downloadText={t("articleDetail.downloadPDF")}
+                      />
+                    </div>
                   </div>
                 </>
               ) : (
@@ -519,35 +531,27 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                         article.publisherName ||
                         t("articleCard.authorAnonymous")}
                     </h3>
-                    <p className="text-gray-600 dark:text-gray-400 mt-1">
-                      {t("articleDetail.copyleftNote")}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2 mt-2">
+                      <ShareButton
+                        shareText={t("articleDetail.share")}
+                        copiedText={t("articleDetail.linkCopied")}
+                      />
+                      <DownloadPDFButton
+                        articleId={article.id}
+                        articleTitle={article.title}
+                        locale={locale}
+                        dateLocale={dateLocale}
+                        createdAt={article.createdAt.toISOString()}
+                        publisherName={article.publisherName || undefined}
+                        downloadText={t("articleDetail.downloadPDF")}
+                      />
+                    </div>
                   </div>
                 </>
               )}
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex justify-end gap-2">
-            <ShareButton
-              shareText={t("articleDetail.share")}
-              copiedText={t("articleDetail.linkCopied")}
-            />
-            <DownloadPDFButton
-              articleId={article.id}
-              articleTitle={article.title}
-              locale={locale}
-              dateLocale={dateLocale}
-              createdAt={article.createdAt.toISOString()}
-              publisherName={
-                article.authors && article.authors.length > 0
-                  ? article.authors.map((a) => a.name).join(", ")
-                  : article.publisherName || undefined
-              }
-              downloadText={t("articleDetail.downloadPDF")}
-            />
-          </div>
         </footer>
 
         {/* Comments Section */}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   User,
@@ -32,6 +32,15 @@ const Contact = () => {
   });
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Preload the subject from ?subject= (e.g. the login page's
+  // "contact technical support" button links to /contact?subject=technical)
+  useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("subject");
+    if (param && SUBJECT_OPTIONS.some((option) => option.value === param)) {
+      setFormData((prev) => ({ ...prev, subject: param }));
+    }
+  }, []);
 
   const validateForm = () => {
     const newErrors = {

@@ -1870,6 +1870,7 @@
     "emailError": "Error sending email",
     "linkSent": "Login link sent to your email!",
     "errorTryAgain": "Something went wrong. Please try again.",
+    "contactSupport": "Contact technical support",
     "adminPanel": "Admin Panel",
     "adminOnly": "Authorized users only",
     "emailLabel": "Email address",

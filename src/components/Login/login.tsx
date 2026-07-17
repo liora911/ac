@@ -3,6 +3,8 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { LifeBuoy } from "lucide-react";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { ALLOWED_EMAILS } from "@/constants/auth";
@@ -141,6 +143,17 @@ export default function LoginForm() {
             }`}
           >
             {notice.text}
+            {notice.kind === "error" && (
+              <div className="mt-2">
+                <Link
+                  href="/contact?subject=technical"
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-red-700 transition-colors"
+                >
+                  <LifeBuoy className="w-3.5 h-3.5" />
+                  {t("auth.contactSupport")}
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
