@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import {
   ChevronLeft,
@@ -26,6 +26,22 @@ export default function PdfViewer({ url, title }: PdfViewerProps) {
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Fit the page to the container width — react-pdf otherwise renders at
+  // the PDF's natural point size, leaving the frame mostly empty.
+  // The zoom buttons multiply this fitted width (scale 1 = fill the frame).
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [fitWidth, setFitWidth] = useState(800);
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const update = () =>
+      setFitWidth(Math.max(280, Math.min(el.clientWidth - 32, 1800)));
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
 
   const onDocumentLoadSuccess = useCallback(({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -186,7 +202,8 @@ export default function PdfViewer({ url, title }: PdfViewerProps) {
 
       {/* PDF Document */}
       <div
-        className={`flex-1 overflow-auto flex items-center justify-center p-4 ${
+        ref={containerRef}
+        className={`flex-1 overflow-auto flex p-4 ${
           isFullscreen ? "bg-black" : "bg-gray-100"
         }`}
       >
@@ -201,11 +218,11 @@ export default function PdfViewer({ url, title }: PdfViewerProps) {
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
           loading={null}
-          className="flex justify-center"
+          className="m-auto"
         >
           <Page
             pageNumber={pageNumber}
-            scale={scale}
+            width={fitWidth * scale}
             className="shadow-2xl"
             renderTextLayer={true}
             renderAnnotationLayer={true}
