@@ -104,6 +104,21 @@ function ArticlesListContent({
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
+  // Grid density: 3 (big cards) … 6 (compact) columns on lg+, persisted
+  const [gridCols, setGridCols] = useState(4);
+  useEffect(() => {
+    const saved = Number(localStorage.getItem("articles-grid-cols"));
+    if (saved >= 3 && saved <= 6) setGridCols(saved);
+  }, []);
+  const changeGridCols = (cols: number) => {
+    setGridCols(cols);
+    try {
+      localStorage.setItem("articles-grid-cols", String(cols));
+    } catch {
+      // storage unavailable — preference just won't persist
+    }
+  };
+
   // Sync selectedCategory with URL when user navigates back/forward
   useEffect(() => {
     setSelectedCategory(categoryId || urlCategoryId || "");
@@ -437,6 +452,31 @@ function ArticlesListContent({
               </button>
             </div>
 
+            {/* Card size slider — left end: big cards (3/row), right end:
+                compact (6/row). Hidden in list view where it has no effect */}
+            {viewMode === "grid" && (
+              <div
+                className="hidden lg:flex items-center gap-2"
+                title={t("articlesPage.cardSize")}
+              >
+                <Grid3X3 className="w-4 h-4 text-gray-400" />
+                <input
+                  type="range"
+                  min={3}
+                  max={6}
+                  step={1}
+                  // Inverted so sliding "up" makes the cards bigger
+                  value={9 - gridCols}
+                  onChange={(e) => changeGridCols(9 - Number(e.target.value))}
+                  className="w-24 accent-blue-600 cursor-pointer"
+                  aria-label={t("articlesPage.cardSize")}
+                />
+                <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums w-4">
+                  {gridCols}
+                </span>
+              </div>
+            )}
+
             {/* Results count */}
             <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
               {isLoading ? t("loading") : t("articlesPage.articlesFound").replace("{total}", total.toString())}
@@ -494,7 +534,10 @@ function ArticlesListContent({
           </div>
 
           {/* Desktop Loading Skeleton */}
-          <div className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1920px]:grid-cols-6 gap-6">
+          <div
+            className="hidden sm:grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-6"
+            style={{ "--cols": String(gridCols) } as React.CSSProperties}
+          >
             {Array.from({ length: initialLimit }).map((_, index) => (
               <div
                 key={index}
@@ -536,7 +579,10 @@ function ArticlesListContent({
         articles.length > 0 && (
           <div className="hidden sm:block">
             {viewMode === "grid" ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 min-[1920px]:grid-cols-6 gap-5">
+              <div
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[repeat(var(--cols),minmax(0,1fr))] gap-5"
+                style={{ "--cols": String(gridCols) } as React.CSSProperties}
+              >
                 {articles.map((article, idx) => {
                   const isNew = idx >= newItemStartIdx;
                   const isBento = article.isFeatured && idx < 3;

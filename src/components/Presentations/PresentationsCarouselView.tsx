@@ -190,6 +190,37 @@ function CategoryCarousel({ category, hasAccess }: PresentationCategoryCarouselP
     });
   };
 
+  // Mouse drag-to-scroll — the scrollbar is hidden, so without this a
+  // desktop mouse has no way to pan besides the arrows
+  const dragRef = useRef<{ startX: number; startScroll: number } | null>(null);
+  const dragMovedRef = useRef(false);
+
+  const onDragDown = (e: React.PointerEvent) => {
+    if (e.pointerType !== "mouse") return;
+    const el = scrollRef.current;
+    if (!el) return;
+    dragRef.current = { startX: e.clientX, startScroll: el.scrollLeft };
+    dragMovedRef.current = false;
+  };
+  const onDragMove = (e: React.PointerEvent) => {
+    const d = dragRef.current;
+    const el = scrollRef.current;
+    if (!d || !el) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 5) dragMovedRef.current = true;
+    el.scrollLeft = d.startScroll - dx;
+  };
+  const onDragEnd = () => {
+    dragRef.current = null;
+  };
+  const onDragClickCapture = (e: React.MouseEvent) => {
+    if (dragMovedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragMovedRef.current = false;
+    }
+  };
+
   if (category.presentations.length === 0) return null;
 
   return (
@@ -207,7 +238,7 @@ function CategoryCarousel({ category, hasAccess }: PresentationCategoryCarouselP
         {canScrollLeft && (
           <button
             onClick={() => scroll("left")}
-            className="absolute start-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 -translate-x-1/2 cursor-pointer"
+            className="absolute start-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-70 group-hover:opacity-100 -translate-x-1/2 cursor-pointer"
             aria-label={locale === "he" ? "הבא" : "Previous"}
           >
             <ChevronLeft className="w-5 h-5 md:w-6 md:h-6" />
@@ -218,7 +249,13 @@ function CategoryCarousel({ category, hasAccess }: PresentationCategoryCarouselP
         <div
           ref={scrollRef}
           onScroll={checkScrollability}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pb-2"
+          onPointerDown={onDragDown}
+          onPointerMove={onDragMove}
+          onPointerUp={onDragEnd}
+          onPointerLeave={onDragEnd}
+          onClickCapture={onDragClickCapture}
+          onDragStart={(e) => e.preventDefault()}
+          className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 cursor-grab active:cursor-grabbing select-none"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {category.presentations.map((presentation) => (
@@ -234,7 +271,7 @@ function CategoryCarousel({ category, hasAccess }: PresentationCategoryCarouselP
         {canScrollRight && (
           <button
             onClick={() => scroll("right")}
-            className="absolute end-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-0 group-hover:opacity-100 translate-x-1/2 cursor-pointer"
+            className="absolute end-0 top-1/2 -translate-y-1/2 z-10 w-10 h-10 md:w-12 md:h-12 bg-white dark:bg-gray-800 rounded-full shadow-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all opacity-70 group-hover:opacity-100 translate-x-1/2 cursor-pointer"
             aria-label={locale === "he" ? "הקודם" : "Next"}
           >
             <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />

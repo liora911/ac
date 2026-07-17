@@ -59,6 +59,7 @@ import {
   Minus,
   RotateCw,
   RotateCcw,
+  GripHorizontal,
 } from "lucide-react";
 import {
   EQUATION_CATEGORIES,
@@ -1332,6 +1333,13 @@ export default function SketchBoard() {
   } | null>(null);
   const [showClearModal, setShowClearModal] = useState(false);
   const [showCalc, setShowCalc] = useState(false);
+  const [calcPos, setCalcPos] = useState({ x: 0, y: 0 });
+  const calcDragRef = useRef<{
+    startX: number;
+    startY: number;
+    origX: number;
+    origY: number;
+  } | null>(null);
   const [showGraphModal, setShowGraphModal] = useState(false);
   const [showEqDialog, setShowEqDialog] = useState(false);
   const [eqSearch, setEqSearch] = useState("");
@@ -2492,26 +2500,70 @@ export default function SketchBoard() {
           </div>
       </div>
 
-      {/* Calculator drawer — floats beside the board, never steals width */}
+      {/* Calculator — a draggable floating panel, never steals board width */}
       <div
-        className={`fixed top-24 bottom-4 end-4 z-40 w-80 max-w-[90vw] transition-all duration-300 ${
+        className={`fixed top-24 end-4 z-40 w-80 max-w-[90vw] transition-opacity duration-300 ${
           showCalc
-            ? "opacity-100 scale-100 pointer-events-auto"
-            : "opacity-0 scale-95 pointer-events-none"
+            ? "opacity-100 pointer-events-auto"
+            : "opacity-0 pointer-events-none"
         }`}
+        style={{ transform: `translate(${calcPos.x}px, ${calcPos.y}px)` }}
         aria-hidden={!showCalc}
       >
-        <div className="relative h-full">
-          <button
-            type="button"
-            onClick={() => setShowCalc(false)}
-            className="absolute -top-2.5 -end-2.5 z-10 flex items-center justify-center w-7 h-7 rounded-full bg-gray-900 dark:bg-gray-600 text-white shadow-lg hover:bg-gray-700 dark:hover:bg-gray-500 transition-colors cursor-pointer"
-            title={t("sketchBoard.closeCalc")}
-            aria-label={t("sketchBoard.closeCalc")}
+        <div className="rounded-xl shadow-2xl overflow-hidden">
+          {/* Drag handle */}
+          <div
+            onPointerDown={(e) => {
+              e.preventDefault();
+              e.currentTarget.setPointerCapture(e.pointerId);
+              calcDragRef.current = {
+                startX: e.clientX,
+                startY: e.clientY,
+                origX: calcPos.x,
+                origY: calcPos.y,
+              };
+            }}
+            onPointerMove={(e) => {
+              const d = calcDragRef.current;
+              if (!d) return;
+              setCalcPos({
+                x: clamp(
+                  d.origX + (e.clientX - d.startX),
+                  -(window.innerWidth - 120),
+                  window.innerWidth - 120
+                ),
+                y: clamp(
+                  d.origY + (e.clientY - d.startY),
+                  -80,
+                  window.innerHeight - 160
+                ),
+              });
+            }}
+            onPointerUp={() => {
+              calcDragRef.current = null;
+            }}
+            onPointerCancel={() => {
+              calcDragRef.current = null;
+            }}
+            className="flex items-center justify-between gap-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white cursor-move touch-none select-none"
+            title={t("sketchBoard.dragToMove")}
           >
-            <X className="w-4 h-4" />
-          </button>
-          <div className="max-h-full overflow-y-auto rounded-xl shadow-2xl">
+            <GripHorizontal className="w-4 h-4 text-gray-400" />
+            <span className="text-xs font-medium">
+              {t("sketchBoard.calc.title")}
+            </span>
+            <button
+              type="button"
+              onClick={() => setShowCalc(false)}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="p-1 rounded hover:bg-white/20 transition-colors cursor-pointer"
+              title={t("sketchBoard.closeCalc")}
+              aria-label={t("sketchBoard.closeCalc")}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <div className="max-h-[calc(100vh-10rem)] overflow-y-auto">
             <Calculator />
           </div>
         </div>
