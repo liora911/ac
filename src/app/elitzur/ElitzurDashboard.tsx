@@ -61,6 +61,7 @@ import {
   Menu,
   PanelLeftClose,
   PanelLeftOpen,
+  ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -494,19 +495,60 @@ function SidebarNav({
   t: (key: string) => string;
   collapsed?: boolean;
 }) {
+  // Per-group fold state, remembered across visits. Default: all open.
+  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("elitzur-sidebar-groups");
+      if (raw) setClosedGroups(JSON.parse(raw));
+    } catch {
+      // corrupt entry — all groups just start open
+    }
+  }, []);
+  const toggleGroup = (labelKey: string) => {
+    setClosedGroups((prev) => {
+      const next = { ...prev, [labelKey]: !prev[labelKey] };
+      try {
+        localStorage.setItem("elitzur-sidebar-groups", JSON.stringify(next));
+      } catch {
+        // storage unavailable — state just won't persist
+      }
+      return next;
+    });
+  };
+
   return (
     <nav role="tablist" aria-orientation="vertical">
-      {TAB_GROUPS.map((group, gi) => (
-        <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-4 last:mb-0"}>
+      {TAB_GROUPS.map((group, gi) => {
+        const GroupIcon = iconMap[group.icon];
+        // A closed group still shows the active tab so it never "disappears"
+        const isClosed =
+          !collapsed &&
+          !!closedGroups[group.labelKey] &&
+          !group.tabs.some((tab) => tab.key === active);
+        return (
+        <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-3 last:mb-0"}>
           {collapsed ? (
             gi > 0 && (
               <div className="mx-2 my-2 h-px bg-gray-200 dark:bg-gray-700" />
             )
           ) : (
-            <div className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 whitespace-nowrap">
-              {t(group.labelKey)}
-            </div>
+            <button
+              type="button"
+              onClick={() => toggleGroup(group.labelKey)}
+              aria-expanded={!isClosed}
+              className="w-full flex items-center gap-1.5 px-3 py-1.5 mb-0.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer whitespace-nowrap"
+            >
+              <ChevronDown
+                className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
+                  isClosed ? "-rotate-90 rtl:rotate-90" : ""
+                }`}
+              />
+              <span className="flex-1 text-start">{t(group.labelKey)}</span>
+              {GroupIcon && <GroupIcon className="w-3.5 h-3.5 flex-shrink-0" />}
+            </button>
           )}
+          {!isClosed && (
           <ul className="space-y-0.5">
             {group.tabs
               .filter((tab) => !tab.disabled)
@@ -542,8 +584,10 @@ function SidebarNav({
                 );
               })}
           </ul>
+          )}
         </div>
-      ))}
+        );
+      })}
     </nav>
   );
 }

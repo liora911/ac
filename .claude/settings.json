@@ -25,7 +25,21 @@
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint \"--file\" \"src/app/presentations/[id]/page.tsx\" --file src/components/MainContent/MainContent.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/account/AccountClient.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/components/PdfViewer/PdfViewer.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
-      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 15; \"tsc exit: $LASTEXITCODE\")"
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 15; \"tsc exit: $LASTEXITCODE\")",
+      "PowerShell(Get-Content .env | Where-Object { $_ -match \"^[A-Z]\" } | ForEach-Object { \\($_ -split \"=\"\\)[0] } | Sort-Object)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx vercel env ls 2>&1)",
+      "PowerShell(npx vercel@55.0.0 env rm DEEPGRAM_API_KEY production -y 2>&1)",
+      "PowerShell(npx vercel@55.0.0 env rm DEEPGRAM_API_KEY preview -y 2>&1)",
+      "PowerShell(npx vercel@55.0.0 env rm DEEPGRAM_MODEL production -y 2>&1)",
+      "PowerShell(npx vercel@55.0.0 env rm DEEPGRAM_MODEL preview -y 2>&1)",
+      "PowerShell(npx vercel@55.0.0 env ls 2>&1 | Select-String -Pattern \"DEEPGRAM\"; if \\(-not $?\\) { \"No DEEPGRAM vars remain\" }; \\(Get-Content .env | Where-Object { $_ -notmatch \"^DEEPGRAM\" }\\) | Set-Content .env -Encoding utf8; \"local .env cleaned\")",
+      "PowerShell(npm install @ai-sdk/openai --no-audit --no-fund 2>&1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 12; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npm install @ai-sdk/openai@3 --no-audit --no-fund 2>&1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 10; \"tsc exit: $LASTEXITCODE\")",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 6; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)"
     ],
     "additionalDirectories": [
       "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]",

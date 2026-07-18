@@ -1,9 +1,11 @@
 import { google } from "@ai-sdk/google";
+import { openai } from "@ai-sdk/openai";
 import { generateText, tool, stepCountIs } from "ai";
 import { z } from "zod";
 import { APP_NAVIGATION_MAP } from "@/constants/AppNavigationMap";
 import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
 import prisma from "@/lib/prisma/prisma";
+import { getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
 
 export const maxDuration = 30;
 
@@ -233,6 +235,54 @@ const visitorTools = {
 const adminTools = {
   ...visitorTools,
 
+  // Admin override: the professor discusses his own articles in depth, so he
+  // gets the full body (visitors get a 3,000-character preview). Includes
+  // drafts too — his unpublished work is still his work.
+  getArticleContent: tool({
+    description:
+      "Get the FULL content of a specific article by slug or title, including drafts. Use when the admin asks about a specific article — then discuss it, answer questions about it, quote from it.",
+    inputSchema: z.object({
+      slug: z.string().describe("The article slug or partial title"),
+    }),
+    execute: async ({ slug }: { slug: string }) => {
+      const article = await prisma.article.findFirst({
+        where: {
+          OR: [
+            { slug },
+            { title: { contains: slug, mode: "insensitive" as const } },
+          ],
+        },
+        select: {
+          title: true,
+          slug: true,
+          content: true,
+          published: true,
+          readDuration: true,
+          createdAt: true,
+          authors: { select: { name: true }, orderBy: { order: "asc" } },
+          category: { select: { name: true } },
+        },
+      });
+      if (!article) return { error: "Article not found" };
+      const plainText = article.content
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        // Generous cap to protect the context window on very long articles
+        .slice(0, 60000);
+      return {
+        title: article.title,
+        authors: article.authors.map((a) => a.name).join(", "),
+        category: article.category?.name ?? "Uncategorized",
+        published: article.published,
+        readDuration: article.readDuration,
+        date: article.createdAt.toISOString().split("T")[0],
+        link: `/articles/${article.slug}`,
+        content: plainText,
+      };
+    },
+  }),
+
   getSiteStats: tool({
     description: "Get statistics about the website content and users.",
     inputSchema: z.object({}),
@@ -332,6 +382,9 @@ You can:
 
 IMPORTANT: When asked "how many articles do we have?" or "show me recent lectures" — USE THE TOOLS. Never make up numbers or titles.
 
+## Discussing an article in depth
+When the professor names an article, call getArticleContent to load its FULL text, then discuss it substantively — answer questions about its content, summarize sections, find passages, and reason about the ideas. If the title is ambiguous, first confirm which article he means (search and offer the matches) before loading it. Ground every claim in the retrieved text; never invent content that is not in the article.
+
 ## Admin Panel Navigation (at /elitzur)
 1. **משתמש פעיל** - Dashboard  2. **דף הבית** - Homepage  3. **קטגוריות** - Categories
 4. **מאמרים** - Articles  5. **אירועים** - Events  6. **הרצאות** - Lectures
@@ -405,12 +458,19 @@ export async function POST(req: Request) {
       );
     }
 
-    const { messages, isAdmin } = await req.json();
+    const { messages } = await req.json();
+    // Admin status MUST come from the server session — the request body is
+    // client-controlled, and admin tools expose private contact messages
+    const session = await getOptionalSession();
+    const isAdmin = isAdminEmail(session?.user?.email);
 
-    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
-      return new Response("GOOGLE_GENERATIVE_AI_API_KEY is not set", {
-        status: 500,
-      });
+    // Admin sessions use OpenAI; public visitors stay on Gemini so anonymous
+    // traffic never spends OpenAI credits
+    const requiredKey = isAdmin
+      ? "OPENAI_API_KEY"
+      : "GOOGLE_GENERATIVE_AI_API_KEY";
+    if (!process.env[requiredKey]) {
+      return new Response(`${requiredKey} is not set`, { status: 500 });
     }
 
     const lastMessage = messages[messages.length - 1];
@@ -422,7 +482,9 @@ export async function POST(req: Request) {
     }
 
     const result = await generateText({
-      model: google("gemini-2.5-flash"),
+      model: isAdmin
+        ? openai(process.env.OPENAI_ASSISTANT_MODEL || "gpt-4o-mini")
+        : google("gemini-2.5-flash"),
       system: getSystemPrompt(!!isAdmin),
       messages,
       tools: isAdmin ? adminTools : visitorTools,
