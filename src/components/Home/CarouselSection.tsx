@@ -4,7 +4,9 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Loader2, Star } from "lucide-react";
+import { Star } from "lucide-react";
+import { useMouseSwipe } from "@/hooks/useCarouselInteractions";
+import ChevronDisc from "@/components/Carousel/ChevronDisc";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import type { ContentItem, CarouselSectionProps } from "@/types/Home/home";
@@ -115,38 +117,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
   const showLeftArrow = isRTL ? canGoNext : canGoPrev;
   const showRightArrow = isRTL ? canGoPrev : canGoNext;
 
-  // Mouse swipe on the desktop grid: dragging past a threshold flips the
-  // page in the direction of the pull (touch swipes already work on mobile)
-  const swipeRef = useRef<{ startX: number; fired: boolean } | null>(null);
-  const swipeMovedRef = useRef(false);
-  const onSwipeDown = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return;
-    swipeRef.current = { startX: e.clientX, fired: false };
-    swipeMovedRef.current = false;
-  };
-  const onSwipeMove = (e: React.PointerEvent) => {
-    const s = swipeRef.current;
-    if (!s || s.fired) return;
-    const dx = e.clientX - s.startX;
-    if (Math.abs(dx) > 8) swipeMovedRef.current = true;
-    if (Math.abs(dx) > 60) {
-      s.fired = true;
-      // Pulling the content left reveals what's on the right, and vice versa
-      if (dx < 0) handleRight();
-      else handleLeft();
-    }
-  };
-  const onSwipeEnd = () => {
-    swipeRef.current = null;
-  };
-  const onSwipeClickCapture = (e: React.MouseEvent) => {
-    // Swallow the click that ends a swipe so cards don't open accidentally
-    if (swipeMovedRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      swipeMovedRef.current = false;
-    }
-  };
+  const swipeHandlers = useMouseSwipe({ onLeft: handleLeft, onRight: handleRight });
 
   const slideVariants = {
     enter: (d: number) => ({ x: d > 0 ? 100 : -100, opacity: 0 }),
@@ -179,9 +150,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             className="hidden sm:flex absolute left-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-r from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-70 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.next") : t("common.previous")}
           >
-            <span className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg">
-              <ChevronLeft className="w-6 h-6 md:w-7 md:h-7 text-gray-800 dark:text-gray-100" />
-            </span>
+            <ChevronDisc dir="left" />
           </button>
         )}
 
@@ -192,13 +161,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
             className="hidden sm:flex absolute right-0 top-0 bottom-0 z-20 w-12 md:w-16 items-center justify-center bg-gradient-to-l from-[var(--background)] via-[var(--background)]/60 to-transparent transition-opacity duration-300 opacity-70 group-hover:opacity-100 cursor-pointer"
             aria-label={isRTL ? t("common.previous") : t("common.next")}
           >
-            <span className="flex items-center justify-center w-10 h-10 md:w-11 md:h-11 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 shadow-lg">
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 md:w-6 md:h-6 text-gray-800 dark:text-gray-100 animate-spin" />
-              ) : (
-                <ChevronRight className="w-6 h-6 md:w-7 md:h-7 text-gray-800 dark:text-gray-100" />
-              )}
-            </span>
+            <ChevronDisc dir="right" loading={isLoading} />
           </button>
         )}
 
@@ -264,12 +227,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
         {/* Desktop: Paginated grid - full bleed, mouse-swipeable */}
         <div
           className="hidden sm:block overflow-hidden px-6 md:px-10 lg:px-12 cursor-grab active:cursor-grabbing select-none"
-          onPointerDown={onSwipeDown}
-          onPointerMove={onSwipeMove}
-          onPointerUp={onSwipeEnd}
-          onPointerLeave={onSwipeEnd}
-          onClickCapture={onSwipeClickCapture}
-          onDragStart={(e) => e.preventDefault()}
+          {...swipeHandlers}
         >
           <AnimatePresence mode="wait" custom={direction}>
             <motion.div

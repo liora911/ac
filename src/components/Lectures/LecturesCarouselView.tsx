@@ -10,6 +10,7 @@ import { useNotification } from "@/contexts/NotificationContext";
 import PremiumBadge from "@/components/PremiumBadge";
 import FavoriteButton from "@/components/FavoriteButton";
 import { LecturePlaceholder } from "@/components/Placeholders";
+import { useDragScroll } from "@/hooks/useCarouselInteractions";
 import { getYouTubeVideoId, getYouTubeThumbnail } from "@/lib/utils/youtube";
 import { shareItem } from "@/lib/utils/share";
 import LectureModal from "./LectureModal";
@@ -221,37 +222,7 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
     });
   };
 
-  // Mouse drag-to-scroll — the scrollbar is hidden, so without this a
-  // desktop mouse has no way to pan besides the arrows
-  const dragRef = useRef<{ startX: number; startScroll: number } | null>(null);
-  const dragMovedRef = useRef(false);
-
-  const onDragDown = (e: React.PointerEvent) => {
-    if (e.pointerType !== "mouse") return; // touch already scrolls natively
-    const el = scrollRef.current;
-    if (!el) return;
-    dragRef.current = { startX: e.clientX, startScroll: el.scrollLeft };
-    dragMovedRef.current = false;
-  };
-  const onDragMove = (e: React.PointerEvent) => {
-    const d = dragRef.current;
-    const el = scrollRef.current;
-    if (!d || !el) return;
-    const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 5) dragMovedRef.current = true;
-    el.scrollLeft = d.startScroll - dx;
-  };
-  const onDragEnd = () => {
-    dragRef.current = null;
-  };
-  const onDragClickCapture = (e: React.MouseEvent) => {
-    // Swallow the click that ends a drag so cards don't open accidentally
-    if (dragMovedRef.current) {
-      e.preventDefault();
-      e.stopPropagation();
-      dragMovedRef.current = false;
-    }
-  };
+  const dragHandlers = useDragScroll(scrollRef);
 
   if (category.lectures.length === 0) return null;
 
@@ -288,12 +259,7 @@ function CategoryCarousel({ category, hasAccess, onPlayLecture }: CategoryCarous
       <div
         ref={scrollRef}
         dir="ltr"
-        onPointerDown={onDragDown}
-        onPointerMove={onDragMove}
-        onPointerUp={onDragEnd}
-        onPointerLeave={onDragEnd}
-        onClickCapture={onDragClickCapture}
-        onDragStart={(e) => e.preventDefault()}
+        {...dragHandlers}
         className="flex gap-4 overflow-x-auto scrollbar-hide pb-2 cursor-grab active:cursor-grabbing select-none"
         style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
       >

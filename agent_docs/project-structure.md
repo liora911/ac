@@ -181,6 +181,7 @@ Complete file tree for the Avshalom Elitzur website.
     /AuthPrompt/AuthPrompt.tsx        # Login prompt overlay
     /BottomSheet/BottomSheet.tsx      # Mobile bottom sheet
     /Breadcrumbs/Breadcrumbs.tsx      # Navigation breadcrumbs
+    /Carousel/ChevronDisc.tsx         # Shared carousel arrow disc (all carousels)
     /Category/CategoryManager.tsx     # Category CRUD manager
     /CategoryPreferences/WelcomeModal.tsx  # Onboarding preferences
     /Clock/Clock.tsx                  # Clock widget
@@ -313,6 +314,7 @@ Complete file tree for the Avshalom Elitzur website.
     useArchive.ts                     # Archive items
     useArticles.ts                    # Articles CRUD
     useCarouselExpand.ts              # Carousel expand state
+    useCarouselInteractions.ts        # Shared mouse swipe/drag for all carousels
     useComments.ts                    # Comments
     useDebouncedValue.ts              # Debounce utility
     useEvents.ts                      # Events CRUD
