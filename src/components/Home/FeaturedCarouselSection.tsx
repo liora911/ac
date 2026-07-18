@@ -4,7 +4,7 @@ import React, { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { Flame } from "lucide-react";
+import { Flame, Star } from "lucide-react";
 import { useMouseSwipe } from "@/hooks/useCarouselInteractions";
 import ChevronDisc from "@/components/Carousel/ChevronDisc";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -16,7 +16,6 @@ import type {
 import { stripHtml } from "@/lib/utils/stripHtml";
 import { ITEMS_PER_PAGE, BATCH_SIZE } from "@/constants/pagination";
 import { COOLDOWN_MS } from "@/constants/timing";
-import { useCarouselExpand } from "@/hooks/useCarouselExpand";
 
 const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
   title,
@@ -50,14 +49,6 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
     page * ITEMS_PER_PAGE,
     (page + 1) * ITEMS_PER_PAGE,
   );
-
-  const {
-    expandedIdx,
-    handleMouseEnter,
-    handleMouseLeave,
-    gridColumns,
-    showText,
-  } = useCarouselExpand();
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -255,14 +246,8 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
-                animate={
-                  gridColumns ? { gridTemplateColumns: gridColumns } : {}
-                }
-                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
-              >
-                {currentItems.map((item, idx) => {
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {currentItems.map((item) => {
                   const imageUrl = getImageUrl(item);
                   const rawSubtitle = getSubtitle?.(item);
                   const subtitle = rawSubtitle ? stripHtml(rawSubtitle) : null;
@@ -270,78 +255,61 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
                     useSlug && item.slug
                       ? `${linkPrefix}/${item.slug}`
                       : `${linkPrefix}/${item.id}`;
-                  const isExpanded = expandedIdx === idx;
 
                   return (
                     <Link
                       key={item.id}
                       href={itemLink}
-                      className="block group/card"
-                      onMouseEnter={() => handleMouseEnter(idx)}
-                      onMouseLeave={handleMouseLeave}
+                      className="group/card block rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all"
                     >
-                      <div
-                        className={`relative aspect-[2/3] lg:aspect-auto lg:h-72 rounded-xl overflow-hidden bg-gray-200 dark:bg-gray-700 shadow-lg ring-2 ring-inset transition-shadow duration-300 ${
-                          isExpanded
-                            ? "ring-blue-400 dark:ring-blue-500 shadow-2xl shadow-blue-500/30"
-                            : "ring-blue-300/50 dark:ring-blue-600/30"
-                        }`}
-                      >
+                      {/* Landscape thumbnail — editorial, matches the rest of the site */}
+                      <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
                         {imageUrl ? (
                           <Image
                             src={imageUrl}
                             alt={item.title}
                             fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 25vw, 16vw"
+                            className="object-cover group-hover/card:scale-105 transition-transform duration-300"
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                           />
                         ) : (
-                          <div className="absolute inset-0 bg-gradient-to-br from-blue-200 to-indigo-300 dark:from-blue-800 dark:to-indigo-900" />
+                          <div className="absolute inset-0 bg-gradient-to-br from-blue-100 to-indigo-200 dark:from-blue-900 dark:to-indigo-950" />
                         )}
 
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        {/* Featured ribbon */}
+                        <span className="absolute top-2.5 start-2.5 inline-flex items-center gap-1 px-2 py-1 rounded-full bg-amber-500/95 text-white text-[11px] font-semibold shadow-md">
+                          <Star className="w-3 h-3 fill-current" />
+                          {t("home.sections.featured")}
+                        </span>
 
                         {item.isPremium && (
-                          <div className="absolute top-2 right-2">
+                          <div className="absolute top-2.5 end-2.5">
                             <PremiumBadge size="sm" />
                           </div>
                         )}
+                      </div>
 
-                        <div
-                          className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
-                            showText
-                              ? isExpanded
-                                ? "opacity-100"
-                                : "lg:opacity-80"
-                              : "lg:opacity-0"
-                          }`}
+                      {/* Title & subtitle in solid, always-readable text */}
+                      <div className="p-4">
+                        <h3
+                          dir="auto"
+                          className="font-bold text-gray-900 dark:text-white line-clamp-2 group-hover/card:text-blue-600 dark:group-hover/card:text-blue-400 transition-colors"
                         >
-                          <h3
-                            className={`text-white font-bold drop-shadow-lg line-clamp-2 ${
-                              isExpanded
-                                ? "text-sm"
-                                : "text-sm lg:text-[10px] lg:leading-tight"
-                            }`}
+                          {item.title}
+                        </h3>
+                        {subtitle && (
+                          <p
+                            dir="auto"
+                            className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2"
                           >
-                            {item.title}
-                          </h3>
-                          {subtitle && (
-                            <p
-                              className={`text-white/80 drop-shadow-md line-clamp-1 ${
-                                isExpanded
-                                  ? "text-xs mt-0.5"
-                                  : "text-xs lg:text-[8px] lg:leading-tight mt-0.5"
-                              }`}
-                            >
-                              {subtitle}
-                            </p>
-                          )}
-                        </div>
+                            {subtitle}
+                          </p>
+                        )}
                       </div>
                     </Link>
                   );
                 })}
-              </motion.div>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>

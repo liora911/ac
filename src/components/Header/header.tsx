@@ -22,6 +22,35 @@ import {
 import { Bot, Bell } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
+import { useTapRipple } from "@/hooks/useTapRipple";
+
+// Desktop nav link with a PS5-style blue tap ripple
+function NavRippleLink({
+  href,
+  label,
+  isActive,
+}: {
+  href: string;
+  label: string;
+  isActive: boolean;
+}) {
+  const { onPointerDown, rippleLayer } = useTapRipple();
+  return (
+    <Link
+      href={href}
+      onPointerDown={onPointerDown}
+      className={`relative overflow-hidden px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+        isActive
+          ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
+          : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
+      }`}
+      aria-current={isActive ? "page" : undefined}
+    >
+      {rippleLayer}
+      <span className="relative z-10">{label}</span>
+    </Link>
+  );
+}
 
 export default function Header() {
   const { data: session } = useSession();
@@ -141,23 +170,14 @@ export default function Header() {
             role="navigation"
             aria-label={t("header.mainNavigation")}
           >
-            {visibleNavItems.map(({ label, href }) => {
-              const isActive = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    isActive
-                      ? "bg-blue-50 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300"
-                      : "text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                  aria-current={isActive ? "page" : undefined}
-                >
-                  {t(label)}
-                </Link>
-              );
-            })}
+            {visibleNavItems.map(({ label, href }) => (
+              <NavRippleLink
+                key={href}
+                href={href}
+                label={t(label)}
+                isActive={pathname === href}
+              />
+            ))}
           </nav>
 
           {/* Right Side Actions */}

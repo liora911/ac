@@ -174,6 +174,27 @@ html.dark .text-amber-800 {
   display: none;
 }
 
+/* PS5-style tap ripple — blue glow fades in from the tap point, then out */
+@keyframes tap-ripple {
+  0% {
+    transform: scale(0);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+.tap-ripple {
+  animation: tap-ripple 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tap-ripple {
+    animation: none;
+    display: none;
+  }
+}
+
 /* Font Size Settings */
 :root {
   --font-size-base: 1rem;
