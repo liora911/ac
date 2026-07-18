@@ -254,8 +254,8 @@ export default function ElitzurDashboard() {
 
               {/* AI Chat Panel */}
               {showAiChat && aiMessages.length > 0 && (
-                <div className="absolute top-full mt-2 start-0 w-full sm:w-96 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl overflow-hidden z-50">
-                  <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
+                <div className="absolute top-full mt-2 start-0 w-full sm:w-[36rem] max-w-[calc(100vw-2rem)] rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-2xl overflow-hidden z-50">
+                  <div className="flex items-center justify-between px-4 py-2.5 bg-gradient-to-r from-purple-500 to-blue-500 text-white">
                     <div className="flex items-center gap-2">
                       <Bot className="w-4 h-4" />
                       <span className="text-sm font-medium">
@@ -265,12 +265,12 @@ export default function ElitzurDashboard() {
                     <button
                       type="button"
                       onClick={() => setShowAiChat(false)}
-                      className="p-1 rounded hover:bg-white/20 transition-colors"
+                      className="p-1 rounded hover:bg-white/20 transition-colors cursor-pointer"
                     >
                       <X className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="max-h-64 overflow-y-auto p-3 space-y-3 bg-gray-50 dark:bg-gray-900">
+                  <div className="h-[55vh] max-h-[520px] overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
                     {aiMessages.map((message) => (
                       <div
                         key={message.id}
@@ -308,6 +308,32 @@ export default function ElitzurDashboard() {
                     )}
                     <div ref={messagesEndRef} />
                   </div>
+
+                  {/* Prompt input inside the panel — continue the conversation
+                      without hunting for the header field behind it */}
+                  <form
+                    onSubmit={handleAiSubmit}
+                    className="flex items-center gap-2 p-3 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800"
+                  >
+                    <input
+                      type="text"
+                      value={aiInput}
+                      onChange={(e) => setAiInput(e.target.value)}
+                      placeholder={placeholderText}
+                      className="flex-1 py-2 px-3 text-sm rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    />
+                    <button
+                      type="submit"
+                      disabled={aiLoading || !aiInput.trim()}
+                      className="flex items-center justify-center w-9 h-9 rounded-lg bg-purple-600 hover:bg-purple-700 text-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                    >
+                      {aiLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Send className="w-4 h-4" />
+                      )}
+                    </button>
+                  </form>
                 </div>
               )}
             </div>
@@ -521,11 +547,12 @@ function SidebarNav({
     <nav role="tablist" aria-orientation="vertical">
       {TAB_GROUPS.map((group, gi) => {
         const GroupIcon = iconMap[group.icon];
-        // A closed group still shows the active tab so it never "disappears"
-        const isClosed =
-          !collapsed &&
-          !!closedGroups[group.labelKey] &&
-          !group.tabs.some((tab) => tab.key === active);
+        // Any group can be collapsed — even the one holding the active tab
+        const isClosed = !collapsed && !!closedGroups[group.labelKey];
+        // When a collapsed group hides the active tab, mark the header active
+        // so the professor still sees which section he's in
+        const holdsActiveWhileClosed =
+          isClosed && group.tabs.some((tab) => tab.key === active);
         return (
         <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-3 last:mb-0"}>
           {collapsed ? (
@@ -537,7 +564,11 @@ function SidebarNav({
               type="button"
               onClick={() => toggleGroup(group.labelKey)}
               aria-expanded={!isClosed}
-              className="w-full flex items-center gap-1.5 px-3 py-1.5 mb-0.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer whitespace-nowrap"
+              className={`w-full flex items-center gap-1.5 px-3 py-1.5 mb-0.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+                holdsActiveWhileClosed
+                  ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+                  : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              }`}
             >
               <ChevronDown
                 className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
@@ -545,6 +576,9 @@ function SidebarNav({
                 }`}
               />
               <span className="flex-1 text-start">{t(group.labelKey)}</span>
+              {holdsActiveWhileClosed && (
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+              )}
               {GroupIcon && <GroupIcon className="w-3.5 h-3.5 flex-shrink-0" />}
             </button>
           )}

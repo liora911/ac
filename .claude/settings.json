@@ -39,7 +39,9 @@
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 12; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
       "PowerShell(npm install @ai-sdk/openai@3 --no-audit --no-fund 2>&1)",
       "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 10; \"tsc exit: $LASTEXITCODE\")",
-      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 6; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)"
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 6; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/api/assistant/route.ts --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 6; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/elitzur/ElitzurDashboard.tsx --file src/app/api/assistant/route.ts 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)",
+      "PowerShell(npx tsc --noEmit 2>&1 | Select-Object -First 5; \"tsc exit: $LASTEXITCODE\"; npx next lint --file src/app/elitzur/ElitzurDashboard.tsx 2>&1 | Select-Object -Last 2; npx next build 2>&1 | Select-String -Pattern \"Compiled|Failed\" | Select-Object -First 1)"
     ],
     "additionalDirectories": [
       "c:\\Users\\krisl\\ace\\ace\\src\\app\\api\\articles\\[id]",
