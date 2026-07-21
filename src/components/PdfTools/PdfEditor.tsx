@@ -29,6 +29,7 @@ import {
   Minus,
   ShieldCheck,
   Signature,
+  Copy,
 } from "lucide-react";
 
 // Set up the worker (same source as PdfViewer)
@@ -454,6 +455,27 @@ export default function PdfEditor() {
       )
     );
     if (selectedOverlayId === overlayId) setSelectedOverlayId(null);
+  };
+
+  // Duplicate an overlay — the copy lands slightly offset and is selected,
+  // so it's immediately draggable
+  const duplicateOverlay = (overlayId: string) => {
+    const source = selectedPage?.overlays.find((o) => o.id === overlayId);
+    if (!source) return;
+    const copy: Overlay = {
+      ...source,
+      id: uid(),
+      x: clamp(source.x + 0.03, 0, 0.95),
+      y: clamp(source.y + 0.03, 0, 0.96),
+    };
+    setPages((prev) =>
+      prev.map((p) =>
+        p.id !== selectedPageId
+          ? p
+          : { ...p, overlays: [...p.overlays, copy] }
+      )
+    );
+    setSelectedOverlayId(copy.id);
   };
 
   const addTextOverlay = () => {
@@ -953,8 +975,8 @@ export default function PdfEditor() {
         </div>
       ) : (
         <>
-          {/* Toolbar */}
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-3 shadow-sm">
+          {/* Toolbar — sticky so it stays reachable while scrolling a long PDF */}
+          <div className="sticky top-20 z-30 rounded-xl border border-gray-200 dark:border-gray-700 bg-white/95 dark:bg-gray-800/95 backdrop-blur-sm p-3 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={addTextOverlay} className={toolbarBtn} disabled={!selectedPage}>
                 <Type className="w-4 h-4" />
@@ -1181,6 +1203,12 @@ export default function PdfEditor() {
                             e.stopPropagation();
                             setSelectedOverlayId(ov.id);
                           }}
+                          onContextMenu={(e) => {
+                            // Right-click duplicates, as requested
+                            e.preventDefault();
+                            e.stopPropagation();
+                            duplicateOverlay(ov.id);
+                          }}
                         >
                           {/* Floating toolbar */}
                           {isSelected && (
@@ -1317,6 +1345,15 @@ export default function PdfEditor() {
                                 </>
                               )}
                               <span className="w-px h-4 bg-gray-600 mx-0.5" />
+                              <button
+                                type="button"
+                                onClick={() => duplicateOverlay(ov.id)}
+                                className="p-1.5 rounded hover:bg-gray-700 dark:hover:bg-gray-600 cursor-pointer"
+                                title={t("pdfTools.duplicateItem")}
+                                aria-label={t("pdfTools.duplicateItem")}
+                              >
+                                <Copy className="w-4 h-4" />
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => deleteOverlay(ov.id)}
