@@ -8,6 +8,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGuestWork } from "@/hooks/useGuests";
 import RichContent from "@/components/RichContent/RichContent";
 import { getYouTubeVideoId } from "@/lib/utils/youtube";
+import GuestAdminFab from "@/components/Guests/GuestAdminFab";
 import {
   ArrowLeft,
   ArrowRight,
@@ -88,6 +89,7 @@ export default function GuestWorkPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <GuestAdminFab guestId={work.guestId} workId={work.id} />
       <div className="max-w-4xl mx-auto px-6 py-10 pb-14">
         {/* Guest attribution */}
         {work.guest && (

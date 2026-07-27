@@ -588,11 +588,13 @@ function WorksView({
   onEditWork,
   onAddWork,
   onBack,
+  initialEditWorkId,
 }: {
   guestId: string;
   onEditWork: (work: GuestWork) => void;
   onAddWork: () => void;
   onBack: () => void;
+  initialEditWorkId?: string | null;
 }) {
   const { t, locale } = useTranslation();
   const { showSuccess, showError } = useNotification();
@@ -600,6 +602,17 @@ function WorksView({
   const updateWork = useUpdateGuestWork();
   const deleteWork = useDeleteGuestWork();
   const [deleteTarget, setDeleteTarget] = useState<GuestWork | null>(null);
+  const deepLinkHandled = useRef(false);
+
+  // Quick-edit deep link: open the target work's form once loaded
+  useEffect(() => {
+    if (deepLinkHandled.current || !initialEditWorkId || !guest?.works) return;
+    const work = guest.works.find((w) => w.id === initialEditWorkId);
+    if (work) {
+      deepLinkHandled.current = true;
+      onEditWork(work);
+    }
+  }, [guest, initialEditWorkId, onEditWork]);
 
   const BackArrow = locale === "he" ? ArrowRight : ArrowLeft;
 
@@ -779,26 +792,44 @@ export default function GuestsAdmin() {
     work: GuestWork | null;
   } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Guest | null>(null);
+  // Work id to auto-open once its guest's WorksView loads (from a deep link)
+  const [pendingWorkId, setPendingWorkId] = useState<string | null>(null);
   const deepLinkHandled = useRef(false);
 
-  // Honor the quick-edit deep link (/elitzur?tab=guests&editGuest=<id>) once
-  // the guests have loaded — opens that guest's edit form immediately
+  // Honor the quick-edit deep links once the guests have loaded:
+  //   ?editGuest=<id>                     → open that guest's edit form
+  //   ?editWork=<workId>&guest=<guestId>  → open that work's edit form
   useEffect(() => {
     if (deepLinkHandled.current || !guests) return;
-    const target = new URLSearchParams(window.location.search).get(
-      "editGuest"
-    );
-    if (!target) {
+    const params = new URLSearchParams(window.location.search);
+    const editGuest = params.get("editGuest");
+    const editWork = params.get("editWork");
+    const workGuest = params.get("guest");
+
+    const clean = () => {
+      const url = new URL(window.location.href);
+      url.searchParams.delete("editGuest");
+      url.searchParams.delete("editWork");
+      url.searchParams.delete("guest");
+      window.history.replaceState(null, "", url.toString());
+    };
+
+    if (editWork && workGuest && guests.some((g) => g.id === workGuest)) {
+      setWorksGuestId(workGuest);
+      setPendingWorkId(editWork);
+      deepLinkHandled.current = true;
+      clean();
+      return;
+    }
+    if (!editGuest) {
       deepLinkHandled.current = true;
       return;
     }
-    const guest = guests.find((g) => g.id === target);
+    const guest = guests.find((g) => g.id === editGuest);
     if (guest) {
       setGuestForm({ guest });
       deepLinkHandled.current = true;
-      const url = new URL(window.location.href);
-      url.searchParams.delete("editGuest");
-      window.history.replaceState(null, "", url.toString());
+      clean();
     }
   }, [guests]);
 
@@ -845,9 +876,16 @@ export default function GuestsAdmin() {
     return (
       <WorksView
         guestId={worksGuestId}
-        onEditWork={(work) => setWorkForm({ guestId: worksGuestId, work })}
+        initialEditWorkId={pendingWorkId}
+        onEditWork={(work) => {
+          setPendingWorkId(null);
+          setWorkForm({ guestId: worksGuestId, work });
+        }}
         onAddWork={() => setWorkForm({ guestId: worksGuestId, work: null })}
-        onBack={() => setWorksGuestId(null)}
+        onBack={() => {
+          setPendingWorkId(null);
+          setWorksGuestId(null);
+        }}
       />
     );
   }
