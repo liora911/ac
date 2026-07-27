@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useNotification } from "@/contexts/NotificationContext";
@@ -19,6 +19,8 @@ import DragDropImageUpload from "@/components/Upload/upload";
 import MultiImageUpload from "@/components/Upload/MultiImageUpload";
 import PdfUpload from "@/components/Upload/PdfUpload";
 import TiptapEditor from "@/lib/editor/editor";
+import { useSiteSettings, siteSettingsKeys } from "@/hooks/useSiteSettings";
+import { useQueryClient } from "@tanstack/react-query";
 import type { Guest, GuestWork } from "@/types/Guests/guests";
 import {
   Plus,
@@ -67,6 +69,96 @@ const inputCls =
 
 const cardCls =
   "rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm";
+
+// ---------- Public Guests-page subtitle editor ----------
+
+function PageSubtitleEditor() {
+  const { t } = useTranslation();
+  const { showSuccess, showError } = useNotification();
+  const queryClient = useQueryClient();
+  const { data: settings } = useSiteSettings();
+
+  const [he, setHe] = useState("");
+  const [en, setEn] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  // Seed the inputs once settings arrive
+  useEffect(() => {
+    if (settings && !loaded) {
+      setHe(settings.guestsSubtitleHe ?? "");
+      setEn(settings.guestsSubtitleEn ?? "");
+      setLoaded(true);
+    }
+  }, [settings, loaded]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/site-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guestsSubtitleHe: he, guestsSubtitleEn: en }),
+      });
+      if (!res.ok) throw new Error("save failed");
+      queryClient.invalidateQueries({ queryKey: siteSettingsKeys.all });
+      showSuccess(t("adminGuests.savedSuccess"));
+    } catch {
+      showError(t("adminGuests.errorGeneric"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+        {t("adminGuests.pageSubtitleTitle")}
+      </h3>
+      <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+        {t("adminGuests.pageSubtitleHint")}
+      </p>
+      <div className="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+            {t("adminGuests.pageSubtitleHe")}
+          </label>
+          <input
+            type="text"
+            value={he}
+            onChange={(e) => setHe(e.target.value)}
+            dir="rtl"
+            placeholder={t("guests.subtitle")}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+            {t("adminGuests.pageSubtitleEn")}
+          </label>
+          <input
+            type="text"
+            value={en}
+            onChange={(e) => setEn(e.target.value)}
+            dir="ltr"
+            className={inputCls}
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex justify-end">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={saving || !loaded}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 hover:bg-blue-700 text-white transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving && <Loader2 className="w-4 h-4 animate-spin" />}
+          {saving ? t("adminGuests.saving") : t("adminGuests.save")}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 // ---------- Guest create/edit form ----------
 
@@ -386,12 +478,11 @@ function WorkForm({
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               {t("adminGuests.description")}
             </label>
-            <input
-              type="text"
+            <TiptapEditor
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className={inputCls}
-              dir="auto"
+              onChange={setDescription}
+              direction={titleDirection === "rtl" ? "rtl" : "ltr"}
+              theme="light"
             />
           </div>
           <div>
@@ -688,6 +779,28 @@ export default function GuestsAdmin() {
     work: GuestWork | null;
   } | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Guest | null>(null);
+  const deepLinkHandled = useRef(false);
+
+  // Honor the quick-edit deep link (/elitzur?tab=guests&editGuest=<id>) once
+  // the guests have loaded — opens that guest's edit form immediately
+  useEffect(() => {
+    if (deepLinkHandled.current || !guests) return;
+    const target = new URLSearchParams(window.location.search).get(
+      "editGuest"
+    );
+    if (!target) {
+      deepLinkHandled.current = true;
+      return;
+    }
+    const guest = guests.find((g) => g.id === target);
+    if (guest) {
+      setGuestForm({ guest });
+      deepLinkHandled.current = true;
+      const url = new URL(window.location.href);
+      url.searchParams.delete("editGuest");
+      window.history.replaceState(null, "", url.toString());
+    }
+  }, [guests]);
 
   const togglePublished = async (guest: Guest) => {
     try {
@@ -770,6 +883,8 @@ export default function GuestsAdmin() {
           {t("adminGuests.addGuest")}
         </button>
       </div>
+
+      <PageSubtitleEditor />
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">

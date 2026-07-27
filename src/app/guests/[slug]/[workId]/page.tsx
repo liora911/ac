@@ -132,12 +132,10 @@ export default function GuestWorkPage() {
           {work.title}
         </h1>
         {work.description && (
-          <p
-            dir={work.titleDirection}
+          <RichContent
+            content={work.description}
             className="mt-3 text-lg text-gray-600 dark:text-gray-300"
-          >
-            {work.description}
-          </p>
+          />
         )}
         {work.category && (
           <span className="inline-block mt-3 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">

@@ -4,14 +4,23 @@ import React from "react";
 import Link from "next/link";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useGuests } from "@/hooks/useGuests";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
+import GuestAdminFab from "@/components/Guests/GuestAdminFab";
 import { Users, Star } from "lucide-react";
 
 export default function GuestsPage() {
-  const { t } = useTranslation();
+  const { t, locale } = useTranslation();
   const { data: guests, isLoading, isError } = useGuests();
+  const { data: settings } = useSiteSettings();
+
+  // Admin-controlled subtitle; falls back to the built-in translation if empty
+  const customSubtitle =
+    locale === "he" ? settings?.guestsSubtitleHe : settings?.guestsSubtitleEn;
+  const subtitle = customSubtitle?.trim() || t("guests.subtitle");
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <GuestAdminFab />
       <div className="w-full px-4 sm:px-6 lg:px-8 py-10 md:py-14">
         {/* Header */}
         <div className="text-center mb-10">
@@ -19,7 +28,7 @@ export default function GuestsPage() {
             {t("guests.title")}
           </h1>
           <p className="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            {t("guests.subtitle")}
+            {subtitle}
           </p>
           <div className="mx-auto mt-4 w-16 h-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500" />
         </div>

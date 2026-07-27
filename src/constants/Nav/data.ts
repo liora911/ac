@@ -10,7 +10,6 @@ export const navItems: NavItem[] = [
   },
   { label: "nav.lectures", href: "/lectures", icon: "LectureIcon" },
   { label: "nav.events", href: "/events", icon: "EventIcon" },
-  // Soft launch: visible only to admins until the first guests are published
-  { label: "nav.guests", href: "/guests", icon: "GuestIcon", adminOnly: true },
+  { label: "nav.guests", href: "/guests", icon: "GuestIcon" },
   { label: "nav.contact", href: "/contact", icon: "ContactIcon" },
 ];

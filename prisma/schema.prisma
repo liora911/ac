@@ -376,6 +376,8 @@ model SiteSettings {
   newsletterMessage        String   @default("מאמר חדש פורסם: {articleName}. מוזמנים לקרוא!")
   newsletterSubjectEn      String   @default("New Article: {articleName}")
   newsletterMessageEn      String   @default("A new article has been published: {articleName}. Check it out!")
+  guestsSubtitleHe         String   @default("")
+  guestsSubtitleEn         String   @default("")
   updatedAt                DateTime @updatedAt
 
   @@map("site_settings")

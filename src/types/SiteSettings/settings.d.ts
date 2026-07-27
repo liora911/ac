@@ -8,5 +8,7 @@ export interface SiteSettings {
   youtubeUrl: string;
   twitterUrl: string;
   defaultLanguage: "he" | "en";
+  guestsSubtitleHe?: string;
+  guestsSubtitleEn?: string;
   updatedAt?: string;
 }

@@ -161,6 +161,10 @@
   "adminGuests": {
     "title": "Guests",
     "subtitle": "Host collaborators' works — researchers, artists, and colleagues",
+    "pageSubtitleTitle": "Public page subtitle",
+    "pageSubtitleHint": "The line shown under the title on the public Guests page. Leave empty to use the default text.",
+    "pageSubtitleHe": "Hebrew",
+    "pageSubtitleEn": "English",
     "addGuest": "Add Guest",
     "editGuest": "Edit Guest",
     "name": "Name",

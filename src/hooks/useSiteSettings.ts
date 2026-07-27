@@ -36,6 +36,8 @@ export function useSiteSettings() {
         youtubeUrl: data.youtubeUrl ?? DEFAULT_SETTINGS.youtubeUrl,
         twitterUrl: data.twitterUrl ?? DEFAULT_SETTINGS.twitterUrl,
         defaultLanguage: data.defaultLanguage ?? DEFAULT_SETTINGS.defaultLanguage,
+        guestsSubtitleHe: data.guestsSubtitleHe ?? "",
+        guestsSubtitleEn: data.guestsSubtitleEn ?? "",
         updatedAt: data.updatedAt ?? null,
       } as SiteSettings;
     },

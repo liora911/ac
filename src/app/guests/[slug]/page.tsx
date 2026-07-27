@@ -8,6 +8,8 @@ import { useGuest } from "@/hooks/useGuests";
 import RichContent from "@/components/RichContent/RichContent";
 import { getYouTubeThumbnailFromUrl } from "@/lib/utils/youtube";
 import { normalizeExternalUrl } from "@/lib/utils/url";
+import { stripHtml } from "@/lib/utils/stripHtml";
+import GuestAdminFab from "@/components/Guests/GuestAdminFab";
 import {
   ArrowLeft,
   ArrowRight,
@@ -63,6 +65,7 @@ export default function GuestProfilePage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <GuestAdminFab guestId={guest.id} />
       {/* Banner */}
       {guest.bannerImageUrl && (
         <div className="h-48 md:h-64 w-full overflow-hidden">
@@ -178,7 +181,7 @@ export default function GuestProfilePage() {
                         dir={work.titleDirection}
                         className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2"
                       >
-                        {work.description}
+                        {stripHtml(work.description)}
                       </p>
                     )}
                   </div>
