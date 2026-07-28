@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useTranslation } from "@/contexts/Translation/translation.context";
-import { User, Mail, ArrowRight } from "lucide-react";
+import { User, Mail, ArrowRight, Home } from "lucide-react";
 import type { Notice } from "@/types/Auth/auth";
 
 function LoginContent() {
@@ -178,12 +178,14 @@ function LoginContent() {
         </div>
 
         {/* Back to home */}
-        <div className="mt-6 text-center">
+        <div className="mt-6 flex justify-center">
           <a
             href="/"
-            className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            title={t("auth.backHome")}
+            aria-label={t("auth.backHome")}
+            className="inline-flex items-center justify-center p-2.5 rounded-full text-gray-500 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-800 transition-colors cursor-pointer"
           >
-            {t("auth.backHome")}
+            <Home className="w-5 h-5" />
           </a>
         </div>
       </div>

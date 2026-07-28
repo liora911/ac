@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Star } from "lucide-react";
 import { useMouseSwipe } from "@/hooks/useCarouselInteractions";
 import ChevronDisc from "@/components/Carousel/ChevronDisc";
+import CarouselTitlePill from "./CarouselTitlePill";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import type { ContentItem, CarouselSectionProps } from "@/types/Home/home";
@@ -138,7 +139,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="flex items-center justify-between mb-4 px-4 sm:px-6 md:px-10 lg:px-12">
-        <h2 className="text-xl font-bold text-[var(--foreground)]">{title}</h2>
+        <CarouselTitlePill title={title} />
       </div>
 
       <div className="relative group">

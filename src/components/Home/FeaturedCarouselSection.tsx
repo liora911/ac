@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Flame, Star } from "lucide-react";
 import { useMouseSwipe } from "@/hooks/useCarouselInteractions";
 import ChevronDisc from "@/components/Carousel/ChevronDisc";
+import CarouselTitlePill from "./CarouselTitlePill";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import PremiumBadge from "@/components/PremiumBadge";
 import type {
@@ -132,19 +133,12 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      {/* Header - integrated badge style */}
+      {/* Header - shared pill with the Featured flame */}
       <div className="flex items-center mb-8 px-4 sm:px-6 md:px-10 lg:px-12">
-        <div className="relative flex items-center">
-          {/* Soft glow behind the badge */}
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-orange-500/20 via-red-500/15 to-indigo-500/20 dark:from-orange-500/10 dark:via-red-500/10 dark:to-indigo-500/10 rounded-2xl blur-lg" />
-          {/* Badge */}
-          <div className="relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-slate-700 via-slate-600 to-slate-800 shadow-lg">
-            <Flame className="w-5 h-5 text-white/90 shrink-0" />
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight whitespace-nowrap">
-              {title}
-            </h2>
-          </div>
-        </div>
+        <CarouselTitlePill
+          title={title}
+          icon={<Flame className="w-5 h-5 text-white/90 shrink-0" />}
+        />
       </div>
 
       <div className="relative group">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import ChevronDisc from "@/components/Carousel/ChevronDisc";
+import CarouselTitlePill from "./CarouselTitlePill";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useGuests } from "@/hooks/useGuests";
 
@@ -74,9 +75,7 @@ const GuestsCarouselSection: React.FC = () => {
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
       <div className="flex items-center justify-between mb-4 px-4 sm:px-6 md:px-10 lg:px-12">
-        <h2 className="text-xl font-bold text-[var(--foreground)]">
-          {t("home.sections.guests")}
-        </h2>
+        <CarouselTitlePill title={t("home.sections.guests")} />
         <Link
           href="/guests"
           className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline"

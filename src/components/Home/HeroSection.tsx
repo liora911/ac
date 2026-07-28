@@ -227,7 +227,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ homeContent, siteSettings }) 
             <motion.div className="mt-6" variants={itemVariants}>
               <button
                 onClick={() => setShowBio(!showBio)}
-                className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-sm font-medium transition-colors"
+                className="inline-flex items-center gap-2 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white text-sm font-medium transition-colors cursor-pointer"
               >
                 {showBio ? (
                   <>

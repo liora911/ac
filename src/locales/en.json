@@ -447,7 +447,7 @@
     "bannerPlaceholder": "Event image/banner will appear here",
     "loading": "Loading events...",
     "errorPrefix": "Error loading events",
-    "noEventsFound": "No events found.",
+    "noEventsFound": "New events coming soon",
     "listView": "List",
     "calendarView": "Calendar"
   },
