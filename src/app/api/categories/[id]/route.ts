@@ -80,7 +80,25 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    await prisma.category.delete({ where: { id } });
+    const category = await prisma.category.findUnique({ where: { id } });
+    if (!category) {
+      return NextResponse.json(
+        { error: "Category not found" },
+        { status: 404 }
+      );
+    }
+
+    // The self-relation has no onDelete rule, so subcategories block the
+    // delete. Promote any children up to this category's own parent, then
+    // remove it — all in one transaction so we never orphan the tree.
+    await prisma.$transaction([
+      prisma.category.updateMany({
+        where: { parentId: id },
+        data: { parentId: category.parentId },
+      }),
+      prisma.category.delete({ where: { id } }),
+    ]);
+
     return new NextResponse(null, { status: 204 });
   } catch (error) {
     console.error("Error deleting category:", error);
