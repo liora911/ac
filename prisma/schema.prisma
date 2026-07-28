@@ -117,8 +117,6 @@ model Article {
   translatedFromId String?
   authorId         String
   categoryId       String?
-  embedding        Float[]
-  embeddingModel   String?
   authors          ArticleAuthor[]
   categories       ArticleCategory[]
   tags             ArticleTag[]

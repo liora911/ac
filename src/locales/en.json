@@ -549,20 +549,6 @@
     "readingTime": "{min} min read",
     "featured": "Featured"
   },
-  "semanticSearch": {
-    "placeholder": "Describe what you're looking for...",
-    "enableAI": "Enable AI search",
-    "disableAI": "Switch to regular search",
-    "aiLabel": "AI",
-    "searchButton": "Search",
-    "description": "AI search understands meaning, not just keywords. Press Enter or click Search.",
-    "resultsFound": "Found {count} related articles",
-    "topMatch": "Top match",
-    "relevance": "relevance",
-    "noResults": "No articles match your description. Try different words or disable AI search.",
-    "generateEmbeddings": "Generate embeddings for all articles",
-    "embeddingsRequired": "AI search requires embeddings. Please generate them first."
-  },
   "articleForm": {
     "tab1RequiredHint": "* Title and at least one author are required",
     "createArticleButton": "Create Article",
@@ -1270,17 +1256,6 @@
       "translateExists": "Translation already exists for this article",
       "translateError": "Failed to translate article"
     },
-    "embeddings": {
-      "title": "AI Search Embeddings",
-      "description": "Generate embeddings for AI-powered semantic search",
-      "generate": "Generate",
-      "generating": "Generating...",
-      "pending": "{count} articles pending",
-      "allComplete": "All articles indexed",
-      "complete": "complete",
-      "success": "Generated embeddings for {processed} of {total} articles",
-      "error": "Failed to generate embeddings"
-    },
     "events": {
       "newEvent": "+ New Event",
       "filters": "Event filters",
@@ -1557,6 +1532,7 @@
       "calendar": "Personal Calendar",
       "collapseMenu": "Collapse menu",
       "expandMenu": "Expand menu",
+      "collapseAllGroups": "Collapse all groups",
       "backToSite": "Back to the site"
     },
     "tabGroups": {

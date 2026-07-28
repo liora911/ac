@@ -62,6 +62,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   ChevronDown,
+  ChevronsDownUp,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -115,6 +116,40 @@ export default function ElitzurDashboard() {
       return next;
     });
   };
+
+  // Per-group fold state, remembered across visits. Default: all open.
+  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("elitzur-sidebar-groups");
+      if (raw) setClosedGroups(JSON.parse(raw));
+    } catch {
+      // corrupt entry — all groups just start open
+    }
+  }, []);
+  const persistGroups = (next: Record<string, boolean>) => {
+    try {
+      localStorage.setItem("elitzur-sidebar-groups", JSON.stringify(next));
+    } catch {
+      // storage unavailable — state just won't persist
+    }
+  };
+  const toggleGroup = (labelKey: string) => {
+    setClosedGroups((prev) => {
+      const next = { ...prev, [labelKey]: !prev[labelKey] };
+      persistGroups(next);
+      return next;
+    });
+  };
+  const collapseAllGroups = () => {
+    const next: Record<string, boolean> = {};
+    for (const group of TAB_GROUPS) next[group.labelKey] = true;
+    setClosedGroups(next);
+    persistGroups(next);
+  };
+  // Something to collapse only when at least one group is still open
+  const anyGroupOpen = TAB_GROUPS.some((group) => !closedGroups[group.labelKey]);
+
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
   const validKeys = useMemo(() => new Set(TABS.map((tab) => tab.key)), []);
@@ -388,26 +423,43 @@ export default function ElitzurDashboard() {
               collapsed ? "w-[4.5rem] p-2" : "w-64 p-3"
             }`}
           >
-            <button
-              type="button"
-              onClick={toggleCollapsed}
-              title={
-                collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
-              }
-              aria-label={
-                collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
-              }
-              aria-expanded={!collapsed}
-              className={`mb-2 p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer ${
-                collapsed ? "self-center" : "self-end"
+            <div
+              className={`mb-2 flex items-center ${
+                collapsed ? "justify-center" : "justify-end gap-1"
               }`}
             >
-              {collapsed ? (
-                <PanelLeftOpen className="w-4 h-4 rtl:rotate-180" />
-              ) : (
-                <PanelLeftClose className="w-4 h-4 rtl:rotate-180" />
+              {/* Collapse every open group at once — shown only when there's
+                  actually something to collapse */}
+              {!collapsed && anyGroupOpen && (
+                <button
+                  type="button"
+                  onClick={collapseAllGroups}
+                  title={t("admin.nav.collapseAllGroups")}
+                  aria-label={t("admin.nav.collapseAllGroups")}
+                  className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+                >
+                  <ChevronsDownUp className="w-4 h-4" />
+                </button>
               )}
-            </button>
+              <button
+                type="button"
+                onClick={toggleCollapsed}
+                title={
+                  collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
+                }
+                aria-label={
+                  collapsed ? t("admin.nav.expandMenu") : t("admin.nav.collapseMenu")
+                }
+                aria-expanded={!collapsed}
+                className="p-2 rounded-lg text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer"
+              >
+                {collapsed ? (
+                  <PanelLeftOpen className="w-4 h-4 rtl:rotate-180" />
+                ) : (
+                  <PanelLeftClose className="w-4 h-4 rtl:rotate-180" />
+                )}
+              </button>
+            </div>
             {/* Only the nav list scrolls — the collapse button above stays pinned */}
             <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden">
               <SidebarNav
@@ -415,6 +467,8 @@ export default function ElitzurDashboard() {
                 onSelect={handleTabClick}
                 t={t}
                 collapsed={collapsed}
+                closedGroups={closedGroups}
+                onToggleGroup={toggleGroup}
               />
             </div>
           </aside>
@@ -441,7 +495,13 @@ export default function ElitzurDashboard() {
                     <X className="w-4 h-4" />
                   </button>
                 </div>
-                <SidebarNav active={active} onSelect={handleTabClick} t={t} />
+                <SidebarNav
+                  active={active}
+                  onSelect={handleTabClick}
+                  t={t}
+                  closedGroups={closedGroups}
+                  onToggleGroup={toggleGroup}
+                />
               </div>
             </div>
           )}
@@ -515,34 +575,16 @@ function SidebarNav({
   onSelect,
   t,
   collapsed = false,
+  closedGroups,
+  onToggleGroup,
 }: {
   active: TabKey;
   onSelect: (key: TabKey) => void;
   t: (key: string) => string;
   collapsed?: boolean;
+  closedGroups: Record<string, boolean>;
+  onToggleGroup: (labelKey: string) => void;
 }) {
-  // Per-group fold state, remembered across visits. Default: all open.
-  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem("elitzur-sidebar-groups");
-      if (raw) setClosedGroups(JSON.parse(raw));
-    } catch {
-      // corrupt entry — all groups just start open
-    }
-  }, []);
-  const toggleGroup = (labelKey: string) => {
-    setClosedGroups((prev) => {
-      const next = { ...prev, [labelKey]: !prev[labelKey] };
-      try {
-        localStorage.setItem("elitzur-sidebar-groups", JSON.stringify(next));
-      } catch {
-        // storage unavailable — state just won't persist
-      }
-      return next;
-    });
-  };
-
   return (
     <nav role="tablist" aria-orientation="vertical">
       {TAB_GROUPS.map((group, gi) => {
@@ -562,7 +604,7 @@ function SidebarNav({
           ) : (
             <button
               type="button"
-              onClick={() => toggleGroup(group.labelKey)}
+              onClick={() => onToggleGroup(group.labelKey)}
               aria-expanded={!isClosed}
               className={`w-full flex items-center gap-2 px-3 py-2.5 mb-1 rounded-lg text-base font-bold transition-colors cursor-pointer whitespace-nowrap ${
                 holdsActiveWhileClosed

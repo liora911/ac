@@ -562,20 +562,6 @@
     "readingTime": "{min} דק׳ קריאה",
     "featured": "מומלץ"
   },
-  "semanticSearch": {
-    "placeholder": "תאר מה אתה מחפש...",
-    "enableAI": "הפעל חיפוש AI",
-    "disableAI": "עבור לחיפוש רגיל",
-    "aiLabel": "AI",
-    "searchButton": "חיפוש",
-    "description": "חיפוש AI מבין משמעות, לא רק מילות מפתח. לחץ Enter או לחץ על חיפוש.",
-    "resultsFound": "נמצאו {count} מאמרים קשורים",
-    "topMatch": "התאמה מובילה",
-    "relevance": "רלוונטיות",
-    "noResults": "לא נמצאו מאמרים התואמים לתיאור שלך. נסה מילים אחרות או בטל את חיפוש ה-AI.",
-    "generateEmbeddings": "צור וקטורים לכל המאמרים",
-    "embeddingsRequired": "חיפוש AI דורש וקטורים. אנא צור אותם קודם."
-  },
   "articleForm": {
     "tab1RequiredHint": "* יש למלא כותרת ולהוסיף לפחות מחבר אחד",
     "createArticleButton": "צור מאמר",
@@ -1305,17 +1291,6 @@
       "translateExists": "תרגום כבר קיים למאמר זה",
       "translateError": "שגיאה בתרגום המאמר"
     },
-    "embeddings": {
-      "title": "אינדוקס חיפוש AI",
-      "description": "יצירת אינדוקס לחיפוש סמנטי מבוסס AI",
-      "generate": "יצירה",
-      "generating": "מייצר...",
-      "pending": "{count} מאמרים ממתינים",
-      "allComplete": "כל המאמרים מאונדקסים",
-      "complete": "הושלם",
-      "success": "נוצר אינדוקס ל-{processed} מתוך {total} מאמרים",
-      "error": "שגיאה ביצירת אינדוקס"
-    },
     "events": {
       "newEvent": "+ אירוע חדש",
       "filters": "סינון אירועים",
@@ -1624,6 +1599,7 @@
       "calendar": "יומן אישי",
       "collapseMenu": "כווץ תפריט",
       "expandMenu": "הרחב תפריט",
+      "collapseAllGroups": "כווץ את כל הקבוצות",
       "backToSite": "חזרה לאתר"
     },
     "tabGroups": {
