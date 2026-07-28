@@ -33,7 +33,9 @@ export async function GET(request: Request) {
         order: true,
         createdAt: true,
         updatedAt: true,
-        ...(includeUnpublished ? { email: true } : {}),
+        // Admins get the private email and the full rich-text bio so the
+        // edit form can pre-fill; the public list stays lean without them
+        ...(includeUnpublished ? { email: true, bio: true } : {}),
       },
       orderBy: [{ isFeatured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
     });
