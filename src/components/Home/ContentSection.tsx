@@ -37,6 +37,8 @@ const MixedCarouselSection = dynamic(() => import("./MixedCarouselSection"), {
   loading: () => <CarouselSkeleton />,
 });
 
+const GuestsCarouselSection = dynamic(() => import("./GuestsCarouselSection"));
+
 const ContentSection: React.FC = () => {
   const { t } = useTranslation();
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
@@ -211,6 +213,9 @@ const ContentSection: React.FC = () => {
               getImageUrl={getPresentationImage}
               getSubtitle={getDescriptionSubtitle}
             />
+
+            {/* Guests — featured only; renders nothing when none are featured */}
+            <GuestsCarouselSection />
 
             {/* Featured Events */}
             {previewData?.featuredEvents && previewData.featuredEvents.length > 0 && (
