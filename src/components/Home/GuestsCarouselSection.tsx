@@ -11,18 +11,16 @@ import { useGuests } from "@/hooks/useGuests";
 /**
  * Homepage "Guests" carousel — visually distinct from the poster carousels:
  * circular avatars in a horizontally-scrolling row, because guests are people,
- * not content posters. Shows featured guests only; renders nothing when there
- * are none, so it never leaves an empty section on the page.
+ * not content posters. Shows every published guest (the public API already
+ * returns published-only); renders nothing when there are none, so it never
+ * leaves an empty section on the page.
  */
 const GuestsCarouselSection: React.FC = () => {
   const { t, locale } = useTranslation();
   const isRTL = locale === "he";
   const { data: guests } = useGuests();
 
-  const featured = useMemo(
-    () => (guests ?? []).filter((g) => g.isFeatured),
-    [guests]
-  );
+  const publishedGuests = useMemo(() => guests ?? [], [guests]);
 
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
@@ -42,7 +40,7 @@ const GuestsCarouselSection: React.FC = () => {
     updateArrows();
     window.addEventListener("resize", updateArrows);
     return () => window.removeEventListener("resize", updateArrows);
-  }, [featured, updateArrows]);
+  }, [publishedGuests, updateArrows]);
 
   const scrollByDir = useCallback(
     (logical: 1 | -1) => {
@@ -65,7 +63,7 @@ const GuestsCarouselSection: React.FC = () => {
   const showLeft = isRTL ? canNext : canPrev;
   const showRight = isRTL ? canPrev : canNext;
 
-  if (featured.length === 0) return null;
+  if (publishedGuests.length === 0) return null;
 
   return (
     <motion.div
@@ -115,7 +113,7 @@ const GuestsCarouselSection: React.FC = () => {
           className="overflow-x-auto scrollbar-hide px-4 sm:px-6 md:px-10 lg:px-12 pb-2"
         >
           <div className="flex gap-6 w-max">
-            {featured.map((guest) => {
+            {publishedGuests.map((guest) => {
               const displayName =
                 locale === "he"
                   ? guest.name

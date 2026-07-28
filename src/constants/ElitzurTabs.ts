@@ -63,6 +63,7 @@ export const TAB_GROUPS: TabGroup[] = [
       { key: "messages", label: "הודעות", icon: "MessageSquare" },
       { key: "notifications", label: "התראות", icon: "Bell" },
       { key: "newsletter", label: "מנויי ניוזלטר", icon: "Mail" },
+      { key: "subscriptions", label: "רשומים ומנויים", icon: "CreditCard" },
     ],
   },
   {
@@ -79,7 +80,6 @@ export const TAB_GROUPS: TabGroup[] = [
     labelKey: "admin.tabGroups.system",
     icon: "Wrench",
     tabs: [
-      { key: "subscriptions", label: "רשומים ומנויים", icon: "CreditCard" },
       { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
       { key: "devMetrics", label: "מדדי מפתחים", icon: "BarChart3" },
     ],

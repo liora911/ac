@@ -23,7 +23,6 @@ import {
   Trash2,
   Eye,
   EyeOff,
-  Star,
   ExternalLink,
   Loader2,
 } from "lucide-react";
@@ -189,7 +188,6 @@ function GuestForm({
     (guest?.titleDirection as "ltr" | "rtl") ?? "rtl"
   );
   const [published, setPublished] = useState(guest?.published ?? false);
-  const [isFeatured, setIsFeatured] = useState(guest?.isFeatured ?? false);
 
   const saving = createGuest.isPending || updateGuest.isPending;
 
@@ -211,7 +209,6 @@ function GuestForm({
       email,
       titleDirection,
       published,
-      isFeatured,
     };
     try {
       if (guest) {
@@ -333,12 +330,6 @@ function GuestForm({
             <Toggle checked={published} onChange={setPublished} />
             <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
               {t("adminGuests.publishedLabel")}
-            </span>
-          </div>
-          <div className="flex items-center gap-3">
-            <Toggle checked={isFeatured} onChange={setIsFeatured} />
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-              {t("adminGuests.featuredLabel")}
             </span>
           </div>
         </div>
@@ -545,9 +536,6 @@ export default function GuestsAdmin() {
                 >
                   {guest.name}
                 </span>
-                {guest.isFeatured && (
-                  <Star className="w-4 h-4 text-amber-400 fill-current" />
-                )}
               </div>
               <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                 <span

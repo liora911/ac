@@ -66,6 +66,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
+import { ALLOWED_EMAILS } from "@/constants/auth";
+import { useAdminBadges } from "@/hooks/useAdminBadges";
 
 const iconMap: Record<string, LucideIcon> = {
   User,
@@ -149,6 +151,30 @@ export default function ElitzurDashboard() {
   };
   // Something to collapse only when at least one group is still open
   const anyGroupOpen = TAB_GROUPS.some((group) => !closedGroups[group.labelKey]);
+
+  // "New since last seen" dots for the messages/comments tabs
+  const isAdmin = !!(
+    session?.user?.email &&
+    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
+  );
+  const {
+    messagesNew,
+    commentsNew,
+    messagesLatest,
+    commentsLatest,
+    markSeen,
+  } = useAdminBadges(isAdmin);
+  // Opening a tab (or new data arriving while it's open) clears its dot
+  useEffect(() => {
+    if (active === "messages") markSeen("messages", messagesLatest);
+  }, [active, messagesLatest, markSeen]);
+  useEffect(() => {
+    if (active === "comments") markSeen("comments", commentsLatest);
+  }, [active, commentsLatest, markSeen]);
+  const tabBadges = useMemo<Partial<Record<TabKey, boolean>>>(
+    () => ({ messages: messagesNew, comments: commentsNew }),
+    [messagesNew, commentsNew]
+  );
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
@@ -469,6 +495,7 @@ export default function ElitzurDashboard() {
                 collapsed={collapsed}
                 closedGroups={closedGroups}
                 onToggleGroup={toggleGroup}
+                tabBadges={tabBadges}
               />
             </div>
           </aside>
@@ -501,6 +528,7 @@ export default function ElitzurDashboard() {
                   t={t}
                   closedGroups={closedGroups}
                   onToggleGroup={toggleGroup}
+                  tabBadges={tabBadges}
                 />
               </div>
             </div>
@@ -577,6 +605,7 @@ function SidebarNav({
   collapsed = false,
   closedGroups,
   onToggleGroup,
+  tabBadges = {},
 }: {
   active: TabKey;
   onSelect: (key: TabKey) => void;
@@ -584,7 +613,15 @@ function SidebarNav({
   collapsed?: boolean;
   closedGroups: Record<string, boolean>;
   onToggleGroup: (labelKey: string) => void;
+  tabBadges?: Partial<Record<TabKey, boolean>>;
 }) {
+  // A small red "ping" dot marking new/unseen activity on a tab
+  const Ping = () => (
+    <span className="absolute -top-1 -end-1 flex h-2.5 w-2.5">
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
+      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800" />
+    </span>
+  );
   return (
     <nav role="tablist" aria-orientation="vertical">
       {TAB_GROUPS.map((group, gi) => {
@@ -595,6 +632,9 @@ function SidebarNav({
         // so the professor still sees which section he's in
         const holdsActiveWhileClosed =
           isClosed && group.tabs.some((tab) => tab.key === active);
+        // Surface a tab's "new" dot on its group header while the group is folded
+        const groupHasBadge =
+          isClosed && group.tabs.some((tab) => tabBadges[tab.key]);
         return (
         <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-3 last:mb-0"}>
           {collapsed ? (
@@ -617,7 +657,12 @@ function SidebarNav({
                   isClosed ? "-rotate-90 rtl:rotate-90" : ""
                 }`}
               />
-              {GroupIcon && <GroupIcon className="w-5 h-5 flex-shrink-0" />}
+              {GroupIcon && (
+                <span className="relative flex-shrink-0">
+                  <GroupIcon className="w-5 h-5" />
+                  {groupHasBadge && <Ping />}
+                </span>
+              )}
               <span className="flex-1 text-start">{t(group.labelKey)}</span>
               {holdsActiveWhileClosed && (
                 <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
@@ -652,7 +697,10 @@ function SidebarNav({
                       aria-label={label}
                     >
                       {IconComponent && (
-                        <IconComponent className="w-5 h-5 flex-shrink-0" />
+                        <span className="relative flex-shrink-0">
+                          <IconComponent className="w-5 h-5" />
+                          {tabBadges[tab.key] && <Ping />}
+                        </span>
                       )}
                       {!collapsed && <span className="truncate">{label}</span>}
                     </button>

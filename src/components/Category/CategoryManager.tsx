@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { Pencil, Trash2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import TiptapEditor from "@/lib/editor/editor";
 import { stripHtml } from "@/lib/utils/stripHtml";
@@ -388,7 +389,7 @@ export default function CategoryManager() {
                                   : t("admin.categories.topLevelCategory")}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <button
                                 onClick={() => {
                                   setEditingCategory(category);
@@ -398,17 +399,21 @@ export default function CategoryManager() {
                                     category.parentId || ""
                                   );
                                 }}
-                                className="inline-flex items-center rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700"
+                                title={t("admin.common.edit")}
+                                aria-label={t("admin.common.edit")}
+                                className="p-2 rounded-lg text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 dark:text-gray-400 dark:hover:bg-indigo-900/30 dark:hover:text-indigo-400 transition-colors cursor-pointer"
                               >
-                                {t("admin.common.edit")}
+                                <Pencil className="w-4 h-4" />
                               </button>
                               <button
                                 onClick={() =>
                                   handleDeleteCategory(category.id)
                                 }
-                                className="inline-flex items-center rounded-md bg-red-600 px-3 py-2 text-sm font-medium text-white hover:bg-red-700"
+                                title={t("admin.common.delete")}
+                                aria-label={t("admin.common.delete")}
+                                className="p-2 rounded-lg text-gray-500 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/30 dark:hover:text-red-400 transition-colors cursor-pointer"
                               >
-                                {t("admin.common.delete")}
+                                <Trash2 className="w-4 h-4" />
                               </button>
                             </div>
                           </>
