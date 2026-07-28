@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { requireAdmin, getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
 import { normalizeExternalUrl } from "@/lib/utils/url";
+import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 
 // Accepts either a cuid or a slug so public URLs can use /guests/[slug]
 async function findGuest(idOrSlug: string, includeUnpublished: boolean) {
@@ -9,13 +10,6 @@ async function findGuest(idOrSlug: string, includeUnpublished: boolean) {
     where: {
       OR: [{ id: idOrSlug }, { slug: idOrSlug }],
       ...(includeUnpublished ? {} : { published: true }),
-    },
-    include: {
-      works: {
-        where: includeUnpublished ? {} : { published: true },
-        include: { category: { select: { id: true, name: true } } },
-        orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-      },
     },
   });
 }
@@ -76,7 +70,7 @@ export async function PATCH(
 
     const data: Record<string, unknown> = {};
     const stringFields = [
-      "name",
+      "nameEn",
       "headline",
       "bio",
       "photoUrl",
@@ -94,23 +88,28 @@ export async function PATCH(
       }
       data.name = String(body.name).trim();
     }
+    // Editable slug — normalized, uniqueness enforced, never left blank
+    if ("slug" in body) {
+      const base =
+        generateSlug(body.slug || "") ||
+        generateSlug(body.nameEn || "") ||
+        generateSlug(body.name || "") ||
+        "guest";
+      data.slug = await generateUniqueSlug(
+        base,
+        async (candidate) =>
+          !!(await prisma.guest.findFirst({
+            where: { slug: candidate, NOT: { id } },
+          }))
+      );
+    }
     if ("websiteUrl" in body) data.websiteUrl = normalizeExternalUrl(body.websiteUrl);
     if ("titleDirection" in body) data.titleDirection = body.titleDirection || "rtl";
     if ("published" in body) data.published = !!body.published;
     if ("isFeatured" in body) data.isFeatured = !!body.isFeatured;
     if ("order" in body) data.order = Number(body.order) || 0;
 
-    const guest = await prisma.guest.update({
-      where: { id },
-      data,
-      include: {
-        works: {
-          include: { category: { select: { id: true, name: true } } },
-          orderBy: [{ order: "asc" }, { createdAt: "desc" }],
-        },
-        _count: { select: { works: true } },
-      },
-    });
+    const guest = await prisma.guest.update({ where: { id }, data });
 
     return NextResponse.json(guest);
   } catch (error) {

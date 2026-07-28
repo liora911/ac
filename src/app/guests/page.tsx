@@ -57,7 +57,12 @@ export default function GuestsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {guests.map((guest) => (
+            {guests.map((guest) => {
+              const displayName =
+                locale === "he"
+                  ? guest.name
+                  : guest.nameEn?.trim() || guest.name;
+              return (
               <Link
                 key={guest.id}
                 href={`/guests/${guest.slug || guest.id}`}
@@ -71,19 +76,19 @@ export default function GuestsPage() {
                 {guest.photoUrl ? (
                   <img
                     src={guest.photoUrl}
-                    alt={guest.name}
+                    alt={displayName}
                     className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-gray-100 dark:ring-gray-700 group-hover:ring-blue-100 dark:group-hover:ring-blue-900/50 transition-all"
                   />
                 ) : (
                   <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold mx-auto">
-                    {guest.name.charAt(0)}
+                    {displayName.charAt(0)}
                   </div>
                 )}
                 <h2
                   dir={guest.titleDirection}
                   className="mt-4 text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                 >
-                  {guest.name}
+                  {displayName}
                 </h2>
                 {guest.headline && (
                   <p
@@ -93,13 +98,9 @@ export default function GuestsPage() {
                     {guest.headline}
                   </p>
                 )}
-                {guest._count && (
-                  <p className="mt-3 text-xs font-medium text-blue-600 dark:text-blue-400">
-                    {guest._count.works} {t("guests.worksLabel")}
-                  </p>
-                )}
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>

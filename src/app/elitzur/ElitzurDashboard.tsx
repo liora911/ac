@@ -385,7 +385,7 @@ export default function ElitzurDashboard() {
               Collapses to an icon rail; content reflows into the freed width */}
           <aside
             className={`hidden lg:flex lg:flex-col flex-shrink-0 sticky top-20 max-h-[calc(100vh-6rem)] overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm transition-all duration-300 ease-in-out ${
-              collapsed ? "w-[4.25rem] p-2" : "w-60 p-3"
+              collapsed ? "w-[4.5rem] p-2" : "w-64 p-3"
             }`}
           >
             <button
@@ -564,22 +564,22 @@ function SidebarNav({
               type="button"
               onClick={() => toggleGroup(group.labelKey)}
               aria-expanded={!isClosed}
-              className={`w-full flex items-center gap-1.5 px-3 py-1.5 mb-0.5 rounded-lg text-[11px] font-semibold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+              className={`w-full flex items-center gap-2 px-3 py-2 mb-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
                 holdsActiveWhileClosed
                   ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-                  : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               }`}
             >
               <ChevronDown
-                className={`w-3.5 h-3.5 flex-shrink-0 transition-transform duration-200 ${
+                className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
                   isClosed ? "-rotate-90 rtl:rotate-90" : ""
                 }`}
               />
+              {GroupIcon && <GroupIcon className="w-4 h-4 flex-shrink-0" />}
               <span className="flex-1 text-start">{t(group.labelKey)}</span>
               {holdsActiveWhileClosed && (
-                <span className="w-1.5 h-1.5 rounded-full bg-blue-500 flex-shrink-0" />
+                <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
               )}
-              {GroupIcon && <GroupIcon className="w-3.5 h-3.5 flex-shrink-0" />}
             </button>
           )}
           {!isClosed && (
@@ -596,12 +596,12 @@ function SidebarNav({
                       type="button"
                       onClick={() => onSelect(tab.key)}
                       title={label}
-                      className={`w-full flex items-center py-2.5 rounded-lg text-sm font-medium text-start transition-colors cursor-pointer ${
-                        collapsed ? "justify-center px-0" : "gap-2.5 px-3"
+                      className={`w-full flex items-center py-3 rounded-lg text-[15px] font-medium text-start transition-colors cursor-pointer ${
+                        collapsed ? "justify-center px-0" : "gap-3 px-3"
                       } ${
                         isActive
                           ? "bg-blue-600 text-white shadow-sm"
-                          : "text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                       }`}
                       role="tab"
                       aria-selected={isActive}
@@ -610,7 +610,7 @@ function SidebarNav({
                       aria-label={label}
                     >
                       {IconComponent && (
-                        <IconComponent className="w-4 h-4 flex-shrink-0" />
+                        <IconComponent className="w-5 h-5 flex-shrink-0" />
                       )}
                       {!collapsed && <span className="truncate">{label}</span>}
                     </button>

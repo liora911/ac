@@ -11,24 +11,15 @@ import { useTranslation } from "@/hooks/useTranslation";
  * specific guest's edit form) so the professor edits from the public page
  * without navigating the whole admin ceremony.
  */
-export default function GuestAdminFab({
-  guestId,
-  workId,
-}: {
-  guestId?: string;
-  workId?: string;
-}) {
+export default function GuestAdminFab({ guestId }: { guestId?: string }) {
   const { data: session } = useSession();
   const { locale } = useTranslation();
 
   if (session?.user?.role !== "ADMIN") return null;
 
-  const href =
-    workId && guestId
-      ? `/elitzur?tab=guests&editWork=${workId}&guest=${guestId}`
-      : guestId
-        ? `/elitzur?tab=guests&editGuest=${guestId}`
-        : "/elitzur?tab=guests";
+  const href = guestId
+    ? `/elitzur?tab=guests&editGuest=${guestId}`
+    : "/elitzur?tab=guests";
   const label = locale === "he" ? "עריכה מהירה" : "Quick edit";
 
   return (

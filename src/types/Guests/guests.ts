@@ -1,38 +1,10 @@
-export interface GuestWork {
-  id: string;
-  guestId: string;
-  title: string;
-  titleDirection: string;
-  description: string | null;
-  content: string | null;
-  imageUrls: string[];
-  pdfUrl: string | null;
-  videoUrl: string | null;
-  coverImageUrl: string | null;
-  categoryId: string | null;
-  category?: { id: string; name: string } | null;
-  published: boolean;
-  order: number;
-  createdAt: string;
-  updatedAt: string;
-  guest?: GuestSummary;
-}
-
-export interface GuestSummary {
-  id: string;
-  name: string;
-  slug: string | null;
-  headline: string | null;
-  photoUrl: string | null;
-  titleDirection: string;
-}
-
 export interface Guest {
   id: string;
   name: string;
+  nameEn: string | null;
   slug: string | null;
   headline: string | null;
-  bio: string | null;
+  bio: string | null; // rich HTML — the guest's whole page body
   photoUrl: string | null;
   bannerImageUrl: string | null;
   websiteUrl: string | null;
@@ -43,12 +15,12 @@ export interface Guest {
   order: number;
   createdAt: string;
   updatedAt: string;
-  works?: GuestWork[];
-  _count?: { works: number };
 }
 
 export interface CreateGuestInput {
   name: string;
+  nameEn?: string;
+  slug?: string;
   headline?: string;
   bio?: string;
   photoUrl?: string;
@@ -58,17 +30,4 @@ export interface CreateGuestInput {
   titleDirection?: string;
   published?: boolean;
   isFeatured?: boolean;
-}
-
-export interface CreateGuestWorkInput {
-  title: string;
-  titleDirection?: string;
-  description?: string;
-  content?: string;
-  imageUrls?: string[];
-  pdfUrl?: string;
-  videoUrl?: string;
-  coverImageUrl?: string;
-  categoryId?: string | null;
-  published?: boolean;
 }

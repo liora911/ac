@@ -21,6 +21,7 @@ export async function GET(request: Request) {
       select: {
         id: true,
         name: true,
+        nameEn: true,
         slug: true,
         headline: true,
         photoUrl: true,
@@ -33,11 +34,6 @@ export async function GET(request: Request) {
         createdAt: true,
         updatedAt: true,
         ...(includeUnpublished ? { email: true } : {}),
-        _count: {
-          select: {
-            works: includeUnpublished ? true : { where: { published: true } },
-          },
-        },
       },
       orderBy: [{ isFeatured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
     });
@@ -67,6 +63,8 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       name,
+      nameEn,
+      slug: slugInput,
       headline,
       bio,
       photoUrl,
@@ -82,8 +80,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
+    // Slug priority: admin-typed slug → English title → Hebrew name → "guest"
+    const slugBase =
+      generateSlug(slugInput || "") ||
+      generateSlug(nameEn || "") ||
+      generateSlug(name) ||
+      "guest";
     const slug = await generateUniqueSlug(
-      generateSlug(name) || "guest",
+      slugBase,
       async (candidate) =>
         !!(await prisma.guest.findUnique({ where: { slug: candidate } }))
     );
@@ -91,6 +95,7 @@ export async function POST(request: Request) {
     const guest = await prisma.guest.create({
       data: {
         name: name.trim(),
+        nameEn: nameEn?.trim() || null,
         slug,
         headline: headline || null,
         bio: bio || null,
@@ -102,7 +107,6 @@ export async function POST(request: Request) {
         published,
         isFeatured,
       },
-      include: { _count: { select: { works: true } } },
     });
 
     return NextResponse.json(guest, { status: 201 });

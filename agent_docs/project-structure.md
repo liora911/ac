@@ -69,10 +69,9 @@ Complete file tree for the Avshalom Elitzur website.
       page.tsx
       [id]/page.tsx
     /favorites/page.tsx               # User favorites
-    /guests/                          # Guest collaborators (hosted works)
+    /guests/                          # Guest collaborators (one rich-text page each)
       page.tsx                        # Guests list
-      [slug]/page.tsx                 # Guest profile + works
-      [slug]/[workId]/page.tsx        # Single work (gallery/PDF/video/story)
+      [slug]/page.tsx                 # Guest profile (rich-text body)
     /lectures/                        # Lectures section
       page.tsx
       [id]/page.tsx
@@ -121,11 +120,9 @@ Complete file tree for the Avshalom Elitzur website.
         route.ts
         full/route.ts
       /footer-sitemap/route.ts        # Footer sitemap data
-      /guest-works/[id]/route.ts      # Guest work CRUD
       /guests/                        # Guests CRUD
         route.ts
         [id]/route.ts
-        [id]/works/route.ts
       /home-content/route.ts          # Home page content
       /home-preview/                  # Home preview
         route.ts

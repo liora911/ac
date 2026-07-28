@@ -135,6 +135,8 @@ export default function TiptapEditor({
   const [imageWidth, setImageWidth] = useState("");
   const [imageHeight, setImageHeight] = useState("");
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [batchUploading, setBatchUploading] = useState(false);
+  const batchInputRef = useRef<HTMLInputElement>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -404,6 +406,29 @@ export default function TiptapEditor({
       setImageHeight("");
       setIsImageModalOpen(false);
     }
+  };
+
+  // Batch insert: upload several images at once and drop each into the editor
+  const handleBatchImages = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const images = Array.from(files).filter((f) => isImageFile(f));
+    if (images.length === 0) {
+      alert("Please choose image files (JPEG, PNG, GIF, or WebP).");
+      return;
+    }
+    setBatchUploading(true);
+    let failures = 0;
+    for (const file of images) {
+      const result = await clientUpload(file);
+      if (result.success) {
+        editor.chain().focus().setImage({ src: result.url }).run();
+      } else {
+        failures++;
+      }
+    }
+    setBatchUploading(false);
+    setIsImageModalOpen(false);
+    if (failures > 0) alert(`${failures} image(s) failed to upload.`);
   };
 
   const addTable = () => {
@@ -798,6 +823,33 @@ export default function TiptapEditor({
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-gray-800 rounded-2xl shadow-2xl p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold text-white mb-4">Insert Image</h3>
+
+            {/* Batch upload — pick several images at once */}
+            <input
+              ref={batchInputRef}
+              type="file"
+              accept="image/*"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                handleBatchImages(e.target.files);
+                e.target.value = "";
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => batchInputRef.current?.click()}
+              disabled={batchUploading}
+              className="w-full mb-4 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              {batchUploading ? "Uploading…" : "Upload multiple images"}
+            </button>
+
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex-1 h-px bg-gray-600" />
+              <span className="text-sm text-gray-400">or a single image</span>
+              <div className="flex-1 h-px bg-gray-600" />
+            </div>
 
             {/* Drag & Drop Upload - reusing existing component */}
             <DragDropImageUpload
