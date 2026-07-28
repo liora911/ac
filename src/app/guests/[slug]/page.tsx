@@ -115,16 +115,6 @@ export default function GuestProfilePage() {
             />
           </div>
         )}
-
-        <div className="mt-12 text-center">
-          <Link
-            href="/guests"
-            className="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline"
-          >
-            <BackArrow className="w-4 h-4" />
-            {t("guests.backToGuests")}
-          </Link>
-        </div>
       </div>
     </div>
   );
