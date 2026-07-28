@@ -2,6 +2,7 @@
 
 import React, { useMemo, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { Compass } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomePreview, useDiscoverCategories } from "@/hooks/useHomePreview";
 import { useRecentlyRead } from "@/hooks/useRecentlyRead";
@@ -151,11 +152,18 @@ const ContentSection: React.FC = () => {
 
   return (
     <section className="py-8 md:py-12 bg-[var(--background)] overflow-x-hidden">
-      <div className="px-6 max-w-6xl mx-auto text-center mb-10">
-        <h2 className="text-3xl font-bold text-[var(--foreground)] mb-2">
-          {t("home.sections.exploreContent")}
-        </h2>
-        <div className="mx-auto w-16 h-1 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500" />
+      <div className="px-6 max-w-6xl mx-auto flex justify-center mb-10">
+        <div className="relative flex items-center">
+          {/* Soft glow behind the badge */}
+          <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/20 via-indigo-500/15 to-violet-500/20 dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-violet-500/10 rounded-2xl blur-lg" />
+          {/* Badge */}
+          <div className="relative flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-lg">
+            <Compass className="w-5 h-5 text-white/90 shrink-0" />
+            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight whitespace-nowrap">
+              {t("home.sections.exploreContent")}
+            </h2>
+          </div>
+        </div>
       </div>
       <div>
 

@@ -138,7 +138,7 @@ const FeaturedCarouselSection: React.FC<FeaturedCarouselSectionProps> = ({
           {/* Soft glow behind the badge */}
           <div className="absolute -inset-1.5 bg-gradient-to-r from-orange-500/20 via-red-500/15 to-indigo-500/20 dark:from-orange-500/10 dark:via-red-500/10 dark:to-indigo-500/10 rounded-2xl blur-lg" />
           {/* Badge */}
-          <div className="relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-slate-700 via-slate-600 to-slate-800 shadow-lg shadow-red-500/25">
+          <div className="relative flex items-center gap-2.5 px-5 py-2.5 rounded-xl bg-gradient-to-r from-slate-700 via-slate-600 to-slate-800 shadow-lg">
             <Flame className="w-5 h-5 text-white/90 shrink-0" />
             <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight whitespace-nowrap">
               {title}
