@@ -38,11 +38,14 @@ export default function GuestsPage() {
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 animate-pulse"
+                className="relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden animate-pulse"
               >
-                <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-700 mx-auto" />
-                <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-2/3 mx-auto mt-4" />
-                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto mt-2" />
+                <div className="h-28 w-full bg-gray-200 dark:bg-gray-700" />
+                <div className="absolute top-[76px] start-5 w-20 h-20 rounded-full bg-gray-300 dark:bg-gray-600 ring-4 ring-white dark:ring-gray-800" />
+                <div className="pt-12 px-5 pb-5">
+                  <div className="h-5 bg-gray-200 dark:bg-gray-700 rounded w-2/3" />
+                  <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mt-2" />
+                </div>
               </div>
             ))}
           </div>
@@ -66,38 +69,57 @@ export default function GuestsPage() {
               <Link
                 key={guest.id}
                 href={`/guests/${guest.slug || guest.id}`}
-                className="group relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 text-center shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all"
+                className="group relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all overflow-hidden"
               >
+                {/* Cover thumbnail — the guest's banner image fills the top */}
+                <div className="h-28 w-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600">
+                  {guest.bannerImageUrl && (
+                    <img
+                      src={guest.bannerImageUrl}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                </div>
+
                 {guest.isFeatured && (
-                  <span className="absolute top-3 end-3 text-amber-400">
+                  <span className="absolute top-3 end-3 text-amber-400 drop-shadow">
                     <Star className="w-5 h-5 fill-current" />
                   </span>
                 )}
-                {guest.photoUrl ? (
-                  <img
-                    src={guest.photoUrl}
-                    alt={displayName}
-                    className="w-24 h-24 rounded-full object-cover mx-auto ring-4 ring-gray-100 dark:ring-gray-700 group-hover:ring-blue-100 dark:group-hover:ring-blue-900/50 transition-all"
-                  />
-                ) : (
-                  <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-3xl font-bold mx-auto">
-                    {displayName.charAt(0)}
-                  </div>
-                )}
-                <h2
-                  dir={guest.titleDirection}
-                  className="mt-4 text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
-                >
-                  {displayName}
-                </h2>
-                {guest.headline && (
-                  <p
+
+                {/* Avatar floats at the corner, straddling cover and body */}
+                <div className="absolute top-[76px] start-5">
+                  {guest.photoUrl ? (
+                    <img
+                      src={guest.photoUrl}
+                      alt={displayName}
+                      className="w-20 h-20 rounded-full object-cover ring-4 ring-white dark:ring-gray-800 shadow-md"
+                    />
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-2xl font-bold ring-4 ring-white dark:ring-gray-800 shadow-md">
+                      {displayName.charAt(0)}
+                    </div>
+                  )}
+                </div>
+
+                {/* Body */}
+                <div className="pt-12 px-5 pb-5 text-start">
+                  <h2
                     dir={guest.titleDirection}
-                    className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2"
+                    className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                   >
-                    {guest.headline}
-                  </p>
-                )}
+                    {displayName}
+                  </h2>
+                  {guest.headline && (
+                    <p
+                      dir={guest.titleDirection}
+                      className="mt-1 text-sm text-gray-500 dark:text-gray-400 line-clamp-2"
+                    >
+                      {guest.headline}
+                    </p>
+                  )}
+                </div>
               </Link>
               );
             })}

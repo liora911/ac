@@ -564,18 +564,18 @@ function SidebarNav({
               type="button"
               onClick={() => toggleGroup(group.labelKey)}
               aria-expanded={!isClosed}
-              className={`w-full flex items-center gap-2 px-3 py-2 mb-1 rounded-lg text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap ${
+              className={`w-full flex items-center gap-2 px-3 py-2.5 mb-1 rounded-lg text-base font-bold transition-colors cursor-pointer whitespace-nowrap ${
                 holdsActiveWhileClosed
                   ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-                  : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  : "text-gray-800 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700/50"
               }`}
             >
               <ChevronDown
-                className={`w-4 h-4 flex-shrink-0 transition-transform duration-200 ${
+                className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
                   isClosed ? "-rotate-90 rtl:rotate-90" : ""
                 }`}
               />
-              {GroupIcon && <GroupIcon className="w-4 h-4 flex-shrink-0" />}
+              {GroupIcon && <GroupIcon className="w-5 h-5 flex-shrink-0" />}
               <span className="flex-1 text-start">{t(group.labelKey)}</span>
               {holdsActiveWhileClosed && (
                 <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
