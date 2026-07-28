@@ -12,6 +12,7 @@ import {
 } from "@/hooks/useGuests";
 import Modal from "@/components/Modal/Modal";
 import DragDropImageUpload from "@/components/Upload/upload";
+import MultiImageUpload from "@/components/Upload/MultiImageUpload";
 import TiptapEditor from "@/lib/editor/editor";
 import { useSiteSettings, siteSettingsKeys } from "@/hooks/useSiteSettings";
 import { useQueryClient } from "@tanstack/react-query";
@@ -174,10 +175,18 @@ function GuestForm({
   const [bannerImageUrl, setBannerImageUrl] = useState(
     guest?.bannerImageUrl ?? ""
   );
+  const [galleryUrls, setGalleryUrls] = useState<string[]>(
+    guest?.galleryUrls ?? []
+  );
   const [websiteUrl, setWebsiteUrl] = useState(guest?.websiteUrl ?? "");
   const [email, setEmail] = useState(guest?.email ?? "");
   const [titleDirection, setTitleDirection] = useState(
     guest?.titleDirection ?? "rtl"
+  );
+  // The body editor's own direction — mirrors the article editor so the
+  // RTL/LTR toolbar and punctuation placement work identically
+  const [bioDirection, setBioDirection] = useState<"ltr" | "rtl">(
+    (guest?.titleDirection as "ltr" | "rtl") ?? "rtl"
   );
   const [published, setPublished] = useState(guest?.published ?? false);
   const [isFeatured, setIsFeatured] = useState(guest?.isFeatured ?? false);
@@ -197,6 +206,7 @@ function GuestForm({
       bio,
       photoUrl,
       bannerImageUrl,
+      galleryUrls,
       websiteUrl,
       email,
       titleDirection,
@@ -364,9 +374,20 @@ function GuestForm({
         <TiptapEditor
           value={bio}
           onChange={setBio}
-          direction={titleDirection === "rtl" ? "rtl" : "ltr"}
+          direction={bioDirection}
+          onDirectionChange={setBioDirection}
           theme="light"
         />
+      </div>
+
+      <div className={cardCls}>
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">
+          {t("adminGuests.gallery")}
+        </h4>
+        <p className="text-xs text-gray-400 dark:text-gray-500 mb-3">
+          {t("adminGuests.galleryHint")}
+        </p>
+        <MultiImageUpload imageUrls={galleryUrls} onChange={setGalleryUrls} />
       </div>
 
       <div className="flex items-center justify-end gap-3">

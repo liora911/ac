@@ -103,6 +103,9 @@ export async function PATCH(
           }))
       );
     }
+    if ("galleryUrls" in body) {
+      data.galleryUrls = Array.isArray(body.galleryUrls) ? body.galleryUrls : [];
+    }
     if ("websiteUrl" in body) data.websiteUrl = normalizeExternalUrl(body.websiteUrl);
     if ("titleDirection" in body) data.titleDirection = body.titleDirection || "rtl";
     if ("published" in body) data.published = !!body.published;

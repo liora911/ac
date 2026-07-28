@@ -209,6 +209,7 @@ model Guest {
   bio            String?  // rich HTML (Tiptap) — the guest's whole page body
   photoUrl       String?
   bannerImageUrl String?
+  galleryUrls    String[] @default([]) // image gallery shown on the guest page
   websiteUrl     String?
   email          String?  // admin-only contact, never rendered publicly
   titleDirection String   @default("rtl")

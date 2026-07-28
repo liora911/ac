@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -8,12 +8,45 @@ import { useGuest } from "@/hooks/useGuests";
 import RichContent from "@/components/RichContent/RichContent";
 import { normalizeExternalUrl } from "@/lib/utils/url";
 import GuestAdminFab from "@/components/Guests/GuestAdminFab";
-import { ArrowLeft, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ExternalLink,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  X,
+} from "lucide-react";
 
 export default function GuestProfilePage() {
   const params = useParams<{ slug: string }>();
   const { t, locale } = useTranslation();
   const { data: guest, isLoading, isError } = useGuest(params?.slug);
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+
+  const gallery = guest?.galleryUrls ?? [];
+
+  const closeLightbox = useCallback(() => setLightboxIdx(null), []);
+  const stepLightbox = useCallback(
+    (dir: -1 | 1) => {
+      setLightboxIdx((idx) => {
+        if (idx == null || gallery.length === 0) return idx;
+        return (idx + dir + gallery.length) % gallery.length;
+      });
+    },
+    [gallery.length]
+  );
+
+  useEffect(() => {
+    if (lightboxIdx == null) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") stepLightbox(-1);
+      if (e.key === "ArrowRight") stepLightbox(1);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [lightboxIdx, closeLightbox, stepLightbox]);
 
   const BackArrow = locale === "he" ? ArrowRight : ArrowLeft;
 
@@ -115,7 +148,83 @@ export default function GuestProfilePage() {
             />
           </div>
         )}
+
+        {/* Gallery */}
+        {gallery.length > 0 && (
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+            {gallery.map((url, idx) => (
+              <button
+                key={`${url}-${idx}`}
+                type="button"
+                onClick={() => setLightboxIdx(idx)}
+                className="aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700 cursor-zoom-in group"
+                aria-label={`${displayName} ${idx + 1}`}
+              >
+                <img
+                  src={url}
+                  alt=""
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </button>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Lightbox */}
+      {lightboxIdx != null && gallery[lightboxIdx] && (
+        <div
+          className="fixed inset-0 z-[70] bg-black/90 flex items-center justify-center"
+          onClick={closeLightbox}
+          role="dialog"
+          aria-modal="true"
+        >
+          <button
+            type="button"
+            onClick={closeLightbox}
+            className="absolute top-4 end-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+            aria-label={t("guests.closeLightbox")}
+          >
+            <X className="w-6 h-6" />
+          </button>
+          {gallery.length > 1 && (
+            <>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  stepLightbox(-1);
+                }}
+                className="absolute left-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Previous"
+              >
+                <ChevronLeft className="w-7 h-7" />
+              </button>
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  stepLightbox(1);
+                }}
+                className="absolute right-4 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                aria-label="Next"
+              >
+                <ChevronRight className="w-7 h-7" />
+              </button>
+            </>
+          )}
+          <img
+            src={gallery[lightboxIdx]}
+            alt=""
+            onClick={(e) => e.stopPropagation()}
+            className="max-w-[92vw] max-h-[88vh] object-contain rounded-lg shadow-2xl"
+          />
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/80 text-sm">
+            {lightboxIdx + 1} / {gallery.length}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
