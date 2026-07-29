@@ -81,6 +81,8 @@ export default function WidgetsAdmin() {
     updateWidget.mutate({ key, variant }, { onError });
   const saveConfig = (key: string) =>
     updateWidget.mutate({ key, config: configDraft }, { onError });
+  const setVisibility = (key: string, visibility: "public" | "private") =>
+    updateWidget.mutate({ key, visibility }, { onError });
 
   const modalMeta = variantModalKey ? getWidgetMeta(variantModalKey) : null;
   const modalEntry = variantModalKey ? WIDGET_REGISTRY[variantModalKey] : null;

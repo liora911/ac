@@ -151,6 +151,9 @@
     "selected": "נבחר",
     "settings": "הגדרות",
     "saveSettings": "שמור הגדרות",
+    "visibility": "נראות",
+    "public": "ציבורי",
+    "private": "למרצה בלבד",
     "error": "עדכון הווידג'ט נכשל"
   },
   "widgets": {
@@ -178,7 +181,7 @@
       "announcement": {
         "name": "הודעה / קריאה לפעולה",
         "description": "הודעה בולטת עם כפתור אופציונלי.",
-        "variants": { "banner": "באנר", "card": "כרטיס" },
+        "variants": { "sunset": "שקיעה", "ocean": "אוקיינוס", "forest": "יער", "slate": "אפור" },
         "config": {
           "heading": "כותרת",
           "body": "תוכן ההודעה",
