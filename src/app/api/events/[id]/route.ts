@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import {
+  requireAdmin,
+  authErrorResponse,
+  isAuthError,
+  getOptionalSession,
+  isAdminEmail,
+} from "@/lib/auth/apiAuth";
 import prisma from "@/lib/prisma/prisma";
 import { deleteBlob } from "@/actions/upload";
 
@@ -29,6 +35,12 @@ export async function GET(
     });
 
     if (!event) {
+      return NextResponse.json({ error: "Event not found" }, { status: 404 });
+    }
+
+    // Drafts are visible to admins only — don't serve unpublished by ID
+    const isAdmin = isAdminEmail((await getOptionalSession())?.user?.email);
+    if (!event.published && !isAdmin) {
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
 

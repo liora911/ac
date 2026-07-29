@@ -412,7 +412,7 @@ export default function ElitzurDashboard() {
                 </Link>
                 <div className="flex items-center gap-2 ps-2 border-s border-gray-200 dark:border-gray-600">
                   <div
-                    className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm"
+                    className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-sm font-semibold shadow-sm"
                     title={session.user?.email ?? undefined}
                   >
                     {session.user?.email?.charAt(0).toUpperCase()}

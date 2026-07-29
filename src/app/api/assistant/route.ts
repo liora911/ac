@@ -521,7 +521,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Assistant API error:", error);
     return new Response(
-      error instanceof Error ? error.message : "Unknown error",
+      "The assistant is temporarily unavailable. Please try again.",
       { status: 500 }
     );
   }

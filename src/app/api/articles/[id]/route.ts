@@ -15,6 +15,7 @@ import type {
 import { deleteBlobs } from "@/actions/upload";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { findOrCreateTags } from "@/lib/prisma/tags";
+import { contentTeaser } from "@/lib/utils/stripHtml";
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {
@@ -176,10 +177,37 @@ export async function GET(
       return NextResponse.json({ error: "Article not found" }, { status: 404 });
     }
 
+    // Premium content must be gated on the server, not only behind the UI's
+    // <PremiumGate>. Full body goes only to admins or active subscribers;
+    // everyone else gets a short teaser.
+    let canViewPremium = !!isAuthorized;
+    if (article.isPremium && !canViewPremium && session?.user?.email) {
+      const viewer = await prisma.user.findUnique({
+        where: { email: session.user.email },
+        select: { id: true },
+      });
+      if (viewer) {
+        const sub = await prisma.subscription.findUnique({
+          where: { userId: viewer.id },
+          select: { status: true },
+        });
+        canViewPremium = sub?.status === "ACTIVE";
+      }
+    }
+
     const transformedArticle = transformArticle(article as ArticleWithRelations);
+    if (transformedArticle.isPremium && !canViewPremium) {
+      transformedArticle.content = contentTeaser(article.content);
+    }
 
     return NextResponse.json(transformedArticle, {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      headers: {
+        // Premium responses vary by viewer — never let a shared/public cache
+        // serve full content to the wrong person.
+        "Cache-Control": transformedArticle.isPremium
+          ? "private, no-store"
+          : "public, s-maxage=300, stale-while-revalidate=600",
+      },
     });
   } catch (error) {
     console.error("Error fetching article:", error);

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
 import { rateLimiters, getClientIP } from "@/lib/rate-limit/rate-limit";
+import { contentTeaser } from "@/lib/utils/stripHtml";
 
 export async function GET(request: NextRequest) {
   try {
@@ -176,9 +177,15 @@ export async function GET(request: NextRequest) {
     const total =
       articles.length + presentations.length + events.length + lectures.length;
 
+    // Don't leak full premium bodies through search — return only a teaser for
+    // premium articles (search results just need a snippet anyway).
+    const safeArticles = articles.map((a) =>
+      a.isPremium ? { ...a, content: contentTeaser(a.content, 200) } : a
+    );
+
     return NextResponse.json(
       {
-        articles,
+        articles: safeArticles,
         presentations,
         events,
         lectures,

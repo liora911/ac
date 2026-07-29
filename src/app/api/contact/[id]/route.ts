@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
+import { requireAdmin, isAuthError, authErrorResponse } from "@/lib/auth/apiAuth";
 
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    // Admin-only: contact messages are private and IDs are returned by the
+    // public POST, so this must never be callable without admin auth.
+    const auth = await requireAdmin();
+    if (isAuthError(auth)) return authErrorResponse(auth);
+
     const { id } = await params;
 
     if (!id) {

@@ -33,7 +33,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           select: {
             id: true,
             name: true,
-            email: true,
             image: true,
           },
         },
@@ -59,7 +58,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         user: {
           id: c.user.id,
           name: c.user.name,
-          email: c.user.email,
           image: c.user.image,
         },
         likeCount: c.likes.length,

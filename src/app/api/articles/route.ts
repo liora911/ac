@@ -15,6 +15,7 @@ import type {
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { findOrCreateTags } from "@/lib/prisma/tags";
 import { sendNewsletterForArticle } from "@/lib/newsletter/auto-send";
+import { contentTeaser } from "@/lib/utils/stripHtml";
 
 // Helper to transform DB article to API response
 function transformArticle(article: ArticleWithRelations): Article {
@@ -248,6 +249,15 @@ export async function GET(request: NextRequest) {
     });
 
     const transformedArticles: Article[] = (articles as ArticleWithRelations[]).map(transformArticle);
+
+    // Never ship full premium bodies in the list to non-admins — the paid
+    // content is only served (to admins/subscribers) by the detail route.
+    // Viewer-independent within the public branch, so caching stays valid.
+    if (!isAuthorized) {
+      for (const a of transformedArticles) {
+        if (a.isPremium) a.content = contentTeaser(a.content);
+      }
+    }
 
     const response: ArticlesListResponse = {
       articles: transformedArticles,

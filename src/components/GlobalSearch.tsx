@@ -18,15 +18,7 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
   const [results, setResults] = useState<SearchResults | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const collapseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  useEffect(() => {
-    return () => {
-      if (collapseTimerRef.current) clearTimeout(collapseTimerRef.current);
-    };
-  }, []);
   const [selectedIndex, setSelectedIndex] = useState(-1);
   const [activeTab, setActiveTab] = useState<CategoryType>("all");
   const [error, setError] = useState<string | null>(null);
@@ -194,29 +186,11 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
     // Don't auto-search on focus - wait for user to type at least 2 characters
   };
 
-  // Collapsed mode: shrink to a magnifier icon; expand on hover/focus or while there's a query/results
+  // Collapsed mode: a magnifier icon that expands on click/focus (or while
+  // there's a query/results). Expanding on hover made the overlay flicker and
+  // overlap the neighbouring language button when the cursor passed near it.
   const isExpanded =
-    !collapsible || isHovered || isFocused || query.length > 0 || isOpen;
-
-  const handleMouseEnter = () => {
-    if (!collapsible) return;
-    if (collapseTimerRef.current) {
-      clearTimeout(collapseTimerRef.current);
-      collapseTimerRef.current = null;
-    }
-    setIsHovered(true);
-    inputRef.current?.focus();
-  };
-
-  const handleMouseLeave = () => {
-    if (!collapsible) return;
-    // Grace period before collapsing — prevents rapid flicker when the
-    // cursor sits near the expand/collapse boundary
-    collapseTimerRef.current = setTimeout(() => {
-      setIsHovered(false);
-      if (!query) inputRef.current?.blur();
-    }, 150);
-  };
+    !collapsible || isFocused || query.length > 0 || isOpen;
 
   const clearSearch = () => {
     setQuery("");
@@ -259,8 +233,6 @@ export default function GlobalSearch({ collapsible = false }: GlobalSearchProps)
       className={`relative p-0 m-0 ${
         collapsible ? "w-9 sm:w-10 h-10" : "w-full max-w-xs sm:max-w-sm"
       }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       {/* In collapsible mode the expansion is an overlay anchored to the
           icon's fixed slot — neighbors never move, so no hover flicker */}

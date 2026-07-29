@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { requireAdmin, authErrorResponse, isAuthError } from "@/lib/auth/apiAuth";
+import {
+  requireAdmin,
+  authErrorResponse,
+  isAuthError,
+  getOptionalSession,
+  isAdminEmail,
+} from "@/lib/auth/apiAuth";
 import { deleteBlobs } from "@/actions/upload";
 
 export async function GET(
@@ -35,8 +41,21 @@ export async function GET(
       );
     }
 
+    // Drafts are visible to admins only — don't serve unpublished by ID
+    const isAdmin = isAdminEmail((await getOptionalSession())?.user?.email);
+    if (!presentation.published && !isAdmin) {
+      return NextResponse.json(
+        { error: "Presentation not found" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(presentation, {
-      headers: { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
+      headers: {
+        "Cache-Control": presentation.published
+          ? "public, s-maxage=300, stale-while-revalidate=600"
+          : "private, no-store",
+      },
     });
   } catch (error) {
     console.error("Error fetching presentation:", error);

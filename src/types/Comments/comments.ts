@@ -2,7 +2,8 @@
 export interface CommentAuthor {
   id: string;
   name: string | null;
-  email: string | null;
+  // Only exposed to admins; omitted from public comment/reply responses
+  email?: string | null;
   image: string | null;
 }
 
