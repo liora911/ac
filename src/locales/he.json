@@ -153,7 +153,7 @@
     "saveSettings": "שמור הגדרות",
     "visibility": "נראות",
     "public": "ציבורי",
-    "private": "למרצה בלבד",
+    "private": "מנהל בלבד",
     "error": "עדכון הווידג'ט נכשל"
   },
   "widgets": {
@@ -166,11 +166,21 @@
     "items": {
       "quoteOfDay": {
         "name": "ציטוט היום",
-        "description": "ציטוט מתחלף מעולם הפיזיקה והפילוסופיה שמשתנה מדי יום.",
+        "description": "ציטוט מתחלף שמשתנה בתדירות שתבחר.",
         "variants": {
           "card": "כרטיס",
           "banner": "באנר",
           "minimal": "מינימלי"
+        },
+        "config": {
+          "quotes": "הציטוטים שלך (ציטוט בכל שורה; הוסף — שם המחבר לקרדיט)",
+          "rotation": "החלף כל"
+        },
+        "rotation": {
+          "hourly": "כל שעה",
+          "twiceDaily": "כל 12 שעות",
+          "daily": "כל יום",
+          "weekly": "כל שבוע"
         }
       },
       "newsletter": {

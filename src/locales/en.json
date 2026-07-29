@@ -153,7 +153,7 @@
     "saveSettings": "Save settings",
     "visibility": "Visibility",
     "public": "Public",
-    "private": "Professor only",
+    "private": "Admin only",
     "error": "Failed to update widget"
   },
   "widgets": {
@@ -166,11 +166,21 @@
     "items": {
       "quoteOfDay": {
         "name": "Quote of the Day",
-        "description": "A rotating quote from physics and philosophy that changes daily.",
+        "description": "A rotating quote that changes on a schedule you choose.",
         "variants": {
           "card": "Card",
           "banner": "Banner",
           "minimal": "Minimal"
+        },
+        "config": {
+          "quotes": "Your quotes (one per line; add — Author to credit)",
+          "rotation": "Change every"
+        },
+        "rotation": {
+          "hourly": "Every hour",
+          "twiceDaily": "Every 12 hours",
+          "daily": "Every day",
+          "weekly": "Every week"
         }
       },
       "newsletter": {

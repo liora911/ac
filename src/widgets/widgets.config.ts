@@ -14,6 +14,30 @@ export const WIDGET_META: WidgetMeta[] = [
       { key: "banner", labelKey: "widgets.items.quoteOfDay.variants.banner" },
       { key: "minimal", labelKey: "widgets.items.quoteOfDay.variants.minimal" },
     ],
+    configFields: [
+      {
+        key: "quotes",
+        labelKey: "widgets.items.quoteOfDay.config.quotes",
+        type: "textarea",
+      },
+      {
+        key: "rotation",
+        labelKey: "widgets.items.quoteOfDay.config.rotation",
+        type: "select",
+        options: [
+          { value: "1", labelKey: "widgets.items.quoteOfDay.rotation.hourly" },
+          {
+            value: "12",
+            labelKey: "widgets.items.quoteOfDay.rotation.twiceDaily",
+          },
+          { value: "24", labelKey: "widgets.items.quoteOfDay.rotation.daily" },
+          {
+            value: "168",
+            labelKey: "widgets.items.quoteOfDay.rotation.weekly",
+          },
+        ],
+      },
+    ],
   },
   {
     key: "newsletter",
@@ -32,6 +56,10 @@ export const WIDGET_META: WidgetMeta[] = [
     nameKey: "widgets.items.announcement.name",
     descriptionKey: "widgets.items.announcement.description",
     defaultVariant: "sunset",
+    sampleConfig: {
+      heading: "Announcement",
+      body: "Your message here…",
+    },
     variants: [
       { key: "sunset", labelKey: "widgets.items.announcement.variants.sunset" },
       { key: "ocean", labelKey: "widgets.items.announcement.variants.ocean" },

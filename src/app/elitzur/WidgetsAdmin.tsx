@@ -1,16 +1,32 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import LoginForm from "@/components/Login/login";
 import Modal from "@/components/Modal/Modal";
-import { Check, Settings2 } from "lucide-react";
+import { Check, Settings2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useNotification } from "@/contexts/NotificationContext";
 import { useWidgets, useUpdateWidget } from "@/hooks/useWidgets";
 import { WIDGET_META, getWidgetMeta } from "@/widgets/widgets.config";
 import { WIDGET_REGISTRY } from "@/widgets/registry";
+import type { WidgetMeta } from "@/types/Widgets/widgets";
+
+// Merge the widget's sample placeholder config with the real values so a
+// preview is never blank (e.g. an announcement with no text yet).
+function previewConfig(
+  meta: WidgetMeta,
+  cfg: Record<string, unknown> | null | undefined
+): Record<string, string> {
+  const merged: Record<string, string> = { ...(meta.sampleConfig ?? {}) };
+  const c = (cfg ?? {}) as Record<string, unknown>;
+  for (const k of Object.keys(c)) {
+    const v = c[k];
+    if (typeof v === "string" && v.trim()) merged[k] = v;
+  }
+  return merged;
+}
 
 function Toggle({
   checked,
@@ -53,10 +69,15 @@ export default function WidgetsAdmin() {
   const { showError } = useNotification();
   const { data: states } = useWidgets({ all: true });
   const updateWidget = useUpdateWidget();
+
   const [variantModalKey, setVariantModalKey] = useState<string | null>(null);
   const [configDraft, setConfigDraft] = useState<Record<string, string>>({});
+  const [pendingVariant, setPendingVariant] = useState<string | null>(null);
 
-  // Seed the config form from the widget's stored config when the modal opens
+  // Carousel
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [index, setIndex] = useState(0);
+
   useEffect(() => {
     if (!variantModalKey) return;
     const meta = getWidgetMeta(variantModalKey);
@@ -67,7 +88,25 @@ export default function WidgetsAdmin() {
       draft[f.key] = typeof cfg[f.key] === "string" ? (cfg[f.key] as string) : "";
     });
     setConfigDraft(draft);
+    setPendingVariant(null);
   }, [variantModalKey, states]);
+
+  const onScroll = useCallback(() => {
+    const el = scrollerRef.current;
+    if (!el || el.clientWidth === 0) return;
+    setIndex(Math.round(Math.abs(el.scrollLeft) / el.clientWidth));
+  }, []);
+
+  const goToCard = useCallback((i: number) => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const clamped = Math.max(0, Math.min(WIDGET_META.length - 1, i));
+    (el.children[clamped] as HTMLElement | undefined)?.scrollIntoView({
+      behavior: "smooth",
+      inline: "center",
+      block: "nearest",
+    });
+  }, []);
 
   if (!isAuthorized) return <LoginForm />;
 
@@ -77,8 +116,10 @@ export default function WidgetsAdmin() {
 
   const toggleEnabled = (key: string, enabled: boolean) =>
     updateWidget.mutate({ key, enabled }, { onError });
-  const pickVariant = (key: string, variant: string) =>
+  const pickVariant = (key: string, variant: string) => {
+    setPendingVariant(variant);
     updateWidget.mutate({ key, variant }, { onError });
+  };
   const saveConfig = (key: string) =>
     updateWidget.mutate({ key, config: configDraft }, { onError });
   const setVisibility = (key: string, visibility: "public" | "private") =>
@@ -87,7 +128,8 @@ export default function WidgetsAdmin() {
   const modalMeta = variantModalKey ? getWidgetMeta(variantModalKey) : null;
   const modalEntry = variantModalKey ? WIDGET_REGISTRY[variantModalKey] : null;
   const modalState = variantModalKey ? stateFor(variantModalKey) : null;
-  const currentVariant = modalState?.variant ?? modalMeta?.defaultVariant;
+  const currentVariant =
+    pendingVariant ?? modalState?.variant ?? modalMeta?.defaultVariant;
 
   return (
     <div className="space-y-6">
@@ -100,92 +142,141 @@ export default function WidgetsAdmin() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-        {WIDGET_META.map((meta) => {
-          const entry = WIDGET_REGISTRY[meta.key];
-          const st = stateFor(meta.key);
-          const enabled = st?.enabled ?? false;
-          const Preview = entry?.Preview;
-          const activeVariant = st?.variant ?? meta.defaultVariant;
-          const variantLabelKey =
-            meta.variants.find((v) => v.key === activeVariant)?.labelKey ??
-            meta.variants[0].labelKey;
+      {/* Carousel — one widget at a time; scroll by arrows or mouse/trackpad */}
+      <div className="relative">
+        <button
+          type="button"
+          onClick={() => goToCard(index - 1)}
+          disabled={index === 0}
+          aria-label={t("common.previous")}
+          className="hidden sm:flex absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
+          onClick={() => goToCard(index + 1)}
+          disabled={index >= WIDGET_META.length - 1}
+          aria-label={t("common.next")}
+          className="hidden sm:flex absolute -right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 items-center justify-center rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+        >
+          <ChevronRight className="w-5 h-5" />
+        </button>
 
-          return (
-            <div
-              key={meta.key}
-              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 shadow-sm flex flex-col"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                    {t(meta.nameKey)}
-                  </h3>
-                  <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
-                    {t(meta.descriptionKey)}
-                  </p>
-                </div>
-                <Toggle
-                  checked={enabled}
-                  onChange={(v) => toggleEnabled(meta.key, v)}
-                  disabled={updateWidget.isPending}
-                />
-              </div>
+        <div
+          ref={scrollerRef}
+          onScroll={onScroll}
+          className="flex overflow-x-auto snap-x snap-mandatory scrollbar-hide scroll-smooth"
+        >
+          {WIDGET_META.map((meta) => {
+            const entry = WIDGET_REGISTRY[meta.key];
+            const st = stateFor(meta.key);
+            const enabled = st?.enabled ?? false;
+            const activeVariant = st?.variant ?? meta.defaultVariant;
+            const ActiveComp = entry?.variants[activeVariant] ?? undefined;
+            const variantLabelKey =
+              meta.variants.find((v) => v.key === activeVariant)?.labelKey ??
+              meta.variants[0].labelKey;
+            const visibility = st?.visibility ?? "public";
 
-              <button
-                type="button"
-                onClick={() => setVariantModalKey(meta.key)}
-                className="mt-3 rounded-lg bg-gray-50 dark:bg-gray-900/40 p-3 text-start hover:ring-2 hover:ring-blue-400 transition cursor-pointer overflow-hidden"
-                title={t("adminWidgets.chooseVariant")}
+            return (
+              <div
+                key={meta.key}
+                className="flex-shrink-0 w-full snap-center px-1"
               >
-                {Preview ? <Preview /> : null}
-              </button>
+                <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm max-w-3xl mx-auto">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                        {t(meta.nameKey)}
+                      </h3>
+                      <p className="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                        {t(meta.descriptionKey)}
+                      </p>
+                    </div>
+                    <Toggle
+                      checked={enabled}
+                      onChange={(v) => toggleEnabled(meta.key, v)}
+                      disabled={updateWidget.isPending}
+                    />
+                  </div>
 
-              <div className="mt-3 flex items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400">
-                <span className="truncate">
-                  {t("adminWidgets.slot")}: {t(`widgets.slots.${meta.slot}`)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setVariantModalKey(meta.key)}
-                  className="inline-flex items-center gap-1 flex-shrink-0 text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                >
-                  <Settings2 className="w-3.5 h-3.5" />
-                  {t(variantLabelKey)}
-                </button>
-              </div>
+                  {/* Live preview of the selected variant (non-interactive) */}
+                  <div className="mt-4 rounded-lg bg-gray-50 dark:bg-gray-900/40 p-4 overflow-hidden">
+                    <div className="pointer-events-none">
+                      {ActiveComp ? (
+                        <ActiveComp config={previewConfig(meta, st?.config)} />
+                      ) : entry?.Preview ? (
+                        <entry.Preview />
+                      ) : null}
+                    </div>
+                  </div>
 
-              {/* Public vs professor-only visibility */}
-              <div className="mt-3 flex items-center gap-2 text-xs">
-                <span className="text-gray-500 dark:text-gray-400">
-                  {t("adminWidgets.visibility")}:
-                </span>
-                <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                  {(["public", "private"] as const).map((vis) => {
-                    const current = (st?.visibility ?? "public") === vis;
-                    return (
-                      <button
-                        key={vis}
-                        type="button"
-                        onClick={() => setVisibility(meta.key, vis)}
-                        disabled={updateWidget.isPending}
-                        className={`px-2.5 py-1 font-medium transition-colors cursor-pointer disabled:opacity-50 ${
-                          current
-                            ? vis === "private"
-                              ? "bg-amber-500 text-white"
-                              : "bg-blue-600 text-white"
-                            : "bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        }`}
-                      >
-                        {t(`adminWidgets.${vis}`)}
-                      </button>
-                    );
-                  })}
+                  <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                      {t("adminWidgets.slot")}: {t(`widgets.slots.${meta.slot}`)}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setVariantModalKey(meta.key)}
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 dark:border-gray-700 px-3 py-1.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                    >
+                      <Settings2 className="w-4 h-4" />
+                      {t("adminWidgets.chooseVariant")}
+                      <span className="text-gray-400">· {t(variantLabelKey)}</span>
+                    </button>
+                  </div>
+
+                  {/* Public vs admin-only visibility */}
+                  <div className="mt-3 flex items-center gap-2 text-xs">
+                    <span className="text-gray-500 dark:text-gray-400">
+                      {t("adminWidgets.visibility")}:
+                    </span>
+                    <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                      {(["public", "private"] as const).map((vis) => {
+                        const current = visibility === vis;
+                        return (
+                          <button
+                            key={vis}
+                            type="button"
+                            onClick={() => setVisibility(meta.key, vis)}
+                            disabled={updateWidget.isPending}
+                            className={`px-2.5 py-1 font-medium transition-colors cursor-pointer disabled:opacity-50 ${
+                              current
+                                ? vis === "private"
+                                  ? "bg-amber-500 text-white"
+                                  : "bg-blue-600 text-white"
+                                : "bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                            }`}
+                          >
+                            {t(`adminWidgets.${vis}`)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+
+        {/* Dots */}
+        <div className="mt-4 flex justify-center gap-1.5">
+          {WIDGET_META.map((meta, i) => (
+            <button
+              key={meta.key}
+              type="button"
+              onClick={() => goToCard(i)}
+              aria-label={t(meta.nameKey)}
+              className={`h-2 rounded-full transition-all cursor-pointer ${
+                i === index
+                  ? "w-6 bg-blue-500"
+                  : "w-2 bg-gray-300 dark:bg-gray-600 hover:bg-gray-400"
+              }`}
+            />
+          ))}
+        </div>
       </div>
 
       <Modal
@@ -201,7 +292,7 @@ export default function WidgetsAdmin() {
       >
         {modalMeta && modalEntry && (
           <div className="space-y-6">
-            {/* Config editor (only for widgets that declare fields) */}
+            {/* Settings form (only for widgets that declare fields) */}
             {modalMeta.configFields && modalMeta.configFields.length > 0 && (
               <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
                 <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
@@ -225,9 +316,26 @@ export default function WidgetsAdmin() {
                               [field.key]: e.target.value,
                             }))
                           }
-                          rows={3}
+                          rows={4}
                           className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                         />
+                      ) : field.type === "select" ? (
+                        <select
+                          value={configDraft[field.key] ?? ""}
+                          onChange={(e) =>
+                            setConfigDraft((d) => ({
+                              ...d,
+                              [field.key]: e.target.value,
+                            }))
+                          }
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent cursor-pointer"
+                        >
+                          {field.options?.map((opt) => (
+                            <option key={opt.value} value={opt.value}>
+                              {t(opt.labelKey)}
+                            </option>
+                          ))}
+                        </select>
                       ) : (
                         <input
                           type={field.type === "url" ? "url" : "text"}
@@ -259,18 +367,22 @@ export default function WidgetsAdmin() {
               </div>
             )}
 
-            {/* Variant chooser — large side-by-side previews */}
+            {/* Variant chooser — large previews reflecting the current settings */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {modalMeta.variants.map((v) => {
                 const VariantComp = modalEntry.variants[v.key];
                 const isSelected = currentVariant === v.key;
                 return (
-                  <button
+                  <div
                     key={v.key}
-                    type="button"
-                    onClick={() => {
-                      pickVariant(modalMeta.key, v.key);
-                      setVariantModalKey(null);
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => pickVariant(modalMeta.key, v.key)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        pickVariant(modalMeta.key, v.key);
+                      }
                     }}
                     className={`text-start rounded-xl border-2 p-4 transition cursor-pointer ${
                       isSelected
@@ -289,10 +401,12 @@ export default function WidgetsAdmin() {
                         </span>
                       )}
                     </div>
-                    <div className="overflow-hidden rounded-lg">
-                      {VariantComp ? <VariantComp config={configDraft} /> : null}
+                    <div className="overflow-hidden rounded-lg pointer-events-none">
+                      {VariantComp ? (
+                        <VariantComp config={previewConfig(modalMeta, configDraft)} />
+                      ) : null}
                     </div>
-                  </button>
+                  </div>
                 );
               })}
             </div>

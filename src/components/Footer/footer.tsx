@@ -7,6 +7,7 @@ import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText, Mail, CheckCircle, Loader2 } from "lucide-react";
 import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
 import WidgetSlot from "@/components/Widgets/WidgetSlot";
+import { useEnabledWidgets } from "@/components/Widgets/WidgetsProvider";
 import type {
   ArticlePreview,
   CategoryWithArticles,
@@ -215,6 +216,12 @@ export default function Footer() {
     null,
   );
   const [isSitemapExpanded, setIsSitemapExpanded] = useState(false);
+  // Avoid a duplicate newsletter: hide the footer's built-in signup whenever a
+  // Newsletter widget is active for this viewer.
+  const enabledWidgets = useEnabledWidgets();
+  const newsletterWidgetActive = enabledWidgets.some(
+    (w) => w.enabled && w.key === "newsletter"
+  );
 
   useEffect(() => {
     // Try to get cached data first
@@ -254,8 +261,8 @@ export default function Footer() {
         {/* Global widget slot */}
         <WidgetSlot id="globalFooter" className="mb-6" />
 
-        {/* Newsletter Section */}
-        <NewsletterSignup />
+        {/* Newsletter Section (hidden when a Newsletter widget is active) */}
+        {!newsletterWidgetActive && <NewsletterSignup />}
 
         {/* Bottom section */}
         <div className="text-center text-sm text-gray-600 dark:text-gray-400">

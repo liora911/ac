@@ -14,13 +14,15 @@ export interface WidgetVariantMeta {
   labelKey: string;
 }
 
-export type WidgetConfigFieldType = "text" | "textarea" | "url";
+export type WidgetConfigFieldType = "text" | "textarea" | "url" | "select";
 
 export interface WidgetConfigField {
   key: string;
   labelKey: string;
   type: WidgetConfigFieldType;
   placeholder?: string;
+  // For type "select": the available choices
+  options?: { value: string; labelKey: string }[];
 }
 
 // Catalogue entry for a widget. Lives in code (src/widgets); the DB only stores
@@ -33,6 +35,8 @@ export interface WidgetMeta {
   defaultVariant: string;
   variants: WidgetVariantMeta[];
   configFields?: WidgetConfigField[];
+  // Placeholder values used only to keep admin previews from looking blank
+  sampleConfig?: Record<string, string>;
 }
 
 export type WidgetVisibility = "public" | "private";
