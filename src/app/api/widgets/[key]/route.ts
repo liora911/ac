@@ -47,6 +47,9 @@ export async function PATCH(
         ? body.variant
         : meta.defaultVariant;
     }
+    if ("visibility" in body) {
+      update.visibility = body.visibility === "private" ? "private" : "public";
+    }
 
     let configValue: Prisma.InputJsonValue | typeof Prisma.JsonNull | undefined;
     if ("config" in body) {
@@ -85,6 +88,7 @@ export async function PATCH(
               ? update.variant
               : meta.defaultVariant,
           config: configValue ?? Prisma.JsonNull,
+          visibility: body.visibility === "private" ? "private" : "public",
         },
         update,
       });

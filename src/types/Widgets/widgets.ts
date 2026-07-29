@@ -35,18 +35,22 @@ export interface WidgetMeta {
   configFields?: WidgetConfigField[];
 }
 
+export type WidgetVisibility = "public" | "private";
+
 // Persisted state for a widget (one row in the `widgets` table).
 export interface WidgetState {
   key: string;
   enabled: boolean;
   variant: string | null;
   config: Record<string, unknown> | null;
+  visibility: WidgetVisibility;
 }
 
 export interface UpdateWidgetInput {
   enabled?: boolean;
   variant?: string | null;
   config?: Record<string, unknown> | null;
+  visibility?: WidgetVisibility;
 }
 
 // Props passed to every rendered widget variant component.

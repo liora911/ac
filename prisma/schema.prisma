@@ -462,11 +462,12 @@ model Archive {
 // (src/widgets); this table stores only which are enabled, the chosen variant,
 // and any per-widget config. `key` matches the registry key.
 model Widget {
-  key       String   @id
-  enabled   Boolean  @default(false)
-  variant   String?
-  config    Json?
-  updatedAt DateTime @updatedAt
+  key        String   @id
+  enabled    Boolean  @default(false)
+  variant    String?
+  config     Json?
+  visibility String   @default("public") // "public" | "private" (professor-only)
+  updatedAt  DateTime @updatedAt
 
   @@map("widgets")
 }

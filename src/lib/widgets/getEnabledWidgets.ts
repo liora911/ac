@@ -14,6 +14,7 @@ async function queryEnabledWidgets(): Promise<WidgetState[]> {
       enabled: r.enabled,
       variant: r.variant,
       config: (r.config ?? null) as Record<string, unknown> | null,
+      visibility: r.visibility === "private" ? "private" : "public",
     }));
   } catch (error) {
     // Never let a widget-lookup failure take down the whole layout/page.

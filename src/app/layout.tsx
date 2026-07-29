@@ -18,6 +18,7 @@ import MainContent from "@/components/MainContent/MainContent";
 import StatCounter from "@/components/Analytics/StatCounter";
 import { WidgetsProvider } from "@/components/Widgets/WidgetsProvider";
 import { getEnabledWidgets } from "@/lib/widgets/getEnabledWidgets";
+import { getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
 
 // Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
 const WelcomeModal = dynamic(
@@ -117,8 +118,17 @@ export default async function RootLayout({
   const localeCookie = cookieStore.get("locale")?.value;
   const locale = localeCookie === "en" ? "en" : "he";
 
-  // Server-seed enabled widgets so slots render in the initial HTML (no flash)
-  const enabledWidgets = await getEnabledWidgets();
+  // Server-seed enabled widgets so slots render in the initial HTML (no flash).
+  // Private (professor-only) widgets are filtered out here for non-admins, so
+  // their content never reaches the public HTML at all.
+  const [allEnabled, session] = await Promise.all([
+    getEnabledWidgets(),
+    getOptionalSession(),
+  ]);
+  const isAdmin = isAdminEmail(session?.user?.email);
+  const enabledWidgets = allEnabled.filter(
+    (w) => isAdmin || w.visibility !== "private"
+  );
 
   return (
     <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>

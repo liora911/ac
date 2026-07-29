@@ -14,8 +14,10 @@ import {
   NewsletterPreview,
 } from "./newsletter/NewsletterWidget";
 import {
-  AnnouncementBanner,
-  AnnouncementCard,
+  AnnouncementSunset,
+  AnnouncementOcean,
+  AnnouncementForest,
+  AnnouncementSlate,
   AnnouncementPreview,
 } from "./announcement/AnnouncementWidget";
 import {
@@ -55,8 +57,10 @@ export const WIDGET_REGISTRY: Record<string, WidgetRegistryEntry> = {
   announcement: {
     Preview: AnnouncementPreview,
     variants: {
-      banner: AnnouncementBanner,
-      card: AnnouncementCard,
+      sunset: AnnouncementSunset,
+      ocean: AnnouncementOcean,
+      forest: AnnouncementForest,
+      slate: AnnouncementSlate,
     },
   },
   countdown: {
