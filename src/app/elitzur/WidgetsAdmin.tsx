@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import LoginForm from "@/components/Login/login";
@@ -54,6 +54,20 @@ export default function WidgetsAdmin() {
   const { data: states } = useWidgets({ all: true });
   const updateWidget = useUpdateWidget();
   const [variantModalKey, setVariantModalKey] = useState<string | null>(null);
+  const [configDraft, setConfigDraft] = useState<Record<string, string>>({});
+
+  // Seed the config form from the widget's stored config when the modal opens
+  useEffect(() => {
+    if (!variantModalKey) return;
+    const meta = getWidgetMeta(variantModalKey);
+    const cfg = (states?.find((s) => s.key === variantModalKey)?.config ??
+      {}) as Record<string, unknown>;
+    const draft: Record<string, string> = {};
+    meta?.configFields?.forEach((f) => {
+      draft[f.key] = typeof cfg[f.key] === "string" ? (cfg[f.key] as string) : "";
+    });
+    setConfigDraft(draft);
+  }, [variantModalKey, states]);
 
   if (!isAuthorized) return <LoginForm />;
 
@@ -65,6 +79,8 @@ export default function WidgetsAdmin() {
     updateWidget.mutate({ key, enabled }, { onError });
   const pickVariant = (key: string, variant: string) =>
     updateWidget.mutate({ key, variant }, { onError });
+  const saveConfig = (key: string) =>
+    updateWidget.mutate({ key, config: configDraft }, { onError });
 
   const modalMeta = variantModalKey ? getWidgetMeta(variantModalKey) : null;
   const modalEntry = variantModalKey ? WIDGET_REGISTRY[variantModalKey] : null;
@@ -150,43 +166,105 @@ export default function WidgetsAdmin() {
             : ""
         }
         hideFooter
+        maxWidthClass="max-w-6xl"
       >
         {modalMeta && modalEntry && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {modalMeta.variants.map((v) => {
-              const VariantComp = modalEntry.variants[v.key];
-              const isSelected = currentVariant === v.key;
-              return (
-                <button
-                  key={v.key}
-                  type="button"
-                  onClick={() => {
-                    pickVariant(modalMeta.key, v.key);
-                    setVariantModalKey(null);
-                  }}
-                  className={`text-start rounded-xl border-2 p-3 transition cursor-pointer ${
-                    isSelected
-                      ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-900"
-                      : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-900 dark:text-white">
-                      {t(v.labelKey)}
-                    </span>
-                    {isSelected && (
-                      <span className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
-                        <Check className="w-3.5 h-3.5" />
-                        {t("adminWidgets.selected")}
+          <div className="space-y-6">
+            {/* Config editor (only for widgets that declare fields) */}
+            {modalMeta.configFields && modalMeta.configFields.length > 0 && (
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 p-4">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">
+                  {t("adminWidgets.settings")}
+                </h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {modalMeta.configFields.map((field) => (
+                    <div
+                      key={field.key}
+                      className={field.type === "textarea" ? "sm:col-span-2" : ""}
+                    >
+                      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        {t(field.labelKey)}
+                      </label>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          value={configDraft[field.key] ?? ""}
+                          onChange={(e) =>
+                            setConfigDraft((d) => ({
+                              ...d,
+                              [field.key]: e.target.value,
+                            }))
+                          }
+                          rows={3}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      ) : (
+                        <input
+                          type={field.type === "url" ? "url" : "text"}
+                          value={configDraft[field.key] ?? ""}
+                          onChange={(e) =>
+                            setConfigDraft((d) => ({
+                              ...d,
+                              [field.key]: e.target.value,
+                            }))
+                          }
+                          dir={field.type === "url" ? "ltr" : "auto"}
+                          className="w-full px-3 py-2 text-sm rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => saveConfig(modalMeta.key)}
+                    disabled={updateWidget.isPending}
+                    className="inline-flex items-center gap-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 text-sm font-medium transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    <Check className="w-4 h-4" />
+                    {t("adminWidgets.saveSettings")}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Variant chooser — large side-by-side previews */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {modalMeta.variants.map((v) => {
+                const VariantComp = modalEntry.variants[v.key];
+                const isSelected = currentVariant === v.key;
+                return (
+                  <button
+                    key={v.key}
+                    type="button"
+                    onClick={() => {
+                      pickVariant(modalMeta.key, v.key);
+                      setVariantModalKey(null);
+                    }}
+                    className={`text-start rounded-xl border-2 p-4 transition cursor-pointer ${
+                      isSelected
+                        ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-900"
+                        : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                        {t(v.labelKey)}
                       </span>
-                    )}
-                  </div>
-                  <div className="overflow-hidden rounded-lg">
-                    {VariantComp ? <VariantComp /> : null}
-                  </div>
-                </button>
-              );
-            })}
+                      {isSelected && (
+                        <span className="inline-flex items-center gap-1 text-xs text-blue-600 dark:text-blue-400">
+                          <Check className="w-3.5 h-3.5" />
+                          {t("adminWidgets.selected")}
+                        </span>
+                      )}
+                    </div>
+                    <div className="overflow-hidden rounded-lg">
+                      {VariantComp ? <VariantComp config={configDraft} /> : null}
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </Modal>

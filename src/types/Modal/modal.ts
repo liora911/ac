@@ -11,4 +11,6 @@ export type ModalProps = {
   cancelText?: string;
   children?: ReactNode;
   hideFooter?: boolean;
+  // Tailwind max-width class for the dialog (default "max-w-md")
+  maxWidthClass?: string;
 };

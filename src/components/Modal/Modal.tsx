@@ -16,6 +16,7 @@ const Modal: React.FC<ModalProps> = ({
   cancelText = "Cancel",
   children,
   hideFooter = false,
+  maxWidthClass = "max-w-md",
 }) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
@@ -78,7 +79,7 @@ const Modal: React.FC<ModalProps> = ({
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-y-auto"
+          className={`relative bg-white rounded-2xl shadow-2xl w-full ${maxWidthClass} max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
           role="dialog"
           aria-modal="true"

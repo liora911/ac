@@ -1,15 +1,16 @@
 "use client";
 
-import { useWidgets } from "@/hooks/useWidgets";
+import { useEnabledWidgets } from "./WidgetsProvider";
+import { WidgetErrorBoundary } from "./WidgetErrorBoundary";
 import { WIDGET_META, getWidgetMeta } from "@/widgets/widgets.config";
 import { WIDGET_REGISTRY } from "@/widgets/registry";
 import type { WidgetSlotId } from "@/types/Widgets/widgets";
 
 /**
- * A fixed position on the site reserved for a widget. Renders the single
- * enabled widget assigned to this slot (one-active-per-slot), or nothing at all
- * when the slot is empty — so the space simply stays unused until a widget is
- * enabled for it in the admin.
+ * A fixed position on the site reserved for a widget. Reads the server-seeded
+ * enabled-widget snapshot (so it renders in the initial HTML with no flash) and
+ * shows the single enabled widget assigned to this slot, wrapped in an error
+ * boundary. Empty ⇒ renders nothing; the space simply stays unused.
  */
 export default function WidgetSlot({
   id,
@@ -18,11 +19,10 @@ export default function WidgetSlot({
   id: WidgetSlotId;
   className?: string;
 }) {
-  const { data } = useWidgets();
-  if (!data || data.length === 0) return null;
+  const widgets = useEnabledWidgets();
 
   const slotKeys = WIDGET_META.filter((m) => m.slot === id).map((m) => m.key);
-  const state = data.find((s) => s.enabled && slotKeys.includes(s.key));
+  const state = widgets.find((s) => s.enabled && slotKeys.includes(s.key));
   if (!state) return null;
 
   const entry = WIDGET_REGISTRY[state.key];
@@ -38,7 +38,9 @@ export default function WidgetSlot({
 
   return (
     <div className={`w-full ${className}`}>
-      <Component config={state.config} />
+      <WidgetErrorBoundary>
+        <Component config={state.config} />
+      </WidgetErrorBoundary>
     </div>
   );
 }

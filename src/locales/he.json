@@ -149,6 +149,8 @@
     "slot": "מיקום",
     "pickVariant": "בחר גרסה עבור {name}",
     "selected": "נבחר",
+    "settings": "הגדרות",
+    "saveSettings": "שמור הגדרות",
     "error": "עדכון הווידג'ט נכשל"
   },
   "widgets": {
@@ -167,6 +169,40 @@
           "banner": "באנר",
           "minimal": "מינימלי"
         }
+      },
+      "newsletter": {
+        "name": "הרשמה לניוזלטר",
+        "description": "אפשר למבקרים להירשם לניוזלטר.",
+        "variants": { "card": "כרטיס", "compact": "פס קומפקטי" }
+      },
+      "announcement": {
+        "name": "הודעה / קריאה לפעולה",
+        "description": "הודעה בולטת עם כפתור אופציונלי.",
+        "variants": { "banner": "באנר", "card": "כרטיס" },
+        "config": {
+          "heading": "כותרת",
+          "body": "תוכן ההודעה",
+          "buttonLabel": "טקסט הכפתור",
+          "buttonUrl": "כתובת הכפתור (או נתיב פנימי /)"
+        }
+      },
+      "countdown": {
+        "name": "ספירה לאחור לאירוע",
+        "description": "ספירה לאחור חיה לאירוע הקרוב הבא.",
+        "variants": { "compact": "קומפקטי", "featured": "מוגדל" },
+        "labels": {
+          "upcoming": "אירוע קרוב",
+          "days": "ימים",
+          "hours": "שעות",
+          "minutes": "דק'",
+          "seconds": "שנ'",
+          "viewEvent": "לצפייה באירוע"
+        }
+      },
+      "clock": {
+        "name": "שעון",
+        "description": "תאריך ושעה מקומיים בזמן אמת.",
+        "variants": { "purple": "סגול", "orange": "כתום", "white": "לבן", "black": "שחור" }
       }
     }
   },

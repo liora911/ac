@@ -149,6 +149,8 @@
     "slot": "Slot",
     "pickVariant": "Choose a variant for {name}",
     "selected": "Selected",
+    "settings": "Settings",
+    "saveSettings": "Save settings",
     "error": "Failed to update widget"
   },
   "widgets": {
@@ -167,6 +169,40 @@
           "banner": "Banner",
           "minimal": "Minimal"
         }
+      },
+      "newsletter": {
+        "name": "Newsletter Signup",
+        "description": "Let visitors subscribe to the newsletter.",
+        "variants": { "card": "Card", "compact": "Compact bar" }
+      },
+      "announcement": {
+        "name": "Announcement / CTA",
+        "description": "A highlighted message with an optional button.",
+        "variants": { "banner": "Banner", "card": "Card" },
+        "config": {
+          "heading": "Heading",
+          "body": "Message",
+          "buttonLabel": "Button label",
+          "buttonUrl": "Button URL (or /internal path)"
+        }
+      },
+      "countdown": {
+        "name": "Event Countdown",
+        "description": "Live countdown to the next upcoming event.",
+        "variants": { "compact": "Compact", "featured": "Featured" },
+        "labels": {
+          "upcoming": "Upcoming event",
+          "days": "Days",
+          "hours": "Hours",
+          "minutes": "Min",
+          "seconds": "Sec",
+          "viewEvent": "View event"
+        }
+      },
+      "clock": {
+        "name": "Clock",
+        "description": "Live local date and time.",
+        "variants": { "purple": "Purple", "orange": "Orange", "white": "White", "black": "Black" }
       }
     }
   },

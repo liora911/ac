@@ -14,6 +14,15 @@ export interface WidgetVariantMeta {
   labelKey: string;
 }
 
+export type WidgetConfigFieldType = "text" | "textarea" | "url";
+
+export interface WidgetConfigField {
+  key: string;
+  labelKey: string;
+  type: WidgetConfigFieldType;
+  placeholder?: string;
+}
+
 // Catalogue entry for a widget. Lives in code (src/widgets); the DB only stores
 // which widgets are enabled and their chosen variant/config.
 export interface WidgetMeta {
@@ -23,7 +32,7 @@ export interface WidgetMeta {
   descriptionKey: string;
   defaultVariant: string;
   variants: WidgetVariantMeta[];
-  hasConfig?: boolean;
+  configFields?: WidgetConfigField[];
 }
 
 // Persisted state for a widget (one row in the `widgets` table).

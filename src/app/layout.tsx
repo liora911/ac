@@ -16,6 +16,8 @@ import MotionProvider from "@/components/Motion/MotionProvider";
 import Breadcrumbs from "@/components/Breadcrumbs/Breadcrumbs";
 import MainContent from "@/components/MainContent/MainContent";
 import StatCounter from "@/components/Analytics/StatCounter";
+import { WidgetsProvider } from "@/components/Widgets/WidgetsProvider";
+import { getEnabledWidgets } from "@/lib/widgets/getEnabledWidgets";
 
 // Lazy load WelcomeModal - only ~5% of users (first-time visitors) need it
 const WelcomeModal = dynamic(
@@ -115,6 +117,9 @@ export default async function RootLayout({
   const localeCookie = cookieStore.get("locale")?.value;
   const locale = localeCookie === "en" ? "en" : "he";
 
+  // Server-seed enabled widgets so slots render in the initial HTML (no flash)
+  const enabledWidgets = await getEnabledWidgets();
+
   return (
     <html lang={locale} dir={locale === "he" ? "rtl" : "ltr"} suppressHydrationWarning>
       <head>
@@ -138,14 +143,16 @@ export default async function RootLayout({
                   <SettingsProvider>
                     <CategoryPreferencesProvider>
                       <MotionProvider>
-                        <div className="flex flex-col min-h-screen">
-                          <Header />
-                          <MainContent>
-                            <Breadcrumbs />
-                            {children}
-                          </MainContent>
-                          <Footer />
-                        </div>
+                        <WidgetsProvider value={enabledWidgets}>
+                          <div className="flex flex-col min-h-screen">
+                            <Header />
+                            <MainContent>
+                              <Breadcrumbs />
+                              {children}
+                            </MainContent>
+                            <Footer />
+                          </div>
+                        </WidgetsProvider>
                         <WelcomeModal />
                       </MotionProvider>
                     </CategoryPreferencesProvider>
