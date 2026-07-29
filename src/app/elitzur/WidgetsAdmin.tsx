@@ -154,6 +154,35 @@ export default function WidgetsAdmin() {
                   {t(variantLabelKey)}
                 </button>
               </div>
+
+              {/* Public vs professor-only visibility */}
+              <div className="mt-3 flex items-center gap-2 text-xs">
+                <span className="text-gray-500 dark:text-gray-400">
+                  {t("adminWidgets.visibility")}:
+                </span>
+                <div className="inline-flex rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+                  {(["public", "private"] as const).map((vis) => {
+                    const current = (st?.visibility ?? "public") === vis;
+                    return (
+                      <button
+                        key={vis}
+                        type="button"
+                        onClick={() => setVisibility(meta.key, vis)}
+                        disabled={updateWidget.isPending}
+                        className={`px-2.5 py-1 font-medium transition-colors cursor-pointer disabled:opacity-50 ${
+                          current
+                            ? vis === "private"
+                              ? "bg-amber-500 text-white"
+                              : "bg-blue-600 text-white"
+                            : "bg-transparent text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                        }`}
+                      >
+                        {t(`adminWidgets.${vis}`)}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           );
         })}

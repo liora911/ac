@@ -16,7 +16,7 @@ export async function GET(request: Request) {
     }
 
     const widgets = await prisma.widget.findMany({
-      where: isAdmin ? {} : { enabled: true },
+      where: isAdmin ? {} : { enabled: true, visibility: "public" },
     });
 
     return NextResponse.json(widgets, {
