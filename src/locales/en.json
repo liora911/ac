@@ -151,6 +151,9 @@
     "selected": "Selected",
     "settings": "Settings",
     "saveSettings": "Save settings",
+    "visibility": "Visibility",
+    "public": "Public",
+    "private": "Professor only",
     "error": "Failed to update widget"
   },
   "widgets": {
@@ -178,7 +181,7 @@
       "announcement": {
         "name": "Announcement / CTA",
         "description": "A highlighted message with an optional button.",
-        "variants": { "banner": "Banner", "card": "Card" },
+        "variants": { "sunset": "Sunset", "ocean": "Ocean", "forest": "Forest", "slate": "Slate" },
         "config": {
           "heading": "Heading",
           "body": "Message",

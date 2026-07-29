@@ -31,10 +31,12 @@ export const WIDGET_META: WidgetMeta[] = [
     slot: "homeUnderHero",
     nameKey: "widgets.items.announcement.name",
     descriptionKey: "widgets.items.announcement.description",
-    defaultVariant: "banner",
+    defaultVariant: "sunset",
     variants: [
-      { key: "banner", labelKey: "widgets.items.announcement.variants.banner" },
-      { key: "card", labelKey: "widgets.items.announcement.variants.card" },
+      { key: "sunset", labelKey: "widgets.items.announcement.variants.sunset" },
+      { key: "ocean", labelKey: "widgets.items.announcement.variants.ocean" },
+      { key: "forest", labelKey: "widgets.items.announcement.variants.forest" },
+      { key: "slate", labelKey: "widgets.items.announcement.variants.slate" },
     ],
     configFields: [
       {
