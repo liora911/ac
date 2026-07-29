@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText, Mail, CheckCircle, Loader2 } from "lucide-react";
 import { useSubscribeNewsletter } from "@/hooks/useNewsletter";
+import WidgetSlot from "@/components/Widgets/WidgetSlot";
 import type {
   ArticlePreview,
   CategoryWithArticles,
@@ -250,6 +251,9 @@ export default function Footer() {
       dir={isHebrew ? "rtl" : "ltr"}
     >
       <div className="max-w-6xl mx-auto">
+        {/* Global widget slot */}
+        <WidgetSlot id="globalFooter" className="mb-6" />
+
         {/* Newsletter Section */}
         <NewsletterSignup />
 

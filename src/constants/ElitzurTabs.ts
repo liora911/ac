@@ -18,7 +18,8 @@ export type TabKey =
   | "sketchBoard"
   | "guests"
   | "ideas"
-  | "calendar";
+  | "calendar"
+  | "widgets";
 
 export interface Tab {
   key: TabKey;
@@ -70,6 +71,7 @@ export const TAB_GROUPS: TabGroup[] = [
     labelKey: "admin.tabGroups.tools",
     icon: "Hammer",
     tabs: [
+      { key: "widgets", label: "וידג'טים", icon: "LayoutGrid" },
       { key: "pdfEditor", label: "עורך PDF", icon: "PenTool" },
       { key: "sketchBoard", label: "לוח סקיצות", icon: "Brush" },
       { key: "ideas", label: "רעיונות", icon: "Lightbulb" },

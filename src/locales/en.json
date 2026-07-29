@@ -142,6 +142,34 @@
       "equals": "Calculate"
     }
   },
+  "adminWidgets": {
+    "title": "Widgets",
+    "subtitle": "Enable a widget and pick a variant. Enabled widgets appear in their fixed slot on the site; each slot shows one widget at a time.",
+    "chooseVariant": "Choose a variant",
+    "slot": "Slot",
+    "pickVariant": "Choose a variant for {name}",
+    "selected": "Selected",
+    "error": "Failed to update widget"
+  },
+  "widgets": {
+    "slots": {
+      "homeUnderHero": "Homepage — under hero",
+      "homeAboveFooter": "Homepage — above footer",
+      "articleBelowContent": "Article — below content",
+      "globalFooter": "Global — footer"
+    },
+    "items": {
+      "quoteOfDay": {
+        "name": "Quote of the Day",
+        "description": "A rotating quote from physics and philosophy that changes daily.",
+        "variants": {
+          "card": "Card",
+          "banner": "Banner",
+          "minimal": "Minimal"
+        }
+      }
+    }
+  },
   "guests": {
     "title": "Guests",
     "subtitle": "Researchers and creators whose work Prof. Elitzur is honored to host on this site",
@@ -1531,6 +1559,7 @@
       "guests": "Guests",
       "ideas": "Ideas",
       "calendar": "Personal Calendar",
+      "widgets": "Widgets",
       "collapseMenu": "Collapse menu",
       "expandMenu": "Expand menu",
       "collapseAllGroups": "Collapse all groups",

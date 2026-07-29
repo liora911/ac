@@ -14,6 +14,7 @@ import ArticleClient from "@/components/Article/ArticleClient";
 import DownloadPDFButton from "@/components/Article/DownloadPDFButton";
 import ShareButton from "@/components/Article/ShareButton";
 import CommentSection from "@/components/Comments/CommentSection";
+import WidgetSlot from "@/components/Widgets/WidgetSlot";
 import en from "@/locales/en.json";
 import he from "@/locales/he.json";
 import type { ArticlePageProps } from "@/types/Articles/articles";
@@ -553,6 +554,9 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
           </div>
 
         </footer>
+
+        {/* Widget slot — below the article body, above comments */}
+        <WidgetSlot id="articleBelowContent" className="my-8" />
 
         {/* Comments Section */}
         <CommentSection articleId={article.id} />

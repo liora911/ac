@@ -142,6 +142,34 @@
       "equals": "חשב"
     }
   },
+  "adminWidgets": {
+    "title": "וידג'טים",
+    "subtitle": "הפעל וידג'ט ובחר גרסה. וידג'טים מופעלים מוצגים במיקום הקבוע שלהם באתר; כל מיקום מציג וידג'ט אחד בכל פעם.",
+    "chooseVariant": "בחר גרסה",
+    "slot": "מיקום",
+    "pickVariant": "בחר גרסה עבור {name}",
+    "selected": "נבחר",
+    "error": "עדכון הווידג'ט נכשל"
+  },
+  "widgets": {
+    "slots": {
+      "homeUnderHero": "דף הבית — מתחת לכותרת",
+      "homeAboveFooter": "דף הבית — מעל הפוטר",
+      "articleBelowContent": "מאמר — מתחת לתוכן",
+      "globalFooter": "כללי — פוטר"
+    },
+    "items": {
+      "quoteOfDay": {
+        "name": "ציטוט היום",
+        "description": "ציטוט מתחלף מעולם הפיזיקה והפילוסופיה שמשתנה מדי יום.",
+        "variants": {
+          "card": "כרטיס",
+          "banner": "באנר",
+          "minimal": "מינימלי"
+        }
+      }
+    }
+  },
   "guests": {
     "title": "אורחים",
     "subtitle": "חוקרים ויוצרים שפרופ' אליצור מתכבד לארח את עבודותיהם באתר",
@@ -1598,6 +1626,7 @@
       "guests": "אורחים",
       "ideas": "רעיונות",
       "calendar": "יומן אישי",
+      "widgets": "וידג'טים",
       "collapseMenu": "כווץ תפריט",
       "expandMenu": "הרחב תפריט",
       "collapseAllGroups": "כווץ את כל הקבוצות",

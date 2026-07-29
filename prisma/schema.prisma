@@ -117,6 +117,11 @@ model Article {
   translatedFromId String?
   authorId         String
   categoryId       String?
+  // Dead columns from the removed AI-embeddings feature. Kept in the schema
+  // ONLY so `db push` doesn't drop them while the old (embedding-reading) code
+  // is still deployed. Drop these AFTER the embeddings-removal code ships.
+  embedding        Float[]
+  embeddingModel   String?
   authors          ArticleAuthor[]
   categories       ArticleCategory[]
   tags             ArticleTag[]
@@ -451,6 +456,19 @@ model Archive {
   updatedAt DateTime         @updatedAt
 
   @@map("archives")
+}
+
+// Homepage/site widgets. The widget catalogue + their variants live in code
+// (src/widgets); this table stores only which are enabled, the chosen variant,
+// and any per-widget config. `key` matches the registry key.
+model Widget {
+  key       String   @id
+  enabled   Boolean  @default(false)
+  variant   String?
+  config    Json?
+  updatedAt DateTime @updatedAt
+
+  @@map("widgets")
 }
 
 model Comment {

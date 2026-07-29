@@ -26,6 +26,7 @@ import SketchBoardAdmin from "./SketchBoardAdmin";
 import GuestsAdmin from "./GuestsAdmin";
 import IdeasAdmin from "./IdeasAdmin";
 import CalendarAdmin from "./CalendarAdmin";
+import WidgetsAdmin from "./WidgetsAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
@@ -63,6 +64,7 @@ import {
   PanelLeftOpen,
   ChevronDown,
   ChevronsDownUp,
+  LayoutGrid,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
@@ -93,6 +95,7 @@ const iconMap: Record<string, LucideIcon> = {
   Brush,
   Lightbulb,
   Mail,
+  LayoutGrid,
 };
 
 export default function ElitzurDashboard() {
@@ -590,6 +593,8 @@ export default function ElitzurDashboard() {
           {active === "ideas" && <IdeasAdmin />}
 
           {active === "calendar" && <CalendarAdmin />}
+
+          {active === "widgets" && <WidgetsAdmin />}
             </div>
           </main>
         </div>
