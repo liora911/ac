@@ -19,7 +19,7 @@ import {
   MdAdminPanelSettings,
   MdLanguage,
 } from "react-icons/md";
-import { Bot, Bell } from "lucide-react";
+import { Bot, Bell, Shield } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useUnreadNotificationCount } from "@/hooks/useNotifications";
 import { useTapRipple } from "@/hooks/useTapRipple";
@@ -59,6 +59,10 @@ export default function Header() {
   const [profileMenuOpen, setProfileMenuOpen] = useState<boolean>(false);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
   const [aiAssistantOpen, setAIAssistantOpen] = useState<boolean>(false);
+  // Hidden power-user flag: when on (admins only), the avatar is swapped for a
+  // one-click shield shortcut to /elitzur. Toggle from the DevTools console with
+  // elitzur.reveal() / elitzur.hide().
+  const [quickAccess, setQuickAccess] = useState<boolean>(false);
   const pathname = usePathname();
   const mobileMenuRef = useRef<HTMLElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
@@ -74,6 +78,35 @@ export default function Header() {
   const unreadCount = unreadData?.unreadCount ?? 0;
 
   // Close menus on outside click
+  // Wire the hidden quick-access flag + console command
+  useEffect(() => {
+    const KEY = "elitzur-quick-access";
+    const apply = () => setQuickAccess(localStorage.getItem(KEY) === "true");
+    apply();
+    const w = window as unknown as { elitzur?: Record<string, () => string> };
+    w.elitzur = {
+      reveal() {
+        try {
+          localStorage.setItem(KEY, "true");
+        } catch {}
+        apply();
+        return "Quick access ON — a shield shortcut to /elitzur is now in the navbar. Run elitzur.hide() to undo.";
+      },
+      hide() {
+        try {
+          localStorage.removeItem(KEY);
+        } catch {}
+        apply();
+        return "Quick access OFF.";
+      },
+    };
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === KEY) apply();
+    };
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // Profile menu
@@ -198,8 +231,24 @@ export default function Header() {
               <span>{locale === "he" ? "English" : "עברית"}</span>
             </button>
 
+            {/* Hidden quick-access: shield shortcut to /elitzur (admins) */}
+            {quickAccess && isAdmin && (
+              <Link
+                href="/elitzur"
+                title={t("header.adminSettings")}
+                aria-label={t("header.adminSettings")}
+                className="hidden md:flex items-center justify-center w-9 h-9 rounded-lg bg-red-600 hover:bg-red-700 text-white transition-colors cursor-pointer"
+              >
+                <Shield className="w-5 h-5" />
+              </Link>
+            )}
+
             {/* Profile/Menu Button */}
-            <div className="relative hidden md:block">
+            <div
+              className={`relative ${
+                quickAccess && isAdmin ? "hidden" : "hidden md:block"
+              }`}
+            >
               <button
                 ref={profileButtonRef}
                 onClick={() => setProfileMenuOpen(!profileMenuOpen)}
