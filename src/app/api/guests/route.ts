@@ -33,9 +33,11 @@ export async function GET(request: Request) {
         order: true,
         createdAt: true,
         updatedAt: true,
-        // Admins get the private email and the full rich-text bio so the
-        // edit form can pre-fill; the public list stays lean without them
-        ...(includeUnpublished ? { email: true, bio: true } : {}),
+        // Admins get the private email, the full rich-text bio, and the gallery
+        // so the edit form can pre-fill; the public list stays lean without them.
+        // (galleryUrls MUST be here — otherwise the form seeds an empty gallery
+        // and saving the guest overwrites galleryUrls with [], wiping it.)
+        ...(includeUnpublished ? { email: true, bio: true, galleryUrls: true } : {}),
       },
       orderBy: [{ isFeatured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
     });
