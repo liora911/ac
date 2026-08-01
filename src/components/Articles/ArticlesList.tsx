@@ -104,20 +104,8 @@ function ArticlesListContent({
   // Sort state - combined sortBy and sortOrder for easier dropdown handling
   const [sortOption, setSortOption] = useState<SortOption>("newest");
 
-  // Grid density: 3 (big cards) … 6 (compact) columns on lg+, persisted
-  const [gridCols, setGridCols] = useState(4);
-  useEffect(() => {
-    const saved = Number(localStorage.getItem("articles-grid-cols"));
-    if (saved >= 3 && saved <= 6) setGridCols(saved);
-  }, []);
-  const changeGridCols = (cols: number) => {
-    setGridCols(cols);
-    try {
-      localStorage.setItem("articles-grid-cols", String(cols));
-    } catch {
-      // storage unavailable — preference just won't persist
-    }
-  };
+  // Fixed grid density on lg+ (the list/grid toggle is the only view control now)
+  const gridCols = 4;
 
   // Sync selectedCategory with URL when user navigates back/forward
   useEffect(() => {
@@ -452,31 +440,6 @@ function ArticlesListContent({
               </button>
             </div>
 
-            {/* Card size slider — left end: big cards (3/row), right end:
-                compact (6/row). Hidden in list view where it has no effect */}
-            {viewMode === "grid" && (
-              <div
-                className="hidden lg:flex items-center gap-2"
-                title={t("articlesPage.cardSize")}
-              >
-                <Grid3X3 className="w-4 h-4 text-gray-400" />
-                <input
-                  type="range"
-                  min={3}
-                  max={6}
-                  step={1}
-                  // Inverted so sliding "up" makes the cards bigger
-                  value={9 - gridCols}
-                  onChange={(e) => changeGridCols(9 - Number(e.target.value))}
-                  className="w-24 accent-blue-600 cursor-pointer"
-                  aria-label={t("articlesPage.cardSize")}
-                />
-                <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums w-4">
-                  {gridCols}
-                </span>
-              </div>
-            )}
-
             {/* Results count */}
             <span className="text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
               {isLoading ? t("loading") : t("articlesPage.articlesFound").replace("{total}", total.toString())}
@@ -585,16 +548,14 @@ function ArticlesListContent({
               >
                 {articles.map((article, idx) => {
                   const isNew = idx >= newItemStartIdx;
-                  const isBento = article.isFeatured && idx < 3;
                   return (
                     <motion.div
                       key={article.id}
                       initial={isNew ? { opacity: 0, y: 30 } : false}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.4, delay: isNew ? (idx - newItemStartIdx) * 0.06 : 0, ease: "easeOut" }}
-                      className={isBento ? "md:col-span-2 lg:col-span-2 md:row-span-2" : ""}
                     >
-                      <ArticleCard article={article} isBento={isBento} />
+                      <ArticleCard article={article} />
                     </motion.div>
                   );
                 })}
@@ -635,7 +596,7 @@ function ArticlesListContent({
                             {/* Top Section */}
                             <div>
                               <div className="flex items-start justify-between gap-3 mb-1">
-                                <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                                <h3 className="font-serif text-base sm:text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                                   {article.title}
                                 </h3>
                                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -762,7 +723,7 @@ function getCategoryColor(categoryId?: string): string {
   return CATEGORY_COLORS[Math.abs(hash) % CATEGORY_COLORS.length];
 }
 
-const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }: { article: Article; isBento?: boolean }) {
+const ArticleCard = React.memo(function ArticleCard({ article }: { article: Article }) {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
   const { showSuccessAt } = useNotification();
@@ -782,7 +743,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
   const accentGradient = getCategoryColor(categoryId);
 
   return (
-    <article className={`group/card relative rounded-xl overflow-hidden flex flex-col h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm ${isBento ? "min-h-[420px]" : ""}`}>
+    <article className="group/card relative rounded-xl overflow-hidden flex flex-col h-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Category color accent - top edge */}
       <div className={`h-1 w-full bg-gradient-to-r ${accentGradient} -mt-px`} />
 
@@ -793,13 +754,13 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
 
       <Link href={`/articles/${article.slug || article.id}`} className="block relative flex-1 flex flex-col">
         {/* Image section */}
-        <div className={`relative overflow-hidden ${isBento ? "h-64" : "h-48"} ${!hasAccess ? "grayscale-[30%]" : ""}`}>
+        <div className={`relative overflow-hidden h-48 ${!hasAccess ? "grayscale-[30%]" : ""}`}>
           <Image
             src={displayImage}
             alt={article.title}
             fill
             className="object-cover"
-            sizes={isBento ? "(max-width: 768px) 100vw, 66vw" : "(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
@@ -828,7 +789,7 @@ const ArticleCard = React.memo(function ArticleCard({ article, isBento = false }
 
           {/* Title + hover abstract overlay */}
           <div className="absolute bottom-0 left-0 right-0 p-4">
-            <h3 className={`text-white font-bold drop-shadow-lg line-clamp-2 ${isBento ? "text-xl" : "text-base"}`}>
+            <h3 className="font-serif text-white font-bold drop-shadow-lg line-clamp-2 text-base">
               {article.title}
             </h3>
             {/* Abstract - reveals on hover */}

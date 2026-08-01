@@ -3,6 +3,11 @@
 /* Configure Tailwind v4 dark mode to use .dark class on html element */
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* Serif title face (Frank Ruhl Libre) — makes `font-serif` use it. */
+@theme inline {
+  --font-serif: var(--font-frank-ruhl), Georgia, "Times New Roman", serif;
+}
+
 :root {
   --background: #f8fafc;
   --foreground: #000000;

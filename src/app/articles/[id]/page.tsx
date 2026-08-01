@@ -361,7 +361,7 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             )}
           </div>
 
-          <h1 dir={article.titleDirection || "rtl"} className="text-4xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+          <h1 dir={article.titleDirection || "rtl"} className="font-serif text-4xl font-bold text-gray-900 dark:text-white mb-2 leading-tight">
             {article.title}
           </h1>
 

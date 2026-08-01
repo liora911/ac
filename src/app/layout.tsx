@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Poppins, Frank_Ruhl_Libre } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
 import { cookies } from "next/headers";
@@ -30,6 +30,16 @@ import { BASE_URL } from "@/constants/app";
 const poppins = Poppins({
   weight: ["400", "700"],
   subsets: ["latin"],
+});
+
+// Serif for titles — gives the site a scholarly identity distinct from the
+// SaaS-generic sans. Hebrew + Latin. Exposed as a CSS var for the `font-serif`
+// Tailwind utility (see globals.css @theme).
+const frankRuhl = Frank_Ruhl_Libre({
+  weight: ["500", "700", "900"],
+  subsets: ["hebrew", "latin"],
+  variable: "--font-frank-ruhl",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -136,7 +146,7 @@ export default async function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: localeScript }} />
       </head>
       <body
-        className={`${poppins.className} antialiased focus-visible:outline-2 focus-visible:outline-blue-500`}
+        className={`${poppins.className} ${frankRuhl.variable} antialiased focus-visible:outline-2 focus-visible:outline-blue-500`}
         suppressHydrationWarning={true}
       >
         <a

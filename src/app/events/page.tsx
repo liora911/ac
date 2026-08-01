@@ -8,6 +8,7 @@ import type { Event } from "@/types/Events/events";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import EventModal from "@/components/Events/EventModal";
+import EmptyState from "@/components/EmptyState/EmptyState";
 import { List, CalendarDays } from "lucide-react";
 
 // Dynamic imports for code splitting
@@ -250,7 +251,7 @@ function EventsPageContent() {
         <div className="absolute inset-0 bg-gradient-to-t from-gray-50 dark:from-gray-950 via-black/40 to-black/20" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-white drop-shadow-lg">
               {t("nav.events")}
             </h1>
           </div>
@@ -376,9 +377,11 @@ function EventsPageContent() {
         )}
 
         {!isLoading && !error && (!eventsData || eventsData.length === 0) && (
-          <p className="text-center text-xl text-gray-400">
-            {t("eventsPage.noEventsFound")}
-          </p>
+          <EmptyState
+            icon={CalendarDays}
+            title={t("eventsPage.noEventsFound")}
+            description={t("eventsPage.noEventsDescription")}
+          />
         )}
       </div>
 

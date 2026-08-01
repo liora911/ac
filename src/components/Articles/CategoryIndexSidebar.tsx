@@ -32,7 +32,11 @@ export default function CategoryIndexSidebar({
 
   const groups = useMemo(() => {
     const map = new Map<string, CategoryWithCount[]>();
-    for (const cat of categories) {
+    // Don't list empty topics — a topic showing "0" reads as noise/broken
+    const visible = categories.filter(
+      (c) => c._count == null || c._count.articles > 0
+    );
+    for (const cat of visible) {
       const first = cat.name.trim().charAt(0);
       const letter = isHebrewChar(first)
         ? first

@@ -6,6 +6,8 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { useGuests } from "@/hooks/useGuests";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import GuestAdminFab from "@/components/Guests/GuestAdminFab";
+import CardGrid from "@/components/CardGrid/CardGrid";
+import EmptyState from "@/components/EmptyState/EmptyState";
 import { Users, Star } from "lucide-react";
 
 export default function GuestsPage() {
@@ -24,7 +26,7 @@ export default function GuestsPage() {
       <div className="w-full px-4 sm:px-6 lg:px-8 py-10 md:py-14">
         {/* Header */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)]">
+          <h1 className="font-serif text-3xl md:text-4xl font-bold text-[var(--foreground)]">
             {t("guests.title")}
           </h1>
           <p className="mt-3 text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -34,11 +36,11 @@ export default function GuestsPage() {
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <CardGrid>
             {[...Array(6)].map((_, i) => (
               <div
                 key={i}
-                className="relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden animate-pulse"
+                className="relative w-full sm:w-80 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden animate-pulse"
               >
                 <div className="h-28 w-full bg-gray-200 dark:bg-gray-700" />
                 <div className="absolute top-[76px] start-5 w-20 h-20 rounded-full bg-gray-300 dark:bg-gray-600 ring-4 ring-white dark:ring-gray-800" />
@@ -48,18 +50,19 @@ export default function GuestsPage() {
                 </div>
               </div>
             ))}
-          </div>
+          </CardGrid>
         ) : isError ? (
           <p className="text-center text-red-500 dark:text-red-400 py-16">
             {t("guests.loadError")}
           </p>
         ) : !guests || guests.length === 0 ? (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-            <Users className="w-12 h-12 mx-auto mb-4 opacity-40" />
-            {t("guests.empty")}
-          </div>
+          <EmptyState
+            icon={Users}
+            title={t("guests.empty")}
+            description={t("guests.emptyDescription")}
+          />
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <CardGrid>
             {guests.map((guest) => {
               const displayName =
                 locale === "he"
@@ -69,7 +72,7 @@ export default function GuestsPage() {
               <Link
                 key={guest.id}
                 href={`/guests/${guest.slug || guest.id}`}
-                className="group relative rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all overflow-hidden"
+                className="group relative w-full sm:w-80 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm hover:shadow-lg hover:border-blue-300 dark:hover:border-blue-700 transition-all overflow-hidden"
               >
                 {/* Cover thumbnail — the guest's banner image fills the top */}
                 <div className="h-28 w-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600">
@@ -107,7 +110,7 @@ export default function GuestsPage() {
                 <div className="pt-12 px-5 pb-5 text-start">
                   <h2
                     dir={guest.titleDirection}
-                    className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
+                    className="font-serif text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors"
                   >
                     {displayName}
                   </h2>
@@ -123,7 +126,7 @@ export default function GuestsPage() {
               </Link>
               );
             })}
-          </div>
+          </CardGrid>
         )}
       </div>
     </div>

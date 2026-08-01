@@ -10,6 +10,7 @@ export const STATIC_SEGMENT_KEYS: Record<string, string> = {
   presentations: "nav.presentations",
   lectures: "nav.lectures",
   events: "nav.events",
+  guests: "nav.guests",
   contact: "nav.contact",
   about: "breadcrumbs.about",
   search: "breadcrumbs.search",
