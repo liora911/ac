@@ -37,6 +37,7 @@ export const WIDGET_META: WidgetMeta[] = [
           },
         ],
       },
+      { key: "color", labelKey: "widgets.common.color", type: "color" },
     ],
   },
   {
@@ -87,6 +88,7 @@ export const WIDGET_META: WidgetMeta[] = [
         labelKey: "widgets.items.announcement.config.buttonUrl",
         type: "url",
       },
+      { key: "color", labelKey: "widgets.common.color", type: "color" },
     ],
   },
   {
@@ -111,6 +113,9 @@ export const WIDGET_META: WidgetMeta[] = [
       { key: "orange", labelKey: "widgets.items.clock.variants.orange" },
       { key: "white", labelKey: "widgets.items.clock.variants.white" },
       { key: "black", labelKey: "widgets.items.clock.variants.black" },
+    ],
+    configFields: [
+      { key: "color", labelKey: "widgets.common.color", type: "color" },
     ],
   },
 ];

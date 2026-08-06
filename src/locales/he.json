@@ -154,9 +154,13 @@
     "visibility": "נראות",
     "public": "ציבורי",
     "private": "מנהל בלבד",
+    "resetColor": "איפוס",
     "error": "עדכון הווידג'ט נכשל"
   },
   "widgets": {
+    "common": {
+      "color": "צבע מותאם אישית"
+    },
     "slots": {
       "homeUnderHero": "דף הבית — מתחת לכותרת",
       "homeAboveFooter": "דף הבית — מעל הפוטר",

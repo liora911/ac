@@ -154,9 +154,13 @@
     "visibility": "Visibility",
     "public": "Public",
     "private": "Admin only",
+    "resetColor": "Reset",
     "error": "Failed to update widget"
   },
   "widgets": {
+    "common": {
+      "color": "Custom color"
+    },
     "slots": {
       "homeUnderHero": "Homepage — under hero",
       "homeAboveFooter": "Homepage — above footer",

@@ -14,7 +14,12 @@ export interface WidgetVariantMeta {
   labelKey: string;
 }
 
-export type WidgetConfigFieldType = "text" | "textarea" | "url" | "select";
+export type WidgetConfigFieldType =
+  | "text"
+  | "textarea"
+  | "url"
+  | "select"
+  | "color";
 
 export interface WidgetConfigField {
   key: string;

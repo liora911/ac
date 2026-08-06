@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Quote as QuoteIcon } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { physicsQuotes } from "@/data/quotes";
+import { isHex, withAlpha } from "../colorUtils";
 import type { WidgetComponentProps } from "@/types/Widgets/widgets";
 
 interface DisplayQuote {
@@ -62,24 +62,44 @@ function useRotatingQuote(config: WidgetComponentProps["config"]) {
 export function QuoteCard({ config }: WidgetComponentProps) {
   const { text, author, isRTL } = useRotatingQuote(config);
   if (!text) return null;
+  // Matches the rich-text editor's blockquote: a single-sided accent bar with a
+  // color→transparent gradient, rounded on the far side, italic text. Uses the
+  // admin's custom color when set, otherwise the default blue.
+  const raw = config?.color;
+  const custom = isHex(raw) ? raw : null;
+  const style = custom
+    ? isRTL
+      ? {
+          borderRightColor: custom,
+          backgroundImage: `linear-gradient(to left, ${withAlpha(custom, "1a")}, transparent)`,
+        }
+      : {
+          borderLeftColor: custom,
+          backgroundImage: `linear-gradient(to right, ${withAlpha(custom, "1a")}, transparent)`,
+        }
+    : undefined;
   return (
-    <div
+    <blockquote
       dir={isRTL ? "rtl" : "ltr"}
-      className="max-w-3xl mx-auto rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 md:p-8 shadow-sm"
+      style={style}
+      className={`max-w-3xl mx-auto border-blue-500 from-blue-50 to-transparent dark:from-blue-500/10 p-5 md:p-6 ${
+        isRTL
+          ? "border-r-4 rounded-l-lg bg-gradient-to-l"
+          : "border-l-4 rounded-r-lg bg-gradient-to-r"
+      }`}
     >
-      <QuoteIcon className="w-8 h-8 text-blue-500/40 dark:text-blue-400/40 mb-3" />
       <p
-        className="text-lg md:text-xl font-medium italic leading-relaxed text-gray-800 dark:text-gray-100"
+        className="text-lg md:text-xl italic leading-relaxed text-gray-700 dark:text-gray-300"
         suppressHydrationWarning
       >
         {text}
       </p>
       {author && (
-        <p className="mt-4 text-sm font-semibold text-gray-500 dark:text-gray-400">
+        <footer className="mt-3 text-sm font-semibold not-italic text-gray-500 dark:text-gray-400">
           — {author}
-        </p>
+        </footer>
       )}
-    </div>
+    </blockquote>
   );
 }
 

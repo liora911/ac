@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Megaphone } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { normalizeExternalUrl } from "@/lib/utils/url";
+import { isHex, readableTextColor } from "../colorUtils";
 import type { WidgetComponentProps } from "@/types/Widgets/widgets";
 
 type AnnouncementColor = "sunset" | "ocean" | "forest" | "slate";
@@ -37,6 +38,8 @@ function AnnouncementBase({
 }) {
   const { locale } = useTranslation();
   const { heading, body, buttonLabel, buttonUrl } = readConfig(config);
+  const raw = config?.color;
+  const custom = isHex(raw) ? raw : null;
 
   const showHeading = heading || (sample ? "Announcement" : "");
   const showBody = body || (sample ? "Your message here…" : "");
@@ -50,14 +53,23 @@ function AnnouncementBase({
   return (
     <div
       dir={locale === "he" ? "rtl" : "ltr"}
-      className={`rounded-2xl bg-gradient-to-r ${GRADIENTS[color]} p-6 md:p-8 text-white shadow-lg flex flex-col md:flex-row md:items-center gap-4`}
+      style={
+        custom ? { background: custom, color: readableTextColor(custom) } : undefined
+      }
+      className={`rounded-2xl p-6 md:p-8 shadow-lg flex flex-col md:flex-row md:items-center gap-4 ${
+        custom ? "" : `bg-gradient-to-r ${GRADIENTS[color]} text-white`
+      }`}
     >
       <Megaphone className="w-8 h-8 flex-shrink-0" />
       <div className="min-w-0 flex-1">
         {showHeading && (
           <h3 className="text-lg md:text-xl font-bold">{showHeading}</h3>
         )}
-        {showBody && <p className="mt-1 text-sm text-white/90">{showBody}</p>}
+        {showBody && (
+          <p className={`mt-1 text-sm ${custom ? "opacity-90" : "text-white/90"}`}>
+            {showBody}
+          </p>
+        )}
       </div>
       {buttonLabel && buttonUrl && (
         <>

@@ -682,33 +682,53 @@ function SidebarNav({
                 const isActive = active === tab.key;
                 const IconComponent = iconMap[tab.icon];
                 const label = t(`admin.nav.${tab.key}`);
+                const itemCls = `w-full flex items-center py-3 rounded-lg text-[15px] font-medium text-start transition-colors cursor-pointer ${
+                  collapsed ? "justify-center px-0" : "gap-3 px-3"
+                } ${
+                  isActive
+                    ? "bg-blue-600 text-white shadow-sm"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
+                }`;
+                const inner = (
+                  <>
+                    {IconComponent && (
+                      <span className="relative flex-shrink-0">
+                        <IconComponent className="w-5 h-5" />
+                        {tabBadges[tab.key] && <Ping />}
+                      </span>
+                    )}
+                    {!collapsed && <span className="truncate">{label}</span>}
+                  </>
+                );
                 return (
                   <li key={tab.key}>
-                    <button
-                      type="button"
-                      onClick={() => onSelect(tab.key)}
-                      title={label}
-                      className={`w-full flex items-center py-3 rounded-lg text-[15px] font-medium text-start transition-colors cursor-pointer ${
-                        collapsed ? "justify-center px-0" : "gap-3 px-3"
-                      } ${
-                        isActive
-                          ? "bg-blue-600 text-white shadow-sm"
-                          : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
-                      }`}
-                      role="tab"
-                      aria-selected={isActive}
-                      aria-controls={`panel-${tab.key}`}
-                      id={`tab-${tab.key}`}
-                      aria-label={label}
-                    >
-                      {IconComponent && (
-                        <span className="relative flex-shrink-0">
-                          <IconComponent className="w-5 h-5" />
-                          {tabBadges[tab.key] && <Ping />}
-                        </span>
-                      )}
-                      {!collapsed && <span className="truncate">{label}</span>}
-                    </button>
+                    {tab.externalHref ? (
+                      // Opens an external dashboard directly instead of an in-app panel
+                      <a
+                        href={tab.externalHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title={label}
+                        aria-label={label}
+                        className={itemCls}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onSelect(tab.key)}
+                        title={label}
+                        className={itemCls}
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-controls={`panel-${tab.key}`}
+                        id={`tab-${tab.key}`}
+                        aria-label={label}
+                      >
+                        {inner}
+                      </button>
+                    )}
                   </li>
                 );
               })}

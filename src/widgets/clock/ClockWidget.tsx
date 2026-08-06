@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { isHex, readableTextColor } from "../colorUtils";
+import type { WidgetComponentProps } from "@/types/Widgets/widgets";
 
 type ClockTheme = "purple" | "orange" | "white" | "black";
 
@@ -16,8 +18,16 @@ const THEMES: Record<ClockTheme, string> = {
     "bg-gray-950 text-white border-gray-800 dark:bg-black dark:border-gray-800",
 };
 
-function ClockBase({ theme }: { theme: ClockTheme }) {
+function ClockBase({
+  theme,
+  config,
+}: {
+  theme: ClockTheme;
+  config?: WidgetComponentProps["config"];
+}) {
   const { locale } = useTranslation();
+  const raw = config?.color;
+  const custom = isHex(raw) ? raw : null;
   const isRTL = locale === "he";
   // Initialise on mount only, so server and client agree (no hydration mismatch)
   const [now, setNow] = useState<Date | null>(null);
@@ -48,7 +58,14 @@ function ClockBase({ theme }: { theme: ClockTheme }) {
   return (
     <div
       dir={isRTL ? "rtl" : "ltr"}
-      className={`rounded-2xl border p-6 text-center shadow-sm ${THEMES[theme]}`}
+      style={
+        custom
+          ? { background: custom, color: readableTextColor(custom), borderColor: "transparent" }
+          : undefined
+      }
+      className={`rounded-2xl border p-6 text-center shadow-sm ${
+        custom ? "" : THEMES[theme]
+      }`}
     >
       <div
         className="text-4xl md:text-5xl font-bold tracking-tight tabular-nums"
@@ -66,17 +83,17 @@ function ClockBase({ theme }: { theme: ClockTheme }) {
   );
 }
 
-export function ClockPurple() {
-  return <ClockBase theme="purple" />;
+export function ClockPurple({ config }: WidgetComponentProps) {
+  return <ClockBase theme="purple" config={config} />;
 }
-export function ClockOrange() {
-  return <ClockBase theme="orange" />;
+export function ClockOrange({ config }: WidgetComponentProps) {
+  return <ClockBase theme="orange" config={config} />;
 }
-export function ClockWhite() {
-  return <ClockBase theme="white" />;
+export function ClockWhite({ config }: WidgetComponentProps) {
+  return <ClockBase theme="white" config={config} />;
 }
-export function ClockBlack() {
-  return <ClockBase theme="black" />;
+export function ClockBlack({ config }: WidgetComponentProps) {
+  return <ClockBase theme="black" config={config} />;
 }
 
 // Admin card preview

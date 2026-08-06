@@ -26,6 +26,9 @@ export interface Tab {
   label: string;
   icon: string;
   disabled?: boolean;
+  // If set, the sidebar item opens this URL in a new tab instead of switching
+  // to an in-app panel.
+  externalHref?: string;
 }
 
 export interface TabGroup {
@@ -83,7 +86,12 @@ export const TAB_GROUPS: TabGroup[] = [
     icon: "Wrench",
     tabs: [
       { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
-      { key: "devMetrics", label: "מדדי מפתחים", icon: "BarChart3" },
+      {
+        key: "devMetrics",
+        label: "מדדי מפתחים",
+        icon: "BarChart3",
+        externalHref: "https://statcounter.com/p13202600/summary/?guest=1",
+      },
     ],
   },
 ];
