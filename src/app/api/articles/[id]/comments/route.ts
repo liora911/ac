@@ -33,6 +33,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
           select: {
             id: true,
             name: true,
+            email: true,
             image: true,
           },
         },
@@ -57,7 +58,8 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
         updatedAt: c.updatedAt.toISOString(),
         user: {
           id: c.user.id,
-          name: c.user.name,
+          // Display name only — full email stays private (no domain leaked)
+          name: c.user.name ?? c.user.email?.split("@")[0] ?? null,
           image: c.user.image,
         },
         likeCount: c.likes.length,
