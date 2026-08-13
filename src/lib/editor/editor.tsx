@@ -64,6 +64,7 @@ import {
   IndentDecrease,
   Type,
   Mic,
+  ClipboardPaste,
 } from "lucide-react";
 
 import type {
@@ -119,6 +120,62 @@ const Dropdown = ({
   );
 };
 
+// Word-style paste modes.
+type PasteMode = "source" | "match" | "text";
+
+// Structural tags kept when "matching destination formatting" — everything
+// else (spans, font tags, divs, inline styles) is unwrapped/stripped so the
+// pasted content adopts the editor's own styling.
+const MATCH_ALLOWED = new Set([
+  "P", "BR", "H1", "H2", "H3", "H4", "STRONG", "B", "EM", "I", "U", "S",
+  "STRIKE", "A", "UL", "OL", "LI", "BLOCKQUOTE", "PRE", "CODE",
+  "TABLE", "THEAD", "TBODY", "TR", "TH", "TD", "IMG",
+]);
+
+function escapeHtml(s: string) {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// "Match destination formatting": keep structure, drop foreign styling.
+function cleanToDestination(html: string): string {
+  if (typeof window === "undefined") return html;
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const walk = (node: Node) => {
+    Array.from(node.childNodes).forEach((child) => {
+      if (child.nodeType !== 1) return;
+      const el = child as HTMLElement;
+      walk(el);
+      if (!MATCH_ALLOWED.has(el.tagName)) {
+        const parent = el.parentNode;
+        if (!parent) return;
+        while (el.firstChild) parent.insertBefore(el.firstChild, el);
+        parent.removeChild(el);
+      } else {
+        Array.from(el.attributes).forEach((attr) => {
+          const keep =
+            (el.tagName === "A" && attr.name === "href") ||
+            (el.tagName === "IMG" && (attr.name === "src" || attr.name === "alt"));
+          if (!keep) el.removeAttribute(attr.name);
+        });
+      }
+    });
+  };
+  walk(doc.body);
+  return doc.body.innerHTML;
+}
+
+// "Text only": reduce to plain paragraphs, no formatting.
+function cleanToText(html: string): string {
+  if (typeof window === "undefined") return html;
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  doc
+    .querySelectorAll("p,div,br,li,tr,blockquote,h1,h2,h3,h4,h5,h6")
+    .forEach((el) => el.appendChild(doc.createTextNode("\n")));
+  const text = doc.body.textContent || "";
+  const lines = text.split(/\n+/).map((l) => l.trim()).filter(Boolean);
+  return lines.length ? lines.map((l) => `<p>${escapeHtml(l)}</p>`).join("") : "";
+}
+
 export default function TiptapEditor({
   value,
   onChange,
@@ -141,6 +198,13 @@ export default function TiptapEditor({
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDictationOpen, setIsDictationOpen] = useState(false);
+  // Word-style paste mode. A ref mirrors it so the (statically-configured)
+  // editorProps paste handler always reads the current value.
+  const [pasteMode, setPasteMode] = useState<PasteMode>("source");
+  const pasteModeRef = useRef<PasteMode>("source");
+  useEffect(() => {
+    pasteModeRef.current = pasteMode;
+  }, [pasteMode]);
   const { t } = useTranslation();
 
   const editor = useEditor({
@@ -249,6 +313,14 @@ export default function TiptapEditor({
         });
 
         return true;
+      },
+      // Word-style paste: transform incoming HTML per the selected mode.
+      // (Runs after handlePaste; image pastes are handled above and skip this.)
+      transformPastedHTML: (html) => {
+        const mode = pasteModeRef.current;
+        if (mode === "source") return html;
+        if (mode === "text") return cleanToText(html);
+        return cleanToDestination(html);
       },
       handleDrop: (view, event) => {
         const files = Array.from(event.dataTransfer?.files || []);
@@ -518,6 +590,44 @@ export default function TiptapEditor({
                 isActive={editor.isActive("heading", { level: 3 })}
                 icon={Heading3}
                 label="Heading 3"
+              />
+            </Dropdown>
+          </div>
+
+          {/* Paste mode (Word-style): controls how pasted content is formatted */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "paste"}
+              onToggle={() =>
+                setOpenDropdown(openDropdown === "paste" ? null : "paste")
+              }
+              trigger={
+                <div
+                  className="flex items-center gap-1 px-2 py-1.5 rounded-md hover:bg-gray-100 text-sm font-medium text-gray-700"
+                  title={t("editor.paste.title")}
+                >
+                  <ClipboardPaste className="w-4 h-4" />
+                  <ChevronDown className="w-3 h-3" />
+                </div>
+              }
+            >
+              <DropdownItem
+                onClick={() => setPasteMode("source")}
+                isActive={pasteMode === "source"}
+                icon={ClipboardPaste}
+                label={t("editor.paste.source")}
+              />
+              <DropdownItem
+                onClick={() => setPasteMode("match")}
+                isActive={pasteMode === "match"}
+                icon={Type}
+                label={t("editor.paste.match")}
+              />
+              <DropdownItem
+                onClick={() => setPasteMode("text")}
+                isActive={pasteMode === "text"}
+                icon={Pilcrow}
+                label={t("editor.paste.text")}
               />
             </Dropdown>
           </div>
