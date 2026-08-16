@@ -30,6 +30,8 @@ import { clientUpload, isImageFile } from "@/lib/upload/client-upload";
 import { FontSize } from "./extensions/FontSize";
 import { LineHeight } from "./extensions/LineHeight";
 import { Indent } from "./extensions/Indent";
+import { Mathematics } from "@tiptap/extension-mathematics";
+import "katex/dist/katex.min.css";
 import { TiptapEditorProps } from "@/types/Editor/editor";
 import { DictationModal } from "@/components/Dictation";
 import { useTranslation } from "@/contexts/Translation/translation.context";
@@ -65,6 +67,7 @@ import {
   Type,
   Mic,
   ClipboardPaste,
+  Sigma,
 } from "lucide-react";
 
 import type {
@@ -196,6 +199,8 @@ export default function TiptapEditor({
   const batchInputRef = useRef<HTMLInputElement>(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [formulaLatex, setFormulaLatex] = useState("");
+  const [isFormulaModalOpen, setIsFormulaModalOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
   const [isDictationOpen, setIsDictationOpen] = useState(false);
   // Word-style paste mode. A ref mirrors it so the (statically-configured)
@@ -244,6 +249,9 @@ export default function TiptapEditor({
       LineHeight,
       Indent,
       Youtube.configure({ controls: true, nocookie: true, modestBranding: true }),
+      // Math formulas via KaTeX. Inline with $…$, block with $$…$$, or the
+      // Insert → Formula button. Renders live in the editor and in RichContent.
+      Mathematics.configure({ katexOptions: { throwOnError: false } }),
     ],
     content: value || "",
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -871,6 +879,11 @@ export default function TiptapEditor({
                 icon={YoutubeIcon}
                 label="YouTube Video"
               />
+              <DropdownItem
+                onClick={() => { setFormulaLatex(""); setIsFormulaModalOpen(true); setOpenDropdown(null); }}
+                icon={Sigma}
+                label={t("editor.formula.insert")}
+              />
             </Dropdown>
           </div>
 
@@ -1046,6 +1059,54 @@ export default function TiptapEditor({
                 className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
               >
                 Add Video
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Formula (LaTeX) Modal */}
+      {isFormulaModalOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              {t("editor.formula.title")}
+            </h3>
+            <p className="text-xs text-gray-500 mb-3">{t("editor.formula.hint")}</p>
+            <textarea
+              value={formulaLatex}
+              onChange={(e) => setFormulaLatex(e.target.value)}
+              placeholder="E = mc^2"
+              dir="ltr"
+              rows={3}
+              className="w-full p-3 border border-gray-200 rounded-lg mb-4 font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <div className="flex justify-end gap-2 flex-wrap">
+              <button
+                onClick={() => setIsFormulaModalOpen(false)}
+                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                {t("editor.formula.cancel")}
+              </button>
+              <button
+                onClick={() => {
+                  const latex = formulaLatex.trim();
+                  if (latex) editor.chain().focus().insertInlineMath({ latex }).run();
+                  setIsFormulaModalOpen(false);
+                }}
+                className="px-4 py-2 rounded-lg border border-blue-600 text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                {t("editor.formula.inline")}
+              </button>
+              <button
+                onClick={() => {
+                  const latex = formulaLatex.trim();
+                  if (latex) editor.chain().focus().insertBlockMath({ latex }).run();
+                  setIsFormulaModalOpen(false);
+                }}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                {t("editor.formula.block")}
               </button>
             </div>
           </div>

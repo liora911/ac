@@ -148,6 +148,14 @@
       "source": "Keep source formatting",
       "match": "Match destination formatting",
       "text": "Text only"
+    },
+    "formula": {
+      "insert": "Formula",
+      "title": "Insert a formula (LaTeX)",
+      "hint": "Type LaTeX, e.g. E = mc^2 or \\frac{a}{b}. Tip: you can also type $…$ inline or $$…$$ for a block directly in the text.",
+      "inline": "Insert inline",
+      "block": "Insert block",
+      "cancel": "Cancel"
     }
   },
   "adminWidgets": {

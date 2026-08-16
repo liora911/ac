@@ -1,18 +1,45 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 import type { RichContentProps } from "@/types/Components/components";
 
 export default function RichContent({
   content,
   className = "",
 }: RichContentProps) {
+  const bodyRef = useRef<HTMLDivElement>(null);
+
+  // Render any math nodes (stored as data-latex by the editor) with KaTeX so
+  // published articles show real formulas, not raw markup.
+  useEffect(() => {
+    const root = bodyRef.current;
+    if (!root) return;
+    root
+      .querySelectorAll<HTMLElement>(
+        '[data-type="inline-math"],[data-type="block-math"]'
+      )
+      .forEach((el) => {
+        const latex = el.getAttribute("data-latex") ?? el.textContent ?? "";
+        const isBlock = el.getAttribute("data-type") === "block-math";
+        try {
+          katex.render(latex, el, {
+            throwOnError: false,
+            displayMode: isBlock,
+          });
+        } catch {
+          // leave the raw latex in place if rendering fails
+        }
+      });
+  }, [content]);
+
   if (!content) return null;
 
   // Content is already sanitized when saved to database, so we can render it directly
   return (
     <div className={`rich-content ${className}`}>
-      <div dangerouslySetInnerHTML={{ __html: content }} />
+      <div ref={bodyRef} dangerouslySetInnerHTML={{ __html: content }} />
       <style jsx global>{`
         .rich-content {
           color: inherit;
