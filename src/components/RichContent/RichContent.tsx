@@ -23,6 +23,12 @@ export default function RichContent({
       .forEach((el) => {
         const latex = el.getAttribute("data-latex") ?? el.textContent ?? "";
         const isBlock = el.getAttribute("data-type") === "block-math";
+        // Math is always left-to-right, even inside an RTL (Hebrew) article —
+        // otherwise the bidi algorithm reverses the whole formula.
+        el.setAttribute("dir", "ltr");
+        el.style.direction = "ltr";
+        el.style.unicodeBidi = "isolate";
+        if (isBlock) el.style.display = "block";
         try {
           katex.render(latex, el, {
             throwOnError: false,

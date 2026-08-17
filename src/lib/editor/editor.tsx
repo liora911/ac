@@ -69,6 +69,7 @@ import {
   ClipboardPaste,
   Sigma,
   HelpCircle,
+  FileUp,
 } from "lucide-react";
 
 import type {
@@ -262,6 +263,8 @@ export default function TiptapEditor({
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [batchUploading, setBatchUploading] = useState(false);
   const batchInputRef = useRef<HTMLInputElement>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [formulaLatex, setFormulaLatex] = useState("");
@@ -579,6 +582,66 @@ export default function TiptapEditor({
     setBatchUploading(false);
     setIsImageModalOpen(false);
     if (failures > 0) alert(`${failures} image(s) failed to upload.`);
+  };
+
+  // Import a whole HTML file: upload its embedded (base64) images to Blob,
+  // keep http(s) images, drop unreachable ones, render LaTeX, and insert it.
+  const dataUriToFile = (dataUri: string): File | null => {
+    const match = dataUri.match(/^data:(.+?);base64,(.*)$/);
+    if (!match) return null;
+    try {
+      const mime = match[1];
+      const bin = atob(match[2]);
+      const arr = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
+      const ext = mime.split("/")[1]?.split("+")[0] || "png";
+      return new File(
+        [arr],
+        `import-${Date.now()}-${Math.floor(Math.random() * 1e6)}.${ext}`,
+        { type: mime }
+      );
+    } catch {
+      return null;
+    }
+  };
+
+  const handleImportFile = async (files: FileList | null) => {
+    const file = files?.[0];
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const doc = new DOMParser().parseFromString(text, "text/html");
+      const imgs = Array.from(doc.querySelectorAll("img"));
+      let dropped = 0;
+      for (const img of imgs) {
+        const src = img.getAttribute("src") || "";
+        if (src.startsWith("data:")) {
+          const f = dataUriToFile(src);
+          const result = f ? await clientUpload(f) : null;
+          if (result?.success) img.setAttribute("src", result.url);
+          else {
+            img.remove();
+            dropped++;
+          }
+        } else if (!/^https?:\/\//i.test(src)) {
+          // relative path or file:// — the browser can't reach it
+          img.remove();
+          dropped++;
+        }
+        // http(s) URLs are left as-is (they load directly)
+      }
+      const html = convertLatexDelimiters(doc.body.innerHTML);
+      editor.chain().focus().insertContent(html).run();
+      if (dropped > 0) {
+        alert(t("editor.import.droppedImages").replace("{count}", String(dropped)));
+      }
+    } catch {
+      alert(t("editor.import.error"));
+    } finally {
+      setImporting(false);
+      if (importInputRef.current) importInputRef.current.value = "";
+    }
   };
 
   const addTable = () => {
@@ -980,6 +1043,11 @@ export default function TiptapEditor({
                 icon={Sigma}
                 label={t("editor.formula.insert")}
               />
+              <DropdownItem
+                onClick={() => { importInputRef.current?.click(); setOpenDropdown(null); }}
+                icon={FileUp}
+                label={t("editor.import.insert")}
+              />
             </Dropdown>
           </div>
 
@@ -1209,8 +1277,25 @@ export default function TiptapEditor({
         </div>
       )}
 
+      {/* Hidden file input for "Import HTML file" (Insert menu) */}
+      <input
+        ref={importInputRef}
+        type="file"
+        accept=".html,.htm,text/html"
+        className="hidden"
+        onChange={(e) => handleImportFile(e.target.files)}
+      />
+
       {/* Editor Content - Scrollable area */}
-      <div className="flex-1 overflow-y-auto min-h-[300px] max-h-[500px]">
+      <div className="flex-1 overflow-y-auto min-h-[300px] max-h-[500px] relative">
+        {importing && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 dark:bg-gray-900/70">
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+              <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-blue-500 border-t-transparent" />
+              {t("editor.import.working")}
+            </div>
+          </div>
+        )}
         <EditorContent
           editor={editor}
           className="focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-inset"
@@ -1229,6 +1314,15 @@ export default function TiptapEditor({
       <style jsx global>{`
         .ProseMirror {
           outline: none;
+        }
+        /* Math is always LTR, even inside RTL (Hebrew) content — otherwise the
+           bidi algorithm reverses the formula. */
+        .ProseMirror [data-type="inline-math"],
+        .ProseMirror [data-type="block-math"],
+        .ProseMirror .katex,
+        .ProseMirror .katex-display {
+          direction: ltr;
+          unicode-bidi: isolate;
         }
         .ProseMirror p {
           margin: 0.5em 0;
