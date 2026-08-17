@@ -156,6 +156,11 @@
       "inline": "Insert inline",
       "block": "Insert block",
       "cancel": "Cancel"
+    },
+    "help": {
+      "title": "Pasting tips",
+      "latex": "Formulas: paste LaTeX between $…$ (inline) or $$…$$ (block); \\(…\\) and \\[…\\] also work. In Word, first convert equations to LaTeX (Equation ▸ Conversions ▸ LaTeX), then copy.",
+      "images": "Images copied from Word won't paste — the browser can't read local files. Paste via Google Docs instead, or add images with Insert ▸ Image."
     }
   },
   "adminWidgets": {

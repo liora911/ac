@@ -68,6 +68,7 @@ import {
   Mic,
   ClipboardPaste,
   Sigma,
+  HelpCircle,
 } from "lucide-react";
 
 import type {
@@ -179,6 +180,70 @@ function cleanToText(html: string): string {
   return lines.length ? lines.map((l) => `<p>${escapeHtml(l)}</p>`).join("") : "";
 }
 
+// Matches LaTeX math delimiters: $$…$$ and \[…\] (block), $…$ and \(…\) (inline).
+const MATH_TOKEN_RE =
+  /\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]|\$([^$\n]+?)\$|\\\(([\s\S]+?)\\\)/g;
+
+function mathElement(doc: Document, latex: string, block: boolean): HTMLElement {
+  const el = doc.createElement(block ? "div" : "span");
+  el.setAttribute("data-type", block ? "block-math" : "inline-math");
+  el.setAttribute("data-latex", latex.trim());
+  return el;
+}
+
+// Turn LaTeX-delimited text ($…$, $$…$$, \(…\), \[…\]) into the math-node HTML
+// the Mathematics extension understands, so pasted/loaded LaTeX renders as real
+// formulas. Skips code/pre and already-converted math nodes; idempotent.
+function convertLatexDelimiters(html: string): string {
+  if (typeof window === "undefined" || !html) return html;
+  if (!/\$|\\\(|\\\[/.test(html)) return html; // nothing to do
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const SKIP = new Set(["CODE", "PRE", "SCRIPT", "STYLE"]);
+  const textNodes: Text[] = [];
+  const collect = (node: Node) => {
+    node.childNodes.forEach((child) => {
+      if (child.nodeType === 3) {
+        textNodes.push(child as Text);
+      } else if (child.nodeType === 1) {
+        const el = child as HTMLElement;
+        const dt = el.getAttribute("data-type");
+        if (SKIP.has(el.tagName) || dt === "inline-math" || dt === "block-math") {
+          return;
+        }
+        collect(el);
+      }
+    });
+  };
+  collect(doc.body);
+
+  for (const textNode of textNodes) {
+    const text = textNode.nodeValue || "";
+    MATH_TOKEN_RE.lastIndex = 0;
+    if (!MATH_TOKEN_RE.test(text)) continue;
+    MATH_TOKEN_RE.lastIndex = 0;
+    const frag = doc.createDocumentFragment();
+    let last = 0;
+    let m: RegExpExecArray | null;
+    while ((m = MATH_TOKEN_RE.exec(text)) !== null) {
+      const [full, blk1, blk2, inl1, inl2] = m;
+      if (m.index > last) {
+        frag.appendChild(doc.createTextNode(text.slice(last, m.index)));
+      }
+      const isBlock = blk1 !== undefined || blk2 !== undefined;
+      const latex = (blk1 ?? blk2 ?? inl1 ?? inl2 ?? "").trim();
+      frag.appendChild(
+        latex ? mathElement(doc, latex, isBlock) : doc.createTextNode(full)
+      );
+      last = m.index + full.length;
+    }
+    if (last < text.length) {
+      frag.appendChild(doc.createTextNode(text.slice(last)));
+    }
+    textNode.parentNode?.replaceChild(frag, textNode);
+  }
+  return doc.body.innerHTML;
+}
+
 export default function TiptapEditor({
   value,
   onChange,
@@ -253,7 +318,7 @@ export default function TiptapEditor({
       // Insert → Formula button. Renders live in the editor and in RichContent.
       Mathematics.configure({ katexOptions: { throwOnError: false } }),
     ],
-    content: value || "",
+    content: value ? convertLatexDelimiters(value) : "",
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
@@ -326,9 +391,14 @@ export default function TiptapEditor({
       // (Runs after handlePaste; image pastes are handled above and skip this.)
       transformPastedHTML: (html) => {
         const mode = pasteModeRef.current;
-        if (mode === "source") return html;
-        if (mode === "text") return cleanToText(html);
-        return cleanToDestination(html);
+        const cleaned =
+          mode === "source"
+            ? html
+            : mode === "text"
+            ? cleanToText(html)
+            : cleanToDestination(html);
+        // Render any LaTeX ($…$, $$…$$, \(…\), \[…\]) in the paste as formulas
+        return convertLatexDelimiters(cleaned);
       },
       handleDrop: (view, event) => {
         const files = Array.from(event.dataTransfer?.files || []);
@@ -637,6 +707,32 @@ export default function TiptapEditor({
                 icon={Pilcrow}
                 label={t("editor.paste.text")}
               />
+            </Dropdown>
+          </div>
+
+          {/* Help: pasting formulas & images */}
+          <div className="px-1">
+            <Dropdown
+              isOpen={openDropdown === "help"}
+              onToggle={() =>
+                setOpenDropdown(openDropdown === "help" ? null : "help")
+              }
+              trigger={
+                <div
+                  className="flex items-center px-2 py-1.5 rounded-md hover:bg-gray-100 text-gray-500"
+                  title={t("editor.help.title")}
+                >
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+              }
+            >
+              <div className="p-3 w-72 text-xs leading-relaxed text-gray-600 space-y-2">
+                <p className="font-semibold text-gray-800">
+                  {t("editor.help.title")}
+                </p>
+                <p>{t("editor.help.latex")}</p>
+                <p>{t("editor.help.images")}</p>
+              </div>
             </Dropdown>
           </div>
 
