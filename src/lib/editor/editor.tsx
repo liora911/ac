@@ -3,7 +3,6 @@
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
-import Underline from "@tiptap/extension-underline";
 import Placeholder from "@tiptap/extension-placeholder";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
@@ -14,14 +13,8 @@ import { TableCell } from "@tiptap/extension-table-cell";
 import { TextStyle } from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import Highlight from "@tiptap/extension-highlight";
-import ListItem from "@tiptap/extension-list-item";
-import BulletList from "@tiptap/extension-bullet-list";
-import OrderedList from "@tiptap/extension-ordered-list";
 import TaskList from "@tiptap/extension-task-list";
 import TaskItem from "@tiptap/extension-task-item";
-import CodeBlock from "@tiptap/extension-code-block";
-import Blockquote from "@tiptap/extension-blockquote";
-import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Youtube from "@tiptap/extension-youtube";
 import { useEffect, useState, useRef } from "react";
 import { TextDirection } from "./text-direction";
@@ -283,12 +276,16 @@ export default function TiptapEditor({
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
+      // StarterKit v3 already bundles underline, link, lists, listItem,
+      // codeBlock, blockquote and horizontalRule — so we do NOT add those
+      // again (that caused "Duplicate extension names" and flaky commands).
+      // We only disable link here to use our own styled Link below.
       StarterKit.configure({
         bulletList: { keepMarks: true, keepAttributes: false },
         orderedList: { keepMarks: true, keepAttributes: false },
+        link: false,
       }),
       TextAlign.configure({ types: ["heading", "paragraph"] }),
-      Underline,
       Placeholder.configure({ placeholder }),
       Link.configure({
         openOnClick: false,
@@ -304,14 +301,8 @@ export default function TiptapEditor({
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
-      BulletList,
-      OrderedList,
-      ListItem,
       TaskList,
       TaskItem.configure({ nested: true }),
-      CodeBlock,
-      Blockquote,
-      HorizontalRule,
       TextDirection.configure({ types: ["heading", "paragraph", "listItem"] }),
       FontSize,
       LineHeight,
@@ -321,7 +312,10 @@ export default function TiptapEditor({
       // Insert → Formula button. Renders live in the editor and in RichContent.
       Mathematics.configure({ katexOptions: { throwOnError: false } }),
     ],
-    content: value ? convertLatexDelimiters(value) : "",
+    // Do NOT convert on load — that would silently turn a stray "$…$" in an
+    // existing article into a (possibly broken) formula. Conversion happens
+    // only on explicit paste/import; typed $…$ is handled live by Mathematics.
+    content: value || "",
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
     editorProps: {
       attributes: {
