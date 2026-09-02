@@ -45,19 +45,23 @@ export const TextDirection = Extension.create<TextDirectionOptions>({
 
   addCommands() {
     return {
+      // Apply to EVERY configured type in the selection — not `.every()`,
+      // which short-circuits on the first type that doesn't match the current
+      // node (e.g. "heading" when you're in a paragraph) and silently does
+      // nothing. `.map` runs them all; succeed if any node was updated.
       setTextDirection:
         (direction) =>
         ({ commands }) => {
-          return this.options.types.every((type) =>
-            commands.updateAttributes(type, { dir: direction })
-          );
+          return this.options.types
+            .map((type) => commands.updateAttributes(type, { dir: direction }))
+            .some(Boolean);
         },
       unsetTextDirection:
         () =>
         ({ commands }) => {
-          return this.options.types.every((type) =>
-            commands.updateAttributes(type, { dir: null })
-          );
+          return this.options.types
+            .map((type) => commands.updateAttributes(type, { dir: null }))
+            .some(Boolean);
         },
     };
   },
