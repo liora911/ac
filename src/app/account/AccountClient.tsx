@@ -806,7 +806,7 @@ function AccountContent({
               <div className="px-5 pb-5">
                 {/* Avatar */}
                 <div className="-mt-8 mb-3">
-                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white text-lg font-bold shadow-lg border-3 border-white dark:border-gray-900`}>
+                  <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${avatarColor} flex items-center justify-center text-white text-lg font-bold shadow-lg border-[3px] border-white dark:border-gray-900`}>
                     {initials}
                   </div>
                 </div>
@@ -915,8 +915,8 @@ function AccountContent({
           </div>
 
           {/* ── Right Content Area ── */}
-          <div className="flex-1 min-w-0">
-            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-6">
+          <div className="w-full flex-1 min-w-0">
+            <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm p-4 sm:p-6">
               {tabContent[activeTab]()}
             </div>
           </div>

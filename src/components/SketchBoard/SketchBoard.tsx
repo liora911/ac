@@ -60,11 +60,33 @@ import {
   RotateCw,
   RotateCcw,
   GripHorizontal,
+  Cog,
+  Gauge,
+  Flame,
+  Droplets,
+  Radiation,
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import { createPortal } from "react-dom";
 import {
   EQUATION_CATEGORIES,
   TOTAL_EQUATIONS,
 } from "./equations";
+
+// Icon per equation category — the archive dialog shows these as collapsible
+// group headers so it isn't one long scroll.
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  mechanics: Cog,
+  gravitation: OrbitIcon,
+  em: Zap,
+  quantum: AtomIcon,
+  relativity: Gauge,
+  thermo: Flame,
+  waves: Waves,
+  fluids: Droplets,
+  nuclear: Radiation,
+  math: CalculatorIcon,
+};
 
 // Fixed logical width — the canvas scales responsively via CSS, so
 // coordinates stay stable no matter the screen size. Height is extendable
@@ -1343,6 +1365,7 @@ export default function SketchBoard() {
   const [showGraphModal, setShowGraphModal] = useState(false);
   const [showEqDialog, setShowEqDialog] = useState(false);
   const [eqSearch, setEqSearch] = useState("");
+  const [openCategory, setOpenCategory] = useState<string | null>(null);
   const [showAtomDialog, setShowAtomDialog] = useState(false);
   const [atomSearch, setAtomSearch] = useState("");
   const [graphExpr, setGraphExpr] = useState("sin(x)");
@@ -1859,78 +1882,121 @@ export default function SketchBoard() {
       />
 
       {/* Equation archive dialog */}
-      {showEqDialog && (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
-          <div
-            className="absolute inset-0 bg-black/60"
-            onClick={() => setShowEqDialog(false)}
-            aria-hidden="true"
-          />
-          <div
-            className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="p-5 pb-3 border-b border-gray-100 dark:border-gray-700">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
-                <Sigma className="w-5 h-5 text-blue-500" />
-                {t("sketchBoard.equationsTitle")}
-                <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
-                  ({TOTAL_EQUATIONS})
-                </span>
-              </h3>
-              <input
-                type="text"
-                value={eqSearch}
-                onChange={(e) => setEqSearch(e.target.value)}
-                placeholder={t("sketchBoard.equationsSearch")}
-                dir="auto"
-                autoFocus
-                className="mt-3 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-            <div className="flex-1 overflow-y-auto p-3">
-              {EQUATION_CATEGORIES.map((cat) => {
-                const q = eqSearch.trim().toLowerCase();
-                const items = q
-                  ? cat.equations.filter(
-                      (eq) =>
-                        eq.formula.toLowerCase().includes(q) ||
-                        eq.nameEn.toLowerCase().includes(q) ||
-                        eq.nameHe.includes(eqSearch.trim())
-                    )
-                  : cat.equations;
-                if (items.length === 0) return null;
-                return (
-                  <div key={cat.key} className="mb-3">
-                    <div className="px-2 py-1 text-xs font-bold uppercase tracking-wide text-blue-600 dark:text-blue-400">
-                      {locale === "he" ? cat.labelHe : cat.labelEn}
-                    </div>
-                    {items.map((eq) => (
+      {showEqDialog &&
+        createPortal(
+          <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/60"
+              onClick={() => setShowEqDialog(false)}
+              aria-hidden="true"
+            />
+            <div
+              className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-2xl bg-white dark:bg-gray-800 shadow-2xl overflow-hidden"
+              role="dialog"
+              aria-modal="true"
+            >
+              <div className="p-5 pb-3 border-b border-gray-100 dark:border-gray-700">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="flex items-center gap-2 text-lg font-bold text-gray-900 dark:text-white">
+                    <Sigma className="w-5 h-5 text-blue-500" />
+                    {t("sketchBoard.equationsTitle")}
+                    <span className="text-xs font-normal text-gray-400 dark:text-gray-500">
+                      ({TOTAL_EQUATIONS})
+                    </span>
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowEqDialog(false)}
+                    aria-label={t("dictation.close")}
+                    className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200 transition-colors cursor-pointer flex-shrink-0"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  value={eqSearch}
+                  onChange={(e) => setEqSearch(e.target.value)}
+                  placeholder={t("sketchBoard.equationsSearch")}
+                  dir="auto"
+                  autoFocus
+                  className="mt-3 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex-1 overflow-y-auto p-3">
+                {EQUATION_CATEGORIES.map((cat) => {
+                  const q = eqSearch.trim().toLowerCase();
+                  const searching = q.length > 0;
+                  const items = searching
+                    ? cat.equations.filter(
+                        (eq) =>
+                          eq.formula.toLowerCase().includes(q) ||
+                          eq.nameEn.toLowerCase().includes(q) ||
+                          eq.nameHe.includes(eqSearch.trim())
+                      )
+                    : cat.equations;
+                  if (searching && items.length === 0) return null;
+                  const Icon = CATEGORY_ICONS[cat.key] ?? Sigma;
+                  const expanded = searching || openCategory === cat.key;
+                  return (
+                    <div key={cat.key} className="mb-1">
                       <button
-                        key={eq.formula}
                         type="button"
-                        onClick={() => insertEquation(eq.formula)}
-                        className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-start hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                        onClick={() =>
+                          !searching &&
+                          setOpenCategory(
+                            openCategory === cat.key ? null : cat.key
+                          )
+                        }
+                        className="w-full flex items-center gap-2.5 px-2 py-2.5 rounded-lg text-start hover:bg-gray-100 dark:hover:bg-gray-700/60 transition-colors cursor-pointer"
                       >
-                        <span
-                          dir="ltr"
-                          className="font-mono text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap overflow-x-auto"
-                        >
-                          {eq.formula}
+                        <span className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex-shrink-0">
+                          <Icon className="w-4 h-4" />
                         </span>
-                        <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 max-w-[40%] truncate">
-                          {locale === "he" ? eq.nameHe : eq.nameEn}
+                        <span className="flex-1 text-sm font-semibold text-gray-900 dark:text-white">
+                          {locale === "he" ? cat.labelHe : cat.labelEn}
                         </span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 tabular-nums">
+                          {items.length}
+                        </span>
+                        {!searching && (
+                          <ChevronDown
+                            className={`w-4 h-4 text-gray-400 transition-transform ${
+                              expanded ? "rotate-180" : ""
+                            }`}
+                          />
+                        )}
                       </button>
-                    ))}
-                  </div>
-                );
-              })}
+                      {expanded && (
+                        <div className="mt-0.5 ms-3 ps-2 border-s border-gray-100 dark:border-gray-700">
+                          {items.map((eq) => (
+                            <button
+                              key={eq.formula}
+                              type="button"
+                              onClick={() => insertEquation(eq.formula)}
+                              className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded-lg text-start hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors cursor-pointer"
+                            >
+                              <span
+                                dir="ltr"
+                                className="font-mono text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap overflow-x-auto"
+                              >
+                                {eq.formula}
+                              </span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400 flex-shrink-0 max-w-[40%] truncate">
+                                {locale === "he" ? eq.nameHe : eq.nameEn}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </div>,
+          document.body
+        )}
 
       {/* Bohr atom picker */}
       {showAtomDialog && (
