@@ -65,11 +65,13 @@ import {
   Flame,
   Droplets,
   Radiation,
+  User,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { createPortal } from "react-dom";
 import {
   EQUATION_CATEGORIES,
+  PHYSICIST_CATEGORIES,
   TOTAL_EQUATIONS,
 } from "./equations";
 
@@ -1366,6 +1368,7 @@ export default function SketchBoard() {
   const [showEqDialog, setShowEqDialog] = useState(false);
   const [eqSearch, setEqSearch] = useState("");
   const [openCategory, setOpenCategory] = useState<string | null>(null);
+  const [eqMode, setEqMode] = useState<"topic" | "physicist">("topic");
   const [showAtomDialog, setShowAtomDialog] = useState(false);
   const [atomSearch, setAtomSearch] = useState("");
   const [graphExpr, setGraphExpr] = useState("sin(x)");
@@ -1922,9 +1925,36 @@ export default function SketchBoard() {
                   autoFocus
                   className="mt-3 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
+                {/* Group-by toggle: topic vs. physicist */}
+                <div className="mt-3 inline-flex rounded-lg bg-gray-100 dark:bg-gray-700/60 p-0.5">
+                  {(["topic", "physicist"] as const).map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => {
+                        setEqMode(mode);
+                        setOpenCategory(null);
+                      }}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer ${
+                        eqMode === mode
+                          ? "bg-white dark:bg-gray-800 text-blue-600 dark:text-blue-400 shadow-sm"
+                          : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                      }`}
+                    >
+                      {t(
+                        mode === "topic"
+                          ? "sketchBoard.byTopic"
+                          : "sketchBoard.byPhysicist"
+                      )}
+                    </button>
+                  ))}
+                </div>
               </div>
               <div className="flex-1 overflow-y-auto p-3">
-                {EQUATION_CATEGORIES.map((cat) => {
+                {(eqMode === "topic"
+                  ? EQUATION_CATEGORIES
+                  : PHYSICIST_CATEGORIES
+                ).map((cat) => {
                   const q = eqSearch.trim().toLowerCase();
                   const searching = q.length > 0;
                   const items = searching
@@ -1936,7 +1966,9 @@ export default function SketchBoard() {
                       )
                     : cat.equations;
                   if (searching && items.length === 0) return null;
-                  const Icon = CATEGORY_ICONS[cat.key] ?? Sigma;
+                  const Icon =
+                    CATEGORY_ICONS[cat.key] ??
+                    (eqMode === "physicist" ? User : Sigma);
                   const expanded = searching || openCategory === cat.key;
                   return (
                     <div key={cat.key} className="mb-1">

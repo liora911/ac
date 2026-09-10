@@ -94,6 +94,8 @@
     "equations": "Equations",
     "equationsTitle": "Equation Archive",
     "equationsSearch": "Search equations — e.g. Maxwell, entropy, E=mc...",
+    "byTopic": "By topic",
+    "byPhysicist": "By physicist",
     "atom": "Atom",
     "atomTitle": "Bohr Atom Model",
     "atomHint": "Pick an element and its Bohr diagram is drawn automatically",
