@@ -292,7 +292,7 @@
     "emailHint": "Private — visible only to admins, never shown on the site",
     "ownerEmailLabel": "Owner login (email)",
     "ownerEmailPlaceholder": "person@example.com",
-    "ownerEmailHint": "Let this person edit their own page. Must match the email they sign in with (they must have signed in at least once). Leave empty for none.",
+    "ownerEmailHint": "Let this person edit their own page. Enter the email they sign in with — they can edit once logged in (now or later). Leave empty for none.",
     "publishedLabel": "Published",
     "featuredLabel": "Featured",
     "direction": "Text Direction",

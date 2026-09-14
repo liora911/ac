@@ -54,7 +54,6 @@ model User {
   createdAt        DateTime       @default(now())
   accounts         Account[]
   sessions         Session[]
-  ownedGuests      Guest[]        @relation("GuestOwner")
   articles         Article[]
   events           Event[]
   lectures         Lecture[]
@@ -223,14 +222,17 @@ model Guest {
   published      Boolean  @default(false)
   isFeatured     Boolean  @default(false)
   order          Int      @default(0)
-  // Optional login linked to this profile. The owner may edit their own guest
-  // page (content only) without any admin access. Set by an admin.
+  // Optional login (by email) allowed to edit this profile's content without any
+  // admin access. Matched case-insensitively against the signed-in user's
+  // verified email. Set by an admin; the person need not have signed in yet.
+  ownerEmail     String?
+  // TEMPORARY hotfix column: the currently deployed build (commit 2ebe4f3) still
+  // reads `ownerId`. Keep this until the ownerEmail build is live, then remove
+  // it and run `prisma db push` (code first, then drop the column).
   ownerId        String?
-  owner          User?    @relation("GuestOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  @@index([ownerId])
   @@map("guests")
 }
 

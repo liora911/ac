@@ -23,17 +23,19 @@ const OWNER_EDITABLE = new Set([
   "titleDirection",
 ]);
 
-// Resolve an owner email to a user id. undefined = leave unchanged/blank,
-// null = no matching account (caller reports it).
-async function resolveOwnerId(
-  ownerEmail: unknown
-): Promise<string | null | undefined> {
-  if (typeof ownerEmail !== "string" || !ownerEmail.trim()) return undefined;
-  const user = await prisma.user.findUnique({
-    where: { email: ownerEmail.trim().toLowerCase() },
-    select: { id: true },
-  });
-  return user?.id ?? null;
+// Normalize an owner email for storage/matching. Blank → null (unlink).
+function normalizeOwnerEmail(value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  return value.trim().toLowerCase();
+}
+
+// True if the signed-in user's verified email matches the guest's owner email.
+function emailMatches(
+  sessionEmail: string | null | undefined,
+  ownerEmail: string | null | undefined
+): boolean {
+  if (!sessionEmail || !ownerEmail) return false;
+  return sessionEmail.toLowerCase() === ownerEmail.toLowerCase();
 }
 
 // GET /api/guests/[id] — public detail (id or slug). Unpublished profiles are
@@ -50,14 +52,12 @@ export async function GET(
 
     const guest = await prisma.guest.findFirst({
       where: { OR: [{ id }, { slug: id }] },
-      include: { owner: { select: { email: true } } },
     });
     if (!guest) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 });
     }
 
-    const isOwner =
-      !!session?.user?.id && guest.ownerId === session.user.id;
+    const isOwner = emailMatches(session?.user?.email, guest.ownerEmail);
 
     // Hide unpublished profiles from everyone except managers and the owner
     if (!guest.published && !isManager && !isOwner) {
@@ -65,20 +65,17 @@ export async function GET(
     }
 
     if (isManager) {
-      const { owner, ...rest } = guest;
       return NextResponse.json(
-        { ...rest, ownerEmail: owner?.email ?? null, isOwner, canEdit: true },
+        { ...guest, isOwner, canEdit: true },
         { headers: { "Cache-Control": "no-store" } }
       );
     }
 
-    // Public / owner view — never expose the private contact email, the raw
-    // owner id, or the nested owner record
-    const { owner: _owner, email: _email, ownerId: _ownerId, ...publicGuest } =
-      guest;
-    void _owner;
+    // Public / owner view — never expose the private contact email or the
+    // owner email
+    const { email: _email, ownerEmail: _ownerEmail, ...publicGuest } = guest;
     void _email;
-    void _ownerId;
+    void _ownerEmail;
     return NextResponse.json(
       { ...publicGuest, isOwner, canEdit: isOwner },
       {
@@ -99,7 +96,7 @@ export async function GET(
 }
 
 // PATCH /api/guests/[id] — update. Guests managers may edit everything; a linked
-// owner may edit only their own profile's content fields.
+// owner (matched by verified email) may edit only their own profile's content.
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -113,14 +110,14 @@ export async function PATCH(
     const { id } = await params;
     const existing = await prisma.guest.findFirst({
       where: { OR: [{ id }, { slug: id }] },
-      select: { id: true, ownerId: true },
+      select: { id: true, ownerEmail: true },
     });
     if (!existing) {
       return NextResponse.json({ error: "Guest not found" }, { status: 404 });
     }
 
     const isManager = hasPermission(auth.user, "guests");
-    const isOwner = existing.ownerId === auth.user.id;
+    const isOwner = emailMatches(auth.user.email, existing.ownerEmail);
     if (!isManager && !isOwner) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -178,21 +175,7 @@ export async function PATCH(
       if ("published" in body) data.published = !!body.published;
       if ("isFeatured" in body) data.isFeatured = !!body.isFeatured;
       if ("order" in body) data.order = Number(body.order) || 0;
-      if ("ownerEmail" in body) {
-        const ownerId = await resolveOwnerId(body.ownerEmail);
-        if (
-          ownerId === null &&
-          typeof body.ownerEmail === "string" &&
-          body.ownerEmail.trim()
-        ) {
-          return NextResponse.json(
-            { error: "No user account found with that owner email. Ask them to sign in once first." },
-            { status: 400 }
-          );
-        }
-        // undefined (blank) unlinks; a resolved id links
-        data.ownerId = ownerId ?? null;
-      }
+      if ("ownerEmail" in body) data.ownerEmail = normalizeOwnerEmail(body.ownerEmail);
     }
 
     if (Object.keys(data).length === 0) {

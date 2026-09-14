@@ -17,8 +17,7 @@ export interface Guest {
   createdAt: string;
   updatedAt: string;
   // RBAC / ownership (only present on manager/owner responses)
-  ownerId?: string | null;
-  ownerEmail?: string | null; // linked owner's login email (managers only)
+  ownerEmail?: string | null; // email allowed to self-edit (managers only)
   isOwner?: boolean; // true if the current viewer is the linked owner
   canEdit?: boolean; // true if the current viewer may edit this profile
 }

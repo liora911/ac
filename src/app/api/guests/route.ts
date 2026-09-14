@@ -5,17 +5,10 @@ import { hasPermission } from "@/constants/permissions";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { normalizeExternalUrl } from "@/lib/utils/url";
 
-// Resolve an owner email to a user id. Returns undefined for a blank value
-// (unlink), or null when no account matches (caller decides how to report it).
-async function resolveOwnerId(
-  ownerEmail: unknown
-): Promise<string | null | undefined> {
-  if (typeof ownerEmail !== "string" || !ownerEmail.trim()) return undefined;
-  const user = await prisma.user.findUnique({
-    where: { email: ownerEmail.trim().toLowerCase() },
-    select: { id: true },
-  });
-  return user?.id ?? null;
+// Normalize an owner email for storage/matching. Blank → null (unlink).
+function normalizeOwnerEmail(value: unknown): string | null {
+  if (typeof value !== "string" || !value.trim()) return null;
+  return value.trim().toLowerCase();
 }
 
 // GET /api/guests — public list of published guests (managers see all with ?all=true)
@@ -48,28 +41,17 @@ export async function GET(request: Request) {
         createdAt: true,
         updatedAt: true,
         // Managers get the private email, the full rich-text bio, the gallery,
-        // and the linked owner so the edit form can pre-fill; the public list
-        // stays lean without them. (galleryUrls MUST be here — otherwise the
+        // and the linked owner email so the edit form can pre-fill; the public
+        // list stays lean without them. (galleryUrls MUST be here — otherwise the
         // form seeds an empty gallery and saving overwrites galleryUrls with [].)
         ...(includeUnpublished
-          ? {
-              email: true,
-              bio: true,
-              galleryUrls: true,
-              ownerId: true,
-              owner: { select: { email: true } },
-            }
+          ? { email: true, bio: true, galleryUrls: true, ownerEmail: true }
           : {}),
       },
       orderBy: [{ isFeatured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
     });
 
-    // Flatten the linked owner to a plain email the edit form can show
-    const payload = includeUnpublished
-      ? guests.map(({ owner, ...g }) => ({ ...g, ownerEmail: owner?.email ?? null }))
-      : guests;
-
-    return NextResponse.json(payload, {
+    return NextResponse.json(guests, {
       headers: includeUnpublished
         ? { "Cache-Control": "no-store" }
         : { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
@@ -113,18 +95,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
 
-    // Link an owner account if an email was supplied and matches a user
-    let ownerId: string | null | undefined = undefined;
-    if ("ownerEmail" in body) {
-      ownerId = await resolveOwnerId(ownerEmail);
-      if (ownerId === null && typeof ownerEmail === "string" && ownerEmail.trim()) {
-        return NextResponse.json(
-          { error: "No user account found with that owner email. Ask them to sign in once first." },
-          { status: 400 }
-        );
-      }
-    }
-
     // Slug priority: admin-typed slug → English title → Hebrew name → "guest"
     const slugBase =
       generateSlug(slugInput || "") ||
@@ -149,7 +119,7 @@ export async function POST(request: Request) {
         galleryUrls: Array.isArray(galleryUrls) ? galleryUrls : [],
         websiteUrl: normalizeExternalUrl(websiteUrl),
         email: email || null,
-        ...(ownerId !== undefined ? { ownerId } : {}),
+        ownerEmail: normalizeOwnerEmail(ownerEmail),
         titleDirection,
         published,
         isFeatured,
