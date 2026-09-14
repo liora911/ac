@@ -81,7 +81,11 @@ export default function GuestProfilePage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      <GuestAdminFab guestId={guest.id} />
+      <GuestAdminFab
+        guestId={guest.id}
+        slug={guest.slug}
+        isOwner={!!guest.isOwner}
+      />
       {/* Banner */}
       {guest.bannerImageUrl && (
         <div className="h-48 md:h-64 w-full overflow-hidden">

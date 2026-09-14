@@ -2,6 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
+import { isFullAdmin, hasPermission } from "@/constants/permissions";
 import prisma from "@/lib/prisma/prisma";
 import type { AuthResult, AuthError } from "@/types/Auth/api-auth";
 
@@ -30,7 +31,14 @@ export async function requireAuth(): Promise<AuthResult | AuthError> {
 
   const user = await prisma.user.findUnique({
     where: { email: session.user.email },
-    select: { id: true, email: true, name: true, role: true, image: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      role: true,
+      image: true,
+      permissions: true,
+    },
   });
 
   if (!user) {
@@ -61,10 +69,33 @@ export async function requireAdmin(): Promise<AuthResult | AuthError> {
     return auth;
   }
 
-  const isAdmin = auth.user.email && ALLOWED_EMAILS.includes(auth.user.email.toLowerCase());
-
-  if (!isAdmin) {
+  if (!isFullAdmin(auth.user)) {
     return { error: "Forbidden - Admin access required", status: 403 };
+  }
+
+  return auth;
+}
+
+/**
+ * Require permission to manage a specific section for an API route.
+ * Full admins pass automatically; section managers pass if the section is in
+ * their `permissions`. Returns the session and user, or an error response.
+ *
+ * @example
+ * const auth = await requirePermission("guests");
+ * if ("error" in auth) return NextResponse.json({ error: auth.error }, { status: auth.status });
+ */
+export async function requirePermission(
+  section: string
+): Promise<AuthResult | AuthError> {
+  const auth = await requireAuth();
+
+  if ("error" in auth) {
+    return auth;
+  }
+
+  if (!hasPermission(auth.user, section)) {
+    return { error: "Forbidden - Insufficient permissions", status: 403 };
   }
 
   return auth;

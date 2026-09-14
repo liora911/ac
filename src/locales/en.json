@@ -290,6 +290,9 @@
     "website": "Website URL",
     "emailLabel": "Contact Email",
     "emailHint": "Private — visible only to admins, never shown on the site",
+    "ownerEmailLabel": "Owner login (email)",
+    "ownerEmailPlaceholder": "person@example.com",
+    "ownerEmailHint": "Let this person edit their own page. Must match the email they sign in with (they must have signed in at least once). Leave empty for none.",
     "publishedLabel": "Published",
     "featuredLabel": "Featured",
     "direction": "Text Direction",
@@ -334,6 +337,28 @@
     "errorGeneric": "Something went wrong. Please try again.",
     "nameRequired": "Name is required",
     "titleRequired": "Title is required"
+  },
+  "adminTeam": {
+    "title": "Team & Access",
+    "subtitle": "Add admins and give people access to specific sections — no code needed.",
+    "searchPlaceholder": "Search by name or email...",
+    "empty": "No users found.",
+    "saved": "Access updated",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "fullAdmin": "Full admin",
+    "regularUser": "Regular user",
+    "promoteHint": "Make this person a full admin (access to everything)",
+    "demoteHint": "Remove full admin — keep only the sections ticked below",
+    "adminHasAll": "Full admins can access every section.",
+    "sectionsLabel": "Sections this person can manage:",
+    "adminsOnly": "Only full admins can manage the team."
+  },
+  "guestEdit": {
+    "title": "Edit my page",
+    "subtitle": "Update your profile, biography, photos and gallery.",
+    "signInRequired": "Please sign in to edit your page.",
+    "signIn": "Sign in",
+    "notAllowed": "You don't have permission to edit this page."
   },
   "adminIdeas": {
     "title": "Ideas",
@@ -1645,6 +1670,7 @@
       "ideas": "Ideas",
       "calendar": "Personal Calendar",
       "widgets": "Widgets",
+      "team": "Team & Access",
       "collapseMenu": "Collapse menu",
       "expandMenu": "Expand menu",
       "collapseAllGroups": "Collapse all groups",

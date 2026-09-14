@@ -8,6 +8,7 @@ export interface AuthResult {
     name: string | null;
     role: string;
     image: string | null;
+    permissions: string[];
   };
 }
 

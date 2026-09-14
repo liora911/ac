@@ -47,10 +47,14 @@ model User {
   emailVerified    DateTime?
   image            String?
   role             UserRole       @default(USER)
+  // Section keys a non-superadmin may manage (e.g. ["guests"]). Empty = no admin
+  // sections. Ignored for ADMINs, who implicitly have every section.
+  permissions      String[]       @default([])
   stripeCustomerId String?        @unique
   createdAt        DateTime       @default(now())
   accounts         Account[]
   sessions         Session[]
+  ownedGuests      Guest[]        @relation("GuestOwner")
   articles         Article[]
   events           Event[]
   lectures         Lecture[]
@@ -219,9 +223,14 @@ model Guest {
   published      Boolean  @default(false)
   isFeatured     Boolean  @default(false)
   order          Int      @default(0)
+  // Optional login linked to this profile. The owner may edit their own guest
+  // page (content only) without any admin access. Set by an admin.
+  ownerId        String?
+  owner          User?    @relation("GuestOwner", fields: [ownerId], references: [id], onDelete: SetNull)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
+  @@index([ownerId])
   @@map("guests")
 }
 

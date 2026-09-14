@@ -16,6 +16,11 @@ export interface Guest {
   order: number;
   createdAt: string;
   updatedAt: string;
+  // RBAC / ownership (only present on manager/owner responses)
+  ownerId?: string | null;
+  ownerEmail?: string | null; // linked owner's login email (managers only)
+  isOwner?: boolean; // true if the current viewer is the linked owner
+  canEdit?: boolean; // true if the current viewer may edit this profile
 }
 
 export interface CreateGuestInput {
@@ -32,4 +37,5 @@ export interface CreateGuestInput {
   titleDirection?: string;
   published?: boolean;
   isFeatured?: boolean;
+  ownerEmail?: string | null; // link/unlink an owner login by email
 }

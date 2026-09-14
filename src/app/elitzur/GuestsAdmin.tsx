@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
+import { isFullAdmin } from "@/constants/permissions";
 import { useNotification } from "@/contexts/NotificationContext";
 import {
   useGuests,
@@ -179,6 +181,7 @@ function GuestForm({
   );
   const [websiteUrl, setWebsiteUrl] = useState(guest?.websiteUrl ?? "");
   const [email, setEmail] = useState(guest?.email ?? "");
+  const [ownerEmail, setOwnerEmail] = useState(guest?.ownerEmail ?? "");
   const [titleDirection, setTitleDirection] = useState(
     guest?.titleDirection ?? "rtl"
   );
@@ -207,6 +210,7 @@ function GuestForm({
       galleryUrls,
       websiteUrl,
       email,
+      ownerEmail,
       titleDirection,
       published,
     };
@@ -312,6 +316,22 @@ function GuestForm({
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+              {t("adminGuests.ownerEmailLabel")}
+            </label>
+            <input
+              type="email"
+              value={ownerEmail}
+              onChange={(e) => setOwnerEmail(e.target.value)}
+              className={inputCls}
+              dir="ltr"
+              placeholder={t("adminGuests.ownerEmailPlaceholder")}
+            />
+            <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+              {t("adminGuests.ownerEmailHint")}
+            </p>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
               {t("adminGuests.direction")}
             </label>
             <select
@@ -408,6 +428,8 @@ function GuestForm({
 
 export default function GuestsAdmin() {
   const { t } = useTranslation();
+  const { data: session } = useSession();
+  const fullAdmin = isFullAdmin(session?.user);
   const { showSuccess, showError } = useNotification();
   const { data: guests, isLoading } = useGuests({ all: true });
   const updateGuest = useUpdateGuest();
@@ -501,7 +523,7 @@ export default function GuestsAdmin() {
         </button>
       </div>
 
-      <PageSubtitleEditor />
+      {fullAdmin && <PageSubtitleEditor />}
 
       {isLoading ? (
         <div className="flex items-center justify-center py-12">

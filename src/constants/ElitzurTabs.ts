@@ -13,6 +13,7 @@ export type TabKey =
   | "newsletter"
   | "subscriptions"
   | "settings"
+  | "team"
   | "devMetrics"
   | "pdfEditor"
   | "sketchBoard"
@@ -85,6 +86,7 @@ export const TAB_GROUPS: TabGroup[] = [
     labelKey: "admin.tabGroups.system",
     icon: "Wrench",
     tabs: [
+      { key: "team", label: "צוות והרשאות", icon: "ShieldCheck" },
       { key: "settings", label: "הגדרות מערכת", icon: "Settings" },
       {
         key: "devMetrics",

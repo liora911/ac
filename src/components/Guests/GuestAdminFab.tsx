@@ -4,23 +4,44 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { Pencil } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { isFullAdmin, hasPermission } from "@/constants/permissions";
 
 /**
- * Floating "quick edit" button, admin-only — mirrors the article edit FAB.
- * Deep-links straight into the Guests admin tab (optionally opening a
- * specific guest's edit form) so the professor edits from the public page
- * without navigating the whole admin ceremony.
+ * Floating "quick edit" button on a guest's public page.
+ * - Guests managers (full admin or the "guests" permission) deep-link into the
+ *   Guests admin tab to edit any field.
+ * - A linked owner (not a manager) gets an "Edit my page" link to their own
+ *   owner-scoped editor.
+ * - Everyone else sees nothing.
  */
-export default function GuestAdminFab({ guestId }: { guestId?: string }) {
+export default function GuestAdminFab({
+  guestId,
+  slug,
+  isOwner = false,
+}: {
+  guestId?: string;
+  slug?: string | null;
+  isOwner?: boolean;
+}) {
   const { data: session } = useSession();
   const { locale } = useTranslation();
 
-  if (session?.user?.role !== "ADMIN") return null;
+  const isManager =
+    isFullAdmin(session?.user) || hasPermission(session?.user, "guests");
 
-  const href = guestId
-    ? `/elitzur?tab=guests&editGuest=${guestId}`
-    : "/elitzur?tab=guests";
-  const label = locale === "he" ? "עריכה מהירה" : "Quick edit";
+  let href: string | null = null;
+  let label = "";
+  if (isManager) {
+    href = guestId
+      ? `/elitzur?tab=guests&editGuest=${guestId}`
+      : "/elitzur?tab=guests";
+    label = locale === "he" ? "עריכה מהירה" : "Quick edit";
+  } else if (isOwner && slug) {
+    href = `/guests/${slug}/edit`;
+    label = locale === "he" ? "עריכת העמוד שלי" : "Edit my page";
+  }
+
+  if (!href) return null;
 
   return (
     <Link

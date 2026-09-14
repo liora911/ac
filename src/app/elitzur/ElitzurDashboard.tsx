@@ -27,6 +27,7 @@ import GuestsAdmin from "./GuestsAdmin";
 import IdeasAdmin from "./IdeasAdmin";
 import CalendarAdmin from "./CalendarAdmin";
 import WidgetsAdmin from "./WidgetsAdmin";
+import TeamAdmin from "./TeamAdmin";
 import DevMetrics from "@/components/DevMetrics/DevMetrics";
 import {
   User,
@@ -65,10 +66,15 @@ import {
   ChevronDown,
   ChevronsDownUp,
   LayoutGrid,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { TabKey, TABS, TAB_GROUPS } from "@/constants/ElitzurTabs";
-import { ALLOWED_EMAILS } from "@/constants/auth";
+import {
+  isFullAdmin,
+  hasPermission,
+  GRANTABLE_SECTIONS,
+} from "@/constants/permissions";
 import { useAdminBadges } from "@/hooks/useAdminBadges";
 
 const iconMap: Record<string, LucideIcon> = {
@@ -96,6 +102,7 @@ const iconMap: Record<string, LucideIcon> = {
   Lightbulb,
   Mail,
   LayoutGrid,
+  ShieldCheck,
 };
 
 export default function ElitzurDashboard() {
@@ -155,11 +162,20 @@ export default function ElitzurDashboard() {
   // Something to collapse only when at least one group is still open
   const anyGroupOpen = TAB_GROUPS.some((group) => !closedGroups[group.labelKey]);
 
-  // "New since last seen" dots for the messages/comments tabs
-  const isAdmin = !!(
-    session?.user?.email &&
-    ALLOWED_EMAILS.includes(session.user.email.toLowerCase())
-  );
+  // Access model: full admins see everything (incl. the Team tab); section
+  // managers see only the sections they were granted.
+  const fullAdmin = isFullAdmin(session?.user);
+  const canSee = useMemo(() => {
+    const grantable = new Set(GRANTABLE_SECTIONS.map((s) => s.key as string));
+    return (key: TabKey): boolean => {
+      if (fullAdmin) return true;
+      // Non-admins only ever see grantable sections they hold permission for
+      return grantable.has(key) && hasPermission(session?.user, key);
+    };
+  }, [fullAdmin, session?.user]);
+
+  // "New since last seen" dots for the messages/comments tabs (full admin only)
+  const isAdmin = fullAdmin;
   const {
     messagesNew,
     commentsNew,
@@ -181,14 +197,26 @@ export default function ElitzurDashboard() {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showAiChat, setShowAiChat] = useState(false);
-  const validKeys = useMemo(() => new Set(TABS.map((tab) => tab.key)), []);
+  // Only tabs the current user may actually open
+  const validKeys = useMemo(
+    () => new Set(TABS.filter((tab) => canSee(tab.key)).map((tab) => tab.key)),
+    [canSee]
+  );
 
-  // Restore the active tab from the URL so refresh/bookmarks keep your place
+  // Restore the active tab from the URL so refresh/bookmarks keep your place;
+  // if the current tab isn't permitted (e.g. a section manager landing on the
+  // default "user" tab), fall back to the first tab they can see.
   useEffect(() => {
     const param = new URLSearchParams(window.location.search).get("tab");
     if (param && validKeys.has(param as TabKey)) {
       setActive(param as TabKey);
+      return;
     }
+    setActive((current) => {
+      if (validKeys.has(current)) return current;
+      const first = TABS.find((tab) => validKeys.has(tab.key));
+      return first ? first.key : current;
+    });
   }, [validKeys]);
 
   const handleTabClick = (tabKey: TabKey) => {
@@ -499,6 +527,7 @@ export default function ElitzurDashboard() {
                 closedGroups={closedGroups}
                 onToggleGroup={toggleGroup}
                 tabBadges={tabBadges}
+                canSee={canSee}
               />
             </div>
           </aside>
@@ -532,6 +561,7 @@ export default function ElitzurDashboard() {
                   closedGroups={closedGroups}
                   onToggleGroup={toggleGroup}
                   tabBadges={tabBadges}
+                  canSee={canSee}
                 />
               </div>
             </div>
@@ -595,6 +625,8 @@ export default function ElitzurDashboard() {
           {active === "calendar" && <CalendarAdmin />}
 
           {active === "widgets" && <WidgetsAdmin />}
+
+          {active === "team" && <TeamAdmin />}
             </div>
           </main>
         </div>
@@ -611,6 +643,7 @@ function SidebarNav({
   closedGroups,
   onToggleGroup,
   tabBadges = {},
+  canSee,
 }: {
   active: TabKey;
   onSelect: (key: TabKey) => void;
@@ -619,6 +652,7 @@ function SidebarNav({
   closedGroups: Record<string, boolean>;
   onToggleGroup: (labelKey: string) => void;
   tabBadges?: Partial<Record<TabKey, boolean>>;
+  canSee: (key: TabKey) => boolean;
 }) {
   // A small red "ping" dot marking new/unseen activity on a tab
   const Ping = () => (
@@ -630,16 +664,22 @@ function SidebarNav({
   return (
     <nav role="tablist" aria-orientation="vertical">
       {TAB_GROUPS.map((group, gi) => {
+        // Only the tabs this user is permitted to open
+        const visibleTabs = group.tabs.filter(
+          (tab) => !tab.disabled && canSee(tab.key)
+        );
+        // A group with nothing visible disappears entirely
+        if (visibleTabs.length === 0) return null;
         const GroupIcon = iconMap[group.icon];
         // Any group can be collapsed — even the one holding the active tab
         const isClosed = !collapsed && !!closedGroups[group.labelKey];
         // When a collapsed group hides the active tab, mark the header active
         // so the professor still sees which section he's in
         const holdsActiveWhileClosed =
-          isClosed && group.tabs.some((tab) => tab.key === active);
+          isClosed && visibleTabs.some((tab) => tab.key === active);
         // Surface a tab's "new" dot on its group header while the group is folded
         const groupHasBadge =
-          isClosed && group.tabs.some((tab) => tabBadges[tab.key]);
+          isClosed && visibleTabs.some((tab) => tabBadges[tab.key]);
         return (
         <div key={group.labelKey} className={collapsed ? "mb-1" : "mb-3 last:mb-0"}>
           {collapsed ? (
@@ -676,8 +716,7 @@ function SidebarNav({
           )}
           {!isClosed && (
           <ul className="space-y-0.5">
-            {group.tabs
-              .filter((tab) => !tab.disabled)
+            {visibleTabs
               .map((tab) => {
                 const isActive = active === tab.key;
                 const IconComponent = iconMap[tab.icon];

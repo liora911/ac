@@ -14,6 +14,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       role: UserRole;
+      permissions: string[];
       hasActiveSubscription: boolean;
     };
   }
@@ -46,6 +47,7 @@ export const authOptions: NextAuthOptions = {
           where: { id: user.id },
           select: {
             role: true,
+            permissions: true,
             subscription: {
               select: { status: true },
             },
@@ -54,6 +56,7 @@ export const authOptions: NextAuthOptions = {
 
         session.user.id = user.id;
         session.user.role = dbUser?.role || UserRole.USER;
+        session.user.permissions = dbUser?.permissions ?? [];
         session.user.hasActiveSubscription =
           dbUser?.subscription?.status === "ACTIVE";
       }

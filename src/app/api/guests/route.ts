@@ -1,10 +1,24 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma/prisma";
-import { requireAdmin, getOptionalSession, isAdminEmail } from "@/lib/auth/apiAuth";
+import { requirePermission, getOptionalSession } from "@/lib/auth/apiAuth";
+import { hasPermission } from "@/constants/permissions";
 import { generateSlug, generateUniqueSlug } from "@/lib/utils/slug";
 import { normalizeExternalUrl } from "@/lib/utils/url";
 
-// GET /api/guests — public list of published guests (admins see all with ?all=true)
+// Resolve an owner email to a user id. Returns undefined for a blank value
+// (unlink), or null when no account matches (caller decides how to report it).
+async function resolveOwnerId(
+  ownerEmail: unknown
+): Promise<string | null | undefined> {
+  if (typeof ownerEmail !== "string" || !ownerEmail.trim()) return undefined;
+  const user = await prisma.user.findUnique({
+    where: { email: ownerEmail.trim().toLowerCase() },
+    select: { id: true },
+  });
+  return user?.id ?? null;
+}
+
+// GET /api/guests — public list of published guests (managers see all with ?all=true)
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -13,7 +27,7 @@ export async function GET(request: Request) {
     let includeUnpublished = false;
     if (wantAll) {
       const session = await getOptionalSession();
-      includeUnpublished = isAdminEmail(session?.user?.email);
+      includeUnpublished = hasPermission(session?.user, "guests");
     }
 
     const guests = await prisma.guest.findMany({
@@ -33,16 +47,29 @@ export async function GET(request: Request) {
         order: true,
         createdAt: true,
         updatedAt: true,
-        // Admins get the private email, the full rich-text bio, and the gallery
-        // so the edit form can pre-fill; the public list stays lean without them.
-        // (galleryUrls MUST be here — otherwise the form seeds an empty gallery
-        // and saving the guest overwrites galleryUrls with [], wiping it.)
-        ...(includeUnpublished ? { email: true, bio: true, galleryUrls: true } : {}),
+        // Managers get the private email, the full rich-text bio, the gallery,
+        // and the linked owner so the edit form can pre-fill; the public list
+        // stays lean without them. (galleryUrls MUST be here — otherwise the
+        // form seeds an empty gallery and saving overwrites galleryUrls with [].)
+        ...(includeUnpublished
+          ? {
+              email: true,
+              bio: true,
+              galleryUrls: true,
+              ownerId: true,
+              owner: { select: { email: true } },
+            }
+          : {}),
       },
       orderBy: [{ isFeatured: "desc" }, { order: "asc" }, { createdAt: "desc" }],
     });
 
-    return NextResponse.json(guests, {
+    // Flatten the linked owner to a plain email the edit form can show
+    const payload = includeUnpublished
+      ? guests.map(({ owner, ...g }) => ({ ...g, ownerEmail: owner?.email ?? null }))
+      : guests;
+
+    return NextResponse.json(payload, {
       headers: includeUnpublished
         ? { "Cache-Control": "no-store" }
         : { "Cache-Control": "public, s-maxage=300, stale-while-revalidate=600" },
@@ -56,10 +83,10 @@ export async function GET(request: Request) {
   }
 }
 
-// POST /api/guests — create a guest (admin only)
+// POST /api/guests — create a guest (guests managers only)
 export async function POST(request: Request) {
   try {
-    const auth = await requireAdmin();
+    const auth = await requirePermission("guests");
     if ("error" in auth) {
       return NextResponse.json({ error: auth.error }, { status: auth.status });
     }
@@ -76,6 +103,7 @@ export async function POST(request: Request) {
       galleryUrls,
       websiteUrl,
       email,
+      ownerEmail,
       titleDirection = "rtl",
       published = false,
       isFeatured = false,
@@ -83,6 +111,18 @@ export async function POST(request: Request) {
 
     if (!name || typeof name !== "string" || !name.trim()) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 });
+    }
+
+    // Link an owner account if an email was supplied and matches a user
+    let ownerId: string | null | undefined = undefined;
+    if ("ownerEmail" in body) {
+      ownerId = await resolveOwnerId(ownerEmail);
+      if (ownerId === null && typeof ownerEmail === "string" && ownerEmail.trim()) {
+        return NextResponse.json(
+          { error: "No user account found with that owner email. Ask them to sign in once first." },
+          { status: 400 }
+        );
+      }
     }
 
     // Slug priority: admin-typed slug → English title → Hebrew name → "guest"
@@ -109,6 +149,7 @@ export async function POST(request: Request) {
         galleryUrls: Array.isArray(galleryUrls) ? galleryUrls : [],
         websiteUrl: normalizeExternalUrl(websiteUrl),
         email: email || null,
+        ...(ownerId !== undefined ? { ownerId } : {}),
         titleDirection,
         published,
         isFeatured,
