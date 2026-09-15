@@ -267,7 +267,11 @@
     "worksTitle": "עבודות",
     "noWorks": "אין עדיין עבודות שפורסמו",
     "gallery": "גלריה",
-    "closeLightbox": "סגור"
+    "closeLightbox": "סגור",
+    "share": "שיתוף",
+    "linkCopied": "הקישור הועתק",
+    "downloadPdf": "הורדת PDF",
+    "popupBlocked": "יש לאפשר חלונות קופצים כדי להוריד את ה-PDF"
   },
   "adminGuests": {
     "title": "אורחים",

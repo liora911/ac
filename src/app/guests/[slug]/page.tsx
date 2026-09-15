@@ -8,6 +8,7 @@ import { useGuest } from "@/hooks/useGuests";
 import RichContent from "@/components/RichContent/RichContent";
 import { normalizeExternalUrl } from "@/lib/utils/url";
 import GuestAdminFab from "@/components/Guests/GuestAdminFab";
+import GuestActions from "@/components/Guests/GuestActions";
 import {
   ArrowLeft,
   ArrowRight,
@@ -140,6 +141,9 @@ export default function GuestProfilePage() {
               {t("guests.visitWebsite")}
             </a>
           )}
+          <div className="mt-5">
+            <GuestActions guest={guest} displayName={displayName} />
+          </div>
         </div>
 
         {/* Body — the guest's whole page: text, images, everything, freely

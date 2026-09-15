@@ -267,7 +267,11 @@
     "worksTitle": "Works",
     "noWorks": "No published works yet",
     "gallery": "Gallery",
-    "closeLightbox": "Close"
+    "closeLightbox": "Close",
+    "share": "Share",
+    "linkCopied": "Link copied",
+    "downloadPdf": "Download PDF",
+    "popupBlocked": "Please allow pop-ups to download the PDF"
   },
   "adminGuests": {
     "title": "Guests",
