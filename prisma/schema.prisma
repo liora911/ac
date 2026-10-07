@@ -123,7 +123,7 @@ model Article {
   // Dead columns from the removed AI-embeddings feature. Kept in the schema
   // ONLY so `db push` doesn't drop them while the old (embedding-reading) code
   // is still deployed. Drop these AFTER the embeddings-removal code ships.
-  embedding        Float[]
+  embedding        Float[]  @default([])
   embeddingModel   String?
   authors          ArticleAuthor[]
   categories       ArticleCategory[]
@@ -226,9 +226,9 @@ model Guest {
   // admin access. Matched case-insensitively against the signed-in user's
   // verified email. Set by an admin; the person need not have signed in yet.
   ownerEmail     String?
-  // TEMPORARY hotfix column: the currently deployed build (commit 2ebe4f3) still
-  // reads `ownerId`. Keep this until the ownerEmail build is live, then remove
-  // it and run `prisma db push` (code first, then drop the column).
+  // TEMPORARY: the deployed Prisma client (built from the committed schema) still
+  // declares this column, so findFirst() selects it. Drop ONLY after a deploy
+  // whose committed schema no longer contains it. See prod-schema-drop-ordering.
   ownerId        String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
