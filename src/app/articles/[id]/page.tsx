@@ -6,7 +6,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import type { Metadata } from "next";
-import { BookOpen, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import ReadingModeButton from "@/components/Article/ReadingModeButton";
 import { getArticle } from "@/lib/articles/getArticle";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
@@ -305,16 +306,9 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
 
             <div className="text-right">
               {/* Reading mode: the article alone, in a new tab */}
-              <Link
+              <ReadingModeButton
                 href={`/articles/${article.slug || article.id}/read`}
-                target="_blank"
-                rel="noopener"
-                title={t("articleDetail.readingModeHint")}
-                className="inline-flex items-center gap-1.5 mb-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm transition-colors hover:border-blue-300 hover:text-blue-700 dark:hover:border-blue-700 dark:hover:text-blue-300"
-              >
-                <BookOpen className="w-4 h-4 shrink-0" />
-                {t("articleDetail.readingMode")}
-              </Link>
+              />
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {article.readDuration} {t("articleCard.minRead")}
               </p>
