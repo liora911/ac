@@ -105,6 +105,9 @@ const iconMap: Record<string, LucideIcon> = {
   ShieldCheck,
 };
 
+// New key: the old per-group map ("elitzur-sidebar-groups") allowed several open groups
+const GROUP_STORAGE_KEY = "elitzur-sidebar-open-group";
+
 export default function ElitzurDashboard() {
   const { data: session } = useSession();
   const { t, locale } = useTranslation();
@@ -129,38 +132,41 @@ export default function ElitzurDashboard() {
     });
   };
 
-  // Per-group fold state, remembered across visits. Default: all open.
-  const [closedGroups, setClosedGroups] = useState<Record<string, boolean>>({});
+  // Accordion: at most one group is open at a time, remembered across visits.
+  // `undefined` = nothing stored yet, so the group holding the active tab opens;
+  // `null` = the user folded everything.
+  const [openGroup, setOpenGroup] = useState<string | null | undefined>(undefined);
   useEffect(() => {
     try {
-      const raw = localStorage.getItem("elitzur-sidebar-groups");
-      if (raw) setClosedGroups(JSON.parse(raw));
+      const stored = localStorage.getItem(GROUP_STORAGE_KEY);
+      if (stored === "") setOpenGroup(null);
+      else if (stored && TAB_GROUPS.some((g) => g.labelKey === stored)) setOpenGroup(stored);
     } catch {
-      // corrupt entry — all groups just start open
+      // storage unavailable — fall back to the active tab's group
     }
   }, []);
-  const persistGroups = (next: Record<string, boolean>) => {
+  const persistOpenGroup = (next: string | null) => {
     try {
-      localStorage.setItem("elitzur-sidebar-groups", JSON.stringify(next));
+      localStorage.setItem(GROUP_STORAGE_KEY, next ?? "");
     } catch {
       // storage unavailable — state just won't persist
     }
   };
+  const activeGroup =
+    TAB_GROUPS.find((g) => g.tabs.some((tab) => tab.key === active))?.labelKey ?? null;
+  const currentOpenGroup = openGroup === undefined ? activeGroup : openGroup;
+  // Opening a group folds whichever one was open; clicking the open one folds it
   const toggleGroup = (labelKey: string) => {
-    setClosedGroups((prev) => {
-      const next = { ...prev, [labelKey]: !prev[labelKey] };
-      persistGroups(next);
-      return next;
-    });
+    const next = currentOpenGroup === labelKey ? null : labelKey;
+    setOpenGroup(next);
+    persistOpenGroup(next);
   };
   const collapseAllGroups = () => {
-    const next: Record<string, boolean> = {};
-    for (const group of TAB_GROUPS) next[group.labelKey] = true;
-    setClosedGroups(next);
-    persistGroups(next);
+    setOpenGroup(null);
+    persistOpenGroup(null);
   };
-  // Something to collapse only when at least one group is still open
-  const anyGroupOpen = TAB_GROUPS.some((group) => !closedGroups[group.labelKey]);
+  // Something to collapse only when a group is open
+  const anyGroupOpen = currentOpenGroup !== null;
 
   // Access model: full admins see everything (incl. the Team tab); section
   // managers see only the sections they were granted.
@@ -524,7 +530,7 @@ export default function ElitzurDashboard() {
                 onSelect={handleTabClick}
                 t={t}
                 collapsed={collapsed}
-                closedGroups={closedGroups}
+                openGroup={currentOpenGroup}
                 onToggleGroup={toggleGroup}
                 tabBadges={tabBadges}
                 canSee={canSee}
@@ -558,7 +564,7 @@ export default function ElitzurDashboard() {
                   active={active}
                   onSelect={handleTabClick}
                   t={t}
-                  closedGroups={closedGroups}
+                  openGroup={currentOpenGroup}
                   onToggleGroup={toggleGroup}
                   tabBadges={tabBadges}
                   canSee={canSee}
@@ -640,7 +646,7 @@ function SidebarNav({
   onSelect,
   t,
   collapsed = false,
-  closedGroups,
+  openGroup,
   onToggleGroup,
   tabBadges = {},
   canSee,
@@ -649,7 +655,8 @@ function SidebarNav({
   onSelect: (key: TabKey) => void;
   t: (key: string) => string;
   collapsed?: boolean;
-  closedGroups: Record<string, boolean>;
+  /** The one expanded group (accordion); null when all are folded */
+  openGroup: string | null;
   onToggleGroup: (labelKey: string) => void;
   tabBadges?: Partial<Record<TabKey, boolean>>;
   canSee: (key: TabKey) => boolean;
@@ -672,7 +679,7 @@ function SidebarNav({
         if (visibleTabs.length === 0) return null;
         const GroupIcon = iconMap[group.icon];
         // Any group can be collapsed — even the one holding the active tab
-        const isClosed = !collapsed && !!closedGroups[group.labelKey];
+        const isClosed = !collapsed && openGroup !== group.labelKey;
         // When a collapsed group hides the active tab, mark the header active
         // so the professor still sees which section he's in
         const holdsActiveWhileClosed =

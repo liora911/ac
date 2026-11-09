@@ -53,9 +53,11 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
     expandedIdx,
     handleMouseEnter,
     handleMouseLeave,
-    gridColumns,
-    showText,
-  } = useCarouselExpand();
+    handleRowLeave,
+    gridStyle,
+    gridTransitionClass,
+    isCaptionHidden,
+  } = useCarouselExpand(page);
 
   const canNavigate = items.length > ITEMS_PER_PAGE || hasMore;
   const canGoNext = canNavigate && (page < totalPages - 1 || hasMore);
@@ -240,12 +242,10 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
-                animate={
-                  gridColumns ? { gridTemplateColumns: gridColumns } : {}
-                }
-                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              <div
+                className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 ${gridTransitionClass}`}
+                style={gridStyle}
+                onMouseLeave={handleRowLeave}
               >
                 {currentItems.map((item, idx) => {
                   const imageUrl = getImageUrl(item);
@@ -256,13 +256,14 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                       ? `${linkPrefix}/${item.slug}`
                       : `${linkPrefix}/${item.id}`;
                   const isExpanded = expandedIdx === idx;
+                  const captionHidden = isCaptionHidden(idx);
 
                   return (
                     <Link
                       key={item.id}
                       href={itemLink}
                       className="block group/card"
-                      onMouseEnter={() => handleMouseEnter(idx)}
+                      onMouseEnter={() => handleMouseEnter(idx, page)}
                       onMouseLeave={handleMouseLeave}
                     >
                       <div
@@ -295,13 +296,15 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                           {item.isPremium && <PremiumBadge size="sm" />}
                         </div>
 
+                        {/* Hides instantly while the width animates (its font size
+                            changes), then fades back in once the card settles */}
                         <div
-                          className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
-                            showText
-                              ? isExpanded
-                                ? "opacity-100"
-                                : "lg:opacity-80"
-                              : "lg:opacity-0"
+                          className={`absolute bottom-0 left-0 right-0 p-2.5 ${
+                            captionHidden
+                              ? "lg:opacity-0"
+                              : `transition-opacity duration-300 ${
+                                  isExpanded ? "opacity-100" : "lg:opacity-80"
+                                }`
                           }`}
                         >
                           <h3
@@ -329,7 +332,7 @@ const CarouselSection: React.FC<CarouselSectionProps> = ({
                     </Link>
                   );
                 })}
-              </motion.div>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>

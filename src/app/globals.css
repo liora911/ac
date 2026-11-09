@@ -29,6 +29,15 @@
   --input: #e2e8f0;
   --ring: #3b82f6;
   --radius: 0.5rem;
+  /* Fixed public navbar height. These are pre-hydration fallbacks; the
+     Header overwrites it with the measured height (nav links can wrap). */
+  --navbar-height: 65px;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --navbar-height: 69px;
+  }
 }
 
 /* Use .dark class on html element for CSS variable dark mode */

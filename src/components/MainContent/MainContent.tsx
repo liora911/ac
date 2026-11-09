@@ -12,10 +12,10 @@ export default function MainContent({ children }: MainContentProps) {
   return (
     <main
       id="main-content"
-      // pt-[60px] clears the fixed public navbar — without it the first
-      // 60px of every page (e.g. the breadcrumbs) hide behind the navbar
+      // Clears the fixed public navbar by its measured height (set by the
+      // Header; it varies by width) so the breadcrumbs never slide under it
       className={`flex-grow flex flex-col ${
-        isAuthPage || isAdminPage ? "" : "pt-[60px]"
+        isAuthPage || isAdminPage ? "" : "pt-[var(--navbar-height)]"
       }`}
       role="main"
     >

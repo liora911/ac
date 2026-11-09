@@ -68,6 +68,7 @@ export default function Header() {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   const mobileButtonRef = useRef<HTMLButtonElement>(null);
   const profileButtonRef = useRef<HTMLButtonElement>(null);
+  const headerRef = useRef<HTMLElement>(null);
 
   const isAdmin = session?.user?.role === "ADMIN";
   const isRTL = locale === "he";
@@ -154,6 +155,21 @@ export default function Header() {
     };
   }, [mobileMenuOpen]);
 
+  // Publish the navbar's real height as --navbar-height so page content and the
+  // mobile menu clear it at every width (the links wrap to two rows on tablets).
+  // Re-runs on route change because the header unmounts on /auth and /elitzur.
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+    const root = document.documentElement;
+    const update = () =>
+      root.style.setProperty("--navbar-height", `${el.offsetHeight}px`);
+    update();
+    const observer = new ResizeObserver(update);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [pathname]);
+
   // Hide header on auth pages
   if (pathname?.startsWith("/auth")) {
     return null;
@@ -168,7 +184,7 @@ export default function Header() {
   };
 
   // The admin dashboard has its own header; the fixed public navbar would
-  // cover it (nothing on /elitzur clears the fixed 60px)
+  // cover it (nothing on /elitzur clears the fixed navbar height)
   if (pathname?.startsWith("/elitzur")) {
     return null;
   }
@@ -184,6 +200,7 @@ export default function Header() {
       </a>
 
       <header
+        ref={headerRef}
         className="fixed top-0 left-0 right-0 z-50 w-full border-b border-gray-200 dark:border-gray-700/80 bg-white dark:bg-gray-950 backdrop-blur-sm shadow-sm px-4 py-3"
         role="banner"
       >
@@ -418,7 +435,7 @@ export default function Header() {
       {/* Mobile Navigation */}
       <nav
         ref={mobileMenuRef}
-        className={`fixed top-[60px] left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-950 shadow-xl border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out ${
+        className={`fixed top-[var(--navbar-height)] left-0 right-0 z-50 md:hidden bg-white dark:bg-gray-950 shadow-xl border-t border-gray-100 dark:border-gray-800 transition-all duration-300 ease-out ${
           mobileMenuOpen
             ? "opacity-100 translate-y-0"
             : "opacity-0 -translate-y-2 pointer-events-none"

@@ -57,8 +57,15 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
   const totalPages = Math.ceil(items.length / ITEMS_PER_PAGE);
   const currentItems = items.slice(page * ITEMS_PER_PAGE, (page + 1) * ITEMS_PER_PAGE);
 
-  const { expandedIdx, handleMouseEnter, handleMouseLeave, gridColumns, showText } =
-    useCarouselExpand();
+  const {
+    expandedIdx,
+    handleMouseEnter,
+    handleMouseLeave,
+    handleRowLeave,
+    gridStyle,
+    gridTransitionClass,
+    isCaptionHidden,
+  } = useCarouselExpand(page);
 
   const canNavigate = items.length > ITEMS_PER_PAGE;
   const canGoNext = canNavigate && page < totalPages - 1;
@@ -164,10 +171,10 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
               exit="exit"
               transition={{ duration: 0.3, ease: "easeInOut" }}
             >
-              <motion.div
-                className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3"
-                animate={gridColumns ? { gridTemplateColumns: gridColumns } : {}}
-                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              <div
+                className={`grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 ${gridTransitionClass}`}
+                style={gridStyle}
+                onMouseLeave={handleRowLeave}
               >
                 {currentItems.map((item, idx) => (
                   <MixedCard
@@ -177,12 +184,12 @@ const MixedCarouselSection: React.FC<MixedCarouselSectionProps> = ({
                     getSubtitle={getSubtitle}
                     t={t}
                     isExpanded={expandedIdx === idx}
-                    showText={showText}
-                    onMouseEnter={() => handleMouseEnter(idx)}
+                    captionHidden={isCaptionHidden(idx)}
+                    onMouseEnter={() => handleMouseEnter(idx, page)}
                     onMouseLeave={handleMouseLeave}
                   />
                 ))}
-              </motion.div>
+              </div>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -219,7 +226,7 @@ function MixedCard({
   getSubtitle,
   t,
   isExpanded = false,
-  showText = true,
+  captionHidden = false,
   onMouseEnter,
   onMouseLeave,
 }: {
@@ -228,7 +235,7 @@ function MixedCard({
   getSubtitle?: (item: ContentItem) => string | null;
   t: (key: string) => string;
   isExpanded?: boolean;
-  showText?: boolean;
+  captionHidden?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
 }) {
@@ -282,8 +289,12 @@ function MixedCard({
           </div>
         )}
 
-        <div className={`absolute bottom-0 left-0 right-0 p-2.5 transition-opacity duration-200 ${
-          showText ? (isExpanded ? "opacity-100" : "lg:opacity-80") : "lg:opacity-0"
+        {/* Hides instantly while the width animates (its font size changes),
+            then fades back in once the card settles */}
+        <div className={`absolute bottom-0 left-0 right-0 p-2.5 ${
+          captionHidden
+            ? "lg:opacity-0"
+            : `transition-opacity duration-300 ${isExpanded ? "opacity-100" : "lg:opacity-80"}`
         }`}>
           <h3 className={`text-white font-semibold drop-shadow-lg line-clamp-2 ${
             isExpanded ? "text-sm" : "text-sm lg:text-[10px] lg:leading-tight"
