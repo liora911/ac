@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { isReaderPath } from "@/lib/utils/readerMode";
 import type { MainContentProps } from "@/types/Components/components";
 
 export default function MainContent({ children }: MainContentProps) {
@@ -8,6 +9,8 @@ export default function MainContent({ children }: MainContentProps) {
   const isAuthPage = pathname?.startsWith("/auth");
   // The admin dashboard has no public navbar, so no clearance needed there
   const isAdminPage = pathname?.startsWith("/elitzur");
+  // Article reading mode hides the navbar too
+  const isReaderPage = isReaderPath(pathname);
 
   return (
     <main
@@ -15,7 +18,7 @@ export default function MainContent({ children }: MainContentProps) {
       // Clears the fixed public navbar by its measured height (set by the
       // Header; it varies by width) so the breadcrumbs never slide under it
       className={`flex-grow flex flex-col ${
-        isAuthPage || isAdminPage ? "" : "pt-[var(--navbar-height)]"
+        isAuthPage || isAdminPage || isReaderPage ? "" : "pt-[var(--navbar-height)]"
       }`}
       role="main"
     >

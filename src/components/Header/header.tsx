@@ -4,6 +4,7 @@ import { navItems } from "@/constants/Nav/data";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isReaderPath } from "@/lib/utils/readerMode";
 import { useSession } from "next-auth/react";
 import { useState, useEffect, useRef } from "react";
 import GlobalSearch from "../GlobalSearch";
@@ -170,8 +171,8 @@ export default function Header() {
     return () => observer.disconnect();
   }, [pathname]);
 
-  // Hide header on auth pages
-  if (pathname?.startsWith("/auth")) {
+  // Hide header on auth pages and in article reading mode
+  if (pathname?.startsWith("/auth") || isReaderPath(pathname)) {
     return null;
   }
 

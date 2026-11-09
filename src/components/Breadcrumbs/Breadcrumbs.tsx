@@ -3,6 +3,7 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { isReaderPath } from "@/lib/utils/readerMode";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useArticle } from "@/hooks/useArticles";
 import { useEvent } from "@/hooks/useEvents";
@@ -97,7 +98,7 @@ export default function Breadcrumbs() {
   const listPagesWithHero = ["/articles", "/lectures", "/presentations", "/events", "/guests", "/browse"];
   const isListPage = listPagesWithHero.includes(pathname);
 
-  if (!pathname || pathname === "/" || pathname.startsWith("/auth") || pathname.startsWith("/elitzur") || isListPage) {
+  if (!pathname || pathname === "/" || pathname.startsWith("/auth") || pathname.startsWith("/elitzur") || isListPage || isReaderPath(pathname)) {
     return null;
   }
 

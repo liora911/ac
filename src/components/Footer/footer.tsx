@@ -2,6 +2,7 @@
 
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { usePathname } from "next/navigation";
+import { isReaderPath } from "@/lib/utils/readerMode";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronUp, FolderOpen, FileText, Mail, CheckCircle, Loader2 } from "lucide-react";
@@ -246,9 +247,13 @@ export default function Footer() {
     fetchSitemapData();
   }, []);
 
-  // Hide footer on auth pages and in the admin dashboard (it gets in the
-  // way of the work surfaces there, e.g. the sketch board)
-  if (pathname?.startsWith("/auth") || pathname?.startsWith("/elitzur")) {
+  // Hide footer on auth pages, in the admin dashboard (it gets in the way of
+  // the work surfaces there, e.g. the sketch board) and in article reading mode
+  if (
+    pathname?.startsWith("/auth") ||
+    pathname?.startsWith("/elitzur") ||
+    isReaderPath(pathname)
+  ) {
     return null;
   }
 

@@ -627,7 +627,9 @@
     "linkCopied": "הקישור הועתק!",
     "tagsTitle": "תגיות",
     "copyleftNote": "מאמר זה ניתן להורדה בחינם, אין זכויות יוצרים",
-    "relatedArticles": "מאמרים קשורים"
+    "relatedArticles": "מאמרים קשורים",
+    "readingMode": "מצב קריאה",
+    "readingModeHint": "פתיחת המאמר בלבד בכרטיסייה חדשה, בלי שאר האתר"
   },
   "lectureDetail": {
     "loading": "טוען סרטון...",

@@ -613,7 +613,9 @@
     "linkCopied": "Link copied to clipboard!",
     "tagsTitle": "Tags",
     "copyleftNote": "This article is available for free download, no copyright.",
-    "relatedArticles": "Related Articles"
+    "relatedArticles": "Related Articles",
+    "readingMode": "Reading mode",
+    "readingModeHint": "Open just the article in a new tab, without the rest of the site"
   },
   "lectureDetail": {
     "loading": "Loading video...",

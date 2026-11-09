@@ -6,10 +6,12 @@ import { Sun, Moon, Globe, UserPlus, Ticket, Heart } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useCategoryPreferences } from "@/contexts/CategoryPreferencesContext";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { isReaderPath } from "@/lib/utils/readerMode";
 
 export default function WelcomeModal() {
   const router = useRouter();
+  const pathname = usePathname();
   const { t, locale, setLocale } = useTranslation();
   const { theme, toggleTheme } = useTheme();
   const isRTL = locale === "he";
@@ -37,7 +39,8 @@ export default function WelcomeModal() {
     markWelcomeSeen();
   };
 
-  if (!shouldShowWelcome) return null;
+  // Reading mode shows only the article; the welcome can wait for the main site
+  if (!shouldShowWelcome || isReaderPath(pathname)) return null;
 
   return (
     <AnimatePresence>

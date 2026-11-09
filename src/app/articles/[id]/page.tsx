@@ -6,7 +6,8 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { ALLOWED_EMAILS } from "@/constants/auth";
 import type { Metadata } from "next";
-import { Sparkles } from "lucide-react";
+import { BookOpen, Sparkles } from "lucide-react";
+import { getArticle } from "@/lib/articles/getArticle";
 import AuthorAvatars from "@/components/Articles/AuthorAvatars";
 import RichContent from "@/components/RichContent";
 import PremiumGate from "@/components/PremiumGate/PremiumGate";
@@ -20,142 +21,6 @@ import he from "@/locales/he.json";
 import type { ArticlePageProps } from "@/types/Articles/articles";
 import { formatDate } from "@/lib/utils/date";
 import { getArticleStatusColor } from "@/lib/utils/status";
-
-// Server-side function to fetch article by ID or slug
-async function getArticle(idOrSlug: string) {
-  if (!prisma) {
-    throw new Error("Database connection not available");
-  }
-
-  // Decode URL parameter (handles percent-encoded slugs like %D7%99...)
-  const decodedIdOrSlug = decodeURIComponent(idOrSlug);
-
-  // Try to find by slug first (more SEO-friendly)
-  let article = await prisma.article.findUnique({
-    where: { slug: decodedIdOrSlug },
-    include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-        },
-      },
-      category: {
-        select: {
-          id: true,
-          name: true,
-          bannerImageUrl: true,
-        },
-      },
-      categories: {
-        include: {
-          category: {
-            select: {
-              id: true,
-              name: true,
-              bannerImageUrl: true,
-            },
-          },
-        },
-      },
-      authors: {
-        orderBy: { order: "asc" },
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-          order: true,
-        },
-      },
-      tags: {
-        include: {
-          tag: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              color: true,
-            },
-          },
-        },
-      },
-      translations: {
-        where: { published: true },
-        select: { id: true, slug: true, language: true, title: true },
-      },
-      translatedFrom: {
-        select: { id: true, slug: true, language: true, title: true, published: true },
-      },
-    },
-  });
-
-  // If not found by slug, try by ID (backward compatibility)
-  if (!article) {
-    article = await prisma.article.findUnique({
-      where: { id: decodedIdOrSlug },
-      include: {
-      author: {
-        select: {
-          id: true,
-          name: true,
-          email: true,
-          image: true,
-        },
-      },
-      category: {
-        select: {
-          id: true,
-          name: true,
-          bannerImageUrl: true,
-        },
-      },
-      categories: {
-        include: {
-          category: {
-            select: {
-              id: true,
-              name: true,
-              bannerImageUrl: true,
-            },
-          },
-        },
-      },
-      authors: {
-        orderBy: { order: "asc" },
-        select: {
-          id: true,
-          name: true,
-          imageUrl: true,
-          order: true,
-        },
-      },
-      tags: {
-        include: {
-          tag: {
-            select: {
-              id: true,
-              name: true,
-              slug: true,
-              color: true,
-            },
-          },
-        },
-      },
-      translations: {
-        where: { published: true },
-        select: { id: true, slug: true, language: true, title: true },
-      },
-      translatedFrom: {
-        select: { id: true, slug: true, language: true, title: true, published: true },
-      },
-    },
-    });
-  }
-
-  return article;
-}
 
 const PINNED_RELATED_ID = "cmlc13za90002l504vy30172b";
 
@@ -439,6 +304,17 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             </div>
 
             <div className="text-right">
+              {/* Reading mode: the article alone, in a new tab */}
+              <Link
+                href={`/articles/${article.slug || article.id}/read`}
+                target="_blank"
+                rel="noopener"
+                title={t("articleDetail.readingModeHint")}
+                className="inline-flex items-center gap-1.5 mb-2 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm transition-colors hover:border-blue-300 hover:text-blue-700 dark:hover:border-blue-700 dark:hover:text-blue-300"
+              >
+                <BookOpen className="w-4 h-4 shrink-0" />
+                {t("articleDetail.readingMode")}
+              </Link>
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {article.readDuration} {t("articleCard.minRead")}
               </p>
