@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useMemo, useCallback } from "react";
+import React, { useMemo, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
-import { Compass } from "lucide-react";
+import { ChevronDown, Compass } from "lucide-react";
 import { useTranslation } from "@/contexts/Translation/translation.context";
 import { useHomePreview, useDiscoverCategories } from "@/hooks/useHomePreview";
 import { useRecentlyRead } from "@/hooks/useRecentlyRead";
@@ -45,6 +45,16 @@ const ContentSection: React.FC = () => {
   const { data: previewData, isLoading: previewLoading } = useHomePreview();
   const { data: discoverCategories } = useDiscoverCategories();
   const { data: recentlyRead } = useRecentlyRead();
+  const carouselsRef = useRef<HTMLDivElement>(null);
+
+  // "Explore Content" scrolls to the first carousel
+  const scrollToCarousels = useCallback(() => {
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    carouselsRef.current?.scrollIntoView({
+      behavior: reduceMotion ? "auto" : "smooth",
+      block: "start",
+    });
+  }, []);
 
   // Convert recently read articles to ContentItem format for carousel
   const recentlyReadItems: ContentItem[] = useMemo(() => {
@@ -152,20 +162,23 @@ const ContentSection: React.FC = () => {
 
   return (
     <section className="py-8 md:py-12 bg-[var(--background)] overflow-x-hidden">
-      <div className="px-6 max-w-6xl mx-auto flex justify-center mb-10">
-        <div className="relative flex items-center">
-          {/* Soft glow behind the badge */}
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/20 via-indigo-500/15 to-violet-500/20 dark:from-blue-500/10 dark:via-indigo-500/10 dark:to-violet-500/10 rounded-2xl blur-lg" />
-          {/* Badge */}
-          <div className="relative flex items-center gap-2.5 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-lg">
-            <Compass className="w-5 h-5 text-white/90 shrink-0" />
-            <h2 className="text-lg sm:text-xl font-bold text-white tracking-tight whitespace-nowrap">
-              {t("home.sections.exploreContent")}
-            </h2>
-          </div>
-        </div>
+      <div className="px-6 max-w-6xl mx-auto flex items-center gap-4 sm:gap-6 mb-10">
+        <span aria-hidden="true" className="h-px flex-1 bg-slate-200 dark:bg-slate-700/70" />
+        <h2>
+          <button
+            type="button"
+            onClick={scrollToCarousels}
+            className="group inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800/60 text-slate-800 dark:text-slate-100 text-base sm:text-lg font-semibold tracking-tight whitespace-nowrap shadow-sm cursor-pointer transition-colors hover:border-slate-400 hover:bg-slate-50 dark:hover:border-slate-500 dark:hover:bg-slate-800 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-slate-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)]"
+          >
+            <Compass className="w-5 h-5 text-slate-500 dark:text-slate-400 shrink-0" />
+            {t("home.sections.exploreContent")}
+            <ChevronDown className="w-4 h-4 text-slate-400 dark:text-slate-500 shrink-0 transition-transform duration-200 group-hover:translate-y-0.5" />
+          </button>
+        </h2>
+        <span aria-hidden="true" className="h-px flex-1 bg-slate-200 dark:bg-slate-700/70" />
       </div>
-      <div>
+      {/* scroll-mt clears the fixed header when "Explore Content" scrolls here */}
+      <div ref={carouselsRef} className="scroll-mt-24">
 
         {previewLoading ? (
           <div className="space-y-10">
