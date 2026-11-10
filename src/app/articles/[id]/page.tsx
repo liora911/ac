@@ -305,10 +305,6 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
             </div>
 
             <div className="text-right">
-              {/* Reading mode: the article alone, in a new tab */}
-              <ReadingModeButton
-                href={`/articles/${article.slug || article.id}/read`}
-              />
               <p className="text-sm text-gray-500 dark:text-gray-400">
                 {article.readDuration} {t("articleCard.minRead")}
               </p>
@@ -329,6 +325,14 @@ export default async function ArticleDetailPage({ params }: ArticlePageProps) {
                 </span>
               ) : null}
             </div>
+          </div>
+
+          {/* Reading mode: the article alone, in a new tab. Its own row so the
+              full call-to-action label has room */}
+          <div className="mt-6">
+            <ReadingModeButton
+              href={`/articles/${article.slug || article.id}/read`}
+            />
           </div>
         </header>
 
